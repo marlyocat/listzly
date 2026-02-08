@@ -32,35 +32,41 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _pages,
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-        items: [
-          BottomNavigationBarItem(
-            icon: Image.asset('lib/images/home.png', width: 24, height: 24),
-            label: '',
+      body: IndexedStack(index: _selectedIndex, children: _pages),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border(
+            top: BorderSide(color: Colors.grey.shade300, width: 1),
           ),
-          BottomNavigationBarItem(
-            icon: Image.asset('lib/images/quest.png', width: 24, height: 24),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset('lib/images/trophy.png', width: 24, height: 24),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset('lib/images/settings.png', width: 24, height: 24),
-            label: '',
-          ),
-        ],
+        ),
+        child: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: Colors.white,
+          elevation: 0,
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+          items: [
+            BottomNavigationBarItem(
+              icon: Image.asset('lib/images/home.png', width: 24, height: 24),
+              label: '',
+            ),
+            BottomNavigationBarItem(
+              icon: Image.asset('lib/images/quest.png', width: 24, height: 24),
+              label: '',
+            ),
+            BottomNavigationBarItem(
+              icon: Image.asset('lib/images/trophy.png', width: 24, height: 24),
+              label: '',
+            ),
+            BottomNavigationBarItem(
+              icon: Image.asset('lib/images/settings.png', width: 24, height: 24),
+              label: '',
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -72,7 +78,7 @@ class _HomeTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -106,17 +112,11 @@ class _HomeTab extends StatelessWidget {
                     const SizedBox(height: 20),
 
                     // Redeem Button
-                    MyButton(
-                      text: "Redeem",
-                      onTap: () {},
-                    ),
+                    MyButton(text: "Redeem", onTap: () {}),
                   ],
                 ),
 
-                Image.asset(
-                  'lib/images/music_instrument.png',
-                  height: 100,
-                ),
+                Image.asset('lib/images/music_instrument.png', height: 100),
               ],
             ),
           ),
