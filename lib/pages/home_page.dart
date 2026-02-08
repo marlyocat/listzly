@@ -1,16 +1,74 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:listzly/components/button.dart';
+import 'package:listzly/pages/quests_page.dart';
+import 'package:listzly/pages/activity_page.dart';
+import 'package:listzly/pages/profile_page.dart';
 import 'package:listzly/theme/colors.dart';
 
-class MenuPage extends StatefulWidget {
-  const MenuPage({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  State<MenuPage> createState() => _MenuPageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _MenuPageState extends State<MenuPage> {
+class _HomePageState extends State<HomePage> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _pages = const [
+    _HomeTab(),
+    QuestsPage(),
+    ActivityPage(),
+    ProfilePage(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _pages,
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: Colors.white,
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+        items: [
+          BottomNavigationBarItem(
+            icon: Image.asset('lib/images/home.png', width: 24, height: 24),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Image.asset('lib/images/quest.png', width: 24, height: 24),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Image.asset('lib/images/trophy.png', width: 24, height: 24),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Image.asset('lib/images/settings.png', width: 24, height: 24),
+            label: '',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HomeTab extends StatelessWidget {
+  const _HomeTab();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,7 +76,7 @@ class _MenuPageState extends State<MenuPage> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: Icon(Icons.menu, color: Colors.grey[900]),
+        automaticallyImplyLeading: false,
         title: Text('Tokyo', style: TextStyle(color: Colors.grey[900])),
       ),
       body: Column(
