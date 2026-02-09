@@ -80,7 +80,7 @@ class _HomeTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFE8E0FF),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,

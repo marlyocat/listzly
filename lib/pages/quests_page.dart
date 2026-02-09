@@ -7,7 +7,7 @@ class QuestsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      backgroundColor: const Color(0xFFFCE8EE),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
