@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
 import 'package:listzly/components/flip_box_nav_bar.dart';
-import 'package:listzly/components/button.dart';
 import 'package:listzly/pages/quests_page.dart';
 import 'package:listzly/pages/activity_page.dart';
 import 'package:listzly/pages/profile_page.dart';
+import 'package:listzly/pages/practice_page.dart';
 import 'package:listzly/theme/colors.dart';
 
 class HomePage extends StatefulWidget {
@@ -74,58 +75,129 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class _HomeTab extends StatelessWidget {
+class _HomeTab extends StatefulWidget {
   const _HomeTab();
+
+  @override
+  State<_HomeTab> createState() => _HomeTabState();
+}
+
+class _HomeTabState extends State<_HomeTab> {
+  void _onGoTap() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const PracticePage(
+          instrument: 'Piano',
+          instrumentIcon: Icons.piano,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: homeBgColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        title: Text('Tokyo', style: TextStyle(color: Colors.grey[900])),
-      ),
-      body: Column(
-        children: [
-          // Promo Banner
-          Container(
-            decoration: BoxDecoration(
-              color: primaryColor,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 40),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              primaryColor,
+              primaryColor.withAlpha(200),
+              const Color(0xFF4A1D8E),
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              // Top bar
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    //Promo Message
+                    const SizedBox(width: 40),
+                    // Title
                     Text(
-                      'Get 32% off',
+                      'Practice',
                       style: GoogleFonts.dmSerifDisplay(
                         fontSize: 20,
                         color: Colors.white,
                       ),
                     ),
-
-                    const SizedBox(height: 20),
-
-                    // Redeem Button
-                    MyButton(text: "Redeem", onTap: () {}),
+                    const SizedBox(width: 40),
                   ],
                 ),
+              ),
 
-                Image.asset('lib/images/music_instrument.png', height: 100),
-              ],
-            ),
+              // Central area with large Lottie animation
+              Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Lottie.asset(
+                        'lib/images/playing_piano.json',
+                        width: 300,
+                        height: 300,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Piano',
+                        style: GoogleFonts.dmSerifDisplay(
+                          fontSize: 24,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Bottom bar with Go button
+              Padding(
+                padding: const EdgeInsets.only(left: 20, right: 20, bottom: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(width: 40),
+
+                    // Go button
+                    GestureDetector(
+                      onTap: _onGoTap,
+                      child: Container(
+                        width: 140,
+                        height: 52,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Go',
+                            style: GoogleFonts.dmSerifDisplay(
+                              fontSize: 22,
+                              color: primaryColor,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(width: 40),
+                  ],
+                ),
+              ),
+            ],
           ),
-
-          const SizedBox(height: 25),
-        ],
+        ),
       ),
     );
   }
+
 }
