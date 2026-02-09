@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
@@ -79,7 +81,8 @@ class _InstrumentData {
   final String name;
   final IconData icon;
   final String? lottiePath;
-  const _InstrumentData({required this.name, required this.icon, this.lottiePath});
+  final List<Map<String, String>> quotes;
+  const _InstrumentData({required this.name, required this.icon, this.lottiePath, required this.quotes});
 }
 
 class _HomeTab extends StatefulWidget {
@@ -93,11 +96,48 @@ class _HomeTabState extends State<_HomeTab> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
+  late List<int> _quoteIndices;
+
+  @override
+  void initState() {
+    super.initState();
+    final rng = Random();
+    _quoteIndices = List.generate(
+      _instruments.length,
+      (i) => rng.nextInt(_instruments[i].quotes.length),
+    );
+  }
+
   static const List<_InstrumentData> _instruments = [
-    _InstrumentData(name: 'Piano', icon: Icons.piano, lottiePath: 'lib/images/playing_piano.json'),
-    _InstrumentData(name: 'Guitar', icon: Icons.music_note, lottiePath: 'lib/images/playing_guitar.json'),
-    _InstrumentData(name: 'Violin', icon: Icons.music_note_outlined, lottiePath: 'lib/images/playing_violin.json'),
-    _InstrumentData(name: 'Drums', icon: Icons.surround_sound, lottiePath: 'lib/images/playing_drums.json'),
+    _InstrumentData(name: 'Piano', icon: Icons.piano, lottiePath: 'lib/images/playing_piano.json', quotes: [
+      {'quote': 'Simplicity is the final achievement.', 'author': 'Frederic Chopin'},
+      {'quote': 'The piano keys are black and white, but they sound like a million colours in your mind.', 'author': 'Maria Cristina Mena'},
+      {'quote': 'The piano is able to communicate the subtlest universal truths.', 'author': 'Vladimir Horowitz'},
+      {'quote': 'The piano is the silence between the notes.', 'author': 'Claude Debussy'},
+      {'quote': 'The piano is a beautiful instrument to express the deepest feelings of the soul.', 'author': 'Franz Liszt'},
+      {'quote': 'Beware of missing chances; otherwise it may be altogether too late some day.', 'author': 'Franz Liszt'},
+    ]),
+    _InstrumentData(name: 'Guitar', icon: Icons.music_note, lottiePath: 'lib/images/playing_guitar.json', quotes: [
+      {'quote': 'The guitar is a small orchestra.', 'author': 'Andres Segovia'},
+      {'quote': 'The guitar chose me, and I gave my life to it.', 'author': 'Paco de Lucia'},
+      {'quote': 'A guitar is more than just a sound box. It is part of your soul.', 'author': 'Manuel Barrueco'},
+      {'quote': 'The tone of the guitar is between a flute and a harp.', 'author': 'Fernando Sor'},
+      {'quote': 'Music embodies feeling without forcing it to contend with thought.', 'author': 'Franz Liszt'},
+    ]),
+    _InstrumentData(name: 'Violin', icon: Icons.music_note_outlined, lottiePath: 'lib/images/playing_violin.json', quotes: [
+      {'quote': 'The violin can be the most beautiful voice in the world.', 'author': 'Niccolo Paganini'},
+      {'quote': 'A violin sings from the depths of the human soul.', 'author': 'Itzhak Perlman'},
+      {'quote': 'The violin is the perfect instrument of the heart.', 'author': 'Antonio Vivaldi'},
+      {'quote': 'When words leave off, the violin begins.', 'author': 'Heinrich Heine'},
+      {'quote': 'Inspiration is enough to give expression to the tone in singing, especially when the song is without words.', 'author': 'Franz Liszt'},
+    ]),
+    _InstrumentData(name: 'Drums', icon: Icons.surround_sound, lottiePath: 'lib/images/playing_drums.json', quotes: [
+      {'quote': 'The drummer drives. Everyone else rides.', 'author': 'Buddy Rich'},
+      {'quote': 'A good drummer listens as much as he plays.', 'author': 'Indian Proverb'},
+      {'quote': 'Drums are the heartbeat of music.', 'author': 'Ringo Starr'},
+      {'quote': 'Rhythm is the soul of life. The whole universe revolves in rhythm.', 'author': 'Babatunde Olatunji'},
+      {'quote': 'Music is the heart of life. Without it, there is no possible good and with it everything is beautiful.', 'author': 'Franz Liszt'},
+    ]),
   ];
 
   @override
@@ -125,12 +165,13 @@ class _HomeTabState extends State<_HomeTab> {
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
             colors: [
+              const Color(0xFF9333EA),
               primaryColor,
-              primaryColor.withAlpha(200),
               const Color(0xFF4A1D8E),
+              const Color(0xFF2D1066),
             ],
           ),
         ),
@@ -175,8 +216,29 @@ class _HomeTabState extends State<_HomeTab> {
                           Text(
                             inst.name,
                             style: GoogleFonts.dmSerifDisplay(
-                              fontSize: 24,
+                              fontSize: 28,
                               color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 40),
+                            child: Text(
+                              '"${inst.quotes[_quoteIndices[index]]['quote']}"',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.dmSerifDisplay(
+                                fontSize: 14,
+                                color: Colors.white.withAlpha(180),
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            '- ${inst.quotes[_quoteIndices[index]]['author']}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.white.withAlpha(130),
                             ),
                           ),
                         ],
