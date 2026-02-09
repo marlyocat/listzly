@@ -217,11 +217,23 @@ class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
                           else
                             Icon(inst.icon, size: 200, color: Colors.white.withAlpha(180)),
                           const SizedBox(height: 16),
-                          Text(
-                            inst.name,
-                            style: GoogleFonts.dmSerifDisplay(
-                              fontSize: 28,
-                              color: Colors.white,
+                          ShaderMask(
+                            shaderCallback: (bounds) => const LinearGradient(
+                              colors: [Colors.white, Color(0xFFF4A68E)],
+                            ).createShader(bounds),
+                            child: Text(
+                              inst.name,
+                              style: GoogleFonts.dmSerifDisplay(
+                                fontSize: 32,
+                                color: Colors.white,
+                                letterSpacing: 3,
+                                shadows: [
+                                  Shadow(
+                                    color: const Color(0xFFF4A68E).withAlpha(80),
+                                    blurRadius: 12,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                           const SizedBox(height: 20),
