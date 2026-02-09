@@ -92,9 +92,12 @@ class _HomeTab extends StatefulWidget {
   State<_HomeTab> createState() => _HomeTabState();
 }
 
-class _HomeTabState extends State<_HomeTab> {
+class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+  late AnimationController _pulseController;
+  late Animation<double> _pulseAnimation;
+  late AnimationController _rippleController;
 
   late List<int> _quoteIndices;
 
@@ -106,6 +109,17 @@ class _HomeTabState extends State<_HomeTab> {
       _instruments.length,
       (i) => rng.nextInt(_instruments[i].quotes.length),
     );
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat(reverse: true);
+    _pulseAnimation = Tween<double>(begin: 0.0, end: 12.0).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
+    _rippleController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 3500),
+    )..repeat();
   }
 
   static const List<_InstrumentData> _instruments = [
@@ -143,6 +157,8 @@ class _HomeTabState extends State<_HomeTab> {
   @override
   void dispose() {
     _pageController.dispose();
+    _pulseController.dispose();
+    _rippleController.dispose();
     super.dispose();
   }
 
@@ -269,29 +285,71 @@ class _HomeTabState extends State<_HomeTab> {
                 ),
               ),
 
-              // Go button
+              // Play button with ripples
               Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20, bottom: 16),
-                child: GestureDetector(
-                  onTap: _onGoTap,
-                  child: Container(
-                    width: 140,
-                    height: 52,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: Center(
-                      child: Text(
-                        'Go',
-                        style: GoogleFonts.dmSerifDisplay(
-                          fontSize: 22,
-                          color: primaryColor,
-                          fontWeight: FontWeight.w600,
+                padding: const EdgeInsets.only(bottom: 16),
+                child: AnimatedBuilder(
+                  animation: Listenable.merge([_pulseAnimation, _rippleController]),
+                  builder: (context, child) {
+                    return GestureDetector(
+                      onTap: _onGoTap,
+                      child: SizedBox(
+                        width: 140,
+                        height: 140,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            // Ripple rings
+                            for (int i = 0; i < 3; i++)
+                              Builder(builder: (context) {
+                                final phase = (_rippleController.value + i / 3) % 1.0;
+                                final size = 80 + phase * 60;
+                                final opacity = (1.0 - phase) * 0.4;
+                                return Container(
+                                  width: size,
+                                  height: size,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: const Color(0xFFF4A68E).withAlpha((opacity * 255).toInt()),
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                );
+                              }),
+                            // Main button
+                            Container(
+                              width: 80,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: const LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    Color(0xFFF4A68E),
+                                    Color(0xFFE07A5F),
+                                  ],
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(0xFFF4A68E).withAlpha(100),
+                                    blurRadius: 18 + _pulseAnimation.value,
+                                    spreadRadius: 1 + _pulseAnimation.value * 0.4,
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.play_arrow_rounded,
+                                size: 48,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                  ),
+                    );
+                  },
                 ),
               ),
             ],
