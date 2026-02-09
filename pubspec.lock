@@ -49,6 +49,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.19.1"
+  cool_nav:
+    dependency: "direct main"
+    description:
+      name: cool_nav
+      sha256: "604a6671ce421664b9b1dddff5015658893b750459c065fa3a04112b400fa4de"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.1"
   crypto:
     dependency: transitive
     description:

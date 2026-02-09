@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:listzly/components/flip_box_nav_bar.dart';
 import 'package:listzly/components/button.dart';
 import 'package:listzly/pages/quests_page.dart';
 import 'package:listzly/pages/activity_page.dart';
@@ -33,37 +34,38 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(index: _selectedIndex, children: _pages),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border(
-            top: BorderSide(color: Colors.grey.shade300, width: 1),
-          ),
-        ),
-        child: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.white,
-          elevation: 0,
+      bottomNavigationBar: SafeArea(
+        child: FlipBoxNavBar(
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
           items: [
-            BottomNavigationBarItem(
-              icon: Image.asset('lib/images/home.png', width: 24, height: 24),
-              label: '',
+            FlipBoxNavItem(
+              name: 'Home',
+              selectedImage: 'lib/images/home_selected.png',
+              unselectedImage: 'lib/images/home_unselected.png',
+              selectedBackgroundColor: primaryColor,
+              unselectedBackgroundColor: backgroundColor,
             ),
-            BottomNavigationBarItem(
-              icon: Image.asset('lib/images/quest.png', width: 24, height: 24),
-              label: '',
+            FlipBoxNavItem(
+              name: 'Quests',
+              selectedImage: 'lib/images/quest_selected.png',
+              unselectedImage: 'lib/images/quest_unselected.png',
+              selectedBackgroundColor: primaryColor,
+              unselectedBackgroundColor: backgroundColor,
             ),
-            BottomNavigationBarItem(
-              icon: Image.asset('lib/images/trophy.png', width: 24, height: 24),
-              label: '',
+            FlipBoxNavItem(
+              name: 'Activity',
+              selectedImage: 'lib/images/trophy_selected.png',
+              unselectedImage: 'lib/images/trophy_unselected.png',
+              selectedBackgroundColor: primaryColor,
+              unselectedBackgroundColor: backgroundColor,
             ),
-            BottomNavigationBarItem(
-              icon: Image.asset('lib/images/settings.png', width: 24, height: 24),
-              label: '',
+            FlipBoxNavItem(
+              name: 'Profile',
+              selectedImage: 'lib/images/settings_selected.png',
+              unselectedImage: 'lib/images/settings_unselected.png',
+              selectedBackgroundColor: primaryColor,
+              unselectedBackgroundColor: backgroundColor,
             ),
           ],
         ),
