@@ -194,19 +194,7 @@ class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
         child: SafeArea(
           child: Column(
             children: [
-              // Top bar
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                child: Center(
-                  child: Text(
-                    'Practice',
-                    style: GoogleFonts.dmSerifDisplay(
-                      fontSize: 20,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
+              const SizedBox(height: 8),
 
               // Swipeable instrument carousel
               Expanded(
@@ -252,7 +240,7 @@ class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
                           const SizedBox(height: 8),
                           Text(
                             '- ${inst.quotes[_quoteIndices[index]]['author']}',
-                            style: TextStyle(
+                            style: GoogleFonts.dmSerifDisplay(
                               fontSize: 12,
                               color: Colors.white.withAlpha(130),
                             ),
