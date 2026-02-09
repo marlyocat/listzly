@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:listzly/theme/colors.dart';
 
 class ActivityPage extends StatelessWidget {
   const ActivityPage({super.key});
@@ -7,7 +8,7 @@ class ActivityPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF5E0),
+      backgroundColor: activityBgColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:listzly/theme/colors.dart';
 
 class QuestsPage extends StatelessWidget {
   const QuestsPage({super.key});
@@ -7,7 +8,7 @@ class QuestsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFCE8EE),
+      backgroundColor: questsBgColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,

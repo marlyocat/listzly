@@ -64,8 +64,8 @@ class _HomePageState extends State<HomePage> {
               name: 'Profile',
               selectedImage: 'lib/images/settings_selected.png',
               unselectedImage: 'lib/images/settings_unselected.png',
-              selectedBackgroundColor: const Color(0xFF4ECDC4),
-              unselectedBackgroundColor: const Color(0xFF4ECDC4).withOpacity(0.6),
+              selectedBackgroundColor: tealColor,
+              unselectedBackgroundColor: tealColor.withOpacity(0.6),
             ),
           ],
         ),
@@ -80,7 +80,7 @@ class _HomeTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFE8E0FF),
+      backgroundColor: homeBgColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
