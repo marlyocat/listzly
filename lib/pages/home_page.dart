@@ -75,6 +75,13 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
+class _InstrumentData {
+  final String name;
+  final IconData icon;
+  final String? lottiePath;
+  const _InstrumentData({required this.name, required this.icon, this.lottiePath});
+}
+
 class _HomeTab extends StatefulWidget {
   const _HomeTab();
 
@@ -83,13 +90,30 @@ class _HomeTab extends StatefulWidget {
 }
 
 class _HomeTabState extends State<_HomeTab> {
+  final PageController _pageController = PageController();
+  int _currentPage = 0;
+
+  static const List<_InstrumentData> _instruments = [
+    _InstrumentData(name: 'Piano', icon: Icons.piano, lottiePath: 'lib/images/playing_piano.json'),
+    _InstrumentData(name: 'Guitar', icon: Icons.music_note, lottiePath: 'lib/images/playing_guitar.json'),
+    _InstrumentData(name: 'Violin', icon: Icons.music_note_outlined, lottiePath: 'lib/images/playing_violin.json'),
+    _InstrumentData(name: 'Drums', icon: Icons.surround_sound, lottiePath: 'lib/images/playing_drums.json'),
+  ];
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
   void _onGoTap() {
+    final instrument = _instruments[_currentPage];
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const PracticePage(
-          instrument: 'Piano',
-          instrumentIcon: Icons.piano,
+        builder: (context) => PracticePage(
+          instrument: instrument.name,
+          instrumentIcon: instrument.icon,
         ),
       ),
     );
@@ -116,81 +140,96 @@ class _HomeTabState extends State<_HomeTab> {
               // Top bar
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const SizedBox(width: 40),
-                    // Title
-                    Text(
-                      'Practice',
-                      style: GoogleFonts.dmSerifDisplay(
-                        fontSize: 20,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(width: 40),
-                  ],
-                ),
-              ),
-
-              // Central area with large Lottie animation
-              Expanded(
                 child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Lottie.asset(
-                        'lib/images/playing_piano.json',
-                        width: 300,
-                        height: 300,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Piano',
-                        style: GoogleFonts.dmSerifDisplay(
-                          fontSize: 24,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
+                  child: Text(
+                    'Practice',
+                    style: GoogleFonts.dmSerifDisplay(
+                      fontSize: 20,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
 
-              // Bottom bar with Go button
-              Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20, bottom: 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const SizedBox(width: 40),
-
-                    // Go button
-                    GestureDetector(
-                      onTap: _onGoTap,
-                      child: Container(
-                        width: 140,
-                        height: 52,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Go',
+              // Swipeable instrument carousel
+              Expanded(
+                child: PageView.builder(
+                  controller: _pageController,
+                  itemCount: _instruments.length,
+                  onPageChanged: (index) => setState(() => _currentPage = index),
+                  itemBuilder: (context, index) {
+                    final inst = _instruments[index];
+                    return Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (inst.lottiePath != null)
+                            Lottie.asset(
+                              inst.lottiePath!,
+                              width: 300,
+                              height: 300,
+                            )
+                          else
+                            Icon(inst.icon, size: 200, color: Colors.white.withAlpha(180)),
+                          const SizedBox(height: 16),
+                          Text(
+                            inst.name,
                             style: GoogleFonts.dmSerifDisplay(
-                              fontSize: 22,
-                              color: primaryColor,
-                              fontWeight: FontWeight.w600,
+                              fontSize: 24,
+                              color: Colors.white,
                             ),
                           ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+              // Dot indicators
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(_instruments.length, (index) {
+                    final isActive = index == _currentPage;
+                    return AnimatedContainer(
+                      duration: const Duration(milliseconds: 250),
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      width: isActive ? 24 : 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: isActive ? Colors.white : Colors.white.withAlpha(80),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+
+              // Go button
+              Padding(
+                padding: const EdgeInsets.only(left: 20, right: 20, bottom: 16),
+                child: GestureDetector(
+                  onTap: _onGoTap,
+                  child: Container(
+                    width: 140,
+                    height: 52,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Go',
+                        style: GoogleFonts.dmSerifDisplay(
+                          fontSize: 22,
+                          color: primaryColor,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
-
-                    const SizedBox(width: 40),
-                  ],
+                  ),
                 ),
               ),
             ],
@@ -199,5 +238,4 @@ class _HomeTabState extends State<_HomeTab> {
       ),
     );
   }
-
 }
