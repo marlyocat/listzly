@@ -33,7 +33,6 @@ class _PracticePageState extends State<PracticePage>
     {'quote': 'The beautiful thing about learning is nobody can take it away from you.', 'author': 'B.B. King'},
     {'quote': 'Without craftsmanship, inspiration is a mere reed shaken in the wind.', 'author': 'Johannes Brahms'},
     {'quote': 'Genius is one percent inspiration and ninety-nine percent perspiration.', 'author': 'Thomas Edison'},
-    {'quote': 'Where words fail, music speaks.', 'author': 'Hans Christian Andersen'},
     {'quote': 'One who plays wrong notes is a beginner; one who hesitates is an amateur.', 'author': 'Unknown'},
   ];
 
@@ -48,6 +47,16 @@ class _PracticePageState extends State<PracticePage>
   late AnimationController _rippleController;
   late AnimationController _tapScaleController;
   late Animation<double> _tapScaleAnimation;
+  late AnimationController _celebrationController;
+  late AnimationController _sparkleController;
+  late Animation<double> _checkScaleAnimation;
+  late Animation<double> _checkOpacityAnimation;
+  late Animation<double> _textSlideAnimation;
+  late Animation<double> _textOpacityAnimation;
+  late Animation<double> _summarySlideAnimation;
+  late Animation<double> _summaryOpacityAnimation;
+  late Animation<double> _buttonScaleAnimation;
+  late Animation<double> _buttonOpacityAnimation;
 
   @override
   void initState() {
@@ -72,6 +81,63 @@ class _PracticePageState extends State<PracticePage>
     );
     _tapScaleAnimation = Tween<double>(begin: 1.0, end: 0.85).animate(
       CurvedAnimation(parent: _tapScaleController, curve: Curves.easeInOut),
+    );
+
+    _celebrationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    );
+    _sparkleController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2000),
+    );
+    _checkScaleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _celebrationController,
+        curve: const Interval(0.0, 0.45, curve: Curves.elasticOut),
+      ),
+    );
+    _checkOpacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _celebrationController,
+        curve: const Interval(0.0, 0.15, curve: Curves.easeIn),
+      ),
+    );
+    _textSlideAnimation = Tween<double>(begin: 30.0, end: 0.0).animate(
+      CurvedAnimation(
+        parent: _celebrationController,
+        curve: const Interval(0.25, 0.55, curve: Curves.easeOutCubic),
+      ),
+    );
+    _textOpacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _celebrationController,
+        curve: const Interval(0.25, 0.55, curve: Curves.easeIn),
+      ),
+    );
+    _summarySlideAnimation = Tween<double>(begin: 20.0, end: 0.0).animate(
+      CurvedAnimation(
+        parent: _celebrationController,
+        curve: const Interval(0.40, 0.65, curve: Curves.easeOutCubic),
+      ),
+    );
+    _summaryOpacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _celebrationController,
+        curve: const Interval(0.40, 0.65, curve: Curves.easeIn),
+      ),
+    );
+    _buttonScaleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _celebrationController,
+        curve: const Interval(0.55, 0.80, curve: Curves.elasticOut),
+      ),
+    );
+    _buttonOpacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _celebrationController,
+        curve: const Interval(0.55, 0.70, curve: Curves.easeIn),
+      ),
     );
 
     _startTimer();
@@ -116,34 +182,12 @@ class _PracticePageState extends State<PracticePage>
   }
 
   void _onSessionComplete() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF2D1066),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(
-          'Session Complete!',
-          style: GoogleFonts.dmSerifDisplay(color: Colors.white, fontSize: 24),
-        ),
-        content: Text(
-          '${widget.durationMinutes} minutes of ${widget.instrument.toLowerCase()} practice recorded.',
-          style: const TextStyle(color: Colors.white70, fontSize: 16),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              Navigator.of(this.context).pop(true);
-            },
-            child: Text(
-              'Done',
-              style: TextStyle(color: const Color(0xFFF4A68E), fontSize: 16),
-            ),
-          ),
-        ],
-      ),
-    );
+    HapticFeedback.heavyImpact();
+    _pulseController.stop();
+    _rippleController.stop();
+    _quoteTimer?.cancel();
+    _celebrationController.forward();
+    _sparkleController.repeat();
   }
 
   Future<bool> _onWillPop() async {
@@ -202,6 +246,8 @@ class _PracticePageState extends State<PracticePage>
     _pulseController.dispose();
     _rippleController.dispose();
     _tapScaleController.dispose();
+    _celebrationController.dispose();
+    _sparkleController.dispose();
     super.dispose();
   }
 
@@ -240,7 +286,8 @@ class _PracticePageState extends State<PracticePage>
           child: SafeArea(
             child: Stack(
               children: [
-                // Main content
+                // Timer view
+                if (!_sessionCompleted)
                 Column(
                   children: [
                     const Spacer(flex: 3),
@@ -253,7 +300,7 @@ class _PracticePageState extends State<PracticePage>
                       child: Text(
                         _formatTime(_remainingSeconds),
                         style: GoogleFonts.dmSerifDisplay(
-                          fontSize: 80,
+                          fontSize: 85,
                           color: Colors.white,
                           fontWeight: FontWeight.w400,
                           shadows: [
@@ -375,11 +422,227 @@ class _PracticePageState extends State<PracticePage>
                   ],
                 ),
 
+                // TODO: Remove — temporary button to test celebration view
+                if (!_sessionCompleted)
+                  Positioned(
+                    bottom: 16,
+                    right: 16,
+                    child: TextButton(
+                      onPressed: () {
+                        _timer?.cancel();
+                        setState(() {
+                          _remainingSeconds = 0;
+                          _sessionCompleted = true;
+                        });
+                        _onSessionComplete();
+                      },
+                      child: Text(
+                        'End Session',
+                        style: TextStyle(color: Colors.white.withAlpha(100), fontSize: 12),
+                      ),
+                    ),
+                  ),
+
+                // Celebration view
+                if (_sessionCompleted)
+                  _buildCelebrationView(),
+
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildCelebrationView() {
+    return AnimatedBuilder(
+      animation: Listenable.merge([_celebrationController, _sparkleController]),
+      builder: (context, child) {
+        return Column(
+          children: [
+            const Spacer(flex: 3),
+
+            // Checkmark with sparkles
+            SizedBox(
+              width: 200,
+              height: 200,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  // Sparkle particles
+                  for (int i = 0; i < 8; i++)
+                    Builder(builder: (context) {
+                      final angle = (i / 8) * 2 * pi + _sparkleController.value * 2 * pi;
+                      final radius = 70.0 + sin(_sparkleController.value * 2 * pi + i) * 15.0;
+                      final sparkleOpacity =
+                          (sin(_sparkleController.value * 2 * pi * 2 + i * 0.8) * 0.5 + 0.5) *
+                          _checkOpacityAnimation.value;
+                      return Transform.translate(
+                        offset: Offset(cos(angle) * radius, sin(angle) * radius),
+                        child: Container(
+                          width: 4,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: const Color(0xFFF4A68E).withAlpha((sparkleOpacity * 200).toInt()),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFFF4A68E).withAlpha((sparkleOpacity * 100).toInt()),
+                                blurRadius: 4,
+                                spreadRadius: 1,
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }),
+
+                  // Checkmark circle
+                  Transform.scale(
+                    scale: _checkScaleAnimation.value,
+                    child: Opacity(
+                      opacity: _checkOpacityAnimation.value.clamp(0.0, 1.0),
+                      child: Container(
+                        width: 110,
+                        height: 110,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [Color(0xFFF4A68E), Color(0xFFE07A5F)],
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFFF4A68E).withAlpha(100),
+                              blurRadius: 30,
+                              spreadRadius: 5,
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.check_rounded,
+                          size: 60,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 40),
+
+            // "Session Complete!" text
+            Transform.translate(
+              offset: Offset(0, _textSlideAnimation.value),
+              child: Opacity(
+                opacity: _textOpacityAnimation.value.clamp(0.0, 1.0),
+                child: ShaderMask(
+                  shaderCallback: (bounds) => const LinearGradient(
+                    colors: [Color(0xFFFCE4DC), Color(0xFFF4A68E)],
+                  ).createShader(bounds),
+                  child: Text(
+                    'Session Complete!',
+                    style: GoogleFonts.dmSerifDisplay(
+                      fontSize: 36,
+                      color: Colors.white,
+                      shadows: [
+                        Shadow(
+                          color: const Color(0xFFF4A68E).withAlpha(80),
+                          blurRadius: 12,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            // Summary
+            Transform.translate(
+              offset: Offset(0, _summarySlideAnimation.value),
+              child: Opacity(
+                opacity: _summaryOpacityAnimation.value.clamp(0.0, 1.0),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(widget.instrumentIcon, color: Colors.white.withAlpha(180), size: 20),
+                        const SizedBox(width: 8),
+                        Text(
+                          widget.instrument,
+                          style: GoogleFonts.dmSerifDisplay(
+                            fontSize: 18,
+                            color: Colors.white.withAlpha(180),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '${widget.durationMinutes} minutes practiced',
+                      style: GoogleFonts.dmSerifDisplay(
+                        fontSize: 14,
+                        color: Colors.white.withAlpha(130),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const Spacer(flex: 2),
+
+            // Done button
+            Transform.scale(
+              scale: _buttonScaleAnimation.value,
+              child: Opacity(
+                opacity: _buttonOpacityAnimation.value.clamp(0.0, 1.0),
+                child: GestureDetector(
+                  onTap: () => Navigator.of(context).pop(true),
+                  child: Container(
+                    width: 200,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(28),
+                      gradient: const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Color(0xFFF4A68E), Color(0xFFE07A5F)],
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFF4A68E).withAlpha(100),
+                          blurRadius: 20,
+                          spreadRadius: 2,
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Done',
+                        style: GoogleFonts.dmSerifDisplay(
+                          fontSize: 20,
+                          color: Colors.white,
+                          letterSpacing: 2,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            const Spacer(flex: 2),
+          ],
+        );
+      },
     );
   }
 }
