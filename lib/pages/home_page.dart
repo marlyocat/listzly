@@ -9,6 +9,7 @@ import 'package:listzly/pages/activity_page.dart';
 import 'package:listzly/pages/profile_page.dart';
 import 'package:listzly/pages/practice_page.dart';
 import 'package:listzly/theme/colors.dart';
+import 'package:turn_page_transition/turn_page_transition.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -166,7 +167,10 @@ class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
     final instrument = _instruments[_currentPage];
     Navigator.push(
       context,
-      MaterialPageRoute(
+      TurnPageRoute(
+        overleafColor: const Color(0xFF4A1D8E),
+        animationTransitionPoint: 0.5,
+        transitionDuration: const Duration(milliseconds: 600),
         builder: (context) => PracticePage(
           instrument: instrument.name,
           instrumentIcon: instrument.icon,
