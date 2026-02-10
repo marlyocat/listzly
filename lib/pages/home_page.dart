@@ -208,18 +208,19 @@ class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
                   onPageChanged: (index) => setState(() => _currentPage = index),
                   itemBuilder: (context, index) {
                     final inst = _instruments[index];
-                    return Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
+                    return Column(
                         children: [
                           if (inst.lottiePath != null)
-                            Lottie.asset(
-                              inst.lottiePath!,
-                              width: 300,
-                              height: 300,
+                            Expanded(
+                              child: Lottie.asset(
+                                inst.lottiePath!,
+                                fit: BoxFit.contain,
+                              ),
                             )
                           else
-                            Icon(inst.icon, size: 200, color: Colors.white.withAlpha(180)),
+                            Expanded(
+                              child: Icon(inst.icon, size: 200, color: Colors.white.withAlpha(180)),
+                            ),
                           const SizedBox(height: 16),
                           ShaderMask(
                             shaderCallback: (bounds) => const LinearGradient(
@@ -261,8 +262,8 @@ class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
                               color: Colors.white.withAlpha(130),
                             ),
                           ),
+                          const SizedBox(height: 24),
                         ],
-                      ),
                     );
                   },
                 ),
