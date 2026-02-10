@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:listzly/theme/colors.dart';
 
@@ -45,6 +46,8 @@ class _PracticePageState extends State<PracticePage>
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
   late AnimationController _rippleController;
+  late AnimationController _tapScaleController;
+  late Animation<double> _tapScaleAnimation;
 
   @override
   void initState() {
@@ -62,6 +65,13 @@ class _PracticePageState extends State<PracticePage>
     _rippleController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 3500),
+    );
+    _tapScaleController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 150),
+    );
+    _tapScaleAnimation = Tween<double>(begin: 1.0, end: 0.85).animate(
+      CurvedAnimation(parent: _tapScaleController, curve: Curves.easeInOut),
     );
 
     _startTimer();
@@ -89,6 +99,8 @@ class _PracticePageState extends State<PracticePage>
   }
 
   void _togglePause() {
+    HapticFeedback.mediumImpact();
+    _tapScaleController.forward().then((_) => _tapScaleController.reverse());
     setState(() {
       _isPaused = !_isPaused;
       if (_isPaused) {
@@ -189,6 +201,7 @@ class _PracticePageState extends State<PracticePage>
     _quoteTimer?.cancel();
     _pulseController.dispose();
     _rippleController.dispose();
+    _tapScaleController.dispose();
     super.dispose();
   }
 
@@ -210,6 +223,7 @@ class _PracticePageState extends State<PracticePage>
         }
       },
       child: Scaffold(
+        backgroundColor: const Color(0xFF2D1066),
         body: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -288,11 +302,13 @@ class _PracticePageState extends State<PracticePage>
 
                     // Pause / Play button with ripples when paused
                     AnimatedBuilder(
-                      animation: Listenable.merge([_pulseAnimation, _rippleController]),
+                      animation: Listenable.merge([_pulseAnimation, _rippleController, _tapScaleAnimation]),
                       builder: (context, child) {
                         return GestureDetector(
                           onTap: _sessionCompleted ? null : _togglePause,
-                          child: SizedBox(
+                          child: ScaleTransition(
+                            scale: _tapScaleAnimation,
+                            child: SizedBox(
                             width: 140,
                             height: 140,
                             child: Stack(
@@ -349,6 +365,7 @@ class _PracticePageState extends State<PracticePage>
                                 ),
                               ],
                             ),
+                          ),
                           ),
                         );
                       },
