@@ -5,11 +5,13 @@ import 'package:listzly/theme/colors.dart';
 class PracticePage extends StatelessWidget {
   final String instrument;
   final IconData instrumentIcon;
+  final int durationMinutes;
 
   const PracticePage({
     super.key,
     required this.instrument,
     required this.instrumentIcon,
+    required this.durationMinutes,
   });
 
   @override
@@ -59,7 +61,7 @@ class PracticePage extends StatelessWidget {
               // Large metric display
               const Spacer(),
               Text(
-                '0:00',
+                '$durationMinutes:00',
                 style: GoogleFonts.dmSerifDisplay(
                   fontSize: 72,
                   color: Colors.white,

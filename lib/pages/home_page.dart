@@ -96,6 +96,7 @@ class _HomeTab extends StatefulWidget {
 class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+  double _selectedDuration = 15;
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
   late AnimationController _rippleController;
@@ -174,6 +175,7 @@ class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
         builder: (context) => PracticePage(
           instrument: instrument.name,
           instrumentIcon: instrument.icon,
+          durationMinutes: _selectedDuration.toInt(),
         ),
       ),
     );
@@ -222,45 +224,106 @@ class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
                               child: Icon(inst.icon, size: 200, color: Colors.white.withAlpha(180)),
                             ),
                           const SizedBox(height: 16),
-                          ShaderMask(
-                            shaderCallback: (bounds) => const LinearGradient(
-                              colors: [Colors.white, Color(0xFFF4A68E)],
-                            ).createShader(bounds),
-                            child: Text(
-                              inst.name,
-                              style: GoogleFonts.dmSerifDisplay(
-                                fontSize: 32,
-                                color: Colors.white,
-                                letterSpacing: 3,
-                                shadows: [
-                                  Shadow(
-                                    color: const Color(0xFFF4A68E).withAlpha(80),
-                                    blurRadius: 12,
-                                  ),
-                                ],
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const SizedBox(width: 48),
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    ShaderMask(
+                                      shaderCallback: (bounds) => const LinearGradient(
+                                        colors: [Colors.white, Color(0xFFF4A68E)],
+                                      ).createShader(bounds),
+                                      child: Text(
+                                        inst.name,
+                                        style: GoogleFonts.dmSerifDisplay(
+                                          fontSize: 32,
+                                          color: Colors.white,
+                                          letterSpacing: 3,
+                                          shadows: [
+                                            Shadow(
+                                              color: const Color(0xFFF4A68E).withAlpha(80),
+                                              blurRadius: 12,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 20),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                                      child: Text(
+                                        '"${inst.quotes[_quoteIndices[index]]['quote']}"',
+                                        textAlign: TextAlign.center,
+                                        style: GoogleFonts.dmSerifDisplay(
+                                          fontSize: 14,
+                                          color: Colors.white.withAlpha(180),
+                                          fontStyle: FontStyle.italic,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      '- ${inst.quotes[_quoteIndices[index]]['author']}',
+                                      style: GoogleFonts.dmSerifDisplay(
+                                        fontSize: 12,
+                                        color: Colors.white.withAlpha(130),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 40),
-                            child: Text(
-                              '"${inst.quotes[_quoteIndices[index]]['quote']}"',
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.dmSerifDisplay(
-                                fontSize: 14,
-                                color: Colors.white.withAlpha(180),
-                                fontStyle: FontStyle.italic,
+                              // Vertical duration slider
+                              SizedBox(
+                                width: 48,
+                                height: 160,
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      '${_selectedDuration.toInt()}',
+                                      style: GoogleFonts.dmSerifDisplay(
+                                        fontSize: 16,
+                                        color: const Color(0xFFF4A68E),
+                                      ),
+                                    ),
+                                    Text(
+                                      'min',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: Colors.white.withAlpha(150),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Expanded(
+                                      child: RotatedBox(
+                                        quarterTurns: 3,
+                                        child: SliderTheme(
+                                          data: SliderThemeData(
+                                            trackHeight: 3,
+                                            activeTrackColor: const Color(0xFFF4A68E),
+                                            inactiveTrackColor: Colors.white.withAlpha(40),
+                                            thumbColor: const Color(0xFFF4A68E),
+                                            thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 7),
+                                            overlayColor: const Color(0xFFF4A68E).withAlpha(40),
+                                            overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
+                                          ),
+                                          child: Slider(
+                                            value: _selectedDuration,
+                                            min: 5,
+                                            max: 120,
+                                            divisions: 23,
+                                            onChanged: (value) {
+                                              setState(() => _selectedDuration = value);
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            '- ${inst.quotes[_quoteIndices[index]]['author']}',
-                            style: GoogleFonts.dmSerifDisplay(
-                              fontSize: 12,
-                              color: Colors.white.withAlpha(130),
-                            ),
+                            ],
                           ),
                           const SizedBox(height: 24),
                         ],
