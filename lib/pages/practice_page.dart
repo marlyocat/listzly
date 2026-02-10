@@ -18,12 +18,13 @@ class PracticePage extends StatelessWidget {
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
             colors: [
+              const Color(0xFF9333EA),
               primaryColor,
-              primaryColor.withAlpha(200),
               const Color(0xFF4A1D8E),
+              const Color(0xFF2D1066),
             ],
           ),
         ),
