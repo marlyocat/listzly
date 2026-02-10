@@ -232,12 +232,23 @@ class _PracticePageState extends State<PracticePage>
                     const Spacer(flex: 3),
 
                     // Large countdown timer
-                    Text(
-                      _formatTime(_remainingSeconds),
-                      style: GoogleFonts.dmSerifDisplay(
-                        fontSize: 80,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400,
+                    ShaderMask(
+                      shaderCallback: (bounds) => const LinearGradient(
+                        colors: [Color(0xFFFCE4DC), Color(0xFFF4A68E)],
+                      ).createShader(bounds),
+                      child: Text(
+                        _formatTime(_remainingSeconds),
+                        style: GoogleFonts.dmSerifDisplay(
+                          fontSize: 80,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w400,
+                          shadows: [
+                            Shadow(
+                              color: const Color(0xFFF4A68E).withAlpha(80),
+                              blurRadius: 12,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
 

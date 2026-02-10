@@ -168,15 +168,28 @@ class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
     final instrument = _instruments[_currentPage];
     Navigator.push(
       context,
-      TurnPageRoute(
-        overleafColor: const Color(0xFF4A1D8E),
-        animationTransitionPoint: 0.5,
+      PageRouteBuilder(
+        fullscreenDialog: true,
         transitionDuration: const Duration(milliseconds: 600),
-        builder: (context) => PracticePage(
+        reverseTransitionDuration: const Duration(milliseconds: 300),
+        pageBuilder: (context, animation, secondaryAnimation) => PracticePage(
           instrument: instrument.name,
           instrumentIcon: instrument.icon,
           durationMinutes: _selectedDuration.toInt(),
         ),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          // Only apply turn-page effect for forward animation
+          if (animation.status == AnimationStatus.reverse) {
+            return FadeTransition(opacity: animation, child: child);
+          }
+          return TurnPageTransition(
+            animation: animation,
+            overleafColor: const Color(0xFF4A1D8E),
+            animationTransitionPoint: 0.5,
+            direction: TurnDirection.rightToLeft,
+            child: child,
+          );
+        },
       ),
     );
   }
