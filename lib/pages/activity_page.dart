@@ -50,9 +50,17 @@ class _ActivityPageState extends State<ActivityPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F7F7),
-      body: SafeArea(
-        child: CustomScrollView(
+      backgroundColor: primaryDarkest,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: purpleGradientColors,
+          ),
+        ),
+        child: SafeArea(
+          child: CustomScrollView(
           slivers: [
             // Title
             SliverToBoxAdapter(
@@ -63,7 +71,7 @@ class _ActivityPageState extends State<ActivityPage> {
                   style: GoogleFonts.nunito(
                     fontSize: 32,
                     fontWeight: FontWeight.w900,
-                    color: const Color(0xFF1A1A1A),
+                    color: Colors.white,
                   ),
                 ),
               ),
@@ -89,6 +97,7 @@ class _ActivityPageState extends State<ActivityPage> {
           ],
         ),
       ),
+      ),
     );
   }
 
@@ -100,7 +109,7 @@ class _ActivityPageState extends State<ActivityPage> {
       child: Container(
         height: 40,
         decoration: BoxDecoration(
-          color: const Color(0xFFEEEEEE),
+          color: darkCardBorder,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Row(
@@ -112,17 +121,8 @@ class _ActivityPageState extends State<ActivityPage> {
                 child: Container(
                   margin: const EdgeInsets.all(3),
                   decoration: BoxDecoration(
-                    color: selected ? Colors.white : Colors.transparent,
+                    color: selected ? darkSurfaceBg : Colors.transparent,
                     borderRadius: BorderRadius.circular(8),
-                    boxShadow: selected
-                        ? [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.06),
-                              blurRadius: 4,
-                              offset: const Offset(0, 1),
-                            ),
-                          ]
-                        : null,
                   ),
                   child: Center(
                     child: Text(
@@ -132,8 +132,8 @@ class _ActivityPageState extends State<ActivityPage> {
                         fontWeight:
                             selected ? FontWeight.w800 : FontWeight.w600,
                         color: selected
-                            ? const Color(0xFF1A1A1A)
-                            : const Color(0xFF999999),
+                            ? Colors.white
+                            : darkTextMuted,
                       ),
                     ),
                   ),
@@ -158,7 +158,7 @@ class _ActivityPageState extends State<ActivityPage> {
             style: GoogleFonts.nunito(
               fontSize: 18,
               fontWeight: FontWeight.w800,
-              color: const Color(0xFF1A1A1A),
+              color: Colors.white,
             ),
           ),
           const SizedBox(height: 2),
@@ -189,9 +189,9 @@ class _ActivityPageState extends State<ActivityPage> {
       child: Container(
         padding: const EdgeInsets.fromLTRB(12, 16, 16, 12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: darkCardBg,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFFEEEEEE)),
+          border: Border.all(color: darkCardBorder),
         ),
         child: Column(
           children: [
@@ -213,7 +213,7 @@ class _ActivityPageState extends State<ActivityPage> {
                           style: GoogleFonts.nunito(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
-                            color: const Color(0xFFCCCCCC),
+                            color: darkTextMuted,
                           ),
                         ),
                       ),
@@ -236,7 +236,7 @@ class _ActivityPageState extends State<ActivityPage> {
                                 right: 0,
                                 child: Container(
                                   height: 1,
-                                  color: const Color(0xFFF3F3F3),
+                                  color: darkDivider,
                                 ),
                               );
                             }),
@@ -291,7 +291,7 @@ class _ActivityPageState extends State<ActivityPage> {
                       style: GoogleFonts.nunito(
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
-                        color: const Color(0xFFCCCCCC),
+                        color: darkTextMuted,
                       ),
                     ),
                   ),
@@ -319,9 +319,9 @@ class _ActivityPageState extends State<ActivityPage> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: darkCardBg,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFFEEEEEE)),
+          border: Border.all(color: darkCardBorder),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -331,7 +331,7 @@ class _ActivityPageState extends State<ActivityPage> {
               style: GoogleFonts.nunito(
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
-                color: const Color(0xFF1A1A1A),
+                color: Colors.white,
               ),
             ),
             const SizedBox(height: 14),
@@ -353,7 +353,7 @@ class _ActivityPageState extends State<ActivityPage> {
                                 style: GoogleFonts.nunito(
                                   fontSize: 10,
                                   fontWeight: FontWeight.w700,
-                                  color: const Color(0xFFBBBBBB),
+                                  color: darkTextSecondary,
                                 ),
                               ),
                             ),
@@ -378,7 +378,7 @@ class _ActivityPageState extends State<ActivityPage> {
                             ),
                             decoration: BoxDecoration(
                               color: val == 0
-                                  ? const Color(0xFFEEEEEE)
+                                  ? darkSurfaceBg
                                   : primaryColor.withValues(
                                       alpha: 0.2 + val * 0.6),
                               shape: BoxShape.circle,
@@ -403,9 +403,9 @@ class _ActivityPageState extends State<ActivityPage> {
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: darkCardBg,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFFEEEEEE)),
+          border: Border.all(color: darkCardBorder),
         ),
         child: Column(
           children: [
@@ -419,7 +419,7 @@ class _ActivityPageState extends State<ActivityPage> {
                     style: GoogleFonts.nunito(
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
-                      color: const Color(0xFF1A1A1A),
+                      color: Colors.white,
                     ),
                   ),
                   const Spacer(),
@@ -428,7 +428,7 @@ class _ActivityPageState extends State<ActivityPage> {
                     style: GoogleFonts.nunito(
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
-                      color: primaryColor,
+                      color: accentCoral,
                     ),
                   ),
                 ],
@@ -442,7 +442,7 @@ class _ActivityPageState extends State<ActivityPage> {
                 children: [
                   const Divider(
                     height: 1,
-                    color: Color(0xFFF0F0F0),
+                    color: darkDivider,
                     indent: 16,
                     endIndent: 16,
                   ),
@@ -457,7 +457,7 @@ class _ActivityPageState extends State<ActivityPage> {
                             style: GoogleFonts.nunito(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
-                              color: const Color(0xFF999999),
+                              color: darkTextMuted,
                             ),
                           ),
                         ),
@@ -466,13 +466,13 @@ class _ActivityPageState extends State<ActivityPage> {
                           style: GoogleFonts.nunito(
                             fontSize: 15,
                             fontWeight: FontWeight.w800,
-                            color: const Color(0xFF1A1A1A),
+                            color: Colors.white,
                           ),
                         ),
                         const SizedBox(width: 8),
                         const Icon(
                           Icons.chevron_right,
-                          color: Color(0xFFCCCCCC),
+                          color: darkTextMuted,
                           size: 20,
                         ),
                       ],

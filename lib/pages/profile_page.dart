@@ -8,9 +8,17 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F7F7),
-      body: SafeArea(
-        child: CustomScrollView(
+      backgroundColor: primaryDarkest,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: purpleGradientColors,
+          ),
+        ),
+        child: SafeArea(
+          child: CustomScrollView(
           slivers: [
             // Title
             SliverToBoxAdapter(
@@ -21,7 +29,7 @@ class ProfilePage extends StatelessWidget {
                   style: GoogleFonts.nunito(
                     fontSize: 32,
                     fontWeight: FontWeight.w900,
-                    color: const Color(0xFF1A1A1A),
+                    color: Colors.white,
                   ),
                 ),
               ),
@@ -118,6 +126,7 @@ class ProfilePage extends StatelessWidget {
           ],
         ),
       ),
+      ),
     );
   }
 
@@ -128,9 +137,9 @@ class ProfilePage extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: darkCardBg,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFFEEEEEE)),
+          border: Border.all(color: darkCardBorder),
         ),
         child: Row(
           children: [
@@ -159,7 +168,7 @@ class ProfilePage extends StatelessWidget {
                     style: GoogleFonts.nunito(
                       fontSize: 20,
                       fontWeight: FontWeight.w800,
-                      color: const Color(0xFF1A1A1A),
+                      color: Colors.white,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -168,7 +177,7 @@ class ProfilePage extends StatelessWidget {
                     style: GoogleFonts.nunito(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: const Color(0xFFBBBBBB),
+                      color: darkTextSecondary,
                     ),
                   ),
                 ],
@@ -179,12 +188,12 @@ class ProfilePage extends StatelessWidget {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: const Color(0xFFF3F3F3),
+                color: darkSurfaceBg,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: const Icon(
                 Icons.edit_outlined,
-                color: Color(0xFF999999),
+                color: darkTextMuted,
                 size: 18,
               ),
             ),
@@ -215,9 +224,9 @@ class ProfilePage extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: darkCardBg,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFFEEEEEE)),
+          border: Border.all(color: darkCardBorder),
         ),
         child: Column(
           children: [
@@ -236,7 +245,7 @@ class ProfilePage extends StatelessWidget {
               style: GoogleFonts.nunito(
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
-                color: const Color(0xFFBBBBBB),
+                color: darkTextSecondary,
               ),
             ),
           ],
@@ -262,15 +271,15 @@ class ProfilePage extends StatelessWidget {
               style: GoogleFonts.nunito(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
-                color: const Color(0xFFBBBBBB),
+                color: darkTextSecondary,
               ),
             ),
           ),
           Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: darkCardBg,
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: const Color(0xFFEEEEEE)),
+              border: Border.all(color: darkCardBorder),
             ),
             child: Column(
               children: items.asMap().entries.map((entry) {
@@ -283,7 +292,7 @@ class ProfilePage extends StatelessWidget {
                         height: 1,
                         indent: 52,
                         endIndent: 16,
-                        color: Color(0xFFF0F0F0),
+                        color: darkDivider,
                       ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
@@ -292,7 +301,7 @@ class ProfilePage extends StatelessWidget {
                         children: [
                           Icon(
                             row.icon,
-                            color: const Color(0xFF1A1A1A),
+                            color: Colors.white,
                             size: 20,
                           ),
                           const SizedBox(width: 14),
@@ -302,7 +311,7 @@ class ProfilePage extends StatelessWidget {
                               style: GoogleFonts.nunito(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w700,
-                                color: const Color(0xFF1A1A1A),
+                                color: Colors.white,
                               ),
                             ),
                           ),
@@ -364,15 +373,15 @@ class ProfilePage extends StatelessWidget {
               style: GoogleFonts.nunito(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
-                color: const Color(0xFFBBBBBB),
+                color: darkTextSecondary,
               ),
             ),
           ),
           Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: darkCardBg,
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: const Color(0xFFEEEEEE)),
+              border: Border.all(color: darkCardBorder),
             ),
             child: Column(
               children: instruments.asMap().entries.map((entry) {
@@ -388,7 +397,7 @@ class ProfilePage extends StatelessWidget {
                         height: 1,
                         indent: 60,
                         endIndent: 16,
-                        color: Color(0xFFF0F0F0),
+                        color: darkDivider,
                       ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
@@ -415,7 +424,7 @@ class ProfilePage extends StatelessWidget {
                                   style: GoogleFonts.nunito(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w700,
-                                    color: const Color(0xFF1A1A1A),
+                                    color: Colors.white,
                                   ),
                                 ),
                                 const SizedBox(height: 6),
@@ -426,8 +435,7 @@ class ProfilePage extends StatelessWidget {
                                     child: Stack(
                                       children: [
                                         Container(
-                                            color:
-                                                const Color(0xFFF0F0F0)),
+                                            color: darkProgressBg),
                                         FractionallySizedBox(
                                           widthFactor:
                                               fraction.clamp(0.0, 1.0),
@@ -455,7 +463,7 @@ class ProfilePage extends StatelessWidget {
                                 style: GoogleFonts.nunito(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w800,
-                                  color: const Color(0xFF1A1A1A),
+                                  color: Colors.white,
                                 ),
                               ),
                               Text(
@@ -463,7 +471,7 @@ class ProfilePage extends StatelessWidget {
                                 style: GoogleFonts.nunito(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w600,
-                                  color: const Color(0xFFBBBBBB),
+                                  color: darkTextSecondary,
                                 ),
                               ),
                             ],
@@ -514,11 +522,11 @@ class _TrailingText extends _Trailing {
           style: GoogleFonts.nunito(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: const Color(0xFFBBBBBB),
+            color: darkTextSecondary,
           ),
         ),
         const SizedBox(width: 4),
-        const Icon(Icons.chevron_right, color: Color(0xFFCCCCCC), size: 20),
+        const Icon(Icons.chevron_right, color: darkTextMuted, size: 20),
       ],
     );
   }
@@ -541,7 +549,7 @@ class _TrailingToggle extends _Trailing {
           activeThumbColor: Colors.white,
           activeTrackColor: primaryColor,
           inactiveThumbColor: Colors.white,
-          inactiveTrackColor: const Color(0xFFDDDDDD),
+          inactiveTrackColor: darkTextMuted,
         ),
       ),
     );
@@ -555,7 +563,7 @@ class _TrailingChevron extends _Trailing {
   Widget build() {
     return const Icon(
       Icons.chevron_right,
-      color: Color(0xFFCCCCCC),
+      color: darkTextMuted,
       size: 20,
     );
   }

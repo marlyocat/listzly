@@ -17,6 +17,15 @@ const neutralMid      = Color(0xFFAFAFAF);
 const neutralLight    = Color(0xFFE5E5E5);
 const neutralLightest = Color(0xFFF0F0F0);
 
+// Dark theme UI colors (for content on purple gradient backgrounds)
+const darkCardBg = Color(0x14FFFFFF);        // white @ 20 alpha — card backgrounds
+const darkCardBorder = Color(0x26FFFFFF);    // white @ 38 alpha — card borders
+const darkTextSecondary = Color(0xB3FFFFFF); // white @ 179 alpha
+const darkTextMuted = Color(0x80FFFFFF);     // white @ 128 alpha
+const darkDivider = Color(0x1AFFFFFF);       // white @ 26 alpha
+const darkSurfaceBg = Color(0x1FFFFFFF);     // white @ 31 alpha — icon/chip containers
+const darkProgressBg = Color(0x26FFFFFF);    // white @ 38 alpha — progress bar tracks
+
 // Standard purple gradient (reusable across all pages)
 const purpleGradientColors = [
   primaryLight,   // 0xFF9333EA

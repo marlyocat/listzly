@@ -114,9 +114,17 @@ class _QuestsPageState extends State<QuestsPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F7F7),
-      body: SafeArea(
-        child: CustomScrollView(
+      backgroundColor: primaryDarkest,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: purpleGradientColors,
+          ),
+        ),
+        child: SafeArea(
+          child: CustomScrollView(
           slivers: [
             // Title
             SliverToBoxAdapter(
@@ -127,7 +135,7 @@ class _QuestsPageState extends State<QuestsPage>
                   style: GoogleFonts.nunito(
                     fontSize: 32,
                     fontWeight: FontWeight.w900,
-                    color: const Color(0xFF1A1A1A),
+                    color: Colors.white,
                   ),
                 ),
               ),
@@ -162,6 +170,7 @@ class _QuestsPageState extends State<QuestsPage>
           ],
         ),
       ),
+      ),
     );
   }
 
@@ -172,9 +181,9 @@ class _QuestsPageState extends State<QuestsPage>
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: darkCardBg,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFFEEEEEE)),
+          border: Border.all(color: darkCardBorder),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -190,7 +199,7 @@ class _QuestsPageState extends State<QuestsPage>
                   style: GoogleFonts.nunito(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
-                    color: const Color(0xFFBBBBBB),
+                    color: darkTextSecondary,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -202,7 +211,7 @@ class _QuestsPageState extends State<QuestsPage>
                         ? primaryColor
                         : isToday
                             ? primaryColor.withValues(alpha: 0.12)
-                            : const Color(0xFFF3F3F3),
+                            : darkSurfaceBg,
                     shape: BoxShape.circle,
                     border: isToday && !completed
                         ? Border.all(
@@ -220,7 +229,7 @@ class _QuestsPageState extends State<QuestsPage>
                       : isPast
                           ? Icon(
                               Icons.close_rounded,
-                              color: const Color(0xFFCCCCCC),
+                              color: darkTextMuted,
                               size: 16,
                             )
                           : null,
@@ -254,9 +263,9 @@ class _QuestsPageState extends State<QuestsPage>
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: darkCardBg,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFFEEEEEE)),
+          border: Border.all(color: darkCardBorder),
         ),
         child: Column(
           children: [
@@ -274,7 +283,7 @@ class _QuestsPageState extends State<QuestsPage>
               style: GoogleFonts.nunito(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
-                color: const Color(0xFFBBBBBB),
+                color: darkTextSecondary,
               ),
             ),
           ],
@@ -293,9 +302,9 @@ class _QuestsPageState extends State<QuestsPage>
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: darkCardBg,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFFEEEEEE)),
+          border: Border.all(color: darkCardBorder),
         ),
         child: Column(
           children: [
@@ -309,7 +318,7 @@ class _QuestsPageState extends State<QuestsPage>
                     style: GoogleFonts.nunito(
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
-                      color: const Color(0xFF1A1A1A),
+                      color: Colors.white,
                     ),
                   ),
                   const Spacer(),
@@ -318,7 +327,7 @@ class _QuestsPageState extends State<QuestsPage>
                     style: GoogleFonts.nunito(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: const Color(0xFFBBBBBB),
+                      color: darkTextSecondary,
                     ),
                   ),
                 ],
@@ -335,7 +344,7 @@ class _QuestsPageState extends State<QuestsPage>
                     height: 1,
                     indent: 16,
                     endIndent: 16,
-                    color: Color(0xFFF0F0F0),
+                    color: darkDivider,
                   ),
                   _buildQuestTile(quest),
                   if (index == quests.length - 1) const SizedBox(height: 6),
@@ -369,14 +378,14 @@ class _QuestsPageState extends State<QuestsPage>
                 decoration: BoxDecoration(
                   color: isComplete
                       ? primaryColor.withValues(alpha: 0.12)
-                      : const Color(0xFFF3F3F3),
+                      : darkSurfaceBg,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
                   isComplete ? Icons.check_rounded : quest.icon,
                   color: isComplete
                       ? primaryColor
-                      : const Color(0xFF999999),
+                      : darkTextMuted,
                   size: 22,
                 ),
               ),
@@ -395,8 +404,8 @@ class _QuestsPageState extends State<QuestsPage>
                               fontSize: 15,
                               fontWeight: FontWeight.w800,
                               color: isComplete
-                                  ? const Color(0xFFBBBBBB)
-                                  : const Color(0xFF1A1A1A),
+                                  ? darkTextSecondary
+                                  : Colors.white,
                               decoration: isComplete
                                   ? TextDecoration.lineThrough
                                   : null,
@@ -410,7 +419,7 @@ class _QuestsPageState extends State<QuestsPage>
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
                             color: isComplete
-                                ? const Color(0xFFCCCCCC)
+                                ? darkTextMuted
                                 : accentCoral,
                           ),
                         ),
@@ -422,7 +431,7 @@ class _QuestsPageState extends State<QuestsPage>
                       style: GoogleFonts.nunito(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFFBBBBBB),
+                        color: darkTextSecondary,
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -436,7 +445,7 @@ class _QuestsPageState extends State<QuestsPage>
                               height: 8,
                               child: Stack(
                                 children: [
-                                  Container(color: const Color(0xFFF0F0F0)),
+                                  Container(color: darkProgressBg),
                                   FractionallySizedBox(
                                     widthFactor:
                                         animatedProgress.clamp(0.0, 1.0),
@@ -461,7 +470,7 @@ class _QuestsPageState extends State<QuestsPage>
                           style: GoogleFonts.nunito(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
-                            color: const Color(0xFFBBBBBB),
+                            color: darkTextSecondary,
                           ),
                         ),
                       ],
