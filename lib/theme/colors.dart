@@ -1,13 +1,26 @@
 import 'package:flutter/material.dart';
 
-// Primary colors
-var primaryColor   = const Color(0xFF7C3AED); // Deep violet
-var secondaryColor = const Color(0xFFE879A2); // Soft rose
-var accentColor    = const Color(0xFFF59E0B); // Warm amber
-var tealColor      = const Color(0xFF4ECDC4); // Mint teal
+// Purple family
+const primaryColor   = Color(0xFF7C3AED); // Deep Violet
+const primaryLight   = Color(0xFF9333EA); // Light Violet
+const primaryDark    = Color(0xFF4A1D8E); // Dark Violet
+const primaryDarkest = Color(0xFF2D1066); // Deepest Violet
 
-// Page backgrounds
-var homeBgColor     = const Color(0xFFE8E0FF); // Light violet
-var questsBgColor   = const Color(0xFFFCE8EE); // Light rose
-var activityBgColor = const Color(0xFFFFF5E0); // Light amber
-var profileBgColor  = const Color(0xFFE0FAF7); // Light teal
+// Coral accent family
+const accentCoral      = Color(0xFFF4A68E); // Coral
+const accentCoralDark  = Color(0xFFE07A5F); // Dark Coral
+const accentCoralLight = Color(0xFFFCE4DC); // Light Coral (badge bg)
+
+// Neutrals
+const neutralDark     = Color(0xFF3C3C3C);
+const neutralMid      = Color(0xFFAFAFAF);
+const neutralLight    = Color(0xFFE5E5E5);
+const neutralLightest = Color(0xFFF0F0F0);
+
+// Standard purple gradient (reusable across all pages)
+const purpleGradientColors = [
+  primaryLight,   // 0xFF9333EA
+  primaryColor,   // 0xFF7C3AED
+  primaryDark,    // 0xFF4A1D8E
+  primaryDarkest, // 0xFF2D1066
+];

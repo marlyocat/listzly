@@ -54,22 +54,22 @@ class _HomePageState extends State<HomePage> {
               name: 'Quests',
               selectedImage: 'lib/images/quest_selected.png',
               unselectedImage: 'lib/images/quest_unselected.png',
-              selectedBackgroundColor: secondaryColor,
-              unselectedBackgroundColor: secondaryColor.withOpacity(0.6),
+              selectedBackgroundColor: accentCoral,
+              unselectedBackgroundColor: primaryColor.withOpacity(0.6),
             ),
             FlipBoxNavItem(
               name: 'Activity',
               selectedImage: 'lib/images/trophy_selected.png',
               unselectedImage: 'lib/images/trophy_unselected.png',
-              selectedBackgroundColor: accentColor,
-              unselectedBackgroundColor: accentColor.withOpacity(0.6),
+              selectedBackgroundColor: accentCoral,
+              unselectedBackgroundColor: primaryColor.withOpacity(0.6),
             ),
             FlipBoxNavItem(
               name: 'Profile',
               selectedImage: 'lib/images/settings_selected.png',
               unselectedImage: 'lib/images/settings_unselected.png',
-              selectedBackgroundColor: tealColor,
-              unselectedBackgroundColor: tealColor.withOpacity(0.6),
+              selectedBackgroundColor: accentCoral,
+              unselectedBackgroundColor: primaryColor.withOpacity(0.6),
             ),
           ],
         ),
@@ -184,7 +184,7 @@ class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
           }
           return TurnPageTransition(
             animation: animation,
-            overleafColor: const Color(0xFF4A1D8E),
+            overleafColor: primaryDark,
             animationTransitionPoint: 0.5,
             direction: TurnDirection.rightToLeft,
             child: child,
@@ -202,12 +202,7 @@ class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              const Color(0xFF9333EA),
-              primaryColor,
-              const Color(0xFF4A1D8E),
-              const Color(0xFF2D1066),
-            ],
+            colors: purpleGradientColors,
           ),
         ),
         child: SafeArea(
@@ -246,7 +241,7 @@ class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
                                   children: [
                                     ShaderMask(
                                       shaderCallback: (bounds) => const LinearGradient(
-                                        colors: [Colors.white, Color(0xFFF4A68E)],
+                                        colors: [Colors.white, accentCoral],
                                       ).createShader(bounds),
                                       child: Text(
                                         inst.name,
@@ -256,7 +251,7 @@ class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
                                           letterSpacing: 3,
                                           shadows: [
                                             Shadow(
-                                              color: const Color(0xFFF4A68E).withAlpha(80),
+                                              color: accentCoral.withAlpha(80),
                                               blurRadius: 12,
                                             ),
                                           ],
@@ -297,7 +292,7 @@ class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
                                       '${_selectedDuration.toInt()}',
                                       style: GoogleFonts.dmSerifDisplay(
                                         fontSize: 16,
-                                        color: const Color(0xFFF4A68E),
+                                        color: accentCoral,
                                       ),
                                     ),
                                     Text(
@@ -314,11 +309,11 @@ class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
                                         child: SliderTheme(
                                           data: SliderThemeData(
                                             trackHeight: 3,
-                                            activeTrackColor: const Color(0xFFF4A68E),
+                                            activeTrackColor: accentCoral,
                                             inactiveTrackColor: Colors.white.withAlpha(40),
-                                            thumbColor: const Color(0xFFF4A68E),
+                                            thumbColor: accentCoral,
                                             thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 7),
-                                            overlayColor: const Color(0xFFF4A68E).withAlpha(40),
+                                            overlayColor: accentCoral.withAlpha(40),
                                             overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
                                           ),
                                           child: Slider(
@@ -392,7 +387,7 @@ class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                      color: const Color(0xFFF4A68E).withAlpha((opacity * 255).toInt()),
+                                      color: accentCoral.withAlpha((opacity * 255).toInt()),
                                       width: 1.5,
                                     ),
                                   ),
@@ -408,13 +403,13 @@ class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                   colors: [
-                                    Color(0xFFF4A68E),
-                                    Color(0xFFE07A5F),
+                                    accentCoral,
+                                    accentCoralDark,
                                   ],
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xFFF4A68E).withAlpha(100),
+                                    color: accentCoral.withAlpha(100),
                                     blurRadius: 18 + _pulseAnimation.value,
                                     spreadRadius: 1 + _pulseAnimation.value * 0.4,
                                   ),

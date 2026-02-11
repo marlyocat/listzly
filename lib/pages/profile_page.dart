@@ -13,12 +13,7 @@ class ProfilePage extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              const Color(0xFF7EDDD6),
-              tealColor,
-              const Color(0xFF2BA39B),
-              const Color(0xFF1A6B65),
-            ],
+            colors: purpleGradientColors,
           ),
         ),
         child: SafeArea(
@@ -94,12 +89,12 @@ class ProfilePage extends StatelessWidget {
                   gradient: const LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [Color(0xFF9333EA), Color(0xFF7C3AED)],
+                    colors: [primaryLight, primaryColor],
                   ),
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF7C3AED).withOpacity(0.3),
+                      color: primaryColor.withOpacity(0.3),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -138,20 +133,20 @@ class ProfilePage extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFFFF4E0),
+                        color: accentCoralLight,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.star_rounded, size: 16, color: Color(0xFFFF9600)),
+                          Icon(Icons.star_rounded, size: 16, color: accentCoralDark),
                           const SizedBox(width: 4),
                           Text(
                             'Level 5  ·  846 XP',
                             style: GoogleFonts.nunito(
                               fontSize: 12,
                               fontWeight: FontWeight.w800,
-                              color: const Color(0xFFFF9600),
+                              color: accentCoralDark,
                             ),
                           ),
                         ],
@@ -189,14 +184,14 @@ class ProfilePage extends StatelessWidget {
                   icon: Icons.local_fire_department_rounded,
                   value: '3',
                   label: 'Day Streak',
-                  color: const Color(0xFFFF9600),
+                  color: accentCoral,
                 ),
                 const SizedBox(height: 10),
                 _buildMiniStat(
                   icon: Icons.bolt_rounded,
                   value: '846',
                   label: 'Total XP',
-                  color: const Color(0xFFFFC800),
+                  color: accentCoral,
                 ),
               ],
             ),
@@ -209,14 +204,14 @@ class ProfilePage extends StatelessWidget {
                   icon: Icons.diamond_rounded,
                   value: '120',
                   label: 'Gems',
-                  color: const Color(0xFF1CB0F6),
+                  color: primaryLight,
                 ),
                 const SizedBox(height: 10),
                 _buildMiniStat(
                   icon: Icons.emoji_events_rounded,
                   value: '2',
                   label: 'Achievements',
-                  color: const Color(0xFFCE82FF),
+                  color: primaryLight,
                 ),
               ],
             ),
@@ -279,10 +274,10 @@ class ProfilePage extends StatelessWidget {
 
   Widget _buildInstrumentsSection() {
     final instruments = [
-      _InstrumentStat(name: 'Piano', icon: Icons.piano_rounded, color: const Color(0xFF58CC02), sessions: 12, minutes: 180),
-      _InstrumentStat(name: 'Guitar', icon: Icons.music_note_rounded, color: const Color(0xFFCE82FF), sessions: 5, minutes: 65),
-      _InstrumentStat(name: 'Violin', icon: Icons.music_note_outlined, color: const Color(0xFFFF9600), sessions: 1, minutes: 20),
-      _InstrumentStat(name: 'Drums', icon: Icons.surround_sound_rounded, color: const Color(0xFFFF4B4B), sessions: 1, minutes: 20),
+      _InstrumentStat(name: 'Piano', icon: Icons.piano_rounded, color: primaryColor, sessions: 12, minutes: 180),
+      _InstrumentStat(name: 'Guitar', icon: Icons.music_note_rounded, color: primaryLight, sessions: 5, minutes: 65),
+      _InstrumentStat(name: 'Violin', icon: Icons.music_note_outlined, color: accentCoral, sessions: 1, minutes: 20),
+      _InstrumentStat(name: 'Drums', icon: Icons.surround_sound_rounded, color: primaryDark, sessions: 1, minutes: 20),
     ];
 
     final totalMinutes = instruments.fold<int>(0, (sum, i) => sum + i.minutes);
@@ -411,10 +406,10 @@ class ProfilePage extends StatelessWidget {
 
   Widget _buildPreferencesSection() {
     final items = [
-      _PrefItem(icon: Icons.notifications_rounded, title: 'Reminders', subtitle: 'Daily at 7:00 PM', color: const Color(0xFF58CC02)),
-      _PrefItem(icon: Icons.timer_rounded, title: 'Daily Goal', subtitle: '15 minutes per day', color: const Color(0xFFCE82FF)),
-      _PrefItem(icon: Icons.dark_mode_rounded, title: 'Appearance', subtitle: 'Light mode', color: const Color(0xFF1CB0F6)),
-      _PrefItem(icon: Icons.volume_up_rounded, title: 'Sound Effects', subtitle: 'On', color: const Color(0xFFFF9600)),
+      _PrefItem(icon: Icons.notifications_rounded, title: 'Reminders', subtitle: 'Daily at 7:00 PM', color: primaryColor),
+      _PrefItem(icon: Icons.timer_rounded, title: 'Daily Goal', subtitle: '15 minutes per day', color: primaryLight),
+      _PrefItem(icon: Icons.dark_mode_rounded, title: 'Appearance', subtitle: 'Light mode', color: primaryLight),
+      _PrefItem(icon: Icons.volume_up_rounded, title: 'Sound Effects', subtitle: 'On', color: accentCoral),
     ];
 
     return Padding(

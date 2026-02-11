@@ -200,7 +200,7 @@ class _PracticePageState extends State<PracticePage>
     final shouldLeave = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF2D1066),
+        backgroundColor: primaryDarkest,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           'End Session?',
@@ -215,7 +215,7 @@ class _PracticePageState extends State<PracticePage>
             onPressed: () => Navigator.of(context).pop(false),
             child: Text(
               'Resume',
-              style: TextStyle(color: const Color(0xFFF4A68E), fontSize: 16),
+              style: TextStyle(color: accentCoral, fontSize: 16),
             ),
           ),
           TextButton(
@@ -269,18 +269,13 @@ class _PracticePageState extends State<PracticePage>
         }
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFF2D1066),
+        backgroundColor: primaryDarkest,
         body: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                const Color(0xFF9333EA),
-                primaryColor,
-                const Color(0xFF4A1D8E),
-                const Color(0xFF2D1066),
-              ],
+              colors: purpleGradientColors,
             ),
           ),
           child: SafeArea(
@@ -295,7 +290,7 @@ class _PracticePageState extends State<PracticePage>
                     // Large countdown timer
                     ShaderMask(
                       shaderCallback: (bounds) => const LinearGradient(
-                        colors: [Color(0xFFFCE4DC), Color(0xFFF4A68E)],
+                        colors: [accentCoralLight, Color(0xFFF4A68E)],
                       ).createShader(bounds),
                       child: Text(
                         _formatTime(_remainingSeconds),
@@ -305,7 +300,7 @@ class _PracticePageState extends State<PracticePage>
                           fontWeight: FontWeight.w400,
                           shadows: [
                             Shadow(
-                              color: const Color(0xFFF4A68E).withAlpha(80),
+                              color: accentCoral.withAlpha(80),
                               blurRadius: 12,
                             ),
                           ],
@@ -374,7 +369,7 @@ class _PracticePageState extends State<PracticePage>
                                         decoration: BoxDecoration(
                                           shape: BoxShape.circle,
                                           border: Border.all(
-                                            color: const Color(0xFFF4A68E).withAlpha((opacity * 255).toInt()),
+                                            color: accentCoral.withAlpha((opacity * 255).toInt()),
                                             width: 1.5,
                                           ),
                                         ),
@@ -391,12 +386,12 @@ class _PracticePageState extends State<PracticePage>
                                       end: Alignment.bottomRight,
                                       colors: [
                                         Color(0xFFF4A68E),
-                                        Color(0xFFE07A5F),
+                                        accentCoralDark,
                                       ],
                                     ),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: const Color(0xFFF4A68E).withAlpha(100),
+                                        color: accentCoral.withAlpha(100),
                                         blurRadius: _isPaused ? 18 + _pulseAnimation.value : 18,
                                         spreadRadius: _isPaused ? 1 + _pulseAnimation.value * 0.4 : 1,
                                       ),
@@ -485,10 +480,10 @@ class _PracticePageState extends State<PracticePage>
                           height: 4,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: const Color(0xFFF4A68E).withAlpha((sparkleOpacity * 200).toInt()),
+                            color: accentCoral.withAlpha((sparkleOpacity * 200).toInt()),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFFF4A68E).withAlpha((sparkleOpacity * 100).toInt()),
+                                color: accentCoral.withAlpha((sparkleOpacity * 100).toInt()),
                                 blurRadius: 4,
                                 spreadRadius: 1,
                               ),
@@ -511,11 +506,11 @@ class _PracticePageState extends State<PracticePage>
                           gradient: const LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
-                            colors: [Color(0xFFF4A68E), Color(0xFFE07A5F)],
+                            colors: [Color(0xFFF4A68E), accentCoralDark],
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFFF4A68E).withAlpha(100),
+                              color: accentCoral.withAlpha(100),
                               blurRadius: 30,
                               spreadRadius: 5,
                             ),
@@ -542,7 +537,7 @@ class _PracticePageState extends State<PracticePage>
                 opacity: _textOpacityAnimation.value.clamp(0.0, 1.0),
                 child: ShaderMask(
                   shaderCallback: (bounds) => const LinearGradient(
-                    colors: [Color(0xFFFCE4DC), Color(0xFFF4A68E)],
+                    colors: [accentCoralLight, Color(0xFFF4A68E)],
                   ).createShader(bounds),
                   child: Text(
                     'Session Complete!',
@@ -551,7 +546,7 @@ class _PracticePageState extends State<PracticePage>
                       color: Colors.white,
                       shadows: [
                         Shadow(
-                          color: const Color(0xFFF4A68E).withAlpha(80),
+                          color: accentCoral.withAlpha(80),
                           blurRadius: 12,
                         ),
                       ],
@@ -614,11 +609,11 @@ class _PracticePageState extends State<PracticePage>
                       gradient: const LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: [Color(0xFFF4A68E), Color(0xFFE07A5F)],
+                        colors: [Color(0xFFF4A68E), accentCoralDark],
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFFF4A68E).withAlpha(100),
+                          color: accentCoral.withAlpha(100),
                           blurRadius: 20,
                           spreadRadius: 2,
                         ),

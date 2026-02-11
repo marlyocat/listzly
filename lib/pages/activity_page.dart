@@ -23,21 +23,21 @@ class _ActivityPageState extends State<ActivityPage> with TickerProviderStateMix
   final List<String> _dayLabels = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
 
   final List<_SessionEntry> _recentSessions = [
-    _SessionEntry(instrument: 'Piano', duration: 25, xp: 30, icon: Icons.piano_rounded, color: Color(0xFF58CC02), timeAgo: 'Today'),
-    _SessionEntry(instrument: 'Guitar', duration: 15, xp: 18, icon: Icons.music_note_rounded, color: Color(0xFFCE82FF), timeAgo: 'Today'),
-    _SessionEntry(instrument: 'Piano', duration: 30, xp: 35, icon: Icons.piano_rounded, color: Color(0xFF58CC02), timeAgo: 'Yesterday'),
-    _SessionEntry(instrument: 'Violin', duration: 20, xp: 22, icon: Icons.music_note_outlined, color: Color(0xFFFF9600), timeAgo: 'Yesterday'),
-    _SessionEntry(instrument: 'Drums', duration: 10, xp: 12, icon: Icons.surround_sound_rounded, color: Color(0xFFFF4B4B), timeAgo: '2 days ago'),
-    _SessionEntry(instrument: 'Piano', duration: 45, xp: 50, icon: Icons.piano_rounded, color: Color(0xFF58CC02), timeAgo: '3 days ago'),
+    _SessionEntry(instrument: 'Piano', duration: 25, xp: 30, icon: Icons.piano_rounded, color: primaryColor, timeAgo: 'Today'),
+    _SessionEntry(instrument: 'Guitar', duration: 15, xp: 18, icon: Icons.music_note_rounded, color: primaryLight, timeAgo: 'Today'),
+    _SessionEntry(instrument: 'Piano', duration: 30, xp: 35, icon: Icons.piano_rounded, color: primaryColor, timeAgo: 'Yesterday'),
+    _SessionEntry(instrument: 'Violin', duration: 20, xp: 22, icon: Icons.music_note_outlined, color: accentCoral, timeAgo: 'Yesterday'),
+    _SessionEntry(instrument: 'Drums', duration: 10, xp: 12, icon: Icons.surround_sound_rounded, color: primaryDark, timeAgo: '2 days ago'),
+    _SessionEntry(instrument: 'Piano', duration: 45, xp: 50, icon: Icons.piano_rounded, color: primaryColor, timeAgo: '3 days ago'),
   ];
 
   final List<_Achievement> _achievements = [
-    _Achievement(icon: Icons.local_fire_department_rounded, title: 'Hot Streak', description: '3 days in a row', color: Color(0xFFFF9600), earned: true),
-    _Achievement(icon: Icons.music_note_rounded, title: 'First Note', description: 'Complete first session', color: Color(0xFF58CC02), earned: true),
-    _Achievement(icon: Icons.timer_rounded, title: 'Marathon', description: 'Practice 60 min in a day', color: Color(0xFFCE82FF), earned: false),
-    _Achievement(icon: Icons.star_rounded, title: 'Virtuoso', description: 'Earn 1000 XP total', color: Color(0xFFFFC800), earned: false),
-    _Achievement(icon: Icons.category_rounded, title: 'Multi-talent', description: 'Play all 4 instruments', color: Color(0xFF1CB0F6), earned: false),
-    _Achievement(icon: Icons.bolt_rounded, title: 'Unstoppable', description: '7 day streak', color: Color(0xFFFF4B4B), earned: false),
+    _Achievement(icon: Icons.local_fire_department_rounded, title: 'Hot Streak', description: '3 days in a row', color: accentCoral, earned: true),
+    _Achievement(icon: Icons.music_note_rounded, title: 'First Note', description: 'Complete first session', color: primaryColor, earned: true),
+    _Achievement(icon: Icons.timer_rounded, title: 'Marathon', description: 'Practice 60 min in a day', color: primaryLight, earned: false),
+    _Achievement(icon: Icons.star_rounded, title: 'Virtuoso', description: 'Earn 1000 XP total', color: accentCoral, earned: false),
+    _Achievement(icon: Icons.category_rounded, title: 'Multi-talent', description: 'Play all 4 instruments', color: primaryLight, earned: false),
+    _Achievement(icon: Icons.bolt_rounded, title: 'Unstoppable', description: '7 day streak', color: primaryDark, earned: false),
   ];
 
   @override
@@ -63,12 +63,7 @@ class _ActivityPageState extends State<ActivityPage> with TickerProviderStateMix
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              const Color(0xFFFBBF24),
-              accentColor,
-              const Color(0xFFD97706),
-              const Color(0xFF92400E),
-            ],
+            colors: purpleGradientColors,
           ),
         ),
         child: SafeArea(
@@ -117,12 +112,12 @@ class _ActivityPageState extends State<ActivityPage> with TickerProviderStateMix
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFFFF9600), Color(0xFFFF7800)],
+            colors: [accentCoral, accentCoralDark],
           ),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFFFF9600).withOpacity(0.3),
+              color: accentCoral.withOpacity(0.3),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -210,7 +205,7 @@ class _ActivityPageState extends State<ActivityPage> with TickerProviderStateMix
                           ),
                           child: practiced
                               ? Icon(Icons.check_rounded,
-                                  color: const Color(0xFFFF9600), size: 20)
+                                  color: accentCoralDark, size: 20)
                               : null,
                         ),
                       ),
@@ -235,7 +230,7 @@ class _ActivityPageState extends State<ActivityPage> with TickerProviderStateMix
               icon: Icons.bolt_rounded,
               value: '$_totalXP',
               label: 'Total XP',
-              color: const Color(0xFFFFC800),
+              color: accentCoral,
             ),
           ),
           const SizedBox(width: 10),
@@ -244,7 +239,7 @@ class _ActivityPageState extends State<ActivityPage> with TickerProviderStateMix
               icon: Icons.timer_rounded,
               value: '${_totalMinutes}m',
               label: 'Practice',
-              color: const Color(0xFFCE82FF),
+              color: primaryLight,
             ),
           ),
           const SizedBox(width: 10),
@@ -253,7 +248,7 @@ class _ActivityPageState extends State<ActivityPage> with TickerProviderStateMix
               icon: Icons.check_circle_rounded,
               value: '$_totalSessions',
               label: 'Sessions',
-              color: const Color(0xFF58CC02),
+              color: primaryColor,
             ),
           ),
         ],
@@ -315,7 +310,7 @@ class _ActivityPageState extends State<ActivityPage> with TickerProviderStateMix
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
               child: Row(
                 children: [
-                  const Icon(Icons.emoji_events_rounded, color: Color(0xFFFFC800), size: 22),
+                  Icon(Icons.emoji_events_rounded, color: accentCoral, size: 22),
                   const SizedBox(width: 8),
                   Text(
                     'Achievements',
@@ -414,7 +409,7 @@ class _ActivityPageState extends State<ActivityPage> with TickerProviderStateMix
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
               child: Row(
                 children: [
-                  const Icon(Icons.history_rounded, color: Color(0xFF1CB0F6), size: 22),
+                  Icon(Icons.history_rounded, color: primaryLight, size: 22),
                   const SizedBox(width: 8),
                   Text(
                     'Recent Sessions',
@@ -477,20 +472,20 @@ class _ActivityPageState extends State<ActivityPage> with TickerProviderStateMix
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFFFF4E0),
+                            color: accentCoralLight,
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.bolt_rounded, size: 14, color: Color(0xFFFF9600)),
+                              Icon(Icons.bolt_rounded, size: 14, color: accentCoralDark),
                               const SizedBox(width: 2),
                               Text(
                                 '+${session.xp}',
                                 style: GoogleFonts.nunito(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w800,
-                                  color: const Color(0xFFFF9600),
+                                  color: accentCoralDark,
                                 ),
                               ),
                             ],

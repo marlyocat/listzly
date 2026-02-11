@@ -20,7 +20,7 @@ class _QuestsPageState extends State<QuestsPage> with TickerProviderStateMixin {
   final List<_Quest> _dailyQuests = [
     _Quest(
       icon: Icons.music_note_rounded,
-      iconColor: const Color(0xFF58CC02),
+      iconColor: primaryColor,
       title: 'Earn 30 XP',
       description: 'Practice any instrument',
       currentProgress: 18,
@@ -30,7 +30,7 @@ class _QuestsPageState extends State<QuestsPage> with TickerProviderStateMixin {
     ),
     _Quest(
       icon: Icons.timer_rounded,
-      iconColor: const Color(0xFFCE82FF),
+      iconColor: primaryLight,
       title: 'Practice for 20 minutes',
       description: 'Total practice time today',
       currentProgress: 12,
@@ -40,7 +40,7 @@ class _QuestsPageState extends State<QuestsPage> with TickerProviderStateMixin {
     ),
     _Quest(
       icon: Icons.piano_rounded,
-      iconColor: const Color(0xFF1CB0F6),
+      iconColor: primaryLight,
       title: 'Complete 2 sessions',
       description: 'Finish full practice sessions',
       currentProgress: 1,
@@ -53,7 +53,7 @@ class _QuestsPageState extends State<QuestsPage> with TickerProviderStateMixin {
   final List<_Quest> _weeklyQuests = [
     _Quest(
       icon: Icons.local_fire_department_rounded,
-      iconColor: const Color(0xFFFF9600),
+      iconColor: accentCoral,
       title: 'Earn 200 XP',
       description: 'Keep up the momentum!',
       currentProgress: 85,
@@ -63,7 +63,7 @@ class _QuestsPageState extends State<QuestsPage> with TickerProviderStateMixin {
     ),
     _Quest(
       icon: Icons.category_rounded,
-      iconColor: const Color(0xFFFF4B4B),
+      iconColor: primaryDark,
       title: 'Try 3 instruments',
       description: 'Variety is the spice of music',
       currentProgress: 1,
@@ -73,7 +73,7 @@ class _QuestsPageState extends State<QuestsPage> with TickerProviderStateMixin {
     ),
     _Quest(
       icon: Icons.bolt_rounded,
-      iconColor: const Color(0xFFFFC800),
+      iconColor: accentCoral,
       title: '7 day streak',
       description: 'Practice every day this week',
       currentProgress: 3,
@@ -126,12 +126,7 @@ class _QuestsPageState extends State<QuestsPage> with TickerProviderStateMixin {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              const Color(0xFFF9A8C9),
-              secondaryColor,
-              const Color(0xFFC45A82),
-              const Color(0xFF8B2E5A),
-            ],
+            colors: purpleGradientColors,
           ),
         ),
         child: SafeArea(
@@ -162,14 +157,14 @@ class _QuestsPageState extends State<QuestsPage> with TickerProviderStateMixin {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.local_fire_department_rounded, color: Color(0xFFFF9600), size: 20),
+                          Icon(Icons.local_fire_department_rounded, color: accentCoral, size: 20),
                           const SizedBox(width: 4),
                           Text(
                             '3',
                             style: GoogleFonts.nunito(
                               fontSize: 16,
                               fontWeight: FontWeight.w800,
-                              color: const Color(0xFFFF9600),
+                              color: accentCoralDark,
                             ),
                           ),
                         ],
@@ -183,7 +178,7 @@ class _QuestsPageState extends State<QuestsPage> with TickerProviderStateMixin {
             // Daily Quests Section
             SliverToBoxAdapter(
               child: _buildSectionCard(
-                headerColor: const Color(0xFF58CC02),
+                headerColor: primaryColor,
                 headerIcon: Icons.wb_sunny_rounded,
                 headerTitle: 'Daily Quests',
                 headerSubtitle: '${_formatDuration(_timeRemaining)} left',
@@ -194,7 +189,7 @@ class _QuestsPageState extends State<QuestsPage> with TickerProviderStateMixin {
             // Weekly Quests Section
             SliverToBoxAdapter(
               child: _buildSectionCard(
-                headerColor: const Color(0xFFCE82FF),
+                headerColor: primaryLight,
                 headerIcon: Icons.calendar_today_rounded,
                 headerTitle: 'Weekly Challenges',
                 headerSubtitle: 'Resets Monday',
@@ -318,13 +313,13 @@ class _QuestsPageState extends State<QuestsPage> with TickerProviderStateMixin {
                 height: 44,
                 decoration: BoxDecoration(
                   color: isComplete
-                      ? const Color(0xFF58CC02).withOpacity(0.15)
+                      ? accentCoral.withOpacity(0.15)
                       : quest.iconColor.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
                   isComplete ? Icons.check_rounded : quest.icon,
-                  color: isComplete ? const Color(0xFF58CC02) : quest.iconColor,
+                  color: isComplete ? accentCoral : quest.iconColor,
                   size: 24,
                 ),
               ),
@@ -355,7 +350,7 @@ class _QuestsPageState extends State<QuestsPage> with TickerProviderStateMixin {
                           decoration: BoxDecoration(
                             color: isComplete
                                 ? const Color(0xFFE5E5E5)
-                                : const Color(0xFFFFF4E0),
+                                : accentCoralLight,
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Row(
@@ -368,7 +363,7 @@ class _QuestsPageState extends State<QuestsPage> with TickerProviderStateMixin {
                                 size: 14,
                                 color: isComplete
                                     ? const Color(0xFF999999)
-                                    : const Color(0xFFFF9600),
+                                    : accentCoralDark,
                               ),
                               const SizedBox(width: 2),
                               Text(
@@ -378,7 +373,7 @@ class _QuestsPageState extends State<QuestsPage> with TickerProviderStateMixin {
                                   fontWeight: FontWeight.w800,
                                   color: isComplete
                                       ? const Color(0xFF999999)
-                                      : const Color(0xFFFF9600),
+                                      : accentCoralDark,
                                 ),
                               ),
                             ],
@@ -420,13 +415,13 @@ class _QuestsPageState extends State<QuestsPage> with TickerProviderStateMixin {
                                       decoration: BoxDecoration(
                                         gradient: LinearGradient(
                                           colors: isComplete
-                                              ? [const Color(0xFF89E219), const Color(0xFF58CC02)]
+                                              ? [accentCoral, accentCoralDark]
                                               : [quest.iconColor.withOpacity(0.8), quest.iconColor],
                                         ),
                                         borderRadius: BorderRadius.circular(6),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: (isComplete ? const Color(0xFF58CC02) : quest.iconColor)
+                                            color: (isComplete ? accentCoral : quest.iconColor)
                                                 .withOpacity(0.3),
                                             blurRadius: 4,
                                             offset: const Offset(0, 1),
@@ -481,12 +476,12 @@ class _QuestsPageState extends State<QuestsPage> with TickerProviderStateMixin {
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF1CB0F6), Color(0xFF0095E0)],
+            colors: [primaryColor, primaryDark],
           ),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF1CB0F6).withOpacity(0.3),
+              color: primaryColor.withOpacity(0.3),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -554,7 +549,7 @@ class _QuestsPageState extends State<QuestsPage> with TickerProviderStateMixin {
                   style: GoogleFonts.nunito(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
-                    color: const Color(0xFF1CB0F6),
+                    color: primaryColor,
                   ),
                 ),
               ),
