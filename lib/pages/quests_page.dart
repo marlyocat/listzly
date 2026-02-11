@@ -250,9 +250,9 @@ class _QuestsPageState extends State<QuestsPage>
         children: [
           _buildChip('3 Days', 'Streak', accentCoral),
           const SizedBox(width: 10),
-          _buildChip('4h 45m', 'This Week', primaryColor),
+          _buildChip('4h 45m', 'This Week', accentCoralLight),
           const SizedBox(width: 10),
-          _buildChip('846', 'Total XP', primaryLight),
+          _buildChip('846', 'Total XP', Colors.white),
         ],
       ),
     );

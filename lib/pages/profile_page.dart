@@ -211,9 +211,9 @@ class ProfilePage extends StatelessWidget {
         children: [
           _buildStatChip('5 days', 'Days Active', accentCoral),
           const SizedBox(width: 10),
-          _buildStatChip('4h 45m', 'Time Spent', primaryColor),
+          _buildStatChip('4h 45m', 'Time Spent', accentCoralLight),
           const SizedBox(width: 10),
-          _buildStatChip('3 days', 'Longest Streak', primaryLight),
+          _buildStatChip('3 days', 'Longest Streak', Colors.white),
         ],
       ),
     );
