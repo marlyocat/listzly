@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:listzly/theme/colors.dart';
 
 class ActivityPage extends StatefulWidget {
   const ActivityPage({super.key});
@@ -57,39 +58,52 @@ class _ActivityPageState extends State<ActivityPage> with TickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F7F7),
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            // Header
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-                child: Text(
-                  'Activity',
-                  style: GoogleFonts.nunito(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFF3C3C3C),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              const Color(0xFFFBBF24),
+              accentColor,
+              const Color(0xFFD97706),
+              const Color(0xFF92400E),
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: CustomScrollView(
+            slivers: [
+              // Header
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+                  child: Text(
+                    'Activity',
+                    style: GoogleFonts.nunito(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
-            ),
 
-            // Streak card
-            SliverToBoxAdapter(child: _buildStreakCard()),
+              // Streak card
+              SliverToBoxAdapter(child: _buildStreakCard()),
 
-            // Stats row
-            SliverToBoxAdapter(child: _buildStatsRow()),
+              // Stats row
+              SliverToBoxAdapter(child: _buildStatsRow()),
 
-            // Achievements section
-            SliverToBoxAdapter(child: _buildAchievementsSection()),
+              // Achievements section
+              SliverToBoxAdapter(child: _buildAchievementsSection()),
 
-            // Recent sessions
-            SliverToBoxAdapter(child: _buildRecentSessionsSection()),
+              // Recent sessions
+              SliverToBoxAdapter(child: _buildRecentSessionsSection()),
 
-            const SliverToBoxAdapter(child: SizedBox(height: 24)),
-          ],
+              const SliverToBoxAdapter(child: SizedBox(height: 24)),
+            ],
+          ),
         ),
       ),
     );
