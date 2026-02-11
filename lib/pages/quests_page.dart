@@ -11,75 +11,69 @@ class QuestsPage extends StatefulWidget {
   State<QuestsPage> createState() => _QuestsPageState();
 }
 
-class _QuestsPageState extends State<QuestsPage> with TickerProviderStateMixin {
+class _QuestsPageState extends State<QuestsPage>
+    with TickerProviderStateMixin {
   late AnimationController _progressAnimController;
   late Timer _countdownTimer;
   late Duration _timeRemaining;
+
+  // Week day labels and completion status
+  final List<String> _dayLabels = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+  final List<bool> _weekDays = [true, true, true, false, false, false, false];
+  final int _todayIndex = 3; // Wednesday
 
   // Mock quest data
   final List<_Quest> _dailyQuests = [
     _Quest(
       icon: Icons.music_note_rounded,
-      iconColor: primaryColor,
       title: 'Earn 30 XP',
       description: 'Practice any instrument',
       currentProgress: 18,
       targetProgress: 30,
       rewardAmount: 10,
-      rewardType: _RewardType.gems,
     ),
     _Quest(
       icon: Icons.timer_rounded,
-      iconColor: primaryLight,
       title: 'Practice for 20 minutes',
       description: 'Total practice time today',
       currentProgress: 12,
       targetProgress: 20,
       rewardAmount: 15,
-      rewardType: _RewardType.gems,
     ),
     _Quest(
       icon: Icons.piano_rounded,
-      iconColor: primaryLight,
       title: 'Complete 2 sessions',
       description: 'Finish full practice sessions',
       currentProgress: 1,
       targetProgress: 2,
       rewardAmount: 10,
-      rewardType: _RewardType.gems,
     ),
   ];
 
   final List<_Quest> _weeklyQuests = [
     _Quest(
       icon: Icons.local_fire_department_rounded,
-      iconColor: accentCoral,
       title: 'Earn 200 XP',
       description: 'Keep up the momentum!',
       currentProgress: 85,
       targetProgress: 200,
       rewardAmount: 50,
-      rewardType: _RewardType.gems,
     ),
     _Quest(
       icon: Icons.category_rounded,
-      iconColor: primaryDark,
       title: 'Try 3 instruments',
       description: 'Variety is the spice of music',
       currentProgress: 1,
       targetProgress: 3,
       rewardAmount: 30,
-      rewardType: _RewardType.gems,
     ),
     _Quest(
       icon: Icons.bolt_rounded,
-      iconColor: accentCoral,
       title: '7 day streak',
       description: 'Practice every day this week',
       currentProgress: 3,
       targetProgress: 7,
       rewardAmount: 100,
-      rewardType: _RewardType.gems,
     ),
   ];
 
@@ -91,7 +85,6 @@ class _QuestsPageState extends State<QuestsPage> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 1200),
     )..forward();
 
-    // Calculate time until midnight
     final now = DateTime.now();
     final midnight = DateTime(now.year, now.month, now.day + 1);
     _timeRemaining = midnight.difference(now);
@@ -112,178 +105,240 @@ class _QuestsPageState extends State<QuestsPage> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  String _formatDuration(Duration d) {
-    final hours = d.inHours;
-    final minutes = d.inMinutes.remainder(60);
-    return '${hours}h ${minutes}m';
+  String _formatCountdown(Duration d) {
+    final h = d.inHours;
+    final m = d.inMinutes.remainder(60);
+    return '${h}h ${m}m left';
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: purpleGradientColors,
-          ),
-        ),
-        child: SafeArea(
-          child: CustomScrollView(
-            slivers: [
-              // Header
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-                  child: Row(
-                    children: [
-                      Text(
-                        'Quests',
-                        style: GoogleFonts.nunito(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                        ),
-                      ),
-                    const Spacer(),
-                    // Streak badge
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: const Color(0xFFE5E5E5), width: 2),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.local_fire_department_rounded, color: accentCoral, size: 20),
-                          const SizedBox(width: 4),
-                          Text(
-                            '3',
-                            style: GoogleFonts.nunito(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w800,
-                              color: accentCoralDark,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+      backgroundColor: const Color(0xFFF7F7F7),
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            // Title
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
+                child: Text(
+                  'Quests',
+                  style: GoogleFonts.nunito(
+                    fontSize: 32,
+                    fontWeight: FontWeight.w900,
+                    color: const Color(0xFF1A1A1A),
+                  ),
                 ),
               ),
             ),
 
-            // Daily Quests Section
+            // Weekly overview card
+            SliverToBoxAdapter(child: _buildWeeklyOverview()),
+
+            // Stats chips
+            SliverToBoxAdapter(child: _buildStatsChips()),
+
+            // Daily quests section
             SliverToBoxAdapter(
-              child: _buildSectionCard(
-                headerColor: primaryColor,
-                headerIcon: Icons.wb_sunny_rounded,
-                headerTitle: 'Daily Quests',
-                headerSubtitle: '${_formatDuration(_timeRemaining)} left',
+              child: _buildQuestSection(
+                title: 'Daily Quests',
+                subtitle: _formatCountdown(_timeRemaining),
                 quests: _dailyQuests,
               ),
             ),
 
-            // Weekly Quests Section
+            // Weekly challenges section
             SliverToBoxAdapter(
-              child: _buildSectionCard(
-                headerColor: primaryLight,
-                headerIcon: Icons.calendar_today_rounded,
-                headerTitle: 'Weekly Challenges',
-                headerSubtitle: 'Resets Monday',
+              child: _buildQuestSection(
+                title: 'Weekly Challenges',
+                subtitle: 'Resets Monday',
                 quests: _weeklyQuests,
               ),
             ),
 
-            // Friend Quest
-            SliverToBoxAdapter(
-              child: _buildFriendQuestCard(),
-            ),
-
-            const SliverToBoxAdapter(child: SizedBox(height: 24)),
+            // Bottom spacing for nav bar
+            const SliverToBoxAdapter(child: SizedBox(height: 100)),
           ],
         ),
-      ),
       ),
     );
   }
 
-  Widget _buildSectionCard({
-    required Color headerColor,
-    required IconData headerIcon,
-    required String headerTitle,
-    required String headerSubtitle,
+  // ─── Weekly calendar overview ─────────────────────────────────────
+  Widget _buildWeeklyOverview() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: const Color(0xFFEEEEEE)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: List.generate(7, (i) {
+            final isToday = i == _todayIndex;
+            final completed = _weekDays[i];
+            final isPast = i < _todayIndex;
+
+            return Column(
+              children: [
+                Text(
+                  _dayLabels[i],
+                  style: GoogleFonts.nunito(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFFBBBBBB),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  width: 34,
+                  height: 34,
+                  decoration: BoxDecoration(
+                    color: completed
+                        ? primaryColor
+                        : isToday
+                            ? primaryColor.withValues(alpha: 0.12)
+                            : const Color(0xFFF3F3F3),
+                    shape: BoxShape.circle,
+                    border: isToday && !completed
+                        ? Border.all(
+                            color: primaryColor.withValues(alpha: 0.4),
+                            width: 2,
+                          )
+                        : null,
+                  ),
+                  child: completed
+                      ? const Icon(
+                          Icons.check_rounded,
+                          color: Colors.white,
+                          size: 18,
+                        )
+                      : isPast
+                          ? Icon(
+                              Icons.close_rounded,
+                              color: const Color(0xFFCCCCCC),
+                              size: 16,
+                            )
+                          : null,
+                ),
+              ],
+            );
+          }),
+        ),
+      ),
+    );
+  }
+
+  // ─── Stats chips row ──────────────────────────────────────────────
+  Widget _buildStatsChips() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+      child: Row(
+        children: [
+          _buildChip('3 Days', 'Streak', accentCoral),
+          const SizedBox(width: 10),
+          _buildChip('4h 45m', 'This Week', primaryColor),
+          const SizedBox(width: 10),
+          _buildChip('846', 'Total XP', primaryLight),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildChip(String value, String label, Color color) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFFEEEEEE)),
+        ),
+        child: Column(
+          children: [
+            Text(
+              value,
+              style: GoogleFonts.nunito(
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: color,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: GoogleFonts.nunito(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFFBBBBBB),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ─── Quest section (daily or weekly) ──────────────────────────────
+  Widget _buildQuestSection({
+    required String title,
+    required String subtitle,
     required List<_Quest> quests,
   }) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFE5E5E5), width: 2),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: const Color(0xFFEEEEEE)),
         ),
         child: Column(
           children: [
             // Section header
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              decoration: BoxDecoration(
-                color: headerColor,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(14),
-                  topRight: Radius.circular(14),
-                ),
-              ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
               child: Row(
                 children: [
-                  Icon(headerIcon, color: Colors.white, size: 22),
-                  const SizedBox(width: 10),
                   Text(
-                    headerTitle,
+                    title,
                     style: GoogleFonts.nunito(
-                      fontSize: 18,
+                      fontSize: 16,
                       fontWeight: FontWeight.w800,
-                      color: Colors.white,
+                      color: const Color(0xFF1A1A1A),
                     ),
                   ),
                   const Spacer(),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.25),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      headerSubtitle,
-                      style: GoogleFonts.nunito(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
+                  Text(
+                    subtitle,
+                    style: GoogleFonts.nunito(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFFBBBBBB),
                     ),
                   ),
                 ],
               ),
             ),
+            const SizedBox(height: 6),
             // Quest items
             ...quests.asMap().entries.map((entry) {
               final index = entry.key;
               final quest = entry.value;
               return Column(
                 children: [
-                  if (index > 0)
-                    const Divider(height: 1, indent: 16, endIndent: 16, color: Color(0xFFF0F0F0)),
+                  const Divider(
+                    height: 1,
+                    indent: 16,
+                    endIndent: 16,
+                    color: Color(0xFFF0F0F0),
+                  ),
                   _buildQuestTile(quest),
+                  if (index == quests.length - 1) const SizedBox(height: 6),
                 ],
               );
             }),
@@ -307,20 +362,22 @@ class _QuestsPageState extends State<QuestsPage> with TickerProviderStateMixin {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Icon container
+              // Icon
               Container(
-                width: 44,
-                height: 44,
+                width: 42,
+                height: 42,
                 decoration: BoxDecoration(
                   color: isComplete
-                      ? accentCoral.withOpacity(0.15)
-                      : quest.iconColor.withOpacity(0.12),
+                      ? primaryColor.withValues(alpha: 0.12)
+                      : const Color(0xFFF3F3F3),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
                   isComplete ? Icons.check_rounded : quest.icon,
-                  color: isComplete ? accentCoral : quest.iconColor,
-                  size: 24,
+                  color: isComplete
+                      ? primaryColor
+                      : const Color(0xFF999999),
+                  size: 22,
                 ),
               ),
               const SizedBox(width: 14),
@@ -335,48 +392,26 @@ class _QuestsPageState extends State<QuestsPage> with TickerProviderStateMixin {
                           child: Text(
                             quest.title,
                             style: GoogleFonts.nunito(
-                              fontSize: 16,
+                              fontSize: 15,
                               fontWeight: FontWeight.w800,
                               color: isComplete
-                                  ? const Color(0xFF999999)
-                                  : const Color(0xFF3C3C3C),
-                              decoration: isComplete ? TextDecoration.lineThrough : null,
+                                  ? const Color(0xFFBBBBBB)
+                                  : const Color(0xFF1A1A1A),
+                              decoration: isComplete
+                                  ? TextDecoration.lineThrough
+                                  : null,
                             ),
                           ),
                         ),
-                        // Reward badge
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                          decoration: BoxDecoration(
+                        // Reward
+                        Text(
+                          '+${quest.rewardAmount} XP',
+                          style: GoogleFonts.nunito(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
                             color: isComplete
-                                ? const Color(0xFFE5E5E5)
-                                : accentCoralLight,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                quest.rewardType == _RewardType.gems
-                                    ? Icons.diamond_rounded
-                                    : Icons.bolt_rounded,
-                                size: 14,
-                                color: isComplete
-                                    ? const Color(0xFF999999)
-                                    : accentCoralDark,
-                              ),
-                              const SizedBox(width: 2),
-                              Text(
-                                '+${quest.rewardAmount}',
-                                style: GoogleFonts.nunito(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w800,
-                                  color: isComplete
-                                      ? const Color(0xFF999999)
-                                      : accentCoralDark,
-                                ),
-                              ),
-                            ],
+                                ? const Color(0xFFCCCCCC)
+                                : accentCoral,
                           ),
                         ),
                       ],
@@ -387,58 +422,31 @@ class _QuestsPageState extends State<QuestsPage> with TickerProviderStateMixin {
                       style: GoogleFonts.nunito(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFFAFAFAF),
+                        color: const Color(0xFFBBBBBB),
                       ),
                     ),
                     const SizedBox(height: 10),
-                    // Progress bar
+                    // Progress bar + counter
                     Row(
                       children: [
                         Expanded(
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(6),
+                            borderRadius: BorderRadius.circular(4),
                             child: SizedBox(
-                              height: 12,
+                              height: 8,
                               child: Stack(
                                 children: [
-                                  // Background
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFFE5E5E5),
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                  ),
-                                  // Progress fill
+                                  Container(color: const Color(0xFFF0F0F0)),
                                   FractionallySizedBox(
-                                    widthFactor: animatedProgress.clamp(0.0, 1.0),
+                                    widthFactor:
+                                        animatedProgress.clamp(0.0, 1.0),
                                     child: Container(
                                       decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          colors: isComplete
-                                              ? [accentCoral, accentCoralDark]
-                                              : [quest.iconColor.withOpacity(0.8), quest.iconColor],
-                                        ),
-                                        borderRadius: BorderRadius.circular(6),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: (isComplete ? accentCoral : quest.iconColor)
-                                                .withOpacity(0.3),
-                                            blurRadius: 4,
-                                            offset: const Offset(0, 1),
-                                          ),
-                                        ],
-                                      ),
-                                      // Shine effect
-                                      child: Align(
-                                        alignment: Alignment.topCenter,
-                                        child: Container(
-                                          height: 4,
-                                          margin: const EdgeInsets.only(top: 2, left: 4, right: 4),
-                                          decoration: BoxDecoration(
-                                            color: Colors.white.withOpacity(0.3),
-                                            borderRadius: BorderRadius.circular(2),
-                                          ),
-                                        ),
+                                        color: isComplete
+                                            ? primaryColor
+                                            : accentCoral,
+                                        borderRadius:
+                                            BorderRadius.circular(4),
                                       ),
                                     ),
                                   ),
@@ -451,9 +459,9 @@ class _QuestsPageState extends State<QuestsPage> with TickerProviderStateMixin {
                         Text(
                           '${quest.currentProgress}/${quest.targetProgress}',
                           style: GoogleFonts.nunito(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w800,
-                            color: const Color(0xFFAFAFAF),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFFBBBBBB),
                           ),
                         ),
                       ],
@@ -467,120 +475,22 @@ class _QuestsPageState extends State<QuestsPage> with TickerProviderStateMixin {
       },
     );
   }
-
-  Widget _buildFriendQuestCard() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [primaryColor, primaryDark],
-          ),
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: primaryColor.withOpacity(0.3),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Row(
-            children: [
-              // Friend quest icon
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: const Icon(
-                  Icons.people_rounded,
-                  color: Colors.white,
-                  size: 30,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Friend Quest',
-                      style: GoogleFonts.nunito(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Invite a friend to practice together and earn bonus rewards!',
-                      style: GoogleFonts.nunito(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white.withOpacity(0.85),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Text(
-                  'INVITE',
-                  style: GoogleFonts.nunito(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
-                    color: primaryColor,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }
-
-enum _RewardType { gems }
 
 class _Quest {
   final IconData icon;
-  final Color iconColor;
   final String title;
   final String description;
   final int currentProgress;
   final int targetProgress;
   final int rewardAmount;
-  final _RewardType rewardType;
 
   const _Quest({
     required this.icon,
-    required this.iconColor,
     required this.title,
     required this.description,
     required this.currentProgress,
     required this.targetProgress,
     required this.rewardAmount,
-    required this.rewardType,
   });
 }

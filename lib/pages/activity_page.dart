@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:listzly/theme/colors.dart';
@@ -9,382 +11,384 @@ class ActivityPage extends StatefulWidget {
   State<ActivityPage> createState() => _ActivityPageState();
 }
 
-class _ActivityPageState extends State<ActivityPage> with TickerProviderStateMixin {
-  late AnimationController _animController;
+class _ActivityPageState extends State<ActivityPage> {
+  int _selectedTab = 0;
 
-  // Mock data
-  final int _currentStreak = 3;
-  final int _totalXP = 846;
-  final int _totalMinutes = 285;
-  final int _totalSessions = 19;
-
-  // Days of week streak (true = practiced)
-  final List<bool> _weekDays = [true, true, true, false, false, false, false];
-  final List<String> _dayLabels = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
-
-  final List<_SessionEntry> _recentSessions = [
-    _SessionEntry(instrument: 'Piano', duration: 25, xp: 30, icon: Icons.piano_rounded, color: primaryColor, timeAgo: 'Today'),
-    _SessionEntry(instrument: 'Guitar', duration: 15, xp: 18, icon: Icons.music_note_rounded, color: primaryLight, timeAgo: 'Today'),
-    _SessionEntry(instrument: 'Piano', duration: 30, xp: 35, icon: Icons.piano_rounded, color: primaryColor, timeAgo: 'Yesterday'),
-    _SessionEntry(instrument: 'Violin', duration: 20, xp: 22, icon: Icons.music_note_outlined, color: accentCoral, timeAgo: 'Yesterday'),
-    _SessionEntry(instrument: 'Drums', duration: 10, xp: 12, icon: Icons.surround_sound_rounded, color: primaryDark, timeAgo: '2 days ago'),
-    _SessionEntry(instrument: 'Piano', duration: 45, xp: 50, icon: Icons.piano_rounded, color: primaryColor, timeAgo: '3 days ago'),
+  // Mock bar chart data (sessions per day for the current week)
+  final List<double> _weeklyBarData = [1, 0, 1, 2, 0, 3, 1];
+  final List<String> _barLabels = [
+    'SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT',
   ];
 
-  final List<_Achievement> _achievements = [
-    _Achievement(icon: Icons.local_fire_department_rounded, title: 'Hot Streak', description: '3 days in a row', color: accentCoral, earned: true),
-    _Achievement(icon: Icons.music_note_rounded, title: 'First Note', description: 'Complete first session', color: primaryColor, earned: true),
-    _Achievement(icon: Icons.timer_rounded, title: 'Marathon', description: 'Practice 60 min in a day', color: primaryLight, earned: false),
-    _Achievement(icon: Icons.star_rounded, title: 'Virtuoso', description: 'Earn 1000 XP total', color: accentCoral, earned: false),
-    _Achievement(icon: Icons.category_rounded, title: 'Multi-talent', description: 'Play all 4 instruments', color: primaryLight, earned: false),
-    _Achievement(icon: Icons.bolt_rounded, title: 'Unstoppable', description: '7 day streak', color: primaryDark, earned: false),
+  // Mock contribution heat map (7 days × 26 weeks)
+  late final List<List<double>> _heatMapData;
+
+  // Mock recent sessions
+  final List<_Session> _sessions = const [
+    _Session(date: '12 Feb 2026', duration: '45m 30s', count: 2),
+    _Session(date: '11 Feb 2026', duration: '30m 15s', count: 1),
+    _Session(date: '10 Feb 2026', duration: '1h 10m', count: 2),
+    _Session(date: '9 Feb 2026', duration: '25m', count: 1),
+    _Session(date: '8 Feb 2026', duration: '50m', count: 1),
+    _Session(date: '7 Feb 2026', duration: '35m', count: 1),
+    _Session(date: '6 Feb 2026', duration: '40m', count: 1),
   ];
 
   @override
   void initState() {
     super.initState();
-    _animController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1000),
-    )..forward();
-  }
-
-  @override
-  void dispose() {
-    _animController.dispose();
-    super.dispose();
+    final rng = Random(42);
+    _heatMapData = List.generate(
+      7,
+      (day) => List.generate(
+        26,
+        (week) => rng.nextDouble() < 0.35 ? 0.0 : rng.nextDouble(),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: purpleGradientColors,
-          ),
+      backgroundColor: const Color(0xFFF7F7F7),
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            // Title
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
+                child: Text(
+                  'Activity',
+                  style: GoogleFonts.nunito(
+                    fontSize: 32,
+                    fontWeight: FontWeight.w900,
+                    color: const Color(0xFF1A1A1A),
+                  ),
+                ),
+              ),
+            ),
+
+            // Week / Month / Year tabs
+            SliverToBoxAdapter(child: _buildSegmentedTabs()),
+
+            // Date range + session count
+            SliverToBoxAdapter(child: _buildDateStats()),
+
+            // Bar chart
+            SliverToBoxAdapter(child: _buildBarChart()),
+
+            // Contribution heat map
+            SliverToBoxAdapter(child: _buildContributionGraph()),
+
+            // Recent sessions list
+            SliverToBoxAdapter(child: _buildSessionList()),
+
+            // Bottom spacing for nav bar
+            const SliverToBoxAdapter(child: SizedBox(height: 100)),
+          ],
         ),
-        child: SafeArea(
-          child: CustomScrollView(
-            slivers: [
-              // Header
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-                  child: Text(
-                    'Activity',
-                    style: GoogleFonts.nunito(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
+      ),
+    );
+  }
+
+  // ─── Week / Month / Year segmented control ───────────────────────
+  Widget _buildSegmentedTabs() {
+    const labels = ['Week', 'Month', 'Year'];
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      child: Container(
+        height: 40,
+        decoration: BoxDecoration(
+          color: const Color(0xFFEEEEEE),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          children: List.generate(3, (i) {
+            final selected = _selectedTab == i;
+            return Expanded(
+              child: GestureDetector(
+                onTap: () => setState(() => _selectedTab = i),
+                child: Container(
+                  margin: const EdgeInsets.all(3),
+                  decoration: BoxDecoration(
+                    color: selected ? Colors.white : Colors.transparent,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: selected
+                        ? [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.06),
+                              blurRadius: 4,
+                              offset: const Offset(0, 1),
+                            ),
+                          ]
+                        : null,
+                  ),
+                  child: Center(
+                    child: Text(
+                      labels[i],
+                      style: GoogleFonts.nunito(
+                        fontSize: 14,
+                        fontWeight:
+                            selected ? FontWeight.w800 : FontWeight.w600,
+                        color: selected
+                            ? const Color(0xFF1A1A1A)
+                            : const Color(0xFF999999),
+                      ),
                     ),
                   ),
                 ),
               ),
-
-              // Streak card
-              SliverToBoxAdapter(child: _buildStreakCard()),
-
-              // Stats row
-              SliverToBoxAdapter(child: _buildStatsRow()),
-
-              // Achievements section
-              SliverToBoxAdapter(child: _buildAchievementsSection()),
-
-              // Recent sessions
-              SliverToBoxAdapter(child: _buildRecentSessionsSection()),
-
-              const SliverToBoxAdapter(child: SizedBox(height: 24)),
-            ],
-          ),
+            );
+          }),
         ),
       ),
     );
   }
 
-  Widget _buildStreakCard() {
+  // ─── Date range + session stat ────────────────────────────────────
+  Widget _buildDateStats() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [accentCoral, accentCoralDark],
-          ),
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: accentCoral.withOpacity(0.3),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  // Flame icon
-                  Container(
-                    width: 52,
-                    height: 52,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: const Icon(
-                      Icons.local_fire_department_rounded,
-                      color: Colors.white,
-                      size: 32,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '$_currentStreak day streak!',
-                        style: GoogleFonts.nunito(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                        ),
-                      ),
-                      Text(
-                        'Keep it going!',
-                        style: GoogleFonts.nunito(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white.withOpacity(0.85),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              // Weekly calendar
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: List.generate(7, (index) {
-                  final practiced = _weekDays[index];
-                  return Column(
-                    children: [
-                      Text(
-                        _dayLabels[index],
-                        style: GoogleFonts.nunito(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white.withOpacity(0.7),
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      AnimatedBuilder(
-                        animation: _animController,
-                        builder: (context, child) {
-                          final delay = index * 0.1;
-                          final progress = ((_animController.value - delay) / (1.0 - delay)).clamp(0.0, 1.0);
-                          return Transform.scale(
-                            scale: practiced ? progress : 1.0,
-                            child: child,
-                          );
-                        },
-                        child: Container(
-                          width: 36,
-                          height: 36,
-                          decoration: BoxDecoration(
-                            color: practiced
-                                ? Colors.white
-                                : Colors.white.withOpacity(0.15),
-                            shape: BoxShape.circle,
-                          ),
-                          child: practiced
-                              ? Icon(Icons.check_rounded,
-                                  color: accentCoralDark, size: 20)
-                              : null,
-                        ),
-                      ),
-                    ],
-                  );
-                }),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStatsRow() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-      child: Row(
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: _buildStatCard(
-              icon: Icons.bolt_rounded,
-              value: '$_totalXP',
-              label: 'Total XP',
+          Text(
+            'Feb 6 – 12, 2026',
+            style: GoogleFonts.nunito(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: const Color(0xFF1A1A1A),
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            '9 Sessions',
+            style: GoogleFonts.nunito(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
               color: accentCoral,
             ),
           ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: _buildStatCard(
-              icon: Icons.timer_rounded,
-              value: '${_totalMinutes}m',
-              label: 'Practice',
-              color: primaryLight,
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: _buildStatCard(
-              icon: Icons.check_circle_rounded,
-              value: '$_totalSessions',
-              label: 'Sessions',
-              color: primaryColor,
-            ),
-          ),
         ],
       ),
     );
   }
 
-  Widget _buildStatCard({
-    required IconData icon,
-    required String value,
-    required String label,
-    required Color color,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFE5E5E5), width: 2),
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: color, size: 28),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: GoogleFonts.nunito(
-              fontSize: 20,
-              fontWeight: FontWeight.w800,
-              color: const Color(0xFF3C3C3C),
-            ),
-          ),
-          Text(
-            label,
-            style: GoogleFonts.nunito(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: const Color(0xFFAFAFAF),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // ─── Bar chart ────────────────────────────────────────────────────
+  Widget _buildBarChart() {
+    // Determine a nice max for the y-axis (at least 1 above the data max)
+    final dataMax =
+        _weeklyBarData.reduce((a, b) => a > b ? a : b).ceilToDouble();
+    final yMax = (dataMax + 1).clamp(2, 100).toDouble();
+    final ySteps = yMax.toInt();
+    const chartHeight = 170.0;
 
-  Widget _buildAchievementsSection() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       child: Container(
+        padding: const EdgeInsets.fromLTRB(12, 16, 16, 12),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFE5E5E5), width: 2),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: const Color(0xFFEEEEEE)),
+        ),
+        child: Column(
+          children: [
+            // Chart area
+            SizedBox(
+              height: chartHeight,
+              child: Row(
+                children: [
+                  // Y-axis labels
+                  SizedBox(
+                    width: 22,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: List.generate(
+                        ySteps + 1,
+                        (i) => Text(
+                          '${ySteps - i}',
+                          style: GoogleFonts.nunito(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFFCCCCCC),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  // Bars + gridlines
+                  Expanded(
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final h = constraints.maxHeight;
+                        return Stack(
+                          children: [
+                            // Horizontal gridlines
+                            ...List.generate(ySteps + 1, (i) {
+                              final y = (i / ySteps) * h;
+                              return Positioned(
+                                top: y,
+                                left: 0,
+                                right: 0,
+                                child: Container(
+                                  height: 1,
+                                  color: const Color(0xFFF3F3F3),
+                                ),
+                              );
+                            }),
+                            // Bars
+                            Positioned.fill(
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: List.generate(7, (i) {
+                                  final val = _weeklyBarData[i];
+                                  final barH =
+                                      yMax > 0 ? (val / yMax) * h : 0.0;
+                                  return Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 5),
+                                      child: Container(
+                                        height: barH > 0 ? barH : 0,
+                                        decoration: BoxDecoration(
+                                          color: val > 0
+                                              ? accentCoral
+                                              : Colors.transparent,
+                                          borderRadius:
+                                              const BorderRadius.vertical(
+                                            top: Radius.circular(4),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
+            // X-axis labels
+            Padding(
+              padding: const EdgeInsets.only(left: 30),
+              child: Row(
+                children: List.generate(
+                  7,
+                  (i) => Expanded(
+                    child: Text(
+                      _barLabels[i],
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.nunito(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFFCCCCCC),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ─── Contribution dot grid (GitHub-style, spanning ~6 months) ────
+  Widget _buildContributionGraph() {
+    const weeks = 26;
+    const cellSize = 10.0;
+    const gap = 3.0;
+    const totalW = weeks * (cellSize + gap) - gap;
+    final months = ['SEP', 'OCT', 'NOV', 'DEC', 'JAN', 'FEB'];
+    // Approximate spacing: 26 weeks / 6 months ≈ 4.3 weeks each
+    const monthSpacing = totalW / 6;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: const Color(0xFFEEEEEE)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-              child: Row(
-                children: [
-                  Icon(Icons.emoji_events_rounded, color: accentCoral, size: 22),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Achievements',
-                    style: GoogleFonts.nunito(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                      color: const Color(0xFF3C3C3C),
-                    ),
-                  ),
-                  const Spacer(),
-                  Text(
-                    '${_achievements.where((a) => a.earned).length}/${_achievements.length}',
-                    style: GoogleFonts.nunito(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFFAFAFAF),
-                    ),
-                  ),
-                ],
+            Text(
+              'Practice History',
+              style: GoogleFonts.nunito(
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: const Color(0xFF1A1A1A),
               ),
             ),
-            SizedBox(
-              height: 110,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
-                itemCount: _achievements.length,
-                itemBuilder: (context, index) {
-                  final achievement = _achievements[index];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: SizedBox(
-                      width: 88,
-                      child: Column(
-                        children: [
-                          Container(
-                            width: 56,
-                            height: 56,
-                            decoration: BoxDecoration(
-                              color: achievement.earned
-                                  ? achievement.color.withOpacity(0.15)
-                                  : const Color(0xFFF0F0F0),
-                              borderRadius: BorderRadius.circular(16),
-                              border: achievement.earned
-                                  ? Border.all(color: achievement.color.withOpacity(0.4), width: 2)
-                                  : null,
+            const SizedBox(height: 14),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Month labels
+                  SizedBox(
+                    width: totalW,
+                    child: Row(
+                      children: months
+                          .map(
+                            (m) => SizedBox(
+                              width: monthSpacing,
+                              child: Text(
+                                m,
+                                style: GoogleFonts.nunito(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
+                                  color: const Color(0xFFBBBBBB),
+                                ),
+                              ),
                             ),
-                            child: Icon(
-                              achievement.icon,
-                              color: achievement.earned
-                                  ? achievement.color
-                                  : const Color(0xFFD0D0D0),
-                              size: 28,
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            achievement.title,
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.nunito(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                              color: achievement.earned
-                                  ? const Color(0xFF3C3C3C)
-                                  : const Color(0xFFAFAFAF),
-                            ),
-                          ),
-                        ],
-                      ),
+                          )
+                          .toList(),
                     ),
-                  );
-                },
+                  ),
+                  const SizedBox(height: 6),
+                  // Dot grid: 7 rows × 26 columns
+                  ...List.generate(7, (day) {
+                    return Padding(
+                      padding:
+                          EdgeInsets.only(bottom: day < 6 ? gap : 0),
+                      child: Row(
+                        children: List.generate(weeks, (week) {
+                          final val = _heatMapData[day][week];
+                          return Container(
+                            width: cellSize,
+                            height: cellSize,
+                            margin: EdgeInsets.only(
+                              right: week < weeks - 1 ? gap : 0,
+                            ),
+                            decoration: BoxDecoration(
+                              color: val == 0
+                                  ? const Color(0xFFEEEEEE)
+                                  : primaryColor.withValues(
+                                      alpha: 0.2 + val * 0.6),
+                              shape: BoxShape.circle,
+                            ),
+                          );
+                        }),
+                      ),
+                    );
+                  }),
+                ],
               ),
             ),
           ],
@@ -393,103 +397,83 @@ class _ActivityPageState extends State<ActivityPage> with TickerProviderStateMix
     );
   }
 
-  Widget _buildRecentSessionsSection() {
+  // ─── Recent sessions list ─────────────────────────────────────────
+  Widget _buildSessionList() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFE5E5E5), width: 2),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: const Color(0xFFEEEEEE)),
         ),
         child: Column(
           children: [
             // Header
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
               child: Row(
                 children: [
-                  Icon(Icons.history_rounded, color: primaryLight, size: 22),
-                  const SizedBox(width: 8),
                   Text(
                     'Recent Sessions',
                     style: GoogleFonts.nunito(
-                      fontSize: 18,
+                      fontSize: 16,
                       fontWeight: FontWeight.w800,
-                      color: const Color(0xFF3C3C3C),
+                      color: const Color(0xFF1A1A1A),
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    'View All',
+                    style: GoogleFonts.nunito(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: primaryColor,
                     ),
                   ),
                 ],
               ),
             ),
-            // Session list
-            ...List.generate(_recentSessions.length, (index) {
-              final session = _recentSessions[index];
+            const SizedBox(height: 6),
+            // Session rows
+            ...List.generate(_sessions.length, (i) {
+              final s = _sessions[i];
               return Column(
                 children: [
-                  if (index > 0)
-                    const Divider(height: 1, indent: 72, endIndent: 16, color: Color(0xFFF0F0F0)),
+                  const Divider(
+                    height: 1,
+                    color: Color(0xFFF0F0F0),
+                    indent: 16,
+                    endIndent: 16,
+                  ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
                     child: Row(
                       children: [
-                        // Instrument icon
-                        Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            color: session.color.withOpacity(0.12),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Icon(session.icon, color: session.color, size: 22),
-                        ),
-                        const SizedBox(width: 14),
-                        // Info
                         Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                session.instrument,
-                                style: GoogleFonts.nunito(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w800,
-                                  color: const Color(0xFF3C3C3C),
-                                ),
-                              ),
-                              Text(
-                                '${session.duration} min  ·  ${session.timeAgo}',
-                                style: GoogleFonts.nunito(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: const Color(0xFFAFAFAF),
-                                ),
-                              ),
-                            ],
+                          child: Text(
+                            s.date,
+                            style: GoogleFonts.nunito(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF999999),
+                            ),
                           ),
                         ),
-                        // XP earned
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: accentCoralLight,
-                            borderRadius: BorderRadius.circular(10),
+                        Text(
+                          s.duration,
+                          style: GoogleFonts.nunito(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w800,
+                            color: const Color(0xFF1A1A1A),
                           ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.bolt_rounded, size: 14, color: accentCoralDark),
-                              const SizedBox(width: 2),
-                              Text(
-                                '+${session.xp}',
-                                style: GoogleFonts.nunito(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w800,
-                                  color: accentCoralDark,
-                                ),
-                              ),
-                            ],
-                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        const Icon(
+                          Icons.chevron_right,
+                          color: Color(0xFFCCCCCC),
+                          size: 20,
                         ),
                       ],
                     ),
@@ -497,7 +481,7 @@ class _ActivityPageState extends State<ActivityPage> with TickerProviderStateMix
                 ],
               );
             }),
-            const SizedBox(height: 4),
+            const SizedBox(height: 6),
           ],
         ),
       ),
@@ -505,36 +489,14 @@ class _ActivityPageState extends State<ActivityPage> with TickerProviderStateMix
   }
 }
 
-class _SessionEntry {
-  final String instrument;
-  final int duration;
-  final int xp;
-  final IconData icon;
-  final Color color;
-  final String timeAgo;
+class _Session {
+  final String date;
+  final String duration;
+  final int count;
 
-  const _SessionEntry({
-    required this.instrument,
+  const _Session({
+    required this.date,
     required this.duration,
-    required this.xp,
-    required this.icon,
-    required this.color,
-    required this.timeAgo,
-  });
-}
-
-class _Achievement {
-  final IconData icon;
-  final String title;
-  final String description;
-  final Color color;
-  final bool earned;
-
-  const _Achievement({
-    required this.icon,
-    required this.title,
-    required this.description,
-    required this.color,
-    required this.earned,
+    required this.count,
   });
 }
