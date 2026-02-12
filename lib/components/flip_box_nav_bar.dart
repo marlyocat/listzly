@@ -2,6 +2,8 @@
 import 'dart:math' show pi;
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:listzly/theme/colors.dart';
 
 class FlipBoxNavItem {
   FlipBoxNavItem({
@@ -99,9 +101,18 @@ class _FlipBoxNavBarState extends State<FlipBoxNavBar>
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
       width: MediaQuery.of(context).size.width,
       height: widget.tileHeight,
+      decoration: const BoxDecoration(
+        color: navBarBg,
+        border: Border(
+          top: BorderSide(
+            color: Color(0x14FFFFFF),
+            width: 0.5,
+          ),
+        ),
+      ),
       child: Row(
         children: List.generate(widget.items.length, (index) {
           return Expanded(
@@ -114,7 +125,11 @@ class _FlipBoxNavBarState extends State<FlipBoxNavBar>
                 height: widget.tileHeight,
                 iconSize: widget.iconSize,
                 textStyle: widget.textStyle ??
-                    const TextStyle(fontSize: 12.0, color: Colors.white),
+                    GoogleFonts.nunito(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
               ),
             ),
           );
@@ -153,25 +168,58 @@ class _FlipBoxTile extends StatefulWidget {
 class _FlipBoxTileState extends State<_FlipBoxTile> {
   Widget get _selectedSide => Container(
         height: widget.height,
-        color: widget.item.selectedBackgroundColor,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              widget.item.selectedBackgroundColor,
+              navBarBg,
+            ],
+          ),
+        ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // Coral active indicator
             Center(
-              child: Image.asset(widget.item.selectedImage,
-                  width: widget.iconSize, height: widget.iconSize),
+              child: Container(
+                height: 2.5,
+                width: 28,
+                decoration: BoxDecoration(
+                  color: accentCoral,
+                  borderRadius: const BorderRadius.vertical(
+                    bottom: Radius.circular(2),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: accentCoral.withValues(alpha: 0.4),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            const SizedBox(height: 4),
-            Text(widget.item.name,
-                textAlign: TextAlign.center, style: widget.textStyle),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(widget.item.selectedImage,
+                      width: widget.iconSize, height: widget.iconSize),
+                  const SizedBox(height: 3),
+                  Text(widget.item.name,
+                      textAlign: TextAlign.center, style: widget.textStyle),
+                ],
+              ),
+            ),
           ],
         ),
       );
 
   Widget get _unselectedSide => Container(
         height: widget.height,
-        color: widget.item.unselectedBackgroundColor,
+        color: navBarBg,
         child: Center(
           child: Image.asset(widget.item.unselectedImage,
               width: widget.iconSize, height: widget.iconSize),

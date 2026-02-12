@@ -26,6 +26,9 @@ const darkDivider = Color(0x26FFFFFF);       // white @ 38 alpha
 const darkSurfaceBg = Color(0x3DFFFFFF);     // white @ 61 alpha — icon/chip containers
 const darkProgressBg = Color(0x33FFFFFF);    // white @ 51 alpha — progress bar tracks
 
+// Navigation bar
+const navBarBg = primaryDark;                // nav bar ground
+
 // Hero card — elevated treatment for primary content cards
 const heroCardBg = Color(0x40FFFFFF);        // white @ 64 alpha — stronger than darkCardBg
 const heroCardBorder = Color(0x55FFFFFF);    // white @ 85 alpha — more visible border
