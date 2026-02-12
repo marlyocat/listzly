@@ -31,7 +31,7 @@ class ProfilePage extends StatelessWidget {
                     end: Alignment.bottomRight,
                   ).createShader(bounds),
                   child: Text(
-                    'Settings',
+                    'Profile',
                     style: GoogleFonts.dmSerifDisplay(
                       fontSize: 36,
                       fontWeight: FontWeight.w400,
