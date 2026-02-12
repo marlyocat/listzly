@@ -116,11 +116,11 @@ class _QuestsPageState extends State<QuestsPage>
     return Scaffold(
       backgroundColor: primaryDarkest,
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: purpleGradientColors,
+            colors: questsGradientColors,
           ),
         ),
         child: SafeArea(
@@ -188,9 +188,16 @@ class _QuestsPageState extends State<QuestsPage>
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: darkCardBg,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: darkCardBorder),
+          color: heroCardBg,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: heroCardBorder),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.15),
+              blurRadius: 20,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,

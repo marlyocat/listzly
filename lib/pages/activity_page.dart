@@ -132,7 +132,7 @@ class _ActivityPageState extends State<ActivityPage>
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: purpleGradientColors,
+            colors: activityGradientColors,
           ),
         ),
         child: SafeArea(
@@ -412,9 +412,16 @@ class _ActivityPageState extends State<ActivityPage>
       child: Container(
         padding: const EdgeInsets.fromLTRB(12, 16, 16, 12),
         decoration: BoxDecoration(
-          color: darkCardBg,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: darkCardBorder, width: 0.5),
+          color: heroCardBg,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: heroCardBorder),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.15),
+              blurRadius: 20,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

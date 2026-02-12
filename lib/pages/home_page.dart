@@ -198,14 +198,53 @@ class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: purpleGradientColors,
           ),
         ),
-        child: SafeArea(
+        child: Stack(
+          children: [
+            // Radial glow behind the play button area (bottom center)
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Container(
+                  width: 350,
+                  height: 350,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        accentCoral.withValues(alpha: 0.10),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            // Decorative ring top-left
+            Positioned(
+              top: -50,
+              left: -50,
+              child: Container(
+                width: 200,
+                height: 200,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.04),
+                    width: 1,
+                  ),
+                ),
+              ),
+            ),
+            SafeArea(
           child: Column(
             children: [
               const SizedBox(height: 8),
@@ -431,6 +470,8 @@ class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
               ),
             ],
           ),
+        ),
+          ],
         ),
       ),
     );

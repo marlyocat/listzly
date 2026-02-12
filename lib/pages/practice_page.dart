@@ -281,6 +281,27 @@ class _PracticePageState extends State<PracticePage>
           child: SafeArea(
             child: Stack(
               children: [
+                // Radial glow behind the timer
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: Container(
+                      width: 400,
+                      height: 400,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: RadialGradient(
+                          colors: [
+                            accentCoral.withValues(alpha: 0.08),
+                            Colors.transparent,
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
                 // Timer view
                 if (!_sessionCompleted)
                 Column(
