@@ -120,7 +120,7 @@ class _QuestsPageState extends State<QuestsPage>
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: questsGradientColors,
+            colors: purpleGradientColors,
           ),
         ),
         child: SafeArea(

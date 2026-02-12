@@ -132,7 +132,7 @@ class _ActivityPageState extends State<ActivityPage>
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: activityGradientColors,
+            colors: purpleGradientColors,
           ),
         ),
         child: SafeArea(

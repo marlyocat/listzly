@@ -14,7 +14,7 @@ class ProfilePage extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: profileGradientColors,
+            colors: purpleGradientColors,
           ),
         ),
         child: SafeArea(

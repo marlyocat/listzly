@@ -30,35 +30,10 @@ const darkProgressBg = Color(0x33FFFFFF);    // white @ 51 alpha — progress ba
 const heroCardBg = Color(0x40FFFFFF);        // white @ 64 alpha — stronger than darkCardBg
 const heroCardBorder = Color(0x55FFFFFF);    // white @ 85 alpha — more visible border
 
-// Standard purple gradient (home + practice)
+// Standard gradient (cool indigo-violet, used across all pages)
 const purpleGradientColors = [
-  primaryLight,   // 0xFF9333EA
-  primaryColor,   // 0xFF7C3AED
-  primaryDark,    // 0xFF4A1D8E
-  primaryDarkest, // 0xFF2D1066
-];
-
-// Per-page gradient variations — same family, subtle shifts
-// Quests: warmer undertone (hint of amber/coral in the mid-tones)
-const questsGradientColors = [
-  Color(0xFF9B33EA), // warmer violet
-  Color(0xFF7C3AED),
-  Color(0xFF5A1D7E), // slightly warmer dark
-  Color(0xFF2D1066),
-];
-
-// Activity: cooler undertone (hint of indigo/blue)
-const activityGradientColors = [
   Color(0xFF7B33EA), // cooler violet
   Color(0xFF6D3AED),
   Color(0xFF3D1D8E), // deeper indigo
   Color(0xFF1E0E5E), // very deep blue-violet
-];
-
-// Profile: deeper, muted, more intimate
-const profileGradientColors = [
-  Color(0xFF8333CC), // muted violet
-  Color(0xFF6B2DBD),
-  Color(0xFF3E1878), // dark plum
-  Color(0xFF1C0A45), // near-black violet
 ];
