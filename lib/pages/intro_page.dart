@@ -9,61 +9,77 @@ class IntroPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: primaryColor,
-      body: Padding(
-        padding: const EdgeInsets.all(25.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            const SizedBox(height: 25),
+      backgroundColor: primaryDarkest,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: purpleGradientColors,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(25.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              const SizedBox(height: 25),
 
-            Text(
-              "Music Man",
-              style: GoogleFonts.dmSerifDisplay(
-                fontSize: 28,
-                color: Colors.white,
+              ShaderMask(
+                shaderCallback: (bounds) => const LinearGradient(
+                  colors: [Colors.white, accentCoral],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ).createShader(bounds),
+                child: Text(
+                  "Music Man",
+                  style: GoogleFonts.dmSerifDisplay(
+                    fontSize: 32,
+                    color: Colors.white,
+                  ),
+                ),
               ),
-            ),
 
-            const SizedBox(height: 25),
+              const SizedBox(height: 25),
 
-            Padding(
-              padding: const EdgeInsets.all(50.0),
-              child: Image.asset('lib/images/music_instrument.png', height: 200,),
-            ),
-
-            Text(
-              "THE SOUND OF MUSICAL INSTRUMENTS",
-              style: GoogleFonts.dmSerifDisplay(
-                fontSize: 44,
-                color: Colors.white,
+              Padding(
+                padding: const EdgeInsets.all(50.0),
+                child: Image.asset('lib/images/music_instrument.png', height: 200),
               ),
-            ),
 
-            const SizedBox(height: 10),
-
-            Text(
-              "Feel the sound of the most exciting instrument",
-              style: TextStyle(
-                color: Colors.grey[300],
-                height: 2,
+              Text(
+                "THE SOUND OF MUSICAL INSTRUMENTS",
+                style: GoogleFonts.dmSerifDisplay(
+                  fontSize: 44,
+                  color: Colors.white,
+                ),
               ),
-            ),
 
-            const SizedBox(height: 10),
+              const SizedBox(height: 10),
 
-            MyButton(
-              text: "Get Started",
-              onTap: () {
-                // Go to Home Page
-                Navigator.pushNamed(context, '/homepage');
-              }
-            )
+              Text(
+                "Feel the sound of the most exciting instrument",
+                style: GoogleFonts.nunito(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: darkTextSecondary,
+                  height: 1.6,
+                ),
+              ),
 
-          ],
-        )
-      )
+              const SizedBox(height: 10),
+
+              MyButton(
+                text: "Get Started",
+                onTap: () {
+                  Navigator.pushNamed(context, '/homepage');
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

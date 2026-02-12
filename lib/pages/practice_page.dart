@@ -208,7 +208,7 @@ class _PracticePageState extends State<PracticePage>
         ),
         content: const Text(
           'This session will not be counted if you leave now.',
-          style: TextStyle(color: Colors.white70, fontSize: 16),
+          style: TextStyle(color: darkTextSecondary, fontSize: 16),
         ),
         actions: [
           TextButton(
@@ -323,7 +323,7 @@ class _PracticePageState extends State<PracticePage>
                               textAlign: TextAlign.center,
                               style: GoogleFonts.dmSerifDisplay(
                                 fontSize: 14,
-                                color: Colors.white.withAlpha(180),
+                                color: darkTextSecondary,
                                 fontStyle: FontStyle.italic,
                               ),
                             ),
@@ -332,7 +332,7 @@ class _PracticePageState extends State<PracticePage>
                               '- ${_quotes[_quoteIndex]['author']}',
                               style: GoogleFonts.dmSerifDisplay(
                                 fontSize: 12,
-                                color: Colors.white.withAlpha(130),
+                                color: darkTextMuted,
                               ),
                             ),
                           ],
@@ -433,7 +433,7 @@ class _PracticePageState extends State<PracticePage>
                       },
                       child: Text(
                         'End Session',
-                        style: TextStyle(color: Colors.white.withAlpha(100), fontSize: 12),
+                        style: TextStyle(color: darkTextMuted, fontSize: 12),
                       ),
                     ),
                   ),
@@ -568,13 +568,13 @@ class _PracticePageState extends State<PracticePage>
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(widget.instrumentIcon, color: Colors.white.withAlpha(180), size: 20),
+                        Icon(widget.instrumentIcon, color: darkTextSecondary, size: 20),
                         const SizedBox(width: 8),
                         Text(
                           widget.instrument,
                           style: GoogleFonts.dmSerifDisplay(
                             fontSize: 18,
-                            color: Colors.white.withAlpha(180),
+                            color: darkTextSecondary,
                           ),
                         ),
                       ],
@@ -584,7 +584,7 @@ class _PracticePageState extends State<PracticePage>
                       '${widget.durationMinutes} minutes practiced',
                       style: GoogleFonts.dmSerifDisplay(
                         fontSize: 14,
-                        color: Colors.white.withAlpha(130),
+                        color: darkTextMuted,
                       ),
                     ),
                   ],

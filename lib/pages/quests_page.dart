@@ -130,12 +130,19 @@ class _QuestsPageState extends State<QuestsPage>
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
-                child: Text(
-                  'Quests',
-                  style: GoogleFonts.nunito(
-                    fontSize: 32,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white,
+                child: ShaderMask(
+                  shaderCallback: (bounds) => const LinearGradient(
+                    colors: [Colors.white, accentCoral],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ).createShader(bounds),
+                  child: Text(
+                    'Quests',
+                    style: GoogleFonts.dmSerifDisplay(
+                      fontSize: 36,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
@@ -215,7 +222,7 @@ class _QuestsPageState extends State<QuestsPage>
                     shape: BoxShape.circle,
                     border: isToday && !completed
                         ? Border.all(
-                            color: primaryColor.withValues(alpha: 0.4),
+                            color: accentCoral.withValues(alpha: 0.5),
                             width: 2,
                           )
                         : null,
@@ -227,9 +234,9 @@ class _QuestsPageState extends State<QuestsPage>
                           size: 18,
                         )
                       : isPast
-                          ? Icon(
+                          ? const Icon(
                               Icons.close_rounded,
-                              color: darkTextMuted,
+                              color: darkTextSecondary,
                               size: 16,
                             )
                           : null,
@@ -377,7 +384,7 @@ class _QuestsPageState extends State<QuestsPage>
                 height: 42,
                 decoration: BoxDecoration(
                   color: isComplete
-                      ? primaryColor.withValues(alpha: 0.12)
+                      ? primaryColor.withValues(alpha: 0.25)
                       : darkSurfaceBg,
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -385,7 +392,7 @@ class _QuestsPageState extends State<QuestsPage>
                   isComplete ? Icons.check_rounded : quest.icon,
                   color: isComplete
                       ? primaryColor
-                      : darkTextMuted,
+                      : accentCoral,
                   size: 22,
                 ),
               ),

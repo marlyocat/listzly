@@ -48,28 +48,28 @@ class _HomePageState extends State<HomePage> {
               selectedImage: 'lib/images/home_selected.png',
               unselectedImage: 'lib/images/home_unselected.png',
               selectedBackgroundColor: primaryColor,
-              unselectedBackgroundColor: primaryColor.withOpacity(0.6),
+              unselectedBackgroundColor: primaryColor.withValues(alpha: 0.6),
             ),
             FlipBoxNavItem(
               name: 'Quests',
               selectedImage: 'lib/images/quest_selected.png',
               unselectedImage: 'lib/images/quest_unselected.png',
               selectedBackgroundColor: primaryColor,
-              unselectedBackgroundColor: primaryColor.withOpacity(0.6),
+              unselectedBackgroundColor: primaryColor.withValues(alpha: 0.6),
             ),
             FlipBoxNavItem(
               name: 'Activity',
               selectedImage: 'lib/images/trophy_selected.png',
               unselectedImage: 'lib/images/trophy_unselected.png',
               selectedBackgroundColor: primaryColor,
-              unselectedBackgroundColor: primaryColor.withOpacity(0.6),
+              unselectedBackgroundColor: primaryColor.withValues(alpha: 0.6),
             ),
             FlipBoxNavItem(
               name: 'Profile',
               selectedImage: 'lib/images/settings_selected.png',
               unselectedImage: 'lib/images/settings_unselected.png',
               selectedBackgroundColor: primaryColor,
-              unselectedBackgroundColor: primaryColor.withOpacity(0.6),
+              unselectedBackgroundColor: primaryColor.withValues(alpha: 0.6),
             ),
           ],
         ),
@@ -266,7 +266,7 @@ class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
                                         textAlign: TextAlign.center,
                                         style: GoogleFonts.dmSerifDisplay(
                                           fontSize: 14,
-                                          color: Colors.white.withAlpha(180),
+                                          color: darkTextSecondary,
                                           fontStyle: FontStyle.italic,
                                         ),
                                       ),
@@ -276,7 +276,7 @@ class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
                                       '- ${inst.quotes[_quoteIndices[index]]['author']}',
                                       style: GoogleFonts.dmSerifDisplay(
                                         fontSize: 12,
-                                        color: Colors.white.withAlpha(130),
+                                        color: darkTextMuted,
                                       ),
                                     ),
                                   ],
@@ -297,9 +297,10 @@ class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
                                     ),
                                     Text(
                                       'min',
-                                      style: TextStyle(
+                                      style: GoogleFonts.nunito(
                                         fontSize: 10,
-                                        color: Colors.white.withAlpha(150),
+                                        fontWeight: FontWeight.w600,
+                                        color: darkTextMuted,
                                       ),
                                     ),
                                     const SizedBox(height: 4),
@@ -310,7 +311,7 @@ class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
                                           data: SliderThemeData(
                                             trackHeight: 3,
                                             activeTrackColor: accentCoral,
-                                            inactiveTrackColor: Colors.white.withAlpha(40),
+                                            inactiveTrackColor: Colors.white.withAlpha(80),
                                             thumbColor: accentCoral,
                                             thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 7),
                                             overlayColor: accentCoral.withAlpha(40),
@@ -353,7 +354,7 @@ class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
                       width: isActive ? 24 : 8,
                       height: 8,
                       decoration: BoxDecoration(
-                        color: isActive ? Colors.white : Colors.white.withAlpha(80),
+                        color: isActive ? Colors.white : Colors.white.withAlpha(140),
                         borderRadius: BorderRadius.circular(4),
                       ),
                     );

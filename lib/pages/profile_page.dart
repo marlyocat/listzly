@@ -24,12 +24,19 @@ class ProfilePage extends StatelessWidget {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
-                child: Text(
-                  'Settings',
-                  style: GoogleFonts.nunito(
-                    fontSize: 32,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white,
+                child: ShaderMask(
+                  shaderCallback: (bounds) => const LinearGradient(
+                    colors: [Colors.white, accentCoral],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ).createShader(bounds),
+                  child: Text(
+                    'Settings',
+                    style: GoogleFonts.dmSerifDisplay(
+                      fontSize: 36,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
@@ -148,12 +155,12 @@ class ProfilePage extends StatelessWidget {
               width: 60,
               height: 60,
               decoration: BoxDecoration(
-                color: primaryColor.withValues(alpha: 0.12),
+                color: darkSurfaceBg,
                 borderRadius: BorderRadius.circular(18),
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.music_note_rounded,
-                color: primaryColor,
+                color: accentCoral,
                 size: 30,
               ),
             ),
@@ -408,7 +415,7 @@ class ProfilePage extends StatelessWidget {
                             width: 38,
                             height: 38,
                             decoration: BoxDecoration(
-                              color: inst.color.withValues(alpha: 0.12),
+                              color: darkSurfaceBg,
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Icon(inst.icon,
