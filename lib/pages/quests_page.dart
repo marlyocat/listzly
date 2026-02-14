@@ -181,7 +181,7 @@ class _QuestsPageState extends State<QuestsPage>
         decoration: BoxDecoration(
           color: heroCardBg,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: heroCardBorder),
+          border: Border.all(color: Colors.black, width: 5),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.15),
@@ -270,7 +270,7 @@ class _QuestsPageState extends State<QuestsPage>
         decoration: BoxDecoration(
           color: darkCardBg,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: darkCardBorder),
+          border: Border.all(color: Colors.black, width: 5),
         ),
         child: Column(
           children: [
@@ -309,7 +309,7 @@ class _QuestsPageState extends State<QuestsPage>
         decoration: BoxDecoration(
           color: darkCardBg,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: darkCardBorder),
+          border: Border.all(color: Colors.black, width: 5),
         ),
         child: Column(
           children: [
