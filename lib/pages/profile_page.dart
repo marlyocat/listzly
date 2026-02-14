@@ -163,6 +163,7 @@ class ProfilePage extends StatelessWidget {
               decoration: BoxDecoration(
                 color: darkSurfaceBg,
                 borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.black, width: 2),
               ),
               child: const Icon(
                 Icons.edit_outlined,
