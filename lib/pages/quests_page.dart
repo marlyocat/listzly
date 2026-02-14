@@ -124,7 +124,7 @@ class _QuestsPageState extends State<QuestsPage>
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
                 child: ShaderMask(
                   shaderCallback: (bounds) => const LinearGradient(
-                    colors: [Colors.white, accentCoral],
+                    colors: [Colors.white, primaryLight],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ).createShader(bounds),
@@ -218,7 +218,7 @@ class _QuestsPageState extends State<QuestsPage>
                     shape: BoxShape.circle,
                     border: isToday && !completed
                         ? Border.all(
-                            color: accentCoral.withValues(alpha: 0.5),
+                            color: primaryLight.withValues(alpha: 0.5),
                             width: 2,
                           )
                         : null,
@@ -252,9 +252,9 @@ class _QuestsPageState extends State<QuestsPage>
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
       child: Row(
         children: [
-          _buildChip('3 Days', 'Streak', accentCoral),
+          _buildChip('3 Days', 'Streak', Colors.white),
           const SizedBox(width: 10),
-          _buildChip('4h 45m', 'This Week', accentCoralLight),
+          _buildChip('4h 45m', 'This Week', Colors.white),
           const SizedBox(width: 10),
           _buildChip('846', 'Total XP', Colors.white),
         ],
@@ -394,14 +394,13 @@ class _QuestsPageState extends State<QuestsPage>
                 decoration: BoxDecoration(
                   color: isComplete
                       ? primaryColor.withValues(alpha: 0.25)
-                      : darkSurfaceBg,
+                      : primaryColor.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.black, width: 2),
                 ),
                 child: Icon(
                   isComplete ? Icons.check_rounded : quest.icon,
-                  color: isComplete
-                      ? primaryColor
-                      : accentCoral,
+                  color: Colors.white,
                   size: 22,
                 ),
               ),
@@ -469,7 +468,7 @@ class _QuestsPageState extends State<QuestsPage>
                                       decoration: BoxDecoration(
                                         color: isComplete
                                             ? primaryColor
-                                            : accentCoral,
+                                            : primaryLight,
                                         borderRadius:
                                             BorderRadius.circular(4),
                                       ),
