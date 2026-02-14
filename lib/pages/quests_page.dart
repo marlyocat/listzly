@@ -114,16 +114,8 @@ class _QuestsPageState extends State<QuestsPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: primaryDarkest,
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: purpleGradientColors,
-          ),
-        ),
-        child: SafeArea(
+      backgroundColor: const Color(0xFF150833),
+      body: SafeArea(
           child: CustomScrollView(
           slivers: [
             // Title
@@ -176,7 +168,6 @@ class _QuestsPageState extends State<QuestsPage>
             const SliverToBoxAdapter(child: SizedBox(height: 100)),
           ],
         ),
-      ),
       ),
     );
   }

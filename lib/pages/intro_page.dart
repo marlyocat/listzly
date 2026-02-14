@@ -11,16 +11,8 @@ class IntroPage extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: primaryDarkest,
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: purpleGradientColors,
-          ),
-        ),
-        child: Stack(
+      backgroundColor: const Color(0xFF150833),
+      body: Stack(
           children: [
             // Background decorative rings
             Positioned(
@@ -174,7 +166,6 @@ class IntroPage extends StatelessWidget {
             ),
           ],
         ),
-      ),
     );
   }
 }

@@ -37,7 +37,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: navBarBg,
+      backgroundColor: const Color(0xFF150833),
       body: IndexedStack(index: _selectedIndex, children: _pages),
       bottomNavigationBar: SafeArea(
         child: FlipBoxNavBar(
@@ -198,15 +198,8 @@ class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: purpleGradientColors,
-          ),
-        ),
-        child: Stack(
+      backgroundColor: const Color(0xFF150833),
+      body: Stack(
           children: [
             // Radial glow behind the play button area (bottom center)
             Positioned(
@@ -474,7 +467,6 @@ class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
         ),
           ],
         ),
-      ),
     );
   }
 }

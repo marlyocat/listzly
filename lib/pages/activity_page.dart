@@ -126,18 +126,10 @@ class _ActivityPageState extends State<ActivityPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: primaryDarkest,
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: purpleGradientColors,
-          ),
-        ),
-        child: SafeArea(
-          child: CustomScrollView(
-            slivers: [
+      backgroundColor: const Color(0xFF150833),
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
               // Title with gradient text
               SliverToBoxAdapter(
                 child: Padding(
@@ -183,7 +175,6 @@ class _ActivityPageState extends State<ActivityPage>
             ],
           ),
         ),
-      ),
     );
   }
 

@@ -269,16 +269,8 @@ class _PracticePageState extends State<PracticePage>
         }
       },
       child: Scaffold(
-        backgroundColor: primaryDarkest,
-        body: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: purpleGradientColors,
-            ),
-          ),
-          child: SafeArea(
+        backgroundColor: const Color(0xFF150833),
+        body: SafeArea(
             child: Stack(
               children: [
                 // Radial glow behind the timer
@@ -467,7 +459,6 @@ class _PracticePageState extends State<PracticePage>
             ),
           ),
         ),
-      ),
     );
   }
 

@@ -8,16 +8,8 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: primaryDarkest,
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: purpleGradientColors,
-          ),
-        ),
-        child: SafeArea(
+      backgroundColor: const Color(0xFF150833),
+      body: SafeArea(
           child: CustomScrollView(
           slivers: [
             // Title
@@ -132,7 +124,6 @@ class ProfilePage extends StatelessWidget {
             const SliverToBoxAdapter(child: SizedBox(height: 100)),
           ],
         ),
-      ),
       ),
     );
   }
