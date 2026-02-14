@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
+
 import 'package:listzly/components/flip_box_nav_bar.dart';
 import 'package:listzly/pages/quests_page.dart';
 import 'package:listzly/pages/activity_page.dart';
@@ -125,6 +126,9 @@ class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
     )..repeat();
   }
 
+  // TODO: Wire up to real persistence (SharedPreferences / database)
+  int _streakDays = 7;
+
   static const List<_InstrumentData> _instruments = [
     _InstrumentData(name: 'Piano', icon: Icons.piano, lottiePath: 'lib/images/playing_piano.json', quotes: [
       {'quote': 'Simplicity is the final achievement.', 'author': 'Frederic Chopin'},
@@ -241,6 +245,47 @@ class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
             SafeArea(
           child: Column(
             children: [
+              const SizedBox(height: 12),
+
+              // Streak badge
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.white.withAlpha(15),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: accentCoral.withAlpha(60),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ShaderMask(
+                      shaderCallback: (bounds) => const LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Color(0xFFFFB74D), accentCoral],
+                      ).createShader(bounds),
+                      child: const Icon(
+                        Icons.local_fire_department_rounded,
+                        size: 18,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      '$_streakDays day streak',
+                      style: GoogleFonts.nunito(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
               const SizedBox(height: 8),
 
               // Swipeable instrument carousel
