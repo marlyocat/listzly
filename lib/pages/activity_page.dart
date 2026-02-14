@@ -115,7 +115,7 @@ class _ActivityPageState extends State<ActivityPage>
                   padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
                   child: ShaderMask(
                     shaderCallback: (bounds) => const LinearGradient(
-                      colors: [Colors.white, Color(0xFFF4A68E)],
+                      colors: [Colors.white, primaryLight],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ).createShader(bounds),
@@ -304,13 +304,6 @@ class _ActivityPageState extends State<ActivityPage>
             value: '9',
             label: 'Sessions',
             color: primaryLight,
-          ),
-          const SizedBox(width: 10),
-          _buildStatCard(
-            icon: Icons.local_fire_department_rounded,
-            value: '3',
-            label: 'Best Day',
-            color: const Color(0xFFFBBF24),
           ),
         ],
       ),

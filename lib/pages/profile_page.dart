@@ -18,7 +18,7 @@ class ProfilePage extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
                 child: ShaderMask(
                   shaderCallback: (bounds) => const LinearGradient(
-                    colors: [Colors.white, accentCoral],
+                    colors: [Colors.white, primaryLight],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ).createShader(bounds),
