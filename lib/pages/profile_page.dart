@@ -37,8 +37,6 @@ class ProfilePage extends StatelessWidget {
             // Profile card
             SliverToBoxAdapter(child: _buildProfileCard()),
 
-            // Stats row
-            SliverToBoxAdapter(child: _buildStatsRow()),
 
             // Display section
             SliverToBoxAdapter(
@@ -96,30 +94,6 @@ class ProfilePage extends StatelessWidget {
             // Instruments section
             SliverToBoxAdapter(child: _buildInstrumentsSection()),
 
-            // About section
-            SliverToBoxAdapter(
-              child: _buildSettingsSection(
-                title: 'About',
-                items: [
-                  _SettingsRow(
-                    icon: Icons.new_releases_outlined,
-                    label: "What's New",
-                    trailing: _TrailingChevron(),
-                  ),
-                  _SettingsRow(
-                    icon: Icons.shield_outlined,
-                    label: 'Data Privacy',
-                    trailing: _TrailingChevron(),
-                  ),
-                  _SettingsRow(
-                    icon: Icons.description_outlined,
-                    label: 'Terms of Service',
-                    trailing: _TrailingChevron(),
-                  ),
-                ],
-              ),
-            ),
-
             // Bottom spacing for nav bar
             const SliverToBoxAdapter(child: SizedBox(height: 100)),
           ],
@@ -137,14 +111,7 @@ class ProfilePage extends StatelessWidget {
         decoration: BoxDecoration(
           color: heroCardBg,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: heroCardBorder),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.15),
-              blurRadius: 20,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          border: Border.all(color: Colors.black, width: 5),
         ),
         child: Row(
           children: [
@@ -155,10 +122,11 @@ class ProfilePage extends StatelessWidget {
               decoration: BoxDecoration(
                 color: darkSurfaceBg,
                 borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: Colors.black, width: 2),
               ),
               child: const Icon(
                 Icons.music_note_rounded,
-                color: accentCoral,
+                color: Colors.white,
                 size: 30,
               ),
             ),
@@ -208,57 +176,6 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  // ─── Stats row ────────────────────────────────────────────────────
-  Widget _buildStatsRow() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-      child: Row(
-        children: [
-          _buildStatChip('5 days', 'Days Active', accentCoral),
-          const SizedBox(width: 10),
-          _buildStatChip('4h 45m', 'Time Spent', accentCoralLight),
-          const SizedBox(width: 10),
-          _buildStatChip('3 days', 'Longest Streak', Colors.white),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatChip(String value, String label, Color color) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-        decoration: BoxDecoration(
-          color: darkCardBg,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: darkCardBorder),
-        ),
-        child: Column(
-          children: [
-            Text(
-              value,
-              style: GoogleFonts.nunito(
-                fontSize: 15,
-                fontWeight: FontWeight.w800,
-                color: color,
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.nunito(
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-                color: darkTextSecondary,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   // ─── Generic settings section ─────────────────────────────────────
   Widget _buildSettingsSection({
     required String title,
@@ -284,7 +201,7 @@ class ProfilePage extends StatelessWidget {
             decoration: BoxDecoration(
               color: darkCardBg,
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: darkCardBorder),
+              border: Border.all(color: Colors.black, width: 5),
             ),
             child: Column(
               children: items.asMap().entries.map((entry) {
@@ -386,7 +303,7 @@ class ProfilePage extends StatelessWidget {
             decoration: BoxDecoration(
               color: darkCardBg,
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: darkCardBorder),
+              border: Border.all(color: Colors.black, width: 5),
             ),
             child: Column(
               children: instruments.asMap().entries.map((entry) {
@@ -415,9 +332,10 @@ class ProfilePage extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: darkSurfaceBg,
                               borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: Colors.black, width: 2),
                             ),
                             child: Icon(inst.icon,
-                                color: inst.color, size: 20),
+                                color: Colors.white, size: 20),
                           ),
                           const SizedBox(width: 14),
                           Expanded(
@@ -557,19 +475,6 @@ class _TrailingToggle extends _Trailing {
           inactiveTrackColor: darkTextMuted,
         ),
       ),
-    );
-  }
-}
-
-class _TrailingChevron extends _Trailing {
-  const _TrailingChevron();
-
-  @override
-  Widget build() {
-    return const Icon(
-      Icons.chevron_right,
-      color: darkTextMuted,
-      size: 20,
     );
   }
 }

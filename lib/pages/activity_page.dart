@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:listzly/theme/colors.dart';
@@ -30,9 +28,6 @@ class _ActivityPageState extends State<ActivityPage>
     'FRI',
     'SAT',
   ];
-
-  // Mock contribution heat map (7 days x 26 weeks)
-  late final List<List<double>> _heatMapData;
 
   // Mock recent sessions
   final List<_Session> _sessions = const [
@@ -77,16 +72,6 @@ class _ActivityPageState extends State<ActivityPage>
   void initState() {
     super.initState();
 
-    // Heat map data
-    final rng = Random(42);
-    _heatMapData = List.generate(
-      7,
-      (day) => List.generate(
-        26,
-        (week) => rng.nextDouble() < 0.35 ? 0.0 : rng.nextDouble(),
-      ),
-    );
-
     // Bar chart entrance animation
     _barAnimController = AnimationController(
       vsync: this,
@@ -116,12 +101,6 @@ class _ActivityPageState extends State<ActivityPage>
     'Drums': Icons.surround_sound,
   };
 
-  static const _instrumentColors = {
-    'Piano': Color(0xFFF4A68E),
-    'Guitar': Color(0xFF7C3AED),
-    'Violin': Color(0xFF60A5FA),
-    'Drums': Color(0xFFFBBF24),
-  };
 
   @override
   Widget build(BuildContext context) {
@@ -164,9 +143,6 @@ class _ActivityPageState extends State<ActivityPage>
               // Bar chart
               SliverToBoxAdapter(child: _buildBarChart()),
 
-              // Contribution heat map
-              SliverToBoxAdapter(child: _buildContributionGraph()),
-
               // Recent sessions list
               SliverToBoxAdapter(child: _buildSessionList()),
 
@@ -188,7 +164,7 @@ class _ActivityPageState extends State<ActivityPage>
         decoration: BoxDecoration(
           color: darkCardBg,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: darkCardBorder, width: 0.5),
+          border: Border.all(color: Colors.black, width: 5),
         ),
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -348,13 +324,18 @@ class _ActivityPageState extends State<ActivityPage>
     required Color color,
   }) {
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
-        decoration: BoxDecoration(
-          color: darkCardBg,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: darkCardBorder, width: 0.5),
-        ),
+      child: Material(
+        elevation: 12,
+        shadowColor: Colors.black,
+        borderRadius: BorderRadius.circular(14),
+        color: Colors.transparent,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+          decoration: BoxDecoration(
+            color: darkCardBg,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: Colors.black, width: 5),
+          ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -364,8 +345,9 @@ class _ActivityPageState extends State<ActivityPage>
               decoration: BoxDecoration(
                 color: darkSurfaceBg,
                 borderRadius: BorderRadius.circular(9),
+                border: Border.all(color: Colors.black, width: 2),
               ),
-              child: Icon(icon, color: color, size: 19),
+              child: Icon(icon, color: Colors.white, size: 19),
             ),
             const SizedBox(height: 10),
             Text(
@@ -387,6 +369,7 @@ class _ActivityPageState extends State<ActivityPage>
           ],
         ),
       ),
+      ),
     );
   }
 
@@ -405,14 +388,7 @@ class _ActivityPageState extends State<ActivityPage>
         decoration: BoxDecoration(
           color: heroCardBg,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: heroCardBorder),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.15),
-              blurRadius: 20,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          border: Border.all(color: Colors.black, width: 5),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -614,136 +590,6 @@ class _ActivityPageState extends State<ActivityPage>
     );
   }
 
-  // --- Contribution dot grid (GitHub-style) with coral gradient ---
-  Widget _buildContributionGraph() {
-    const weeks = 26;
-    const cellSize = 10.0;
-    const gap = 3.0;
-    const totalW = weeks * (cellSize + gap) - gap;
-    final months = ['SEP', 'OCT', 'NOV', 'DEC', 'JAN', 'FEB'];
-    const monthSpacing = totalW / 6;
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: darkCardBg,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: darkCardBorder, width: 0.5),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  'Practice History',
-                  style: GoogleFonts.nunito(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.white,
-                  ),
-                ),
-                const Spacer(),
-                // Legend
-                _buildHeatLegendDot(darkSurfaceBg, 'None'),
-                const SizedBox(width: 8),
-                _buildHeatLegendDot(
-                    accentCoral.withValues(alpha: 0.35), 'Low'),
-                const SizedBox(width: 8),
-                _buildHeatLegendDot(
-                    accentCoral.withValues(alpha: 0.65), 'Med'),
-                const SizedBox(width: 8),
-                _buildHeatLegendDot(accentCoral, 'High'),
-              ],
-            ),
-            const SizedBox(height: 14),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Month labels
-                  SizedBox(
-                    width: totalW,
-                    child: Row(
-                      children: months
-                          .map(
-                            (m) => SizedBox(
-                              width: monthSpacing,
-                              child: Text(
-                                m,
-                                style: GoogleFonts.nunito(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w700,
-                                  color: darkTextMuted,
-                                ),
-                              ),
-                            ),
-                          )
-                          .toList(),
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  // Dot grid: 7 rows x 26 columns
-                  ...List.generate(7, (day) {
-                    return Padding(
-                      padding: EdgeInsets.only(bottom: day < 6 ? gap : 0),
-                      child: Row(
-                        children: List.generate(weeks, (week) {
-                          final val = _heatMapData[day][week];
-                          return Container(
-                            width: cellSize,
-                            height: cellSize,
-                            margin: EdgeInsets.only(
-                              right: week < weeks - 1 ? gap : 0,
-                            ),
-                            decoration: BoxDecoration(
-                              color: val == 0
-                                  ? darkSurfaceBg
-                                  : accentCoral.withValues(
-                                      alpha: 0.15 + val * 0.85),
-                              borderRadius: BorderRadius.circular(3),
-                            ),
-                          );
-                        }),
-                      ),
-                    );
-                  }),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeatLegendDot(Color color, String label) {
-    return Row(
-      children: [
-        Container(
-          width: 8,
-          height: 8,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(2),
-          ),
-        ),
-        const SizedBox(width: 3),
-        Text(
-          label,
-          style: GoogleFonts.nunito(
-            fontSize: 10,
-            fontWeight: FontWeight.w700,
-            color: darkTextSecondary,
-          ),
-        ),
-      ],
-    );
-  }
-
   // --- Recent sessions list with instrument icons ---
   Widget _buildSessionList() {
     return Padding(
@@ -752,7 +598,7 @@ class _ActivityPageState extends State<ActivityPage>
         decoration: BoxDecoration(
           color: darkCardBg,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: darkCardBorder, width: 0.5),
+          border: Border.all(color: Colors.black, width: 5),
         ),
         child: Column(
           children: [
@@ -793,8 +639,6 @@ class _ActivityPageState extends State<ActivityPage>
             // Session rows
             ...List.generate(_sessions.length, (i) {
               final s = _sessions[i];
-              final instColor =
-                  _instrumentColors[s.instrument] ?? accentCoral;
               final instIcon =
                   _instrumentIcons[s.instrument] ?? Icons.music_note;
               return Column(
@@ -817,8 +661,9 @@ class _ActivityPageState extends State<ActivityPage>
                           decoration: BoxDecoration(
                             color: darkSurfaceBg,
                             borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: Colors.black, width: 2),
                           ),
-                          child: Icon(instIcon, color: instColor, size: 20),
+                          child: Icon(instIcon, color: Colors.white, size: 20),
                         ),
                         const SizedBox(width: 12),
                         // Date + instrument name

@@ -213,15 +213,13 @@ class _QuestsPageState extends State<QuestsPage>
                     color: completed
                         ? primaryColor
                         : isToday
-                            ? primaryColor.withValues(alpha: 0.12)
+                            ? primaryColor.withValues(alpha: 0.3)
                             : darkSurfaceBg,
                     shape: BoxShape.circle,
-                    border: isToday && !completed
-                        ? Border.all(
-                            color: primaryLight.withValues(alpha: 0.5),
-                            width: 2,
-                          )
-                        : null,
+                    border: Border.all(
+                      color: Colors.black,
+                      width: 2,
+                    ),
                   ),
                   child: completed
                       ? const Icon(
