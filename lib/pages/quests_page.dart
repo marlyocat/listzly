@@ -176,21 +176,19 @@ class _QuestsPageState extends State<QuestsPage>
   Widget _buildWeeklyOverview() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: heroCardBg,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.black, width: 5),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.15),
-              blurRadius: 20,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Row(
+      child: Material(
+        elevation: 12,
+        shadowColor: Colors.black,
+        borderRadius: BorderRadius.circular(16),
+        color: Colors.transparent,
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: heroCardBg,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.black, width: 5),
+          ),
+          child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: List.generate(7, (i) {
             final isToday = i == _todayIndex;
@@ -244,6 +242,7 @@ class _QuestsPageState extends State<QuestsPage>
           }),
         ),
       ),
+      ),
     );
   }
 
@@ -265,14 +264,19 @@ class _QuestsPageState extends State<QuestsPage>
 
   Widget _buildChip(String value, String label, Color color) {
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
-        decoration: BoxDecoration(
-          color: darkCardBg,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.black, width: 5),
-        ),
-        child: Column(
+      child: Material(
+        elevation: 12,
+        shadowColor: Colors.black,
+        borderRadius: BorderRadius.circular(12),
+        color: Colors.transparent,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+          decoration: BoxDecoration(
+            color: darkCardBg,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.black, width: 5),
+          ),
+          child: Column(
           children: [
             Text(
               value,
@@ -294,6 +298,7 @@ class _QuestsPageState extends State<QuestsPage>
           ],
         ),
       ),
+      ),
     );
   }
 
@@ -305,15 +310,20 @@ class _QuestsPageState extends State<QuestsPage>
   }) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: darkCardBg,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: Colors.black, width: 5),
-        ),
-        child: Column(
-          children: [
-            // Section header
+      child: Material(
+        elevation: 12,
+        shadowColor: Colors.black,
+        borderRadius: BorderRadius.circular(14),
+        color: Colors.transparent,
+        child: Container(
+          decoration: BoxDecoration(
+            color: darkCardBg,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: Colors.black, width: 5),
+          ),
+          child: Column(
+            children: [
+              // Section header
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
               child: Row(
@@ -358,6 +368,7 @@ class _QuestsPageState extends State<QuestsPage>
             }),
           ],
         ),
+      ),
       ),
     );
   }
