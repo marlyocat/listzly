@@ -273,7 +273,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
             onPressed: () => Navigator.of(context).pop(true),
             child: const Text(
               'Leave',
-              style: TextStyle(color: Colors.white54, fontSize: 16),
+              style: TextStyle(color: Colors.red, fontSize: 16),
             ),
           ),
         ],
