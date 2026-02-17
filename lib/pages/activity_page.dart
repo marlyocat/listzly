@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:listzly/models/practice_session.dart';
+import 'package:listzly/providers/session_provider.dart';
 import 'package:listzly/theme/colors.dart';
 
-class ActivityPage extends StatefulWidget {
+class ActivityPage extends ConsumerStatefulWidget {
   const ActivityPage({super.key});
 
   @override
-  State<ActivityPage> createState() => _ActivityPageState();
+  ConsumerState<ActivityPage> createState() => _ActivityPageState();
 }
 
-class _ActivityPageState extends State<ActivityPage>
+class _ActivityPageState extends ConsumerState<ActivityPage>
     with TickerProviderStateMixin {
   int _selectedTab = 0;
 
@@ -17,8 +20,6 @@ class _ActivityPageState extends State<ActivityPage>
   late final AnimationController _barAnimController;
   late final Animation<double> _barAnim;
 
-  // Mock bar chart data (sessions per day for the current week)
-  final List<double> _weeklyBarData = [1, 0, 1, 2, 0, 3, 1];
   final List<String> _barLabels = [
     'SUN',
     'MON',
@@ -29,48 +30,24 @@ class _ActivityPageState extends State<ActivityPage>
     'SAT',
   ];
 
-  // Mock recent sessions
-  final List<_Session> _sessions = const [
-    _Session(
-        date: '12 Feb 2026',
-        duration: '45m 30s',
-        count: 2,
-        instrument: 'Piano'),
-    _Session(
-        date: '11 Feb 2026',
-        duration: '30m 15s',
-        count: 1,
-        instrument: 'Guitar'),
-    _Session(
-        date: '10 Feb 2026',
-        duration: '1h 10m',
-        count: 2,
-        instrument: 'Violin'),
-    _Session(
-        date: '9 Feb 2026',
-        duration: '25m',
-        count: 1,
-        instrument: 'Piano'),
-    _Session(
-        date: '8 Feb 2026',
-        duration: '50m',
-        count: 1,
-        instrument: 'Drums'),
-    _Session(
-        date: '7 Feb 2026',
-        duration: '35m',
-        count: 1,
-        instrument: 'Guitar'),
-    _Session(
-        date: '6 Feb 2026',
-        duration: '40m',
-        count: 1,
-        instrument: 'Piano'),
-  ];
+  // Instrument icon mapping
+  static const _instrumentIcons = {
+    'Piano': Icons.piano,
+    'Guitar': Icons.music_note,
+    'Violin': Icons.library_music,
+    'Drums': Icons.surround_sound,
+  };
+
+  // ---- Date range state ----
+
+  late DateTime _rangeStart;
+  late DateTime _rangeEnd;
 
   @override
   void initState() {
     super.initState();
+
+    _computeDateRange();
 
     // Bar chart entrance animation
     _barAnimController = AnimationController(
@@ -93,17 +70,134 @@ class _ActivityPageState extends State<ActivityPage>
     super.dispose();
   }
 
-  // Instrument icon mapping
-  static const _instrumentIcons = {
-    'Piano': Icons.piano,
-    'Guitar': Icons.music_note,
-    'Violin': Icons.library_music,
-    'Drums': Icons.surround_sound,
-  };
+  /// Recompute [_rangeStart] and [_rangeEnd] based on the current
+  /// [_selectedTab] (0 = week, 1 = month, 2 = year) anchored to today.
+  void _computeDateRange() {
+    final now = DateTime.now();
+    switch (_selectedTab) {
+      case 0: // Week (Sunday – Saturday containing today)
+        final weekday = now.weekday % 7; // Sun=0 .. Sat=6
+        _rangeStart = DateTime(now.year, now.month, now.day - weekday);
+        _rangeEnd = _rangeStart.add(const Duration(days: 6));
+        break;
+      case 1: // Month
+        _rangeStart = DateTime(now.year, now.month);
+        _rangeEnd = DateTime(now.year, now.month + 1)
+            .subtract(const Duration(days: 1));
+        break;
+      case 2: // Year
+        _rangeStart = DateTime(now.year);
+        _rangeEnd = DateTime(now.year, 12, 31);
+        break;
+    }
+  }
 
+  /// Shift the current range backward by one period.
+  void _shiftRangeBack() {
+    setState(() {
+      switch (_selectedTab) {
+        case 0:
+          _rangeStart = _rangeStart.subtract(const Duration(days: 7));
+          _rangeEnd = _rangeEnd.subtract(const Duration(days: 7));
+          break;
+        case 1:
+          _rangeStart = DateTime(_rangeStart.year, _rangeStart.month - 1);
+          _rangeEnd = DateTime(_rangeStart.year, _rangeStart.month + 1)
+              .subtract(const Duration(days: 1));
+          break;
+        case 2:
+          _rangeStart = DateTime(_rangeStart.year - 1);
+          _rangeEnd = DateTime(_rangeStart.year, 12, 31);
+          break;
+      }
+      _restartBarAnimation();
+    });
+  }
+
+  /// Shift the current range forward by one period.
+  void _shiftRangeForward() {
+    setState(() {
+      switch (_selectedTab) {
+        case 0:
+          _rangeStart = _rangeStart.add(const Duration(days: 7));
+          _rangeEnd = _rangeEnd.add(const Duration(days: 7));
+          break;
+        case 1:
+          _rangeStart = DateTime(_rangeStart.year, _rangeStart.month + 1);
+          _rangeEnd = DateTime(_rangeStart.year, _rangeStart.month + 1)
+              .subtract(const Duration(days: 1));
+          break;
+        case 2:
+          _rangeStart = DateTime(_rangeStart.year + 1);
+          _rangeEnd = DateTime(_rangeStart.year, 12, 31);
+          break;
+      }
+      _restartBarAnimation();
+    });
+  }
+
+  void _restartBarAnimation() {
+    _barAnimController.reset();
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (mounted) _barAnimController.forward();
+    });
+  }
+
+  // ---- Formatting helpers ----
+
+  static const _monthNames = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+  ];
+
+  String _formatDateRange() {
+    switch (_selectedTab) {
+      case 0:
+        if (_rangeStart.month == _rangeEnd.month) {
+          return '${_monthNames[_rangeStart.month - 1]} ${_rangeStart.day} \u2013 ${_rangeEnd.day}, ${_rangeEnd.year}';
+        }
+        return '${_monthNames[_rangeStart.month - 1]} ${_rangeStart.day} \u2013 ${_monthNames[_rangeEnd.month - 1]} ${_rangeEnd.day}, ${_rangeEnd.year}';
+      case 1:
+        return '${_monthNames[_rangeStart.month - 1]} ${_rangeStart.year}';
+      case 2:
+        return '${_rangeStart.year}';
+      default:
+        return '';
+    }
+  }
+
+  static String _formatDuration(Duration d) {
+    final hours = d.inHours;
+    final minutes = d.inMinutes.remainder(60);
+    final seconds = d.inSeconds.remainder(60);
+    if (hours > 0 && minutes > 0) return '${hours}h ${minutes}m';
+    if (hours > 0) return '${hours}h';
+    if (minutes > 0 && seconds > 0) return '${minutes}m ${seconds}s';
+    if (minutes > 0) return '${minutes}m';
+    return '${seconds}s';
+  }
+
+  static String _formatSessionDuration(int durationSeconds) {
+    return _formatDuration(Duration(seconds: durationSeconds));
+  }
+
+  static String _formatSessionDate(DateTime dt) {
+    return '${dt.day} ${_monthNames[dt.month - 1]} ${dt.year}';
+  }
 
   @override
   Widget build(BuildContext context) {
+    // Watch providers using the current date range
+    final sessionsAsync = ref.watch(
+      sessionListProvider(start: _rangeStart, end: _rangeEnd),
+    );
+    final barDataAsync = ref.watch(
+      weeklyBarDataProvider(weekStart: _rangeStart),
+    );
+    final statsAsync = ref.watch(
+      summaryStatsProvider(start: _rangeStart, end: _rangeEnd),
+    );
+
     return Scaffold(
       backgroundColor: const Color(0xFF150833),
       body: SafeArea(
@@ -135,16 +229,16 @@ class _ActivityPageState extends State<ActivityPage>
               SliverToBoxAdapter(child: _buildSegmentedTabs()),
 
               // Date range + session count
-              SliverToBoxAdapter(child: _buildDateStats()),
+              SliverToBoxAdapter(child: _buildDateStats(statsAsync)),
 
               // Summary stats row
-              SliverToBoxAdapter(child: _buildSummaryStats()),
+              SliverToBoxAdapter(child: _buildSummaryStats(statsAsync)),
 
               // Bar chart
-              SliverToBoxAdapter(child: _buildBarChart()),
+              SliverToBoxAdapter(child: _buildBarChart(barDataAsync)),
 
               // Recent sessions list
-              SliverToBoxAdapter(child: _buildSessionList()),
+              SliverToBoxAdapter(child: _buildSessionList(sessionsAsync)),
 
               // Bottom spacing for nav bar
               const SliverToBoxAdapter(child: SizedBox(height: 100)),
@@ -201,7 +295,13 @@ class _ActivityPageState extends State<ActivityPage>
                     final selected = _selectedTab == i;
                     return Expanded(
                       child: GestureDetector(
-                        onTap: () => setState(() => _selectedTab = i),
+                        onTap: () {
+                          setState(() {
+                            _selectedTab = i;
+                            _computeDateRange();
+                            _restartBarAnimation();
+                          });
+                        },
                         behavior: HitTestBehavior.opaque,
                         child: Center(
                           child: AnimatedDefaultTextStyle(
@@ -230,7 +330,9 @@ class _ActivityPageState extends State<ActivityPage>
   }
 
   // --- Date range + session stat ---
-  Widget _buildDateStats() {
+  Widget _buildDateStats(
+    AsyncValue<({Duration totalTime, int sessionCount})> statsAsync,
+  ) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
       child: Row(
@@ -241,7 +343,7 @@ class _ActivityPageState extends State<ActivityPage>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Feb 6 \u2013 12, 2026',
+                  _formatDateRange(),
                   style: GoogleFonts.nunito(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
@@ -249,12 +351,31 @@ class _ActivityPageState extends State<ActivityPage>
                   ),
                 ),
                 const SizedBox(height: 2),
-                Text(
-                  '9 Sessions',
-                  style: GoogleFonts.nunito(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: accentCoral,
+                statsAsync.when(
+                  data: (stats) => Text(
+                    '${stats.sessionCount} Session${stats.sessionCount == 1 ? '' : 's'}',
+                    style: GoogleFonts.nunito(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: accentCoral,
+                    ),
+                  ),
+                  loading: () => SizedBox(
+                    height: 20,
+                    width: 80,
+                    child: LinearProgressIndicator(
+                      backgroundColor: darkCardBg,
+                      color: accentCoral.withValues(alpha: 0.5),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                  error: (_, _) => Text(
+                    '\u2014',
+                    style: GoogleFonts.nunito(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: accentCoral,
+                    ),
                   ),
                 ),
               ],
@@ -263,9 +384,9 @@ class _ActivityPageState extends State<ActivityPage>
           // Navigation arrows for date range
           Row(
             children: [
-              _buildCircleIconButton(Icons.chevron_left),
+              _buildCircleIconButton(Icons.chevron_left, onTap: _shiftRangeBack),
               const SizedBox(width: 8),
-              _buildCircleIconButton(Icons.chevron_right),
+              _buildCircleIconButton(Icons.chevron_right, onTap: _shiftRangeForward),
             ],
           ),
         ],
@@ -273,39 +394,80 @@ class _ActivityPageState extends State<ActivityPage>
     );
   }
 
-  Widget _buildCircleIconButton(IconData icon) {
-    return Container(
-      width: 32,
-      height: 32,
-      decoration: BoxDecoration(
-        color: darkSurfaceBg,
-        shape: BoxShape.circle,
-        border: Border.all(color: darkCardBorder),
+  Widget _buildCircleIconButton(IconData icon, {VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 32,
+        height: 32,
+        decoration: BoxDecoration(
+          color: darkSurfaceBg,
+          shape: BoxShape.circle,
+          border: Border.all(color: darkCardBorder),
+        ),
+        child: Icon(icon, color: Colors.white, size: 18),
       ),
-      child: Icon(icon, color: Colors.white, size: 18),
     );
   }
 
   // --- Summary stats row ---
-  Widget _buildSummaryStats() {
+  Widget _buildSummaryStats(
+    AsyncValue<({Duration totalTime, int sessionCount})> statsAsync,
+  ) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-      child: Row(
-        children: [
-          _buildStatCard(
-            icon: Icons.access_time_rounded,
-            value: '4h 35m',
-            label: 'Total Time',
-            color: accentCoral,
-          ),
-          const SizedBox(width: 10),
-          _buildStatCard(
-            icon: Icons.music_note_rounded,
-            value: '9',
-            label: 'Sessions',
-            color: primaryLight,
-          ),
-        ],
+      child: statsAsync.when(
+        data: (stats) => Row(
+          children: [
+            _buildStatCard(
+              icon: Icons.access_time_rounded,
+              value: _formatDuration(stats.totalTime),
+              label: 'Total Time',
+              color: accentCoral,
+            ),
+            const SizedBox(width: 10),
+            _buildStatCard(
+              icon: Icons.music_note_rounded,
+              value: '${stats.sessionCount}',
+              label: 'Sessions',
+              color: primaryLight,
+            ),
+          ],
+        ),
+        loading: () => Row(
+          children: [
+            _buildStatCard(
+              icon: Icons.access_time_rounded,
+              value: '\u2014',
+              label: 'Total Time',
+              color: accentCoral,
+            ),
+            const SizedBox(width: 10),
+            _buildStatCard(
+              icon: Icons.music_note_rounded,
+              value: '\u2014',
+              label: 'Sessions',
+              color: primaryLight,
+            ),
+          ],
+        ),
+        error: (_, _) => Row(
+          children: [
+            _buildStatCard(
+              icon: Icons.access_time_rounded,
+              value: '\u2014',
+              label: 'Total Time',
+              color: accentCoral,
+            ),
+            const SizedBox(width: 10),
+            _buildStatCard(
+              icon: Icons.music_note_rounded,
+              value: '\u2014',
+              label: 'Sessions',
+              color: primaryLight,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -367,12 +529,38 @@ class _ActivityPageState extends State<ActivityPage>
   }
 
   // --- Animated bar chart with gradient fill ---
-  Widget _buildBarChart() {
+  Widget _buildBarChart(AsyncValue<Map<DateTime, int>> barDataAsync) {
+    return barDataAsync.when(
+      data: (barMap) => _buildBarChartContent(_barMapToList(barMap)),
+      loading: () => _buildBarChartContent(List.filled(7, 0.0)),
+      error: (_, _) => _buildBarChartContent(List.filled(7, 0.0)),
+    );
+  }
+
+  /// Convert the [Map<DateTime, int>] from the provider into a 7-element list
+  /// ordered Sunday..Saturday matching the week starting at [_rangeStart].
+  List<double> _barMapToList(Map<DateTime, int> barMap) {
+    final result = List<double>.filled(7, 0.0);
+    for (var i = 0; i < 7; i++) {
+      final day = _rangeStart.add(Duration(days: i));
+      final key = DateTime(day.year, day.month, day.day);
+      result[i] = (barMap[key] ?? 0).toDouble();
+    }
+    return result;
+  }
+
+  Widget _buildBarChartContent(List<double> weeklyBarData) {
     final dataMax =
-        _weeklyBarData.reduce((a, b) => a > b ? a : b).ceilToDouble();
+        weeklyBarData.reduce((a, b) => a > b ? a : b).ceilToDouble();
     final yMax = (dataMax + 1).clamp(2, 100).toDouble();
     final ySteps = yMax.toInt();
     const chartHeight = 170.0;
+
+    // Determine which bar index represents today (if today falls within the range)
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final rangeStartDate = DateTime(_rangeStart.year, _rangeStart.month, _rangeStart.day);
+    final todayIndex = today.difference(rangeStartDate).inDays;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
@@ -452,7 +640,7 @@ class _ActivityPageState extends State<ActivityPage>
                                     crossAxisAlignment:
                                         CrossAxisAlignment.end,
                                     children: List.generate(7, (i) {
-                                      final val = _weeklyBarData[i];
+                                      final val = weeklyBarData[i];
                                       final fullBarH = yMax > 0
                                           ? (val / yMax) * h
                                           : 0.0;
@@ -464,7 +652,7 @@ class _ActivityPageState extends State<ActivityPage>
                                               (1.0 - stagger))
                                           .clamp(0.0, 1.0);
                                       final barH = fullBarH * progress;
-                                      final isToday = i == 5; // Friday
+                                      final isToday = i == todayIndex;
 
                                       return Expanded(
                                         child: Padding(
@@ -544,7 +732,7 @@ class _ActivityPageState extends State<ActivityPage>
                 children: List.generate(
                   7,
                   (i) {
-                    final isToday = i == 5;
+                    final isToday = i == todayIndex;
                     return Expanded(
                       child: Column(
                         children: [
@@ -584,7 +772,7 @@ class _ActivityPageState extends State<ActivityPage>
   }
 
   // --- Recent sessions list with instrument icons ---
-  Widget _buildSessionList() {
+  Widget _buildSessionList(AsyncValue<List<PracticeSession>> sessionsAsync) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       child: Container(
@@ -630,115 +818,118 @@ class _ActivityPageState extends State<ActivityPage>
             ),
             const SizedBox(height: 6),
             // Session rows
-            ...List.generate(_sessions.length, (i) {
-              final s = _sessions[i];
-              final instIcon =
-                  _instrumentIcons[s.instrument] ?? Icons.music_note;
-              return Column(
-                children: [
-                  const Divider(
-                    height: 1,
-                    color: darkDivider,
-                    indent: 16,
-                    endIndent: 16,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 12),
-                    child: Row(
-                      children: [
-                        // Instrument icon
-                        Container(
-                          width: 38,
-                          height: 38,
-                          decoration: BoxDecoration(
-                            color: darkSurfaceBg,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: Colors.black, width: 2),
-                          ),
-                          child: Icon(instIcon, color: Colors.white, size: 20),
-                        ),
-                        const SizedBox(width: 12),
-                        // Date + instrument name
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                s.instrument,
-                                style: GoogleFonts.nunito(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              const SizedBox(height: 1),
-                              Text(
-                                s.date,
-                                style: GoogleFonts.nunito(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: darkTextMuted,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        // Duration + session count
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
+            sessionsAsync.when(
+              data: (sessions) => Column(
+                children: List.generate(sessions.length, (i) {
+                  final s = sessions[i];
+                  final instIcon =
+                      _instrumentIcons[s.instrumentName] ?? Icons.music_note;
+                  return Column(
+                    children: [
+                      const Divider(
+                        height: 1,
+                        color: darkDivider,
+                        indent: 16,
+                        endIndent: 16,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                        child: Row(
                           children: [
-                            Text(
-                              s.duration,
-                              style: GoogleFonts.nunito(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w800,
-                                color: Colors.white,
+                            // Instrument icon
+                            Container(
+                              width: 38,
+                              height: 38,
+                              decoration: BoxDecoration(
+                                color: darkSurfaceBg,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: Colors.black, width: 2),
+                              ),
+                              child: Icon(instIcon, color: Colors.white, size: 20),
+                            ),
+                            const SizedBox(width: 12),
+                            // Date + instrument name
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    s.instrumentName,
+                                    style: GoogleFonts.nunito(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 1),
+                                  Text(
+                                    _formatSessionDate(s.startedAt),
+                                    style: GoogleFonts.nunito(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: darkTextMuted,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            if (s.count > 1) ...[
-                              const SizedBox(height: 1),
-                              Text(
-                                '${s.count} sessions',
-                                style: GoogleFonts.nunito(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                  color: darkTextMuted,
+                            // Duration
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  _formatSessionDuration(s.durationSeconds),
+                                  style: GoogleFonts.nunito(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.white,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
+                            const SizedBox(width: 6),
+                            const Icon(
+                              Icons.chevron_right,
+                              color: darkTextSecondary,
+                              size: 20,
+                            ),
                           ],
                         ),
-                        const SizedBox(width: 6),
-                        const Icon(
-                          Icons.chevron_right,
-                          color: darkTextSecondary,
-                          size: 20,
-                        ),
-                      ],
+                      ),
+                    ],
+                  );
+                }),
+              ),
+              loading: () => const Padding(
+                padding: EdgeInsets.symmetric(vertical: 32),
+                child: Center(
+                  child: SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.5,
+                      color: accentCoral,
                     ),
                   ),
-                ],
-              );
-            }),
+                ),
+              ),
+              error: (err, _) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+                child: Text(
+                  'Could not load sessions.',
+                  style: GoogleFonts.nunito(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: darkTextMuted,
+                  ),
+                ),
+              ),
+            ),
             const SizedBox(height: 6),
           ],
         ),
       ),
     );
   }
-}
-
-class _Session {
-  final String date;
-  final String duration;
-  final int count;
-  final String instrument;
-
-  const _Session({
-    required this.date,
-    required this.duration,
-    required this.count,
-    required this.instrument,
-  });
 }

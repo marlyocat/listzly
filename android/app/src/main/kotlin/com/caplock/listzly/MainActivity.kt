@@ -1,4 +1,4 @@
-package com.example.listzly
+package com.caplock.listzly
 
 import io.flutter.embedding.android.FlutterActivity
 

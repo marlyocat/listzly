@@ -1,0 +1,3 @@
+const String supabaseUrl = 'https://yxgawjevzzuuiaqrerwn.supabase.co';
+const String supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4Z2F3amV2enp1dWlhcXJlcnduIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExNzc0ODQsImV4cCI6MjA4Njc1MzQ4NH0.D963CD-HEkkA6xmaOS_AcRCZH8Uw3CdwRGnBxi9jpGw';
+const String googleWebClientId = '1088932488837-llm7lglf0vlad4lqhru183il9tvjft4s.apps.googleusercontent.com';

@@ -155,7 +155,7 @@ class IntroPage extends StatelessWidget {
                     MyButton(
                       text: "Get Started",
                       onTap: () {
-                        Navigator.pushNamed(context, '/homepage');
+                        Navigator.pushNamed(context, '/auth');
                       },
                     ),
 

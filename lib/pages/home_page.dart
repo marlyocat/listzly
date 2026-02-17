@@ -10,6 +10,8 @@ import 'package:listzly/pages/activity_page.dart';
 import 'package:listzly/pages/profile_page.dart';
 import 'package:listzly/pages/practice_page.dart';
 import 'package:listzly/theme/colors.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:listzly/providers/stats_provider.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
 
 class HomePage extends StatefulWidget {
@@ -88,14 +90,14 @@ class _InstrumentData {
   const _InstrumentData({required this.name, required this.icon, this.lottiePath, required this.quotes});
 }
 
-class _HomeTab extends StatefulWidget {
+class _HomeTab extends ConsumerStatefulWidget {
   const _HomeTab();
 
   @override
-  State<_HomeTab> createState() => _HomeTabState();
+  ConsumerState<_HomeTab> createState() => _HomeTabState();
 }
 
-class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
+class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixin {
   final PageController _pageController = PageController();
   int _currentPage = 0;
   double _selectedDuration = 15;
@@ -125,9 +127,6 @@ class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 3500),
     )..repeat();
   }
-
-  // TODO: Wire up to real persistence (SharedPreferences / database)
-  int _streakDays = 7;
 
   static const List<_InstrumentData> _instruments = [
     _InstrumentData(name: 'Piano', icon: Icons.piano, lottiePath: 'lib/images/playing_piano.json', quotes: [
@@ -201,6 +200,9 @@ class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final statsAsync = ref.watch(userStatsProvider);
+    final streakDays = statsAsync.valueOrNull?.currentStreak ?? 0;
+
     return Scaffold(
       backgroundColor: const Color(0xFF150833),
       body: Stack(
@@ -275,7 +277,7 @@ class _HomeTabState extends State<_HomeTab> with TickerProviderStateMixin {
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      '$_streakDays day streak',
+                      '$streakDays day streak',
                       style: GoogleFonts.nunito(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,

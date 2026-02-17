@@ -1,16 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:listzly/models/profile.dart';
+import 'package:listzly/models/user_settings.dart';
+import 'package:listzly/providers/auth_provider.dart';
+import 'package:listzly/providers/profile_provider.dart';
+import 'package:listzly/providers/settings_provider.dart';
+import 'package:listzly/providers/instrument_provider.dart';
 import 'package:listzly/theme/colors.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final profileAsync = ref.watch(currentProfileProvider);
+    final settingsAsync = ref.watch(userSettingsNotifierProvider);
+    final instrumentsAsync = ref.watch(instrumentStatsProvider);
+
     return Scaffold(
       backgroundColor: const Color(0xFF150833),
       body: SafeArea(
-          child: CustomScrollView(
+        child: CustomScrollView(
           slivers: [
             // Title
             SliverToBoxAdapter(
@@ -35,64 +46,83 @@ class ProfilePage extends StatelessWidget {
             ),
 
             // Profile card
-            SliverToBoxAdapter(child: _buildProfileCard()),
-
+            SliverToBoxAdapter(
+              child: profileAsync.when(
+                data: (profile) {
+                  final email = ref.watch(currentUserProvider)?.email;
+                  return _buildProfileCard(profile, email);
+                },
+                loading: () => _buildProfileCardLoading(),
+                error: (err, _) => _buildErrorCard('Failed to load profile'),
+              ),
+            ),
 
             // Display section
             SliverToBoxAdapter(
-              child: _buildSettingsSection(
-                title: 'Display',
-                items: [
-                  _SettingsRow(
-                    icon: Icons.palette_outlined,
-                    label: 'Theme',
-                    trailing: _TrailingText('System'),
-                  ),
-                  _SettingsRow(
-                    icon: Icons.text_fields_rounded,
-                    label: 'Date & Time Language',
-                    trailing: _TrailingText('English'),
-                  ),
-                  _SettingsRow(
-                    icon: Icons.calendar_today_outlined,
-                    label: 'First Day of Week',
-                    trailing: _TrailingText('Monday'),
-                  ),
-                ],
+              child: settingsAsync.when(
+                data: (settings) => _buildDisplaySection(ref, settings),
+                loading: () => _buildSectionLoading('Display'),
+                error: (err, _) =>
+                    _buildErrorCard('Failed to load display settings'),
               ),
             ),
 
             // Practice section
             SliverToBoxAdapter(
-              child: _buildSettingsSection(
-                title: 'Practice',
-                items: [
-                  _SettingsRow(
-                    icon: Icons.timer_outlined,
-                    label: 'Daily Goal',
-                    trailing: _TrailingText('15 min'),
-                  ),
-                  _SettingsRow(
-                    icon: Icons.notifications_outlined,
-                    label: 'Reminders',
-                    trailing: _TrailingText('7:00 PM'),
-                  ),
-                  _SettingsRow(
-                    icon: Icons.volume_up_outlined,
-                    label: 'Sound Effects',
-                    trailing: _TrailingToggle(true),
-                  ),
-                  _SettingsRow(
-                    icon: Icons.bar_chart_rounded,
-                    label: 'Show Progress Bar',
-                    trailing: _TrailingToggle(true),
-                  ),
-                ],
+              child: settingsAsync.when(
+                data: (settings) => _buildPracticeSection(ref, settings),
+                loading: () => _buildSectionLoading('Practice'),
+                error: (err, _) =>
+                    _buildErrorCard('Failed to load practice settings'),
               ),
             ),
 
             // Instruments section
-            SliverToBoxAdapter(child: _buildInstrumentsSection()),
+            SliverToBoxAdapter(
+              child: instrumentsAsync.when(
+                data: (instruments) => _buildInstrumentsSection(instruments),
+                loading: () => _buildSectionLoading('My Instruments'),
+                error: (err, _) =>
+                    _buildErrorCard('Failed to load instruments'),
+              ),
+            ),
+
+            // Log Out button
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                        '/intropage',
+                        (route) => false,
+                      );
+                      ref.read(authServiceProvider).signOut();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: darkCardBg,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        side: const BorderSide(color: Colors.black, width: 5),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: Text(
+                      'Log Out',
+                      style: GoogleFonts.nunito(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
 
             // Bottom spacing for nav bar
             const SliverToBoxAdapter(child: SizedBox(height: 100)),
@@ -103,7 +133,8 @@ class ProfilePage extends StatelessWidget {
   }
 
   // ─── Profile card ─────────────────────────────────────────────────
-  Widget _buildProfileCard() {
+  Widget _buildProfileCard(Profile profile, String? email) {
+    final joinDate = _formatMonthYear(profile.createdAt);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       child: Container(
@@ -131,22 +162,34 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 16),
-            // Name + join date
+            // Name + email + join date
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Music Man',
+                    profile.displayName,
                     style: GoogleFonts.nunito(
                       fontSize: 20,
                       fontWeight: FontWeight.w800,
                       color: Colors.white,
                     ),
                   ),
+                  if (email != null) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      email,
+                      style: GoogleFonts.nunito(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: darkTextMuted,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                   const SizedBox(height: 2),
                   Text(
-                    'Joined February 2026',
+                    'Joined $joinDate',
                     style: GoogleFonts.nunito(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
@@ -156,24 +199,60 @@ class ProfilePage extends StatelessWidget {
                 ],
               ),
             ),
-            // Edit button
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: darkSurfaceBg,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.black, width: 2),
-              ),
-              child: const Icon(
-                Icons.edit_outlined,
-                color: darkTextMuted,
-                size: 18,
-              ),
-            ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildProfileCardLoading() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: heroCardBg,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.black, width: 5),
+        ),
+        child: const Center(
+          child: SizedBox(
+            height: 60,
+            child: Center(
+              child: CircularProgressIndicator(color: primaryLight),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ─── Display settings section ───────────────────────────────────
+  Widget _buildDisplaySection(WidgetRef ref, UserSettings settings) {
+    return const SizedBox.shrink();
+  }
+
+  // ─── Practice settings section ──────────────────────────────────
+  Widget _buildPracticeSection(WidgetRef ref, UserSettings settings) {
+    return _buildSettingsSection(
+      title: 'Practice',
+      items: [
+        _SettingsRow(
+          icon: Icons.timer_outlined,
+          label: 'Daily Goal',
+          trailing: _TrailingText('${settings.dailyGoalMinutes} min'),
+        ),
+        _SettingsRow(
+          icon: Icons.notifications_outlined,
+          label: 'Reminders',
+          trailing: _TrailingText(settings.reminderTime ?? 'Off'),
+        ),
+        _SettingsRow(
+          icon: Icons.calendar_today_outlined,
+          label: 'First Day of Week',
+          trailing: _TrailingText(settings.firstDayOfWeek),
+        ),
+      ],
     );
   }
 
@@ -253,36 +332,25 @@ class ProfilePage extends StatelessWidget {
   }
 
   // ─── Instruments section ──────────────────────────────────────────
-  Widget _buildInstrumentsSection() {
-    final instruments = [
-      _InstrumentStat(
-          name: 'Piano',
-          icon: Icons.piano_rounded,
-          color: primaryColor,
-          sessions: 12,
-          minutes: 180),
-      _InstrumentStat(
-          name: 'Guitar',
-          icon: Icons.music_note_rounded,
-          color: const Color(0xFFD4A056),
-          sessions: 5,
-          minutes: 65),
-      _InstrumentStat(
-          name: 'Violin',
-          icon: Icons.music_note_outlined,
-          color: accentCoral,
-          sessions: 1,
-          minutes: 20),
-      _InstrumentStat(
-          name: 'Drums',
-          icon: Icons.surround_sound_rounded,
-          color: const Color(0xFF5B9A6B),
-          sessions: 1,
-          minutes: 20),
-    ];
+  Widget _buildInstrumentsSection(List<Map<String, dynamic>> instruments) {
+    final totalMinutes = instruments.fold<int>(
+        0, (sum, i) => sum + ((i['minutes'] as num?)?.toInt() ?? 0));
 
-    final totalMinutes =
-        instruments.fold<int>(0, (sum, i) => sum + i.minutes);
+    // Map of instrument names to icons and colors for display purposes
+    const instrumentIcons = <String, IconData>{
+      'Piano': Icons.piano_rounded,
+      'Guitar': Icons.music_note_rounded,
+      'Violin': Icons.music_note_outlined,
+      'Drums': Icons.surround_sound_rounded,
+    };
+    const instrumentColors = <String, Color>{
+      'Piano': primaryColor,
+      'Guitar': Color(0xFFD4A056),
+      'Violin': accentCoral,
+      'Drums': Color(0xFF5B9A6B),
+    };
+    const defaultIcon = Icons.music_note_rounded;
+    const defaultColor = primaryLight;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
@@ -306,111 +374,206 @@ class ProfilePage extends StatelessWidget {
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: Colors.black, width: 5),
             ),
-            child: Column(
-              children: instruments.asMap().entries.map((entry) {
-                final i = entry.key;
-                final inst = entry.value;
-                final fraction =
-                    totalMinutes > 0 ? inst.minutes / totalMinutes : 0.0;
-
-                return Column(
-                  children: [
-                    if (i > 0)
-                      const Divider(
-                        height: 1,
-                        indent: 60,
-                        endIndent: 16,
-                        color: darkDivider,
+            child: instruments.isEmpty
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 24),
+                    child: Center(
+                      child: Text(
+                        'No instruments yet',
+                        style: GoogleFonts.nunito(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: darkTextSecondary,
+                        ),
                       ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 12),
-                      child: Row(
+                    ),
+                  )
+                : Column(
+                    children: instruments.asMap().entries.map((entry) {
+                      final i = entry.key;
+                      final inst = entry.value;
+                      final name = (inst['name'] as String?) ?? 'Unknown';
+                      final minutes =
+                          (inst['minutes'] as num?)?.toInt() ?? 0;
+                      final sessions =
+                          (inst['sessions'] as num?)?.toInt() ?? 0;
+                      final icon = instrumentIcons[name] ?? defaultIcon;
+                      final color = instrumentColors[name] ?? defaultColor;
+                      final fraction =
+                          totalMinutes > 0 ? minutes / totalMinutes : 0.0;
+
+                      return Column(
                         children: [
-                          Container(
-                            width: 38,
-                            height: 38,
-                            decoration: BoxDecoration(
-                              color: darkSurfaceBg,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: Colors.black, width: 2),
+                          if (i > 0)
+                            const Divider(
+                              height: 1,
+                              indent: 60,
+                              endIndent: 16,
+                              color: darkDivider,
                             ),
-                            child: Icon(inst.icon,
-                                color: Colors.white, size: 20),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 12),
+                            child: Row(
                               children: [
-                                Text(
-                                  inst.name,
-                                  style: GoogleFonts.nunito(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.white,
+                                Container(
+                                  width: 38,
+                                  height: 38,
+                                  decoration: BoxDecoration(
+                                    color: darkSurfaceBg,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                        color: Colors.black, width: 2),
                                   ),
+                                  child: Icon(icon,
+                                      color: Colors.white, size: 20),
                                 ),
-                                const SizedBox(height: 6),
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(3),
-                                  child: SizedBox(
-                                    height: 6,
-                                    child: Stack(
-                                      children: [
-                                        Container(
-                                            color: darkProgressBg),
-                                        FractionallySizedBox(
-                                          widthFactor:
-                                              fraction.clamp(0.0, 1.0),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              color: inst.color,
-                                              borderRadius:
-                                                  BorderRadius.circular(3),
-                                            ),
+                                const SizedBox(width: 14),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        name,
+                                        style: GoogleFonts.nunito(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w700,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 6),
+                                      ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(3),
+                                        child: SizedBox(
+                                          height: 6,
+                                          child: Stack(
+                                            children: [
+                                              Container(
+                                                  color: darkProgressBg),
+                                              FractionallySizedBox(
+                                                widthFactor: fraction
+                                                    .clamp(0.0, 1.0),
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    color: color,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            3),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
+                                ),
+                                const SizedBox(width: 12),
+                                Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      '$minutes min',
+                                      style: GoogleFonts.nunito(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w800,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    Text(
+                                      '$sessions sessions',
+                                      style: GoogleFonts.nunito(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                        color: darkTextSecondary,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
                           ),
-                          const SizedBox(width: 12),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                '${inst.minutes} min',
-                                style: GoogleFonts.nunito(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w800,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              Text(
-                                '${inst.sessions} sessions',
-                                style: GoogleFonts.nunito(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                  color: darkTextSecondary,
-                                ),
-                              ),
-                            ],
-                          ),
                         ],
-                      ),
-                    ),
-                  ],
-                );
-              }).toList(),
+                      );
+                    }).toList(),
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ─── Loading placeholder for a section ────────────────────────────
+  Widget _buildSectionLoading(String title) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 4, bottom: 8),
+            child: Text(
+              title,
+              style: GoogleFonts.nunito(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: darkTextSecondary,
+              ),
+            ),
+          ),
+          Container(
+            height: 80,
+            decoration: BoxDecoration(
+              color: darkCardBg,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: Colors.black, width: 5),
+            ),
+            child: const Center(
+              child: CircularProgressIndicator(color: primaryLight),
             ),
           ),
         ],
       ),
     );
+  }
+
+  // ─── Error card ───────────────────────────────────────────────────
+  Widget _buildErrorCard(String message) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: darkCardBg,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: Colors.black, width: 5),
+        ),
+        child: Center(
+          child: Text(
+            message,
+            style: GoogleFonts.nunito(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: accentCoral,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ─── Utility ──────────────────────────────────────────────────────
+  String _formatMonthYear(DateTime date) {
+    const months = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December',
+    ];
+    return '${months[date.month - 1]} ${date.year}';
   }
 }
 
@@ -456,42 +619,3 @@ class _TrailingText extends _Trailing {
   }
 }
 
-class _TrailingToggle extends _Trailing {
-  final bool value;
-  const _TrailingToggle(this.value);
-
-  @override
-  Widget build() {
-    return SizedBox(
-      height: 28,
-      width: 48,
-      child: FittedBox(
-        fit: BoxFit.contain,
-        child: Switch(
-          value: value,
-          onChanged: (_) {},
-          activeThumbColor: Colors.white,
-          activeTrackColor: primaryColor,
-          inactiveThumbColor: Colors.white,
-          inactiveTrackColor: darkTextMuted,
-        ),
-      ),
-    );
-  }
-}
-
-class _InstrumentStat {
-  final String name;
-  final IconData icon;
-  final Color color;
-  final int sessions;
-  final int minutes;
-
-  const _InstrumentStat({
-    required this.name,
-    required this.icon,
-    required this.color,
-    required this.sessions,
-    required this.minutes,
-  });
-}

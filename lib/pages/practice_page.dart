@@ -3,10 +3,17 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:listzly/models/practice_session.dart';
+import 'package:listzly/providers/auth_provider.dart';
+import 'package:listzly/providers/session_provider.dart';
+import 'package:listzly/providers/quest_provider.dart';
+import 'package:listzly/providers/stats_provider.dart';
+import 'package:listzly/providers/instrument_provider.dart';
 import 'package:listzly/theme/colors.dart';
 
-class PracticePage extends StatefulWidget {
+class PracticePage extends ConsumerStatefulWidget {
   final String instrument;
   final IconData instrumentIcon;
   final int durationMinutes;
@@ -19,10 +26,10 @@ class PracticePage extends StatefulWidget {
   });
 
   @override
-  State<PracticePage> createState() => _PracticePageState();
+  ConsumerState<PracticePage> createState() => _PracticePageState();
 }
 
-class _PracticePageState extends State<PracticePage>
+class _PracticePageState extends ConsumerState<PracticePage>
     with TickerProviderStateMixin {
   static const _quotes = [
     {'quote': 'Every note you play is a step closer to mastery.', 'author': 'Unknown'},
@@ -37,6 +44,7 @@ class _PracticePageState extends State<PracticePage>
   ];
 
   late int _remainingSeconds;
+  late final DateTime _sessionStartTime;
   Timer? _timer;
   Timer? _quoteTimer;
   bool _isPaused = false;
@@ -62,6 +70,7 @@ class _PracticePageState extends State<PracticePage>
   void initState() {
     super.initState();
     _remainingSeconds = widget.durationMinutes * 60;
+    _sessionStartTime = DateTime.now();
     _quoteIndex = Random().nextInt(_quotes.length);
 
     _pulseController = AnimationController(
@@ -188,6 +197,48 @@ class _PracticePageState extends State<PracticePage>
     _quoteTimer?.cancel();
     _celebrationController.forward();
     _sparkleController.repeat();
+    _saveSession();
+  }
+
+  Future<void> _saveSession() async {
+    final user = ref.read(currentUserProvider);
+    if (user == null) return;
+
+    final totalSeconds = widget.durationMinutes * 60;
+    final actualSeconds = totalSeconds - _remainingSeconds;
+
+    final session = PracticeSession(
+      userId: user.id,
+      instrumentName: widget.instrument,
+      durationSeconds: actualSeconds,
+      targetSeconds: totalSeconds,
+      startedAt: _sessionStartTime,
+    );
+
+    try {
+      final savedSession =
+          await ref.read(sessionServiceProvider).saveSession(session);
+
+      // Update quest progress
+      await ref
+          .read(questServiceProvider)
+          .updateQuestProgressAfterSession(user.id, savedSession);
+
+      // Recalculate stats (streak, XP)
+      await ref.read(statsServiceProvider).recalculateStats(user.id);
+
+      // Invalidate providers so other pages see fresh data
+      ref.invalidate(userStatsProvider);
+      ref.invalidate(dailyQuestsProvider);
+      ref.invalidate(weeklyQuestsProvider);
+      ref.invalidate(weekCompletionStatusProvider);
+      ref.invalidate(instrumentStatsProvider);
+      ref.invalidate(sessionListProvider);
+      ref.invalidate(weeklyBarDataProvider);
+      ref.invalidate(summaryStatsProvider);
+    } catch (_) {
+      // Session save failed silently — don't disrupt celebration UI
+    }
   }
 
   Future<bool> _onWillPop() async {
@@ -429,27 +480,6 @@ class _PracticePageState extends State<PracticePage>
                     const Spacer(flex: 2),
                   ],
                 ),
-
-                // TODO: Remove — temporary button to test celebration view
-                if (!_sessionCompleted)
-                  Positioned(
-                    bottom: 16,
-                    right: 16,
-                    child: TextButton(
-                      onPressed: () {
-                        _timer?.cancel();
-                        setState(() {
-                          _remainingSeconds = 0;
-                          _sessionCompleted = true;
-                        });
-                        _onSessionComplete();
-                      },
-                      child: Text(
-                        'End Session',
-                        style: TextStyle(color: darkTextMuted, fontSize: 12),
-                      ),
-                    ),
-                  ),
 
                 // Celebration view
                 if (_sessionCompleted)

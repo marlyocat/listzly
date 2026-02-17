@@ -1,81 +1,43 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:listzly/models/quest.dart';
+import 'package:listzly/models/user_stats.dart';
+import 'package:listzly/providers/quest_provider.dart';
+import 'package:listzly/providers/stats_provider.dart';
+import 'package:listzly/services/quest_service.dart';
 import 'package:listzly/theme/colors.dart';
 
-class QuestsPage extends StatefulWidget {
+/// Maps quest keys to their display icons.
+const _questIconMap = <String, IconData>{
+  'daily_xp_30': Icons.music_note_rounded,
+  'daily_practice_20m': Icons.timer_rounded,
+  'daily_sessions_2': Icons.piano_rounded,
+  'weekly_xp_200': Icons.local_fire_department_rounded,
+  'weekly_instruments_3': Icons.category_rounded,
+  'weekly_streak_7': Icons.bolt_rounded,
+};
+
+class QuestsPage extends ConsumerStatefulWidget {
   const QuestsPage({super.key});
 
   @override
-  State<QuestsPage> createState() => _QuestsPageState();
+  ConsumerState<QuestsPage> createState() => _QuestsPageState();
 }
 
-class _QuestsPageState extends State<QuestsPage>
+class _QuestsPageState extends ConsumerState<QuestsPage>
     with TickerProviderStateMixin {
   late AnimationController _progressAnimController;
   late Timer _countdownTimer;
   late Duration _timeRemaining;
 
-  // Week day labels and completion status
-  final List<String> _dayLabels = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-  final List<bool> _weekDays = [true, true, true, false, false, false, false];
-  final int _todayIndex = 3; // Wednesday
+  // Week day labels starting from Monday (matches backend week start).
+  final List<String> _dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
-  // Mock quest data
-  final List<_Quest> _dailyQuests = [
-    _Quest(
-      icon: Icons.music_note_rounded,
-      title: 'Earn 30 XP',
-      description: 'Practice any instrument',
-      currentProgress: 18,
-      targetProgress: 30,
-      rewardAmount: 10,
-    ),
-    _Quest(
-      icon: Icons.timer_rounded,
-      title: 'Practice for 20 minutes',
-      description: 'Total practice time today',
-      currentProgress: 12,
-      targetProgress: 20,
-      rewardAmount: 15,
-    ),
-    _Quest(
-      icon: Icons.piano_rounded,
-      title: 'Complete 2 sessions',
-      description: 'Finish full practice sessions',
-      currentProgress: 1,
-      targetProgress: 2,
-      rewardAmount: 10,
-    ),
-  ];
-
-  final List<_Quest> _weeklyQuests = [
-    _Quest(
-      icon: Icons.local_fire_department_rounded,
-      title: 'Earn 200 XP',
-      description: 'Keep up the momentum!',
-      currentProgress: 85,
-      targetProgress: 200,
-      rewardAmount: 50,
-    ),
-    _Quest(
-      icon: Icons.category_rounded,
-      title: 'Try 3 instruments',
-      description: 'Variety is the spice of music',
-      currentProgress: 1,
-      targetProgress: 3,
-      rewardAmount: 30,
-    ),
-    _Quest(
-      icon: Icons.bolt_rounded,
-      title: '7 day streak',
-      description: 'Practice every day this week',
-      currentProgress: 3,
-      targetProgress: 7,
-      rewardAmount: 100,
-    ),
-  ];
+  // Today's index where Monday = 0, Sunday = 6.
+  int get _todayIndex => DateTime.now().weekday - 1;
 
   @override
   void initState() {
@@ -111,8 +73,43 @@ class _QuestsPageState extends State<QuestsPage>
     return '${h}h ${m}m left';
   }
 
+  /// Builds a [_Quest] from a [QuestProgress] and the matching definition list.
+  List<_Quest> _mapQuests(
+    List<QuestProgress> progressList,
+    List<QuestDefinition> definitions,
+  ) {
+    return progressList.map((qp) {
+      // Find the matching definition for extra UI metadata.
+      final def = definitions.firstWhere(
+        (d) => d.key == qp.questKey,
+        orElse: () => QuestDefinition(
+          key: qp.questKey,
+          type: qp.questType,
+          title: qp.questKey,
+          description: '',
+          target: qp.target,
+          rewardXp: 0,
+        ),
+      );
+
+      return _Quest(
+        icon: _questIconMap[qp.questKey] ?? Icons.star_rounded,
+        title: def.title,
+        description: def.description,
+        currentProgress: qp.progress,
+        targetProgress: qp.target,
+        rewardAmount: def.rewardXp,
+      );
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final dailyQuestsAsync = ref.watch(dailyQuestsProvider);
+    final weeklyQuestsAsync = ref.watch(weeklyQuestsProvider);
+    final weekCompletionAsync = ref.watch(weekCompletionStatusProvider);
+    final userStatsAsync = ref.watch(userStatsProvider);
+
     return Scaffold(
       backgroundColor: const Color(0xFF150833),
       body: SafeArea(
@@ -141,26 +138,46 @@ class _QuestsPageState extends State<QuestsPage>
             ),
 
             // Weekly overview card
-            SliverToBoxAdapter(child: _buildWeeklyOverview()),
+            SliverToBoxAdapter(
+              child: weekCompletionAsync.when(
+                data: (weekDays) => _buildWeeklyOverview(weekDays),
+                loading: () => _buildLoadingPlaceholder(height: 90),
+                error: (e, _) => _buildErrorPlaceholder(e),
+              ),
+            ),
 
             // Stats chips
-            SliverToBoxAdapter(child: _buildStatsChips()),
+            SliverToBoxAdapter(
+              child: userStatsAsync.when(
+                data: (stats) => _buildStatsChips(stats),
+                loading: () => _buildLoadingPlaceholder(height: 60),
+                error: (e, _) => _buildErrorPlaceholder(e),
+              ),
+            ),
 
             // Daily quests section
             SliverToBoxAdapter(
-              child: _buildQuestSection(
-                title: 'Daily Quests',
-                subtitle: _formatCountdown(_timeRemaining),
-                quests: _dailyQuests,
+              child: dailyQuestsAsync.when(
+                data: (quests) => _buildQuestSection(
+                  title: 'Daily Quests',
+                  subtitle: _formatCountdown(_timeRemaining),
+                  quests: _mapQuests(quests, dailyQuestDefinitions),
+                ),
+                loading: () => _buildLoadingPlaceholder(height: 200),
+                error: (e, _) => _buildErrorPlaceholder(e),
               ),
             ),
 
             // Weekly challenges section
             SliverToBoxAdapter(
-              child: _buildQuestSection(
-                title: 'Weekly Challenges',
-                subtitle: 'Resets Monday',
-                quests: _weeklyQuests,
+              child: weeklyQuestsAsync.when(
+                data: (quests) => _buildQuestSection(
+                  title: 'Weekly Challenges',
+                  subtitle: 'Resets Monday',
+                  quests: _mapQuests(quests, weeklyQuestDefinitions),
+                ),
+                loading: () => _buildLoadingPlaceholder(height: 200),
+                error: (e, _) => _buildErrorPlaceholder(e),
               ),
             ),
 
@@ -172,8 +189,39 @@ class _QuestsPageState extends State<QuestsPage>
     );
   }
 
+  // ─── Loading / error placeholders ────────────────────────────────
+  Widget _buildLoadingPlaceholder({required double height}) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      child: SizedBox(
+        height: height,
+        child: const Center(
+          child: CircularProgressIndicator(color: primaryLight),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorPlaceholder(Object error) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      child: Center(
+        child: Text(
+          'Something went wrong',
+          style: GoogleFonts.nunito(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: darkTextSecondary,
+          ),
+        ),
+      ),
+    );
+  }
+
   // ─── Weekly calendar overview ─────────────────────────────────────
-  Widget _buildWeeklyOverview() {
+  Widget _buildWeeklyOverview(List<bool> weekDays) {
+    final todayIndex = _todayIndex;
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       child: Material(
@@ -191,9 +239,9 @@ class _QuestsPageState extends State<QuestsPage>
           child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: List.generate(7, (i) {
-            final isToday = i == _todayIndex;
-            final completed = _weekDays[i];
-            final isPast = i < _todayIndex;
+            final isToday = i == todayIndex;
+            final completed = i < weekDays.length && weekDays[i];
+            final isPast = i < todayIndex;
 
             return Column(
               children: [
@@ -245,16 +293,18 @@ class _QuestsPageState extends State<QuestsPage>
   }
 
   // ─── Stats chips row ──────────────────────────────────────────────
-  Widget _buildStatsChips() {
+  Widget _buildStatsChips(UserStats stats) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
       child: Row(
         children: [
-          _buildChip('3 Days', 'Streak', Colors.white),
+          _buildChip(
+            '${stats.currentStreak} ${stats.currentStreak == 1 ? 'Day' : 'Days'}',
+            'Streak',
+            Colors.white,
+          ),
           const SizedBox(width: 10),
-          _buildChip('4h 45m', 'This Week', Colors.white),
-          const SizedBox(width: 10),
-          _buildChip('846', 'Total XP', Colors.white),
+          _buildChip('${stats.totalXp}', 'Total XP', Colors.white),
         ],
       ),
     );
