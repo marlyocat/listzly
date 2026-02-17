@@ -84,6 +84,7 @@ flutter:
     - lib/images/playing_guitar.json
     - lib/images/playing_violin.json
     - lib/images/playing_drums.json
+    - lib/images/g_logo.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

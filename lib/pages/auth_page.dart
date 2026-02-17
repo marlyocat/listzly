@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:turn_page_transition/turn_page_transition.dart';
+import 'package:listzly/pages/home_page.dart';
 import 'package:listzly/providers/auth_provider.dart';
 import 'package:listzly/theme/colors.dart';
 
@@ -53,8 +55,8 @@ class _AuthPageState extends ConsumerState<AuthPage> {
       }
 
       if (mounted) {
-        Navigator.of(context).pushNamedAndRemoveUntil(
-          '/homepage',
+        Navigator.of(context).pushAndRemoveUntil(
+          _turnPageRoute(const HomePage()),
           (route) => false,
         );
       }
@@ -86,8 +88,8 @@ class _AuthPageState extends ConsumerState<AuthPage> {
             backgroundColor: accentCoral,
           ),
         );
-        Navigator.of(context).pushNamedAndRemoveUntil(
-          '/homepage',
+        Navigator.of(context).pushAndRemoveUntil(
+          _turnPageRoute(const HomePage()),
           (route) => false,
         );
       }
@@ -101,6 +103,26 @@ class _AuthPageState extends ConsumerState<AuthPage> {
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  Route _turnPageRoute(Widget page) {
+    return PageRouteBuilder(
+      transitionDuration: const Duration(milliseconds: 600),
+      reverseTransitionDuration: const Duration(milliseconds: 300),
+      pageBuilder: (context, animation, secondaryAnimation) => page,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        if (animation.status == AnimationStatus.reverse) {
+          return FadeTransition(opacity: animation, child: child);
+        }
+        return TurnPageTransition(
+          animation: animation,
+          overleafColor: primaryDark,
+          animationTransitionPoint: 0.5,
+          direction: TurnDirection.rightToLeft,
+          child: child,
+        );
+      },
+    );
   }
 
   void _showError(String message) {
@@ -303,30 +325,22 @@ class _AuthPageState extends ConsumerState<AuthPage> {
               const SizedBox(height: 24),
 
               // Google sign-in button
-              SizedBox(
-                width: double.infinity,
-                height: 54,
-                child: OutlinedButton.icon(
-                  onPressed: _isLoading ? null : _signInWithGoogle,
-                  icon: Text(
-                    'G',
-                    style: GoogleFonts.dmSerifDisplay(
-                      fontSize: 20,
+              Center(
+                child: GestureDetector(
+                  onTap: _isLoading ? null : _signInWithGoogle,
+                  child: Container(
+                    width: 54,
+                    height: 54,
+                    decoration: BoxDecoration(
                       color: Colors.white,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: const Color(0xFF747775),
+                      ),
                     ),
-                  ),
-                  label: Text(
-                    'Continue with Google',
-                    style: GoogleFonts.nunito(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
-                  ),
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: Colors.white.withAlpha(30)),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(27),
+                    padding: const EdgeInsets.all(12),
+                    child: Image.asset(
+                      'lib/images/g_logo.png',
                     ),
                   ),
                 ),

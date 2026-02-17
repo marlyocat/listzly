@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:turn_page_transition/turn_page_transition.dart';
 import 'package:listzly/components/button.dart';
+import 'package:listzly/pages/auth_page.dart';
 import 'package:listzly/theme/colors.dart';
 
 class IntroPage extends StatelessWidget {
@@ -155,7 +157,32 @@ class IntroPage extends StatelessWidget {
                     MyButton(
                       text: "Get Started",
                       onTap: () {
-                        Navigator.pushNamed(context, '/auth');
+                        Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                            transitionDuration:
+                                const Duration(milliseconds: 600),
+                            reverseTransitionDuration:
+                                const Duration(milliseconds: 300),
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) =>
+                                    const AuthPage(),
+                            transitionsBuilder: (context, animation,
+                                secondaryAnimation, child) {
+                              if (animation.status == AnimationStatus.reverse) {
+                                return FadeTransition(
+                                    opacity: animation, child: child);
+                              }
+                              return TurnPageTransition(
+                                animation: animation,
+                                overleafColor: primaryDark,
+                                animationTransitionPoint: 0.5,
+                                direction: TurnDirection.rightToLeft,
+                                child: child,
+                              );
+                            },
+                          ),
+                        );
                       },
                     ),
 

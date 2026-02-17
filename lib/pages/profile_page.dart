@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:turn_page_transition/turn_page_transition.dart';
 import 'package:listzly/models/profile.dart';
 import 'package:listzly/models/user_settings.dart';
+import 'package:listzly/pages/intro_page.dart';
 import 'package:listzly/providers/auth_provider.dart';
 import 'package:listzly/providers/profile_provider.dart';
 import 'package:listzly/providers/settings_provider.dart';
@@ -96,8 +98,30 @@ class ProfilePage extends ConsumerWidget {
                   height: 50,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                        '/intropage',
+                      Navigator.of(context).pushAndRemoveUntil(
+                        PageRouteBuilder(
+                          transitionDuration:
+                              const Duration(milliseconds: 600),
+                          reverseTransitionDuration:
+                              const Duration(milliseconds: 300),
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                                  const IntroPage(),
+                          transitionsBuilder: (context, animation,
+                              secondaryAnimation, child) {
+                            if (animation.status == AnimationStatus.reverse) {
+                              return FadeTransition(
+                                  opacity: animation, child: child);
+                            }
+                            return TurnPageTransition(
+                              animation: animation,
+                              overleafColor: primaryDark,
+                              animationTransitionPoint: 0.5,
+                              direction: TurnDirection.leftToRight,
+                              child: child,
+                            );
+                          },
+                        ),
                         (route) => false,
                       );
                       ref.read(authServiceProvider).signOut();
