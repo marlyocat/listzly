@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:listzly/config/supabase_config.dart';
@@ -25,14 +26,21 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: user != null ? const HomePage() : const IntroPage(),
-      routes: {
-        '/intropage': (context) => const IntroPage(),
-        '/homepage': (context) => const HomePage(),
-        '/auth': (context) => const AuthPage(),
-      },
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+      ),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: user != null ? const HomePage() : const IntroPage(),
+        routes: {
+          '/intropage': (context) => const IntroPage(),
+          '/homepage': (context) => const HomePage(),
+          '/auth': (context) => const AuthPage(),
+        },
+      ),
     );
   }
 }
