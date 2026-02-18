@@ -135,6 +135,84 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
     });
   }
 
+  // ---- Date picker ----
+
+  Future<void> _showDatePicker(BuildContext context) async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _rangeStart,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(9999, 12, 31),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.dark(
+              primary: accentCoral,
+              onPrimary: Colors.white,
+              surface: Color(0xFF1E0E3D),
+              onSurface: Colors.white,
+            ),
+            dialogTheme: const DialogThemeData(
+              backgroundColor: Color(0xFF1E0E3D),
+            ),
+            textTheme: const TextTheme(
+              titleLarge: TextStyle(color: Colors.white),
+              bodyLarge: TextStyle(color: Colors.white),
+              bodyMedium: TextStyle(color: Colors.white),
+              labelLarge: TextStyle(color: Colors.white),
+            ),
+            textSelectionTheme: const TextSelectionThemeData(
+              cursorColor: accentCoral,
+              selectionColor: accentCoral,
+            ),
+            datePickerTheme: const DatePickerThemeData(
+              backgroundColor: Color(0xFF1E0E3D),
+              headerForegroundColor: Colors.white,
+              dayForegroundColor: WidgetStatePropertyAll(Colors.white),
+              yearForegroundColor: WidgetStatePropertyAll(Colors.white),
+              weekdayStyle: TextStyle(color: Colors.white70),
+              inputDecorationTheme: InputDecorationTheme(
+                labelStyle: TextStyle(color: Colors.white70),
+                hintStyle: TextStyle(color: Colors.white70),
+                fillColor: Color(0xFF2A1650),
+                filled: true,
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white38),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: accentCoral),
+                ),
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked == null) return;
+
+    setState(() {
+      switch (_selectedTab) {
+        case 0: // Week: jump to the week containing the picked date
+          final weekday = picked.weekday % 7; // Sun=0 .. Sat=6
+          _rangeStart = DateTime(picked.year, picked.month, picked.day - weekday);
+          _rangeEnd = _rangeStart.add(const Duration(days: 6));
+          break;
+        case 1: // Month: jump to the month of the picked date
+          _rangeStart = DateTime(picked.year, picked.month);
+          _rangeEnd = DateTime(picked.year, picked.month + 1)
+              .subtract(const Duration(days: 1));
+          break;
+        case 2: // Year: jump to the year of the picked date
+          _rangeStart = DateTime(picked.year);
+          _rangeEnd = DateTime(picked.year, 12, 31);
+          break;
+      }
+      _restartBarAnimation();
+    });
+  }
+
   // ---- Formatting helpers ----
 
   static const _monthNames = [
@@ -334,12 +412,26 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  _formatDateRange(),
-                  style: GoogleFonts.nunito(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.white,
+                GestureDetector(
+                  onTap: () => _showDatePicker(context),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        _formatDateRange(),
+                        style: GoogleFonts.nunito(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Icon(
+                        Icons.calendar_today_rounded,
+                        color: darkTextMuted,
+                        size: 16,
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 2),
