@@ -10,6 +10,7 @@ import 'package:listzly/providers/profile_provider.dart';
 import 'package:listzly/providers/settings_provider.dart';
 import 'package:listzly/providers/instrument_provider.dart';
 import 'package:listzly/theme/colors.dart';
+import 'package:listzly/services/notification_service.dart';
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
@@ -124,6 +125,7 @@ class ProfilePage extends ConsumerWidget {
                         ),
                         (route) => false,
                       );
+                      NotificationService.instance.cancelReminder();
                       ref.read(authServiceProvider).signOut();
                     },
                     style: ElevatedButton.styleFrom(
@@ -271,7 +273,12 @@ class ProfilePage extends ConsumerWidget {
         _SettingsRow(
           icon: Icons.notifications_outlined,
           label: 'Reminders',
-          trailing: _TrailingText(settings.reminderTime ?? 'Off'),
+          trailing: _TrailingText(
+            settings.reminderTime != null
+                ? _formatReminderDisplay(settings.reminderTime!)
+                : 'Off',
+          ),
+          onTap: () => _showReminderPicker(context, ref, settings),
         ),
       ],
     );
@@ -381,6 +388,353 @@ class ProfilePage extends ConsumerWidget {
         );
       },
     );
+  }
+
+  // ─── Reminder picker ─────────────────────────────────────────────
+  void _showReminderPicker(
+      BuildContext context, WidgetRef ref, UserSettings settings) {
+    const hours = [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+    const minutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
+    const periods = ['AM', 'PM'];
+
+    // Parse current reminder time to set initial wheel positions
+    int initialHourIndex = 0; // default 12
+    int initialMinuteIndex = 0; // default :00
+    int initialPeriodIndex = 0; // default AM
+    if (settings.reminderTime != null) {
+      final parts = settings.reminderTime!.split(':');
+      final h24 = int.parse(parts[0]);
+      final m = int.parse(parts[1]);
+      initialPeriodIndex = h24 >= 12 ? 1 : 0;
+      final h12 = h24 == 0 ? 12 : (h24 > 12 ? h24 - 12 : h24);
+      initialHourIndex = hours.indexOf(h12);
+      initialMinuteIndex = (m ~/ 5).clamp(0, 11);
+      if (initialHourIndex < 0) initialHourIndex = 0;
+    }
+
+    int selectedHourIndex = initialHourIndex;
+    int selectedMinuteIndex = initialMinuteIndex;
+    int selectedPeriodIndex = initialPeriodIndex;
+
+    const wheelHeight = 200.0;
+    const itemExtent = 42.0;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setSheetState) {
+            return Container(
+              decoration: const BoxDecoration(
+                color: Color(0xFF1E0E3D),
+                borderRadius:
+                    BorderRadius.vertical(top: Radius.circular(20)),
+                border: Border(
+                  top: BorderSide(color: Colors.black, width: 5),
+                  left: BorderSide(color: Colors.black, width: 5),
+                  right: BorderSide(color: Colors.black, width: 5),
+                ),
+              ),
+              child: SafeArea(
+                top: false,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 12),
+                    Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: darkTextMuted,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Practice Reminder',
+                      style: GoogleFonts.nunito(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'When should we remind you to practice?',
+                      style: GoogleFonts.nunito(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: darkTextSecondary,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Scroll wheel picker
+                    SizedBox(
+                      height: wheelHeight,
+                      child: Stack(
+                        children: [
+                          // Selection highlight band
+                          Center(
+                            child: Container(
+                              height: itemExtent,
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: 24),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.08),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                          // Wheels
+                          Row(
+                            children: [
+                              const SizedBox(width: 24),
+                              // Hour wheel
+                              Expanded(
+                                flex: 3,
+                                child: ListWheelScrollView.useDelegate(
+                                  controller: FixedExtentScrollController(
+                                      initialItem: initialHourIndex),
+                                  itemExtent: itemExtent,
+                                  physics:
+                                      const FixedExtentScrollPhysics(),
+                                  diameterRatio: 1.5,
+                                  perspective: 0.003,
+                                  onSelectedItemChanged: (index) {
+                                    setSheetState(() =>
+                                        selectedHourIndex = index);
+                                  },
+                                  childDelegate:
+                                      ListWheelChildBuilderDelegate(
+                                    childCount: hours.length,
+                                    builder: (context, index) {
+                                      final isSelected =
+                                          index == selectedHourIndex;
+                                      return Center(
+                                        child: Text(
+                                          '${hours[index]}',
+                                          style: GoogleFonts.nunito(
+                                            fontSize: isSelected ? 22 : 18,
+                                            fontWeight: isSelected
+                                                ? FontWeight.w800
+                                                : FontWeight.w600,
+                                            color: isSelected
+                                                ? Colors.white
+                                                : darkTextSecondary,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                              // Minute wheel
+                              Expanded(
+                                flex: 3,
+                                child: ListWheelScrollView.useDelegate(
+                                  controller: FixedExtentScrollController(
+                                      initialItem: initialMinuteIndex),
+                                  itemExtent: itemExtent,
+                                  physics:
+                                      const FixedExtentScrollPhysics(),
+                                  diameterRatio: 1.5,
+                                  perspective: 0.003,
+                                  onSelectedItemChanged: (index) {
+                                    setSheetState(() =>
+                                        selectedMinuteIndex = index);
+                                  },
+                                  childDelegate:
+                                      ListWheelChildBuilderDelegate(
+                                    childCount: minutes.length,
+                                    builder: (context, index) {
+                                      final isSelected =
+                                          index == selectedMinuteIndex;
+                                      return Center(
+                                        child: Text(
+                                          minutes[index]
+                                              .toString()
+                                              .padLeft(2, '0'),
+                                          style: GoogleFonts.nunito(
+                                            fontSize: isSelected ? 22 : 18,
+                                            fontWeight: isSelected
+                                                ? FontWeight.w800
+                                                : FontWeight.w600,
+                                            color: isSelected
+                                                ? Colors.white
+                                                : darkTextSecondary,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                              // AM/PM wheel
+                              Expanded(
+                                flex: 3,
+                                child: ListWheelScrollView.useDelegate(
+                                  controller: FixedExtentScrollController(
+                                      initialItem: initialPeriodIndex),
+                                  itemExtent: itemExtent,
+                                  physics:
+                                      const FixedExtentScrollPhysics(),
+                                  diameterRatio: 1.5,
+                                  perspective: 0.003,
+                                  onSelectedItemChanged: (index) {
+                                    setSheetState(() =>
+                                        selectedPeriodIndex = index);
+                                  },
+                                  childDelegate:
+                                      ListWheelChildBuilderDelegate(
+                                    childCount: periods.length,
+                                    builder: (context, index) {
+                                      final isSelected =
+                                          index == selectedPeriodIndex;
+                                      return Center(
+                                        child: Text(
+                                          periods[index],
+                                          style: GoogleFonts.nunito(
+                                            fontSize: isSelected ? 22 : 18,
+                                            fontWeight: isSelected
+                                                ? FontWeight.w800
+                                                : FontWeight.w600,
+                                            color: isSelected
+                                                ? Colors.white
+                                                : darkTextSecondary,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 24),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Buttons
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Row(
+                        children: [
+                          // Turn off button
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () async {
+                                Navigator.pop(ctx);
+                                await _clearReminder(ref);
+                              },
+                              behavior: HitTestBehavior.opaque,
+                              child: Container(
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  color: darkCardBg,
+                                  borderRadius: BorderRadius.circular(14),
+                                  border: Border.all(
+                                      color: Colors.black, width: 3),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    'Turn Off',
+                                    style: GoogleFonts.nunito(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w800,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          // Set button
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () async {
+                                // Convert 12h to 24h
+                                final h12 = hours[selectedHourIndex];
+                                final m = minutes[selectedMinuteIndex];
+                                final isAM = selectedPeriodIndex == 0;
+                                int h24;
+                                if (h12 == 12) {
+                                  h24 = isAM ? 0 : 12;
+                                } else {
+                                  h24 = isAM ? h12 : h12 + 12;
+                                }
+                                final timeStr =
+                                    '${h24.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}';
+                                Navigator.pop(ctx);
+                                await _setReminder(ref, timeStr);
+                              },
+                              behavior: HitTestBehavior.opaque,
+                              child: Container(
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  color: primaryLight,
+                                  borderRadius: BorderRadius.circular(14),
+                                  border: Border.all(
+                                      color: Colors.black, width: 3),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    'Set Reminder',
+                                    style: GoogleFonts.nunito(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w800,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  String _formatReminderDisplay(String timeStr) {
+    final parts = timeStr.split(':');
+    final hour = int.parse(parts[0]);
+    final minute = int.parse(parts[1]);
+    final period = hour >= 12 ? 'PM' : 'AM';
+    final displayHour = hour == 0 ? 12 : (hour > 12 ? hour - 12 : hour);
+    final displayMinute = minute.toString().padLeft(2, '0');
+    return '$displayHour:$displayMinute $period';
+  }
+
+  Future<void> _setReminder(WidgetRef ref, String timeStr) async {
+    ref
+        .read(userSettingsNotifierProvider.notifier)
+        .updateSetting('reminder_time', timeStr);
+    final granted = await NotificationService.instance.requestPermission();
+    if (granted) {
+      await NotificationService.instance.scheduleDailyReminder(timeStr);
+    }
+  }
+
+  Future<void> _clearReminder(WidgetRef ref) async {
+    ref
+        .read(userSettingsNotifierProvider.notifier)
+        .updateSetting('reminder_time', null);
+    await NotificationService.instance.cancelReminder();
   }
 
   // ─── Generic settings section ─────────────────────────────────────

@@ -7,14 +7,35 @@ import 'package:listzly/providers/auth_provider.dart';
 import 'package:listzly/pages/intro_page.dart';
 import 'package:listzly/pages/home_page.dart';
 import 'package:listzly/pages/auth_page.dart';
+import 'package:listzly/services/notification_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await NotificationService.instance.init();
 
   await Supabase.initialize(
     url: supabaseUrl,
     anonKey: supabaseAnonKey,
   );
+
+  // Reschedule reminder if user is logged in and has one set
+  final currentUser = Supabase.instance.client.auth.currentUser;
+  if (currentUser != null) {
+    try {
+      final result = await Supabase.instance.client
+          .from('user_settings')
+          .select('reminder_time')
+          .eq('user_id', currentUser.id)
+          .maybeSingle();
+      final reminderTime = result?['reminder_time'] as String?;
+      if (reminderTime != null && reminderTime.isNotEmpty) {
+        await NotificationService.instance.scheduleDailyReminder(reminderTime);
+      }
+    } catch (_) {
+      // Non-critical: if reschedule fails, user can re-set in settings
+    }
+  }
 
   runApp(const ProviderScope(child: MyApp()));
 }
