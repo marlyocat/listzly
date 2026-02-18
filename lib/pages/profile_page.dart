@@ -273,11 +273,6 @@ class ProfilePage extends ConsumerWidget {
           label: 'Reminders',
           trailing: _TrailingText(settings.reminderTime ?? 'Off'),
         ),
-        _SettingsRow(
-          icon: Icons.calendar_today_outlined,
-          label: 'First Day of Week',
-          trailing: _TrailingText(settings.firstDayOfWeek),
-        ),
       ],
     );
   }
