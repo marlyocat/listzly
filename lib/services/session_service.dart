@@ -77,6 +77,33 @@ class SessionService {
     return counts;
   }
 
+  /// Get total practice minutes by day for bar chart (returns day -> minutes).
+  Future<Map<DateTime, int>> getPracticeMinutesByDay(
+    String userId,
+    DateTime weekStart,
+  ) async {
+    final weekEnd = weekStart.add(const Duration(days: 7));
+    final sessions = await getSessionsForRange(userId, weekStart, weekEnd);
+
+    final minutes = <DateTime, int>{};
+    for (var i = 0; i < 7; i++) {
+      final day = DateTime(
+        weekStart.year,
+        weekStart.month,
+        weekStart.day + i,
+      );
+      minutes[day] = 0;
+    }
+
+    for (final session in sessions) {
+      final completed = session.completedAt ?? session.startedAt;
+      final day = DateTime(completed.year, completed.month, completed.day);
+      minutes[day] = (minutes[day] ?? 0) + (session.durationSeconds ~/ 60);
+    }
+
+    return minutes;
+  }
+
   /// Get total practice time and session count for a date range.
   Future<({Duration totalTime, int sessionCount})> getSummaryStats(
     String userId,

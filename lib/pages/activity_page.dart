@@ -20,15 +20,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
   late final AnimationController _barAnimController;
   late final Animation<double> _barAnim;
 
-  final List<String> _barLabels = [
-    'SUN',
-    'MON',
-    'TUE',
-    'WED',
-    'THU',
-    'FRI',
-    'SAT',
-  ];
+  static const _dayLabels = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 
   // Instrument icon mapping
   static const _instrumentIcons = {
@@ -552,8 +544,11 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
   Widget _buildBarChartContent(List<double> weeklyBarData) {
     final dataMax =
         weeklyBarData.reduce((a, b) => a > b ? a : b).ceilToDouble();
-    final yMax = (dataMax + 1).clamp(2, 100).toDouble();
-    final ySteps = yMax.toInt();
+    // Round y-axis max up to a nice interval for minutes
+    final rawMax = dataMax < 30 ? 30.0 : dataMax;
+    final interval = rawMax <= 15 ? 5.0 : rawMax <= 30 ? 10.0 : rawMax <= 60 ? 15.0 : 30.0;
+    final yMax = (rawMax / interval).ceil() * interval;
+    final ySteps = (yMax / interval).toInt();
     const chartHeight = 170.0;
 
     // Determine which bar index represents today (if today falls within the range)
@@ -591,22 +586,25 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
               height: chartHeight,
               child: Row(
                 children: [
-                  // Y-axis labels
+                  // Y-axis labels (minutes)
                   SizedBox(
-                    width: 22,
+                    width: 32,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: List.generate(
                         ySteps + 1,
-                        (i) => Text(
-                          '${ySteps - i}',
-                          style: GoogleFonts.nunito(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: darkTextMuted,
-                          ),
-                        ),
+                        (i) {
+                          final value = (ySteps - i) * interval;
+                          return Text(
+                            '${value.toInt()}m',
+                            style: GoogleFonts.nunito(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              color: darkTextMuted,
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ),
@@ -725,19 +723,20 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
               ),
             ),
             const SizedBox(height: 8),
-            // X-axis labels
+            // X-axis labels (day + date)
             Padding(
-              padding: const EdgeInsets.only(left: 30),
+              padding: const EdgeInsets.only(left: 40),
               child: Row(
                 children: List.generate(
                   7,
                   (i) {
                     final isToday = i == todayIndex;
+                    final dayDate = _rangeStart.add(Duration(days: i));
                     return Expanded(
                       child: Column(
                         children: [
                           Text(
-                            _barLabels[i],
+                            _dayLabels[i],
                             textAlign: TextAlign.center,
                             style: GoogleFonts.nunito(
                               fontSize: 10,
@@ -747,8 +746,20 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                                   : darkTextMuted,
                             ),
                           ),
+                          const SizedBox(height: 1),
+                          Text(
+                            '${dayDate.day.toString().padLeft(2, '0')}/${dayDate.month.toString().padLeft(2, '0')}',
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.nunito(
+                              fontSize: 9,
+                              fontWeight: FontWeight.w600,
+                              color: isToday
+                                  ? accentCoral
+                                  : darkTextMuted.withValues(alpha: 0.6),
+                            ),
+                          ),
                           if (isToday) ...[
-                            const SizedBox(height: 3),
+                            const SizedBox(height: 2),
                             Container(
                               width: 4,
                               height: 4,
@@ -797,19 +808,25 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                     ),
                   ),
                   const Spacer(),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: accentCoral.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      'View All',
-                      style: GoogleFonts.nunito(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: accentCoral,
+                  GestureDetector(
+                    onTap: () {
+                      _showAllSessions(
+                          context, sessionsAsync.valueOrNull ?? []);
+                    },
+                    child: Container(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: accentCoral.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        'View All',
+                        style: GoogleFonts.nunito(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: accentCoral,
+                        ),
                       ),
                     ),
                   ),
@@ -945,6 +962,155 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
           ],
         ),
       ),
+    );
+  }
+
+  void _showAllSessions(BuildContext context, List<PracticeSession> sessions) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.75,
+          minChildSize: 0.4,
+          maxChildSize: 0.95,
+          builder: (context, scrollController) {
+            return Container(
+              decoration: const BoxDecoration(
+                color: Color(0xFF1E0E3D),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                border: Border(
+                  top: BorderSide(color: Colors.black, width: 5),
+                  left: BorderSide(color: Colors.black, width: 5),
+                  right: BorderSide(color: Colors.black, width: 5),
+                ),
+              ),
+              child: Column(
+                children: [
+                  const SizedBox(height: 12),
+                  Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: darkTextMuted,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'All Sessions',
+                    style: GoogleFonts.nunito(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${sessions.length} session${sessions.length == 1 ? '' : 's'}',
+                    style: GoogleFonts.nunito(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: darkTextSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Expanded(
+                    child: sessions.isEmpty
+                        ? Center(
+                            child: Text(
+                              'No recent sessions yet',
+                              style: GoogleFonts.nunito(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: darkTextSecondary,
+                              ),
+                            ),
+                          )
+                        : ListView.builder(
+                      controller: scrollController,
+                      padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(ctx).padding.bottom + 16,
+                      ),
+                      itemCount: sessions.length,
+                      itemBuilder: (context, i) {
+                        final s = sessions[i];
+                        final instIcon = _instrumentIcons[s.instrumentName] ??
+                            Icons.music_note;
+                        return Column(
+                          children: [
+                            const Divider(
+                              height: 1,
+                              color: darkDivider,
+                              indent: 16,
+                              endIndent: 16,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 12),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 38,
+                                    height: 38,
+                                    decoration: BoxDecoration(
+                                      color: darkSurfaceBg,
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(
+                                          color: Colors.black, width: 2),
+                                    ),
+                                    child: Icon(instIcon,
+                                        color: Colors.white, size: 20),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          s.instrumentName,
+                                          style: GoogleFonts.nunito(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w700,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 1),
+                                        Text(
+                                          _formatSessionDate(s.startedAt),
+                                          style: GoogleFonts.nunito(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                            color: darkTextMuted,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Text(
+                                    _formatSessionDuration(s.durationSeconds),
+                                    style: GoogleFonts.nunito(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w800,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

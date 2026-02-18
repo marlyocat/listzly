@@ -31,7 +31,7 @@ Future<Map<DateTime, int>> weeklyBarData(
 }) async {
   final user = ref.watch(currentUserProvider);
   if (user == null) throw Exception('Not authenticated');
-  return ref.watch(sessionServiceProvider).getSessionCountsByDay(
+  return ref.watch(sessionServiceProvider).getPracticeMinutesByDay(
         user.id,
         weekStart,
       );

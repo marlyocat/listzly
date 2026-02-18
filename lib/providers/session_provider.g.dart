@@ -176,7 +176,7 @@ class _SessionListProviderElement
   DateTime get end => (origin as SessionListProvider).end;
 }
 
-String _$weeklyBarDataHash() => r'60621038df6f6ff2eff91c2647fd392ded9d9ba7';
+String _$weeklyBarDataHash() => r'51fa3a53bcdbe9044075ffa653ce2632ea23b51d';
 
 /// See also [weeklyBarData].
 @ProviderFor(weeklyBarData)
