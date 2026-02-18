@@ -180,7 +180,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                   end: Alignment.bottomRight,
                 ).createShader(bounds),
                 child: Text(
-                  'Music Man',
+                  'Listzly',
                   style: GoogleFonts.dmSerifDisplay(
                     fontSize: 32,
                     color: Colors.white,
@@ -192,7 +192,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
 
               // Title
               Text(
-                _isLogin ? 'Welcome Back' : 'Create Account',
+                _isLogin ? 'Welcome' : 'Create Account',
                 style: GoogleFonts.dmSerifDisplay(
                   fontSize: 28,
                   color: Colors.white,
@@ -201,7 +201,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
               const SizedBox(height: 8),
               Text(
                 _isLogin
-                    ? 'Sign in to continue your practice'
+                    ? 'Sign in to start practising'
                     : 'Start your musical journey',
                 style: GoogleFonts.nunito(
                   fontSize: 15,

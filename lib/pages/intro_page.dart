@@ -86,7 +86,7 @@ class IntroPage extends StatelessWidget {
                         end: Alignment.bottomRight,
                       ).createShader(bounds),
                       child: Text(
-                        "Music Man",
+                        "Listzly",
                         style: GoogleFonts.dmSerifDisplay(
                           fontSize: 32,
                           color: Colors.white,
