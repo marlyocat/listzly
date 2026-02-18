@@ -72,7 +72,7 @@ class ProfilePage extends ConsumerWidget {
             // Practice section
             SliverToBoxAdapter(
               child: settingsAsync.when(
-                data: (settings) => _buildPracticeSection(ref, settings),
+                data: (settings) => _buildPracticeSection(context, ref, settings),
                 loading: () => _buildSectionLoading('Practice'),
                 error: (err, _) =>
                     _buildErrorCard('Failed to load practice settings'),
@@ -257,7 +257,8 @@ class ProfilePage extends ConsumerWidget {
   }
 
   // ─── Practice settings section ──────────────────────────────────
-  Widget _buildPracticeSection(WidgetRef ref, UserSettings settings) {
+  Widget _buildPracticeSection(
+      BuildContext context, WidgetRef ref, UserSettings settings) {
     return _buildSettingsSection(
       title: 'Practice',
       items: [
@@ -265,6 +266,7 @@ class ProfilePage extends ConsumerWidget {
           icon: Icons.timer_outlined,
           label: 'Daily Goal',
           trailing: _TrailingText('${settings.dailyGoalMinutes} min'),
+          onTap: () => _showDailyGoalPicker(context, ref, settings),
         ),
         _SettingsRow(
           icon: Icons.notifications_outlined,
@@ -277,6 +279,112 @@ class ProfilePage extends ConsumerWidget {
           trailing: _TrailingText(settings.firstDayOfWeek),
         ),
       ],
+    );
+  }
+
+  void _showDailyGoalPicker(
+      BuildContext context, WidgetRef ref, UserSettings settings) {
+    const goalOptions = [5, 10, 15, 20, 30, 45, 60];
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Color(0xFF1E0E3D),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            border: Border(
+              top: BorderSide(color: Colors.black, width: 5),
+              left: BorderSide(color: Colors.black, width: 5),
+              right: BorderSide(color: Colors.black, width: 5),
+            ),
+          ),
+          child: SafeArea(
+            top: false,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 12),
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: darkTextMuted,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Daily Goal',
+                  style: GoogleFonts.nunito(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'How long do you want to practice each day?',
+                  style: GoogleFonts.nunito(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: darkTextSecondary,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ...goalOptions.map((minutes) {
+                  final isSelected = minutes == settings.dailyGoalMinutes;
+                  return GestureDetector(
+                    onTap: () {
+                      ref
+                          .read(userSettingsNotifierProvider.notifier)
+                          .updateSetting('daily_goal_minutes', minutes);
+                      Navigator.pop(ctx);
+                    },
+                    behavior: HitTestBehavior.opaque,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 14),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          top: BorderSide(
+                            color: darkDivider,
+                            width: goalOptions.first == minutes ? 0 : 1,
+                          ),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Text(
+                            '$minutes min',
+                            style: GoogleFonts.nunito(
+                              fontSize: 16,
+                              fontWeight:
+                                  isSelected ? FontWeight.w800 : FontWeight.w600,
+                              color:
+                                  isSelected ? primaryLight : Colors.white,
+                            ),
+                          ),
+                          const Spacer(),
+                          if (isSelected)
+                            const Icon(
+                              Icons.check_rounded,
+                              color: primaryLight,
+                              size: 22,
+                            ),
+                        ],
+                      ),
+                    ),
+                  );
+                }),
+                const SizedBox(height: 16),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -320,29 +428,33 @@ class ProfilePage extends ConsumerWidget {
                         endIndent: 16,
                         color: darkDivider,
                       ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 13),
-                      child: Row(
-                        children: [
-                          Icon(
-                            row.icon,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Text(
-                              row.label,
-                              style: GoogleFonts.nunito(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
+                    GestureDetector(
+                      onTap: row.onTap,
+                      behavior: HitTestBehavior.opaque,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 13),
+                        child: Row(
+                          children: [
+                            Icon(
+                              row.icon,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Text(
+                                row.label,
+                                style: GoogleFonts.nunito(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
-                          ),
-                          row.trailing.build(),
-                        ],
+                            row.trailing.build(),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -606,11 +718,13 @@ class _SettingsRow {
   final IconData icon;
   final String label;
   final _Trailing trailing;
+  final VoidCallback? onTap;
 
   const _SettingsRow({
     required this.icon,
     required this.label,
     required this.trailing,
+    this.onTap,
   });
 }
 

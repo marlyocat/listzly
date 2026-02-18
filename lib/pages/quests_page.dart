@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:listzly/models/quest.dart';
 import 'package:listzly/models/user_stats.dart';
 import 'package:listzly/providers/quest_provider.dart';
+import 'package:listzly/providers/settings_provider.dart';
 import 'package:listzly/providers/stats_provider.dart';
 import 'package:listzly/services/quest_service.dart';
 import 'package:listzly/theme/colors.dart';
@@ -74,10 +75,13 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
   }
 
   /// Builds a [_Quest] from a [QuestProgress] and the matching definition list.
+  ///
+  /// [dailyGoalMinutes] is used to dynamically set the practice quest title.
   List<_Quest> _mapQuests(
     List<QuestProgress> progressList,
-    List<QuestDefinition> definitions,
-  ) {
+    List<QuestDefinition> definitions, {
+    int? dailyGoalMinutes,
+  }) {
     return progressList.map((qp) {
       // Find the matching definition for extra UI metadata.
       final def = definitions.firstWhere(
@@ -92,13 +96,21 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
         ),
       );
 
+      // Use the user's daily goal for the practice quest title and reward.
+      final isPracticeQuest =
+          qp.questKey == 'daily_practice_20m' && dailyGoalMinutes != null;
+      final title = isPracticeQuest
+          ? 'Practice for $dailyGoalMinutes minutes'
+          : def.title;
+      final rewardXp = isPracticeQuest ? dailyGoalMinutes : def.rewardXp;
+
       return _Quest(
         icon: _questIconMap[qp.questKey] ?? Icons.star_rounded,
-        title: def.title,
+        title: title,
         description: def.description,
         currentProgress: qp.progress,
         targetProgress: qp.target,
-        rewardAmount: def.rewardXp,
+        rewardAmount: rewardXp,
       );
     }).toList();
   }
@@ -109,6 +121,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
     final weeklyQuestsAsync = ref.watch(weeklyQuestsProvider);
     final weekCompletionAsync = ref.watch(weekCompletionStatusProvider);
     final userStatsAsync = ref.watch(userStatsProvider);
+    final settingsAsync = ref.watch(userSettingsNotifierProvider);
 
     return Scaffold(
       backgroundColor: const Color(0xFF150833),
@@ -158,11 +171,18 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
             // Daily quests section
             SliverToBoxAdapter(
               child: dailyQuestsAsync.when(
-                data: (quests) => _buildQuestSection(
-                  title: 'Daily Quests',
-                  subtitle: _formatCountdown(_timeRemaining),
-                  quests: _mapQuests(quests, dailyQuestDefinitions),
-                ),
+                data: (quests) {
+                  final goalMinutes = settingsAsync.valueOrNull?.dailyGoalMinutes;
+                  return _buildQuestSection(
+                    title: 'Daily Quests',
+                    subtitle: _formatCountdown(_timeRemaining),
+                    quests: _mapQuests(
+                      quests,
+                      dailyQuestDefinitions,
+                      dailyGoalMinutes: goalMinutes,
+                    ),
+                  );
+                },
                 loading: () => _buildLoadingPlaceholder(height: 200),
                 error: (e, _) => _buildErrorPlaceholder(e),
               ),

@@ -819,7 +819,22 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
             const SizedBox(height: 6),
             // Session rows
             sessionsAsync.when(
-              data: (sessions) => Column(
+              data: (sessions) => sessions.isEmpty
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 24, horizontal: 16),
+                      child: Center(
+                        child: Text(
+                          'No recent sessions yet',
+                          style: GoogleFonts.nunito(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: darkTextSecondary,
+                          ),
+                        ),
+                      ),
+                    )
+                  : Column(
                 children: List.generate(sessions.length, (i) {
                   final s = sessions[i];
                   final instIcon =

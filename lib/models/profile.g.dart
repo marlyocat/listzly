@@ -8,7 +8,7 @@ part of 'profile.dart';
 
 Profile _$ProfileFromJson(Map<String, dynamic> json) => Profile(
   id: json['id'] as String,
-  displayName: (json['display_name'] as String?) ?? 'User',
+  displayName: json['display_name'] as String,
   avatarUrl: json['avatar_url'] as String?,
   createdAt: DateTime.parse(json['created_at'] as String),
 );

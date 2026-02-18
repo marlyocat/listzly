@@ -23,7 +23,7 @@ final questServiceProvider = AutoDisposeProvider<QuestService>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef QuestServiceRef = AutoDisposeProviderRef<QuestService>;
-String _$dailyQuestsHash() => r'06d51c9720741c0b9fcc273d2465de1c24ca7a6e';
+String _$dailyQuestsHash() => r'e1f26ab3d48c6cd45844876b27f0434170bfdb0f';
 
 /// See also [dailyQuests].
 @ProviderFor(dailyQuests)

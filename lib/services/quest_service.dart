@@ -25,26 +25,26 @@ const dailyQuestDefinitions = [
   QuestDefinition(
     key: 'daily_xp_30',
     type: 'daily',
-    title: 'Earn 30 XP',
+    title: 'Play an instrument',
     description: 'Practice any instrument',
-    target: 30,
+    target: 1,
     rewardXp: 10,
   ),
   QuestDefinition(
     key: 'daily_practice_20m',
     type: 'daily',
     title: 'Practice for 20 minutes',
-    description: 'Total practice time today',
+    description: 'Reach your daily practice goal',
     target: 20,
     rewardXp: 15,
   ),
   QuestDefinition(
     key: 'daily_sessions_2',
     type: 'daily',
-    title: 'Complete 2 sessions',
-    description: 'Finish full practice sessions',
-    target: 2,
-    rewardXp: 10,
+    title: 'Complete 1 session',
+    description: 'Finish a full practice session',
+    target: 1,
+    rewardXp: 20,
   ),
 ];
 
@@ -104,7 +104,13 @@ class QuestService {
   }
 
   /// Get or initialize today's daily quests.
-  Future<List<QuestProgress>> getDailyQuests(String userId) async {
+  ///
+  /// [dailyGoalMinutes] overrides the practice quest target so it matches
+  /// the user's daily-goal setting from their profile.
+  Future<List<QuestProgress>> getDailyQuests(
+    String userId, {
+    required int dailyGoalMinutes,
+  }) async {
     final today = _todayStart();
     final dateStr = today.toIso8601String().split('T')[0];
 
@@ -116,7 +122,35 @@ class QuestService {
         .eq('period_start', dateStr);
 
     if (existing.isNotEmpty) {
-      return _deduplicateByQuestKey(existing);
+      final quests = _deduplicateByQuestKey(existing);
+
+      // Sync the practice quest target if the user changed their daily goal.
+      final practiceQuest = quests.cast<QuestProgress?>().firstWhere(
+            (q) => q!.questKey == 'daily_practice_20m',
+            orElse: () => null,
+          );
+      if (practiceQuest != null && practiceQuest.target != dailyGoalMinutes) {
+        await _client
+            .from('quest_progress')
+            .update({
+              'target': dailyGoalMinutes,
+              'completed': practiceQuest.progress >= dailyGoalMinutes,
+            })
+            .eq('user_id', userId)
+            .eq('quest_key', 'daily_practice_20m')
+            .eq('period_start', dateStr);
+
+        // Return refreshed data.
+        final refreshed = await _client
+            .from('quest_progress')
+            .select()
+            .eq('user_id', userId)
+            .eq('quest_type', 'daily')
+            .eq('period_start', dateStr);
+        return _deduplicateByQuestKey(refreshed);
+      }
+
+      return quests;
     }
 
     // Initialize daily quests for today
@@ -126,7 +160,9 @@ class QuestService {
               'quest_key': d.key,
               'quest_type': 'daily',
               'progress': 0,
-              'target': d.target,
+              'target': d.key == 'daily_practice_20m'
+                  ? dailyGoalMinutes
+                  : d.target,
               'completed': false,
               'period_start': dateStr,
             })
@@ -183,7 +219,7 @@ class QuestService {
     final xpEarned = session.xpEarned;
 
     // --- Daily quests ---
-    await _incrementQuest(userId, 'daily_xp_30', today, xpEarned);
+    await _incrementQuest(userId, 'daily_xp_30', today, 1);
     await _incrementQuest(userId, 'daily_practice_20m', today, minutesPracticed);
     await _incrementQuest(userId, 'daily_sessions_2', today, 1);
 
