@@ -1044,6 +1044,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
       await ref
           .read(groupServiceProvider)
           .removeStudent(widget.groupId!, widget.studentId);
+      ref.invalidate(unreadGroupNotificationsProvider);
       if (mounted) Navigator.of(context).pop(true);
     }
   }

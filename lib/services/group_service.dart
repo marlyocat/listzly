@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:listzly/models/teacher_group.dart';
 import 'package:listzly/models/group_member.dart';
@@ -110,8 +111,11 @@ class GroupService {
       await _client.from('group_notifications').insert({
         'group_id': groupId,
         'message': '$name has joined the group.',
+        'is_read': false,
       });
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('Failed to insert join notification: $e');
+    }
 
     return GroupMember.fromJson(result);
   }
@@ -140,8 +144,11 @@ class GroupService {
         await _client.from('group_notifications').insert({
           'group_id': membership.groupId,
           'message': '$name has left the group.',
+          'is_read': false,
         });
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('Failed to insert leave notification: $e');
+      }
     }
   }
 
@@ -245,8 +252,11 @@ class GroupService {
       await _client.from('group_notifications').insert({
         'group_id': groupId,
         'message': '$name was removed from the group.',
+        'is_read': false,
       });
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('Failed to insert remove notification: $e');
+    }
   }
 
   Future<int> getMemberCount(String groupId) async {
@@ -271,12 +281,30 @@ class GroupService {
         .toList();
   }
 
+  Future<List<GroupNotification>> getAllNotifications(String groupId) async {
+    final result = await _client
+        .from('group_notifications')
+        .select()
+        .eq('group_id', groupId)
+        .order('created_at', ascending: false);
+    return (result as List)
+        .map((e) => GroupNotification.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
   Future<void> markNotificationsRead(String groupId) async {
     await _client
         .from('group_notifications')
         .update({'is_read': true})
         .eq('group_id', groupId)
         .eq('is_read', false);
+  }
+
+  Future<void> deleteAllNotifications(String groupId) async {
+    await _client
+        .from('group_notifications')
+        .delete()
+        .eq('group_id', groupId);
   }
 
   /// Get the teacher's profile for a group (used by students to see their teacher's name).

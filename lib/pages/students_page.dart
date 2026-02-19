@@ -185,6 +185,8 @@ class StudentsPage extends ConsumerWidget {
                       decoration: BoxDecoration(
                         color: accentCoral.withAlpha(20),
                         borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                            color: Colors.black, width: 2),
                       ),
                       child: const Icon(Icons.qr_code_rounded,
                           color: accentCoral, size: 18),
@@ -209,6 +211,8 @@ class StudentsPage extends ConsumerWidget {
                       decoration: BoxDecoration(
                         color: accentCoral.withAlpha(20),
                         borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                            color: Colors.black, width: 2),
                       ),
                       child: const Icon(Icons.copy_rounded,
                           color: accentCoral, size: 18),
@@ -394,110 +398,164 @@ class StudentsPage extends ConsumerWidget {
   }
 
   void _showNotificationsDialog(BuildContext context, WidgetRef ref) {
-    final notifications =
-        ref.read(unreadGroupNotificationsProvider).valueOrNull ?? [];
+    final group = ref.read(teacherGroupProvider).valueOrNull;
+    if (group == null) return;
+
+    final hasUnread =
+        (ref.read(unreadGroupNotificationsProvider).valueOrNull?.length ?? 0) >
+            0;
 
     showDialog(
       context: context,
-      builder: (ctx) => Dialog(
-        backgroundColor: const Color(0xFF1E0E3D),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: const BorderSide(color: Colors.black, width: 5),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+      builder: (ctx) => FutureBuilder(
+        future: ref.read(groupServiceProvider).getAllNotifications(group.id),
+        builder: (ctx, snapshot) {
+          final notifications = snapshot.data ?? [];
+          final isLoading =
+              snapshot.connectionState == ConnectionState.waiting;
+
+          return Dialog(
+            backgroundColor: const Color(0xFF1E0E3D),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+              side: const BorderSide(color: Colors.black, width: 5),
+            ),
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.notifications_rounded,
-                      color: accentCoral, size: 20),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Notifications',
-                    style: GoogleFonts.nunito(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              if (notifications.isEmpty)
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    child: Text(
-                      'No new notifications',
-                      style: GoogleFonts.nunito(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: darkTextMuted,
-                      ),
-                    ),
-                  ),
-                )
-              else
-                ...notifications.map((n) => Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(top: 6),
-                            width: 6,
-                            height: 6,
-                            decoration: const BoxDecoration(
-                              color: accentCoral,
-                              shape: BoxShape.circle,
-                            ),
+                  Row(
+                    children: [
+                      const Icon(Icons.notifications_rounded,
+                          color: accentCoral, size: 20),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Notifications',
+                          style: GoogleFonts.nunito(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
                           ),
-                          const SizedBox(width: 10),
-                          Expanded(
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () => Navigator.pop(ctx),
+                        child: const Icon(Icons.close_rounded,
+                            color: darkTextMuted, size: 20),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  if (isLoading)
+                    const Center(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        child: CircularProgressIndicator(
+                            color: accentCoral, strokeWidth: 2.5),
+                      ),
+                    )
+                  else if (notifications.isEmpty)
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: Text(
+                          'No notifications yet',
+                          style: GoogleFonts.nunito(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: darkTextMuted,
+                          ),
+                        ),
+                      ),
+                    )
+                  else
+                    ...notifications.map((n) => Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.only(top: 6),
+                                width: 6,
+                                height: 6,
+                                decoration: BoxDecoration(
+                                  color: n.isRead
+                                      ? darkTextMuted.withAlpha(80)
+                                      : accentCoral,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  n.message,
+                                  style: GoogleFonts.nunito(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: n.isRead
+                                        ? darkTextMuted
+                                        : Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        )),
+                  if (notifications.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (hasUnread)
+                          GestureDetector(
+                            onTap: () async {
+                              await ref
+                                  .read(groupServiceProvider)
+                                  .markNotificationsRead(group.id);
+                              ref.invalidate(
+                                  unreadGroupNotificationsProvider);
+                              if (ctx.mounted) Navigator.pop(ctx);
+                            },
                             child: Text(
-                              n.message,
+                              'Mark all as Read',
                               style: GoogleFonts.nunito(
                                 fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                                color: darkTextMuted,
                               ),
                             ),
                           ),
-                        ],
-                      ),
-                    )),
-              const SizedBox(height: 8),
-              if (notifications.isNotEmpty)
-                Center(
-                  child: GestureDetector(
-                    onTap: () async {
-                      Navigator.pop(ctx);
-                      final group =
-                          ref.read(teacherGroupProvider).valueOrNull;
-                      if (group != null) {
-                        await ref
-                            .read(groupServiceProvider)
-                            .markNotificationsRead(group.id);
-                        ref.invalidate(unreadGroupNotificationsProvider);
-                      }
-                    },
-                    child: Text(
-                      'Dismiss All',
-                      style: GoogleFonts.nunito(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: darkTextMuted,
-                      ),
+                        if (hasUnread) const SizedBox(width: 20),
+                        GestureDetector(
+                          onTap: () async {
+                            await ref
+                                .read(groupServiceProvider)
+                                .deleteAllNotifications(group.id);
+                            ref.invalidate(
+                                unreadGroupNotificationsProvider);
+                            if (ctx.mounted) Navigator.pop(ctx);
+                          },
+                          child: Text(
+                            'Clear All',
+                            style: GoogleFonts.nunito(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.red,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ),
-            ],
-          ),
-        ),
+                  ],
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }

@@ -56,7 +56,7 @@ Stream<List<GroupNotification>> unreadGroupNotifications(
       .eq('group_id', group.id)
       .order('created_at', ascending: false)
       .map((rows) => rows
-          .where((e) => e['is_read'] == false)
+          .where((e) => e['is_read'] != true)
           .map((e) => GroupNotification.fromJson(e))
           .toList());
 }

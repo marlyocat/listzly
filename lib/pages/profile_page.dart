@@ -1176,6 +1176,7 @@ class ProfilePage extends ConsumerWidget {
                     await ref
                         .read(groupServiceProvider)
                         .removeStudent(groupId, student.studentId);
+                    ref.invalidate(unreadGroupNotificationsProvider);
                     onRemoved();
                   }
                 },
