@@ -357,15 +357,17 @@ class ProfilePage extends ConsumerWidget {
           onTap: () => _showGroupInfoDialog(context, ref, membership.groupId),
         ));
         items.add(_SettingsRow(
+          icon: Icons.swap_horiz_rounded,
+          label: 'Change Role',
+          trailing: const _TrailingText('Student'),
+          onTap: () => _showLeaveGroupAndChangeRoleDialog(context, ref, profile),
+        ));
+        items.add(_SettingsRow(
           icon: Icons.exit_to_app_rounded,
           label: 'Leave Group',
           trailing: const _TrailingText(''),
+          labelColor: Colors.red,
           onTap: () => _showLeaveGroupDialog(context, ref),
-        ));
-        items.add(_SettingsRow(
-          icon: Icons.swap_horiz_rounded,
-          label: 'Change Role',
-          trailing: const _TrailingText('Leave group first'),
         ));
       } else {
         items.add(_SettingsRow(
@@ -602,6 +604,65 @@ class ProfilePage extends ConsumerWidget {
     );
   }
 
+  void _showLeaveGroupAndChangeRoleDialog(
+      BuildContext context, WidgetRef ref, Profile profile) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1E0E3D),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Leave Group & Change Role?',
+          style: GoogleFonts.dmSerifDisplay(fontSize: 20, color: Colors.white),
+        ),
+        content: Text(
+          'You are currently in a group. Changing your role will remove you from your teacher\'s group.',
+          style: GoogleFonts.nunito(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: darkTextSecondary,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Cancel',
+                style: GoogleFonts.nunito(
+                    fontWeight: FontWeight.w700, color: darkTextMuted)),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              try {
+                final user = ref.read(currentUserProvider);
+                if (user == null) return;
+                await ref.read(groupServiceProvider).leaveGroup(user.id);
+                ref.invalidate(studentMembershipProvider);
+                ref.invalidate(isInGroupProvider);
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Failed to leave group: $e'),
+                      backgroundColor: accentCoralDark,
+                    ),
+                  );
+                }
+                return;
+              }
+              if (context.mounted) {
+                _showRoleChangePicker(context, ref, profile);
+              }
+            },
+            child: Text('Leave & Continue',
+                style: GoogleFonts.nunito(
+                    fontWeight: FontWeight.w700, color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showLeaveGroupDialog(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
@@ -638,7 +699,7 @@ class ProfilePage extends ConsumerWidget {
             },
             child: Text('Leave',
                 style: GoogleFonts.nunito(
-                    fontWeight: FontWeight.w700, color: accentCoralDark)),
+                    fontWeight: FontWeight.w700, color: Colors.red)),
           ),
         ],
       ),
@@ -1742,7 +1803,7 @@ class ProfilePage extends ConsumerWidget {
                                 style: GoogleFonts.nunito(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w700,
-                                  color: Colors.white,
+                                  color: row.labelColor ?? Colors.white,
                                 ),
                               ),
                             ),
@@ -2013,12 +2074,14 @@ class _SettingsRow {
   final String label;
   final _Trailing trailing;
   final VoidCallback? onTap;
+  final Color? labelColor;
 
   const _SettingsRow({
     required this.icon,
     required this.label,
     required this.trailing,
     this.onTap,
+    this.labelColor,
   });
 }
 

@@ -21,24 +21,31 @@ class StudentsPage extends ConsumerWidget {
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            // Title
+            // Title + notification bell
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
-                child: ShaderMask(
-                  shaderCallback: (bounds) => const LinearGradient(
-                    colors: [Colors.white, primaryLight],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ).createShader(bounds),
-                  child: Text(
-                    'Students',
-                    style: GoogleFonts.dmSerifDisplay(
-                      fontSize: 36,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.white,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: ShaderMask(
+                        shaderCallback: (bounds) => const LinearGradient(
+                          colors: [Colors.white, primaryLight],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ).createShader(bounds),
+                        child: Text(
+                          'Students',
+                          style: GoogleFonts.dmSerifDisplay(
+                            fontSize: 36,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
+                    _buildNotificationBell(context, ref),
+                  ],
                 ),
               ),
             ),
@@ -338,6 +345,158 @@ class StudentsPage extends ConsumerWidget {
             }),
             const SizedBox(height: 6),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNotificationBell(BuildContext context, WidgetRef ref) {
+    final notificationsAsync = ref.watch(unreadGroupNotificationsProvider);
+    final count = notificationsAsync.valueOrNull?.length ?? 0;
+
+    return GestureDetector(
+      onTap: () => _showNotificationsDialog(context, ref),
+      child: Padding(
+        padding: const EdgeInsets.only(left: 8),
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Icon(
+              Icons.notifications_rounded,
+              color: count > 0 ? accentCoral : darkTextMuted,
+              size: 26,
+            ),
+            if (count > 0)
+              Positioned(
+                top: -4,
+                right: -4,
+                child: Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: const BoxDecoration(
+                    color: accentCoral,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Text(
+                    '$count',
+                    style: GoogleFonts.nunito(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                      height: 1,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showNotificationsDialog(BuildContext context, WidgetRef ref) {
+    final notifications =
+        ref.read(unreadGroupNotificationsProvider).valueOrNull ?? [];
+
+    showDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: const Color(0xFF1E0E3D),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(color: Colors.black, width: 5),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.notifications_rounded,
+                      color: accentCoral, size: 20),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Notifications',
+                    style: GoogleFonts.nunito(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              if (notifications.isEmpty)
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: Text(
+                      'No new notifications',
+                      style: GoogleFonts.nunito(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: darkTextMuted,
+                      ),
+                    ),
+                  ),
+                )
+              else
+                ...notifications.map((n) => Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(top: 6),
+                            width: 6,
+                            height: 6,
+                            decoration: const BoxDecoration(
+                              color: accentCoral,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              n.message,
+                              style: GoogleFonts.nunito(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )),
+              const SizedBox(height: 8),
+              if (notifications.isNotEmpty)
+                Center(
+                  child: GestureDetector(
+                    onTap: () async {
+                      Navigator.pop(ctx);
+                      final group =
+                          ref.read(teacherGroupProvider).valueOrNull;
+                      if (group != null) {
+                        await ref
+                            .read(groupServiceProvider)
+                            .markNotificationsRead(group.id);
+                        ref.invalidate(unreadGroupNotificationsProvider);
+                      }
+                    },
+                    child: Text(
+                      'Dismiss All',
+                      style: GoogleFonts.nunito(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: darkTextMuted,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );

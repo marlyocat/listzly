@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:listzly/models/teacher_group.dart';
 import 'package:listzly/models/group_member.dart';
+import 'package:listzly/models/group_notification.dart';
 import 'package:listzly/models/student_summary.dart';
 
 class GroupService {
@@ -97,11 +98,51 @@ class GroupService {
         })
         .select()
         .single();
+
+    // Notify the teacher
+    try {
+      final profile = await _client
+          .from('profiles')
+          .select('display_name')
+          .eq('id', studentId)
+          .maybeSingle();
+      final name = (profile?['display_name'] as String?) ?? 'A student';
+      await _client.from('group_notifications').insert({
+        'group_id': groupId,
+        'message': '$name has joined the group.',
+      });
+    } catch (_) {}
+
     return GroupMember.fromJson(result);
   }
 
   Future<void> leaveGroup(String studentId) async {
+    // Look up the group and student name before deleting
+    final membership = await getStudentMembership(studentId);
+    String? studentName;
+    if (membership != null) {
+      try {
+        final profile = await _client
+            .from('profiles')
+            .select('display_name')
+            .eq('id', studentId)
+            .maybeSingle();
+        studentName = profile?['display_name'] as String?;
+      } catch (_) {}
+    }
+
     await _client.from('group_members').delete().eq('student_id', studentId);
+
+    // Notify the teacher
+    if (membership != null) {
+      final name = studentName ?? 'A student';
+      try {
+        await _client.from('group_notifications').insert({
+          'group_id': membership.groupId,
+          'message': '$name has left the group.',
+        });
+      } catch (_) {}
+    }
   }
 
   Future<GroupMember?> getStudentMembership(String studentId) async {
@@ -181,11 +222,31 @@ class GroupService {
   }
 
   Future<void> removeStudent(String groupId, String studentId) async {
+    // Look up student name before deleting
+    String? studentName;
+    try {
+      final profile = await _client
+          .from('profiles')
+          .select('display_name')
+          .eq('id', studentId)
+          .maybeSingle();
+      studentName = profile?['display_name'] as String?;
+    } catch (_) {}
+
     await _client
         .from('group_members')
         .delete()
         .eq('group_id', groupId)
         .eq('student_id', studentId);
+
+    // Notify
+    final name = studentName ?? 'A student';
+    try {
+      await _client.from('group_notifications').insert({
+        'group_id': groupId,
+        'message': '$name was removed from the group.',
+      });
+    } catch (_) {}
   }
 
   Future<int> getMemberCount(String groupId) async {
@@ -194,6 +255,28 @@ class GroupService {
         .select('id')
         .eq('group_id', groupId);
     return (result as List).length;
+  }
+
+  // ─── Group Notifications ────────────────────────────────────
+
+  Future<List<GroupNotification>> getUnreadNotifications(String groupId) async {
+    final result = await _client
+        .from('group_notifications')
+        .select()
+        .eq('group_id', groupId)
+        .eq('is_read', false)
+        .order('created_at', ascending: false);
+    return (result as List)
+        .map((e) => GroupNotification.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<void> markNotificationsRead(String groupId) async {
+    await _client
+        .from('group_notifications')
+        .update({'is_read': true})
+        .eq('group_id', groupId)
+        .eq('is_read', false);
   }
 
   /// Get the teacher's profile for a group (used by students to see their teacher's name).

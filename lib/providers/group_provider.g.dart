@@ -93,5 +93,25 @@ final teacherStudentsProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef TeacherStudentsRef = AutoDisposeFutureProviderRef<List<StudentSummary>>;
+String _$unreadGroupNotificationsHash() =>
+    r'cfdf64fe972ab92abcb9c6610bf4eac5cdec8859';
+
+/// See also [unreadGroupNotifications].
+@ProviderFor(unreadGroupNotifications)
+final unreadGroupNotificationsProvider =
+    AutoDisposeStreamProvider<List<GroupNotification>>.internal(
+      unreadGroupNotifications,
+      name: r'unreadGroupNotificationsProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$unreadGroupNotificationsHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef UnreadGroupNotificationsRef =
+    AutoDisposeStreamProviderRef<List<GroupNotification>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

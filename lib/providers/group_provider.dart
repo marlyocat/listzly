@@ -1,6 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:listzly/models/teacher_group.dart';
 import 'package:listzly/models/group_member.dart';
+import 'package:listzly/models/group_notification.dart';
 import 'package:listzly/models/student_summary.dart';
 import 'package:listzly/services/group_service.dart';
 import 'package:listzly/providers/auth_provider.dart';
@@ -37,4 +38,25 @@ Future<List<StudentSummary>> teacherStudents(TeacherStudentsRef ref) async {
   final user = ref.watch(currentUserProvider);
   if (user == null) throw Exception('Not authenticated');
   return ref.watch(groupServiceProvider).getStudentsWithStats(user.id);
+}
+
+@riverpod
+Stream<List<GroupNotification>> unreadGroupNotifications(
+    UnreadGroupNotificationsRef ref) async* {
+  final group = await ref.watch(teacherGroupProvider.future);
+  if (group == null) {
+    yield [];
+    return;
+  }
+
+  final client = ref.watch(supabaseClientProvider);
+  yield* client
+      .from('group_notifications')
+      .stream(primaryKey: ['id'])
+      .eq('group_id', group.id)
+      .order('created_at', ascending: false)
+      .map((rows) => rows
+          .where((e) => e['is_read'] == false)
+          .map((e) => GroupNotification.fromJson(e))
+          .toList());
 }
