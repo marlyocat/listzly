@@ -347,10 +347,12 @@ class ProfilePage extends ConsumerWidget {
       final isInGroup = membershipAsync.valueOrNull != null;
 
       if (isInGroup) {
+        final membership = membershipAsync.valueOrNull!;
         items.add(_SettingsRow(
           icon: Icons.school_rounded,
           label: 'Your Group',
           trailing: const _TrailingText('Joined'),
+          onTap: () => _showGroupInfoDialog(context, ref, membership.groupId),
         ));
         items.add(_SettingsRow(
           icon: Icons.exit_to_app_rounded,
@@ -459,6 +461,11 @@ class ProfilePage extends ConsumerWidget {
                     onTap: () async {
                       Navigator.pop(ctx);
                       if (role == profile.role) return;
+                      if (hasStudents) {
+                        final confirmed =
+                            await _showDisbandConfirmDialog(context);
+                        if (confirmed != true) return;
+                      }
                       await _changeRole(context, ref, role,
                           hasStudents: hasStudents);
                     },
@@ -557,6 +564,42 @@ class ProfilePage extends ConsumerWidget {
     }
   }
 
+  Future<bool?> _showDisbandConfirmDialog(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1E0E3D),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Disband Group?',
+          style: GoogleFonts.dmSerifDisplay(fontSize: 20, color: Colors.white),
+        ),
+        content: Text(
+          'Changing your role will permanently disband your group and remove all students. This action cannot be undone.',
+          style: GoogleFonts.nunito(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: darkTextSecondary,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('Cancel',
+                style: GoogleFonts.nunito(
+                    fontWeight: FontWeight.w700, color: darkTextMuted)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text('Disband & Change Role',
+                style: GoogleFonts.nunito(
+                    fontWeight: FontWeight.w700, color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showLeaveGroupDialog(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
@@ -597,6 +640,133 @@ class ProfilePage extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void _showGroupInfoDialog(
+      BuildContext context, WidgetRef ref, String groupId) {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return FutureBuilder<String?>(
+          future: ref.read(groupServiceProvider).getTeacherName(groupId),
+          builder: (context, snapshot) {
+            final isLoading =
+                snapshot.connectionState == ConnectionState.waiting;
+            final teacherName = isLoading
+                ? null
+                : (snapshot.data ?? 'Unknown Teacher');
+            return Dialog(
+              backgroundColor: const Color(0xFF1E0E3D),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+                side: const BorderSide(color: Colors.black, width: 5),
+              ),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 56,
+                      height: 56,
+                      decoration: BoxDecoration(
+                        color: accentCoral.withAlpha(30),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const Icon(Icons.school_rounded,
+                          color: accentCoral, size: 28),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Your Group',
+                      style: GoogleFonts.dmSerifDisplay(
+                        fontSize: 22,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: darkSurfaceBg,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.black, width: 2),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.person_rounded,
+                              color: darkTextSecondary, size: 20),
+                          const SizedBox(width: 12),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Teacher',
+                                style: GoogleFonts.nunito(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: darkTextMuted,
+                                ),
+                              ),
+                              if (isLoading)
+                                const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                      color: accentCoral, strokeWidth: 2),
+                                )
+                              else
+                                Text(
+                                  teacherName!,
+                                  style: GoogleFonts.nunito(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(ctx);
+                          _showLeaveGroupDialog(context, ref);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          decoration: BoxDecoration(
+                            color: darkCardBg,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.black, width: 3),
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Leave Group',
+                              style: GoogleFonts.nunito(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w800,
+                                color: accentCoralDark,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -675,14 +845,14 @@ class ProfilePage extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Icon(Icons.qr_code_scanner_rounded,
-                        color: primaryLight, size: 18),
+                        color: accentCoral, size: 18),
                     const SizedBox(width: 6),
                     Text(
                       'Scan QR Code',
                       style: GoogleFonts.nunito(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
-                        color: primaryLight,
+                        color: accentCoral,
                       ),
                     ),
                   ],
@@ -723,7 +893,7 @@ class ProfilePage extends ConsumerWidget {
               },
               child: Text('Join',
                   style: GoogleFonts.nunito(
-                      fontWeight: FontWeight.w700, color: primaryLight)),
+                      fontWeight: FontWeight.w700, color: accentCoral)),
             ),
           ],
         ),

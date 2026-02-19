@@ -453,7 +453,7 @@ class StudentsPage extends ConsumerWidget {
               'Remove',
               style: GoogleFonts.nunito(
                 fontWeight: FontWeight.w700,
-                color: accentCoralDark,
+                color: Colors.red,
               ),
             ),
           ),

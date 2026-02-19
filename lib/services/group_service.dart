@@ -198,18 +198,17 @@ class GroupService {
 
   /// Get the teacher's profile for a group (used by students to see their teacher's name).
   Future<String?> getTeacherName(String groupId) async {
-    final group = await _client
-        .from('teacher_groups')
-        .select('teacher_id')
-        .eq('id', groupId)
-        .maybeSingle();
-    if (group == null) return null;
-
-    final profile = await _client
-        .from('profiles')
-        .select('display_name')
-        .eq('id', group['teacher_id'] as String)
-        .maybeSingle();
-    return profile?['display_name'] as String?;
+    try {
+      final result = await _client
+          .from('teacher_groups')
+          .select('profiles(display_name)')
+          .eq('id', groupId)
+          .maybeSingle();
+      if (result == null) return null;
+      final profiles = result['profiles'] as Map<String, dynamic>?;
+      return profiles?['display_name'] as String?;
+    } catch (e) {
+      return null;
+    }
   }
 }
