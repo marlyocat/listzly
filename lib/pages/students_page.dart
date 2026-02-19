@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:listzly/models/student_summary.dart';
 import 'package:listzly/providers/group_provider.dart';
 import 'package:listzly/pages/student_detail_page.dart';
@@ -171,6 +172,19 @@ class StudentsPage extends ConsumerWidget {
                     ),
                   ),
                   GestureDetector(
+                    onTap: () => _showQrCode(context, inviteCode),
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: accentCoral.withAlpha(20),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(Icons.qr_code_rounded,
+                          color: accentCoral, size: 18),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  GestureDetector(
                     onTap: () {
                       Clipboard.setData(ClipboardData(text: inviteCode));
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -334,6 +348,70 @@ class StudentsPage extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+
+  void _showQrCode(BuildContext context, String inviteCode) {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return Dialog(
+          backgroundColor: const Color(0xFF1E0E3D),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: const BorderSide(color: Colors.black, width: 5),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Scan to Join',
+                  style: GoogleFonts.nunito(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Students can scan this QR code\nto join your group',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.nunito(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: darkTextSecondary,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: QrImageView(
+                    data: inviteCode,
+                    version: QrVersions.auto,
+                    size: 200,
+                    backgroundColor: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  inviteCode,
+                  style: GoogleFonts.dmSerifDisplay(
+                    fontSize: 20,
+                    color: accentCoral,
+                    letterSpacing: 4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 

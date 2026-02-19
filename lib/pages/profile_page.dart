@@ -14,6 +14,8 @@ import 'package:listzly/providers/instrument_provider.dart';
 import 'package:listzly/providers/group_provider.dart';
 import 'package:listzly/theme/colors.dart';
 import 'package:listzly/services/notification_service.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
@@ -318,6 +320,12 @@ class ProfilePage extends ConsumerWidget {
               ),
             );
           },
+        ));
+        items.add(_SettingsRow(
+          icon: Icons.qr_code_rounded,
+          label: 'Show QR Code',
+          trailing: const _TrailingText(''),
+          onTap: () => _showQrCode(context, inviteCode),
         ));
       }
 
@@ -652,6 +660,34 @@ class ProfilePage extends ConsumerWidget {
                   ),
                 ),
               ),
+              const SizedBox(height: 12),
+              GestureDetector(
+                onTap: () async {
+                  final scanned = await Navigator.of(ctx).push<String>(
+                    MaterialPageRoute(builder: (_) => const _QrScannerPage()),
+                  );
+                  if (scanned != null && scanned.isNotEmpty) {
+                    codeController.text = scanned;
+                    setDialogState(() => errorText = null);
+                  }
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.qr_code_scanner_rounded,
+                        color: primaryLight, size: 18),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Scan QR Code',
+                      style: GoogleFonts.nunito(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: primaryLight,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
           actions: [
@@ -692,6 +728,70 @@ class ProfilePage extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+
+  void _showQrCode(BuildContext context, String inviteCode) {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return Dialog(
+          backgroundColor: const Color(0xFF1E0E3D),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: const BorderSide(color: Colors.black, width: 5),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Scan to Join',
+                  style: GoogleFonts.nunito(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Students can scan this QR code\nto join your group',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.nunito(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: darkTextSecondary,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: QrImageView(
+                    data: inviteCode,
+                    version: QrVersions.auto,
+                    size: 200,
+                    backgroundColor: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  inviteCode,
+                  style: GoogleFonts.dmSerifDisplay(
+                    fontSize: 20,
+                    color: accentCoral,
+                    letterSpacing: 4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -1544,6 +1644,54 @@ class _TrailingText extends _Trailing {
         const SizedBox(width: 4),
         const Icon(Icons.chevron_right, color: darkTextMuted, size: 20),
       ],
+    );
+  }
+}
+
+// ─── QR Scanner Page ──────────────────────────────────────────────
+class _QrScannerPage extends StatefulWidget {
+  const _QrScannerPage();
+
+  @override
+  State<_QrScannerPage> createState() => _QrScannerPageState();
+}
+
+class _QrScannerPageState extends State<_QrScannerPage> {
+  final MobileScannerController _controller = MobileScannerController();
+  bool _scanned = false;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF150833),
+        foregroundColor: Colors.white,
+        title: Text(
+          'Scan QR Code',
+          style: GoogleFonts.nunito(
+            fontWeight: FontWeight.w800,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      body: MobileScanner(
+        controller: _controller,
+        onDetect: (capture) {
+          if (_scanned) return;
+          final barcodes = capture.barcodes;
+          if (barcodes.isNotEmpty && barcodes.first.rawValue != null) {
+            _scanned = true;
+            Navigator.of(context).pop(barcodes.first.rawValue);
+          }
+        },
+      ),
     );
   }
 }

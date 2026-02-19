@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
 import 'package:listzly/models/user_role.dart';
 import 'package:listzly/providers/auth_provider.dart';
@@ -213,6 +214,34 @@ class _RoleSelectionPageState extends ConsumerState<RoleSelectionPage> {
                     ),
                   ),
                 ),
+                const SizedBox(height: 12),
+                GestureDetector(
+                  onTap: () async {
+                    final scanned = await Navigator.of(context).push<String>(
+                      MaterialPageRoute(builder: (_) => const _QrScannerPage()),
+                    );
+                    if (scanned != null && scanned.isNotEmpty) {
+                      _inviteCodeController.text = scanned;
+                      setState(() => _errorMessage = null);
+                    }
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.qr_code_scanner_rounded,
+                          color: primaryLight, size: 18),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Scan QR Code',
+                        style: GoogleFonts.nunito(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: primaryLight,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
 
               // Error message
@@ -365,6 +394,53 @@ class _RoleCard extends StatelessWidget {
               const Icon(Icons.check_circle_rounded, color: accentCoral, size: 24),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _QrScannerPage extends StatefulWidget {
+  const _QrScannerPage();
+
+  @override
+  State<_QrScannerPage> createState() => _QrScannerPageState();
+}
+
+class _QrScannerPageState extends State<_QrScannerPage> {
+  final MobileScannerController _controller = MobileScannerController();
+  bool _scanned = false;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF150833),
+        foregroundColor: Colors.white,
+        title: Text(
+          'Scan QR Code',
+          style: GoogleFonts.nunito(
+            fontWeight: FontWeight.w800,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      body: MobileScanner(
+        controller: _controller,
+        onDetect: (capture) {
+          if (_scanned) return;
+          final barcodes = capture.barcodes;
+          if (barcodes.isNotEmpty && barcodes.first.rawValue != null) {
+            _scanned = true;
+            Navigator.of(context).pop(barcodes.first.rawValue);
+          }
+        },
       ),
     );
   }
