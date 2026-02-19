@@ -9,27 +9,22 @@ import 'package:listzly/pages/quests_page.dart';
 import 'package:listzly/pages/activity_page.dart';
 import 'package:listzly/pages/profile_page.dart';
 import 'package:listzly/pages/practice_page.dart';
+import 'package:listzly/pages/students_page.dart';
 import 'package:listzly/theme/colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:listzly/providers/stats_provider.dart';
+import 'package:listzly/providers/profile_provider.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends ConsumerState<HomePage> {
   int _selectedIndex = 0;
-
-  final List<Widget> _pages = const [
-    _HomeTab(),
-    QuestsPage(),
-    ActivityPage(),
-    ProfilePage(),
-  ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -39,43 +34,67 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final isTeacher =
+        ref.watch(currentProfileProvider).valueOrNull?.isTeacher ?? false;
+
+    final pages = <Widget>[
+      const _HomeTab(),
+      const QuestsPage(),
+      const ActivityPage(),
+      if (isTeacher) const StudentsPage(),
+      const ProfilePage(),
+    ];
+
+    final navItems = <FlipBoxNavItem>[
+      FlipBoxNavItem(
+        name: 'Home',
+        selectedImage: 'lib/images/home_selected.png',
+        unselectedImage: 'lib/images/home_unselected.png',
+        selectedBackgroundColor: primaryColor,
+        unselectedBackgroundColor: primaryColor.withValues(alpha: 0.6),
+      ),
+      FlipBoxNavItem(
+        name: 'Quests',
+        selectedImage: 'lib/images/quest_selected.png',
+        unselectedImage: 'lib/images/quest_unselected.png',
+        selectedBackgroundColor: primaryColor,
+        unselectedBackgroundColor: primaryColor.withValues(alpha: 0.6),
+      ),
+      FlipBoxNavItem(
+        name: 'Activity',
+        selectedImage: 'lib/images/trophy_selected.png',
+        unselectedImage: 'lib/images/trophy_unselected.png',
+        selectedBackgroundColor: primaryColor,
+        unselectedBackgroundColor: primaryColor.withValues(alpha: 0.6),
+      ),
+      if (isTeacher)
+        FlipBoxNavItem(
+          name: 'Students',
+          selectedImage: 'lib/images/students_selected.png',
+          unselectedImage: 'lib/images/students_unselected.png',
+          selectedBackgroundColor: primaryColor,
+          unselectedBackgroundColor: primaryColor.withValues(alpha: 0.6),
+        ),
+      FlipBoxNavItem(
+        name: 'Profile',
+        selectedImage: 'lib/images/settings_selected.png',
+        unselectedImage: 'lib/images/settings_unselected.png',
+        selectedBackgroundColor: primaryColor,
+        unselectedBackgroundColor: primaryColor.withValues(alpha: 0.6),
+      ),
+    ];
+
+    // Clamp index to prevent overflow when switching roles
+    final safeIndex = _selectedIndex.clamp(0, pages.length - 1);
+
     return Scaffold(
       backgroundColor: const Color(0xFF150833),
-      body: IndexedStack(index: _selectedIndex, children: _pages),
+      body: IndexedStack(index: safeIndex, children: pages),
       bottomNavigationBar: SafeArea(
         child: FlipBoxNavBar(
-          currentIndex: _selectedIndex,
+          currentIndex: safeIndex,
           onTap: _onItemTapped,
-          items: [
-            FlipBoxNavItem(
-              name: 'Home',
-              selectedImage: 'lib/images/home_selected.png',
-              unselectedImage: 'lib/images/home_unselected.png',
-              selectedBackgroundColor: primaryColor,
-              unselectedBackgroundColor: primaryColor.withValues(alpha: 0.6),
-            ),
-            FlipBoxNavItem(
-              name: 'Quests',
-              selectedImage: 'lib/images/quest_selected.png',
-              unselectedImage: 'lib/images/quest_unselected.png',
-              selectedBackgroundColor: primaryColor,
-              unselectedBackgroundColor: primaryColor.withValues(alpha: 0.6),
-            ),
-            FlipBoxNavItem(
-              name: 'Activity',
-              selectedImage: 'lib/images/trophy_selected.png',
-              unselectedImage: 'lib/images/trophy_unselected.png',
-              selectedBackgroundColor: primaryColor,
-              unselectedBackgroundColor: primaryColor.withValues(alpha: 0.6),
-            ),
-            FlipBoxNavItem(
-              name: 'Profile',
-              selectedImage: 'lib/images/settings_selected.png',
-              unselectedImage: 'lib/images/settings_unselected.png',
-              selectedBackgroundColor: primaryColor,
-              unselectedBackgroundColor: primaryColor.withValues(alpha: 0.6),
-            ),
-          ],
+          items: navItems,
         ),
       ),
     );

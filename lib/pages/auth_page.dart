@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
-import 'package:listzly/pages/home_page.dart';
+import 'package:listzly/pages/auth_gate.dart';
+import 'package:listzly/pages/role_selection_page.dart';
 import 'package:listzly/providers/auth_provider.dart';
 import 'package:listzly/theme/colors.dart';
 
@@ -56,7 +57,9 @@ class _AuthPageState extends ConsumerState<AuthPage> {
 
       if (mounted) {
         Navigator.of(context).pushAndRemoveUntil(
-          _turnPageRoute(const HomePage()),
+          _turnPageRoute(
+            _isLogin ? const AuthGate() : const RoleSelectionPage(),
+          ),
           (route) => false,
         );
       }
@@ -89,7 +92,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
           ),
         );
         Navigator.of(context).pushAndRemoveUntil(
-          _turnPageRoute(const HomePage()),
+          _turnPageRoute(const AuthGate()),
           (route) => false,
         );
       }

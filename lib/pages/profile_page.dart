@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
 import 'package:listzly/models/profile.dart';
+import 'package:listzly/models/user_role.dart';
 import 'package:listzly/models/user_settings.dart';
 import 'package:listzly/pages/intro_page.dart';
 import 'package:listzly/providers/auth_provider.dart';
 import 'package:listzly/providers/profile_provider.dart';
 import 'package:listzly/providers/settings_provider.dart';
 import 'package:listzly/providers/instrument_provider.dart';
+import 'package:listzly/providers/group_provider.dart';
 import 'package:listzly/theme/colors.dart';
 import 'package:listzly/services/notification_service.dart';
 
@@ -57,6 +60,16 @@ class ProfilePage extends ConsumerWidget {
                 },
                 loading: () => _buildProfileCardLoading(),
                 error: (err, _) => _buildErrorCard('Failed to load profile'),
+              ),
+            ),
+
+            // Role & Group section
+            SliverToBoxAdapter(
+              child: profileAsync.when(
+                data: (profile) =>
+                    _buildRoleGroupSection(context, ref, profile),
+                loading: () => const SizedBox.shrink(),
+                error: (_, __) => const SizedBox.shrink(),
               ),
             ),
 
@@ -214,13 +227,38 @@ class ProfilePage extends ConsumerWidget {
                     ),
                   ],
                   const SizedBox(height: 2),
-                  Text(
-                    'Joined $joinDate',
-                    style: GoogleFonts.nunito(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: darkTextSecondary,
-                    ),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 4,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Text(
+                        'Joined $joinDate',
+                        style: GoogleFonts.nunito(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: darkTextSecondary,
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: accentCoral.withAlpha(20),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                              color: accentCoral.withAlpha(60)),
+                        ),
+                        child: Text(
+                          profile.role.displayName,
+                          style: GoogleFonts.nunito(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: accentCoral,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -248,6 +286,410 @@ class ProfilePage extends ConsumerWidget {
               child: CircularProgressIndicator(color: primaryLight),
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  // ─── Role & Group section ─────────────────────────────────────
+  Widget _buildRoleGroupSection(
+      BuildContext context, WidgetRef ref, Profile profile) {
+    final items = <_SettingsRow>[];
+
+    if (profile.isTeacher) {
+      final groupAsync = ref.watch(teacherGroupProvider);
+      final studentsAsync = ref.watch(teacherStudentsProvider);
+      final studentCount = studentsAsync.valueOrNull?.length ?? 0;
+      final inviteCode = groupAsync.valueOrNull?.inviteCode;
+
+      if (inviteCode != null) {
+        items.add(_SettingsRow(
+          icon: Icons.vpn_key_rounded,
+          label: 'Invite Code',
+          trailing: _TrailingText(inviteCode),
+          onTap: () {
+            Clipboard.setData(ClipboardData(text: inviteCode));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Invite code copied!',
+                    style: GoogleFonts.nunito(fontWeight: FontWeight.w600)),
+                backgroundColor: accentCoral,
+                duration: const Duration(seconds: 2),
+              ),
+            );
+          },
+        ));
+      }
+
+      items.add(_SettingsRow(
+        icon: Icons.group_rounded,
+        label: 'Students',
+        trailing: _TrailingText('$studentCount/20'),
+      ));
+
+      items.add(_SettingsRow(
+        icon: Icons.swap_horiz_rounded,
+        label: 'Change Role',
+        trailing: const _TrailingText('Teacher'),
+        onTap: () => _showRoleChangePicker(context, ref, profile,
+            hasStudents: studentCount > 0),
+      ));
+    } else if (profile.isStudent) {
+      final membershipAsync = ref.watch(studentMembershipProvider);
+      final isInGroup = membershipAsync.valueOrNull != null;
+
+      if (isInGroup) {
+        items.add(_SettingsRow(
+          icon: Icons.school_rounded,
+          label: 'Your Group',
+          trailing: const _TrailingText('Joined'),
+        ));
+        items.add(_SettingsRow(
+          icon: Icons.exit_to_app_rounded,
+          label: 'Leave Group',
+          trailing: const _TrailingText(''),
+          onTap: () => _showLeaveGroupDialog(context, ref),
+        ));
+        items.add(_SettingsRow(
+          icon: Icons.swap_horiz_rounded,
+          label: 'Change Role',
+          trailing: const _TrailingText('Leave group first'),
+        ));
+      } else {
+        items.add(_SettingsRow(
+          icon: Icons.group_add_rounded,
+          label: 'Join a Group',
+          trailing: const _TrailingText('Enter code'),
+          onTap: () => _showJoinGroupDialog(context, ref),
+        ));
+        items.add(_SettingsRow(
+          icon: Icons.swap_horiz_rounded,
+          label: 'Change Role',
+          trailing: _TrailingText(profile.role.displayName),
+          onTap: () => _showRoleChangePicker(context, ref, profile),
+        ));
+      }
+    } else {
+      // Self-Learner
+      items.add(_SettingsRow(
+        icon: Icons.swap_horiz_rounded,
+        label: 'Change Role',
+        trailing: _TrailingText(profile.role.displayName),
+        onTap: () => _showRoleChangePicker(context, ref, profile),
+      ));
+    }
+
+    return _buildSettingsSection(title: 'Role & Group', items: items);
+  }
+
+  void _showRoleChangePicker(
+      BuildContext context, WidgetRef ref, Profile profile,
+      {bool hasStudents = false}) {
+    final roles = [
+      (UserRole.selfLearner, 'Self-Learner', 'Practice on your own'),
+      (UserRole.student, 'Student', 'Join a teacher\'s group'),
+      (UserRole.teacher, 'Teacher', 'Manage students'),
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Color(0xFF1E0E3D),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            border: Border(
+              top: BorderSide(color: Colors.black, width: 5),
+              left: BorderSide(color: Colors.black, width: 5),
+              right: BorderSide(color: Colors.black, width: 5),
+            ),
+          ),
+          child: SafeArea(
+            top: false,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 12),
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: darkTextMuted,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Change Role',
+                  style: GoogleFonts.nunito(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                  ),
+                ),
+                if (hasStudents) ...[
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Text(
+                      'Warning: Changing your role will disband your group and remove all students.',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.nunito(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: accentCoralDark,
+                      ),
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 16),
+                ...roles.map((r) {
+                  final (role, name, desc) = r;
+                  final isSelected = role == profile.role;
+                  return GestureDetector(
+                    onTap: () async {
+                      Navigator.pop(ctx);
+                      if (role == profile.role) return;
+                      await _changeRole(context, ref, role,
+                          hasStudents: hasStudents);
+                    },
+                    behavior: HitTestBehavior.opaque,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 14),
+                      decoration: const BoxDecoration(
+                        border: Border(
+                          top: BorderSide(color: darkDivider),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  name,
+                                  style: GoogleFonts.nunito(
+                                    fontSize: 16,
+                                    fontWeight: isSelected
+                                        ? FontWeight.w800
+                                        : FontWeight.w600,
+                                    color: isSelected
+                                        ? primaryLight
+                                        : Colors.white,
+                                  ),
+                                ),
+                                Text(
+                                  desc,
+                                  style: GoogleFonts.nunito(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: darkTextMuted,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (isSelected)
+                            const Icon(Icons.check_rounded,
+                                color: primaryLight, size: 22),
+                        ],
+                      ),
+                    ),
+                  );
+                }),
+                const SizedBox(height: 16),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _changeRole(
+      BuildContext context, WidgetRef ref, UserRole newRole,
+      {bool hasStudents = false}) async {
+    try {
+      final user = ref.read(currentUserProvider);
+      if (user == null) return;
+
+      final profileService = ref.read(profileServiceProvider);
+      final groupService = ref.read(groupServiceProvider);
+
+      // If switching away from teacher and has students, disband group
+      if (hasStudents) {
+        final group = await groupService.getTeacherGroup(user.id);
+        if (group != null) {
+          await groupService.deleteGroup(group.id);
+        }
+      }
+
+      // If switching to teacher, create a group
+      if (newRole == UserRole.teacher) {
+        await groupService.createGroup(user.id);
+      }
+
+      await profileService.updateProfile(user.id, role: newRole);
+
+      ref.invalidate(currentProfileProvider);
+      ref.invalidate(teacherGroupProvider);
+      ref.invalidate(teacherStudentsProvider);
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to change role: $e'),
+            backgroundColor: accentCoralDark,
+          ),
+        );
+      }
+    }
+  }
+
+  void _showLeaveGroupDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1E0E3D),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Leave Group',
+          style: GoogleFonts.dmSerifDisplay(fontSize: 20, color: Colors.white),
+        ),
+        content: Text(
+          'Are you sure you want to leave your teacher\'s group?',
+          style: GoogleFonts.nunito(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: darkTextSecondary,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Cancel',
+                style: GoogleFonts.nunito(
+                    fontWeight: FontWeight.w700, color: darkTextMuted)),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              final user = ref.read(currentUserProvider);
+              if (user == null) return;
+              await ref.read(groupServiceProvider).leaveGroup(user.id);
+              ref.invalidate(studentMembershipProvider);
+              ref.invalidate(isInGroupProvider);
+            },
+            child: Text('Leave',
+                style: GoogleFonts.nunito(
+                    fontWeight: FontWeight.w700, color: accentCoralDark)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showJoinGroupDialog(BuildContext context, WidgetRef ref) {
+    final codeController = TextEditingController();
+    String? errorText;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          backgroundColor: const Color(0xFF1E0E3D),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: Text(
+            'Join a Group',
+            style:
+                GoogleFonts.dmSerifDisplay(fontSize: 20, color: Colors.white),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Enter your teacher\'s invite code',
+                style: GoogleFonts.nunito(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: darkTextSecondary,
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: codeController,
+                textCapitalization: TextCapitalization.characters,
+                style: GoogleFonts.nunito(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 2,
+                ),
+                decoration: InputDecoration(
+                  hintText: 'INVITE CODE',
+                  hintStyle: GoogleFonts.nunito(
+                    color: darkTextMuted.withAlpha(100),
+                    fontWeight: FontWeight.w600,
+                  ),
+                  errorText: errorText,
+                  filled: true,
+                  fillColor: Colors.white.withAlpha(12),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.white.withAlpha(30)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.white.withAlpha(30)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide:
+                        const BorderSide(color: accentCoral, width: 1.5),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text('Cancel',
+                  style: GoogleFonts.nunito(
+                      fontWeight: FontWeight.w700, color: darkTextMuted)),
+            ),
+            TextButton(
+              onPressed: () async {
+                final code = codeController.text.trim();
+                if (code.isEmpty) {
+                  setDialogState(() => errorText = 'Please enter a code');
+                  return;
+                }
+                final user = ref.read(currentUserProvider);
+                if (user == null) return;
+                final groupService = ref.read(groupServiceProvider);
+                final group = await groupService.findGroupByInviteCode(code);
+                if (group == null) {
+                  setDialogState(() => errorText = 'Invalid invite code');
+                  return;
+                }
+                try {
+                  await groupService.joinGroup(user.id, group.id);
+                  ref.invalidate(studentMembershipProvider);
+                  ref.invalidate(isInGroupProvider);
+                  if (ctx.mounted) Navigator.pop(ctx);
+                } catch (e) {
+                  setDialogState(() => errorText = e.toString());
+                }
+              },
+              child: Text('Join',
+                  style: GoogleFonts.nunito(
+                      fontWeight: FontWeight.w700, color: primaryLight)),
+            ),
+          ],
         ),
       ),
     );

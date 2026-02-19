@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:listzly/models/profile.dart';
+import 'package:listzly/models/user_role.dart';
 
 class ProfileService {
   final SupabaseClient _client;
@@ -48,10 +49,14 @@ class ProfileService {
     String userId, {
     String? displayName,
     String? avatarUrl,
+    UserRole? role,
+    bool? roleSelected,
   }) async {
     final updates = <String, dynamic>{};
     if (displayName != null) updates['display_name'] = displayName;
     if (avatarUrl != null) updates['avatar_url'] = avatarUrl;
+    if (role != null) updates['role'] = role.toJson();
+    if (roleSelected != null) updates['role_selected'] = roleSelected;
 
     final result = await _client
         .from('profiles')

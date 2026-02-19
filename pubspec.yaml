@@ -83,6 +83,8 @@ flutter:
     - lib/images/trophy_unselected.png
     - lib/images/settings_selected.png
     - lib/images/settings_unselected.png
+    - lib/images/students_selected.png
+    - lib/images/students_unselected.png
     - lib/images/playing_piano.json
     - lib/images/playing_guitar.json
     - lib/images/playing_violin.json

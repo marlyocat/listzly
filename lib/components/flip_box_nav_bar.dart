@@ -8,15 +8,20 @@ import 'package:listzly/theme/colors.dart';
 class FlipBoxNavItem {
   FlipBoxNavItem({
     required this.name,
-    required this.selectedImage,
-    required this.unselectedImage,
+    this.selectedImage,
+    this.unselectedImage,
+    this.icon,
     this.selectedBackgroundColor = Colors.blue,
     this.unselectedBackgroundColor = Colors.lightBlue,
-  });
+  }) : assert(
+          (selectedImage != null && unselectedImage != null) || icon != null,
+          'Either provide both selectedImage and unselectedImage, or provide an icon.',
+        );
 
   final String name;
-  final String selectedImage;
-  final String unselectedImage;
+  final String? selectedImage;
+  final String? unselectedImage;
+  final IconData? icon;
   final Color selectedBackgroundColor;
   final Color unselectedBackgroundColor;
 }
@@ -205,8 +210,12 @@ class _FlipBoxTileState extends State<_FlipBoxTile> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset(widget.item.selectedImage,
-                      width: widget.iconSize, height: widget.iconSize),
+                  if (widget.item.selectedImage != null)
+                    Image.asset(widget.item.selectedImage!,
+                        width: widget.iconSize, height: widget.iconSize)
+                  else
+                    Icon(widget.item.icon, size: widget.iconSize,
+                        color: Colors.white),
                   const SizedBox(height: 3),
                   Text(widget.item.name,
                       textAlign: TextAlign.center, style: widget.textStyle),
@@ -221,8 +230,11 @@ class _FlipBoxTileState extends State<_FlipBoxTile> {
         height: widget.height,
         color: navBarBg,
         child: Center(
-          child: Image.asset(widget.item.unselectedImage,
-              width: widget.iconSize, height: widget.iconSize),
+          child: widget.item.unselectedImage != null
+              ? Image.asset(widget.item.unselectedImage!,
+                  width: widget.iconSize, height: widget.iconSize)
+              : Icon(widget.item.icon, size: widget.iconSize,
+                  color: Colors.white.withAlpha(140)),
         ),
       );
 
