@@ -11,6 +11,7 @@ import 'package:listzly/providers/auth_provider.dart';
 import 'package:listzly/providers/profile_provider.dart';
 import 'package:listzly/providers/settings_provider.dart';
 import 'package:listzly/providers/instrument_provider.dart';
+import 'package:listzly/models/student_summary.dart';
 import 'package:listzly/providers/group_provider.dart';
 import 'package:listzly/theme/colors.dart';
 import 'package:listzly/services/notification_service.dart';
@@ -333,6 +334,7 @@ class ProfilePage extends ConsumerWidget {
         icon: Icons.group_rounded,
         label: 'Students',
         trailing: _TrailingText('$studentCount/20'),
+        onTap: () => _showStudentListSheet(context, ref),
       ));
 
       items.add(_SettingsRow(
@@ -898,6 +900,237 @@ class ProfilePage extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+
+  void _showStudentListSheet(BuildContext context, WidgetRef ref) {
+    final studentsAsync = ref.read(teacherStudentsProvider);
+    final students = studentsAsync.valueOrNull ?? [];
+    final groupAsync = ref.read(teacherGroupProvider);
+    final groupId = groupAsync.valueOrNull?.id;
+
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setSheetState) {
+            return Dialog(
+              backgroundColor: const Color(0xFF1E0E3D),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+                side: const BorderSide(color: Colors.black, width: 5),
+              ),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.55,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 20),
+                    Text(
+                      'Your Students',
+                      style: GoogleFonts.nunito(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                      ),
+                    ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${students.length}/20 students',
+                    style: GoogleFonts.nunito(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: darkTextSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  if (students.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 32),
+                      child: Text(
+                        'No students yet',
+                        style: GoogleFonts.nunito(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: darkTextSecondary,
+                        ),
+                      ),
+                    )
+                  else
+                    Flexible(
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        padding: EdgeInsets.only(
+                          bottom:
+                              MediaQuery.of(ctx).padding.bottom + 16,
+                        ),
+                        itemCount: students.length,
+                        itemBuilder: (context, i) {
+                          final student = students[i];
+                          return _buildStudentListItem(
+                            ctx,
+                            ref,
+                            student,
+                            groupId,
+                            onRemoved: () {
+                              setSheetState(() {
+                                students.removeAt(i);
+                              });
+                              ref.invalidate(teacherStudentsProvider);
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildStudentListItem(
+    BuildContext context,
+    WidgetRef ref,
+    StudentSummary student,
+    String? groupId, {
+    required VoidCallback onRemoved,
+  }) {
+    return Column(
+      children: [
+        const Divider(height: 1, color: darkDivider, indent: 16, endIndent: 16),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: darkSurfaceBg,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.black, width: 2),
+                ),
+                child: Center(
+                  child: Text(
+                    student.displayName.isNotEmpty
+                        ? student.displayName[0].toUpperCase()
+                        : '?',
+                    style: GoogleFonts.dmSerifDisplay(
+                      fontSize: 18,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      student.displayName,
+                      style: GoogleFonts.nunito(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Row(
+                      children: [
+                        Icon(Icons.local_fire_department_rounded,
+                            size: 14, color: accentCoral.withAlpha(180)),
+                        const SizedBox(width: 3),
+                        Text(
+                          '${student.currentStreak}d',
+                          style: GoogleFonts.nunito(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: darkTextSecondary,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Icon(Icons.star_rounded,
+                            size: 14, color: primaryLight.withAlpha(180)),
+                        const SizedBox(width: 3),
+                        Text(
+                          '${student.totalXp} XP',
+                          style: GoogleFonts.nunito(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: darkTextSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              GestureDetector(
+                onTap: () async {
+                  final confirmed = await showDialog<bool>(
+                    context: context,
+                    builder: (dlgCtx) => AlertDialog(
+                      backgroundColor: const Color(0xFF1E0E3D),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16)),
+                      title: Text(
+                        'Remove Student',
+                        style: GoogleFonts.dmSerifDisplay(
+                            fontSize: 20, color: Colors.white),
+                      ),
+                      content: Text(
+                        'Are you sure you want to remove ${student.displayName} from your group?',
+                        style: GoogleFonts.nunito(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: darkTextSecondary,
+                        ),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(dlgCtx, false),
+                          child: Text('Cancel',
+                              style: GoogleFonts.nunito(
+                                  fontWeight: FontWeight.w700,
+                                  color: darkTextMuted)),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(dlgCtx, true),
+                          child: Text('Remove',
+                              style: GoogleFonts.nunito(
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.red)),
+                        ),
+                      ],
+                    ),
+                  );
+                  if (confirmed == true && groupId != null) {
+                    await ref
+                        .read(groupServiceProvider)
+                        .removeStudent(groupId, student.studentId);
+                    onRemoved();
+                  }
+                },
+                child: Text(
+                  'Remove',
+                  style: GoogleFonts.nunito(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.red,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 

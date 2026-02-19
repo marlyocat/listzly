@@ -316,28 +316,20 @@ class StudentsPage extends ConsumerWidget {
                   ),
                   _StudentTile(
                     student: student,
-                    onTap: () {
-                      Navigator.of(context).push(
+                    onTap: () async {
+                      final groupAsync = ref.read(teacherGroupProvider);
+                      final groupId = groupAsync.valueOrNull?.id;
+                      final removed = await Navigator.of(context).push<bool>(
                         MaterialPageRoute(
                           builder: (_) => StudentDetailPage(
                             studentId: student.studentId,
                             studentName: student.displayName,
+                            groupId: groupId,
                           ),
                         ),
                       );
-                    },
-                    onRemove: () async {
-                      final confirmed = await _showRemoveDialog(
-                          context, student.displayName);
-                      if (confirmed == true) {
-                        final groupAsync = ref.read(teacherGroupProvider);
-                        final group = groupAsync.valueOrNull;
-                        if (group != null) {
-                          await ref
-                              .read(groupServiceProvider)
-                              .removeStudent(group.id, student.studentId);
-                          ref.invalidate(teacherStudentsProvider);
-                        }
+                      if (removed == true) {
+                        ref.invalidate(teacherStudentsProvider);
                       }
                     },
                   ),
@@ -466,12 +458,10 @@ class StudentsPage extends ConsumerWidget {
 class _StudentTile extends StatelessWidget {
   final StudentSummary student;
   final VoidCallback onTap;
-  final VoidCallback onRemove;
 
   const _StudentTile({
     required this.student,
     required this.onTap,
-    required this.onRemove,
   });
 
   @override
@@ -549,20 +539,6 @@ class _StudentTile extends StatelessWidget {
                 ],
               ),
             ),
-            // Remove button
-            GestureDetector(
-              onTap: onRemove,
-              child: Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: Colors.white.withAlpha(8),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(Icons.person_remove_rounded,
-                    color: darkTextMuted, size: 18),
-              ),
-            ),
-            const SizedBox(width: 4),
             const Icon(Icons.chevron_right, color: darkTextSecondary, size: 20),
           ],
         ),

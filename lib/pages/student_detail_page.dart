@@ -3,16 +3,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:listzly/models/practice_session.dart';
 import 'package:listzly/providers/student_data_provider.dart';
+import 'package:listzly/providers/group_provider.dart';
 import 'package:listzly/theme/colors.dart';
 
 class StudentDetailPage extends ConsumerStatefulWidget {
   final String studentId;
   final String studentName;
+  final String? groupId;
 
   const StudentDetailPage({
     super.key,
     required this.studentId,
     required this.studentName,
+    this.groupId,
   });
 
   @override
@@ -264,6 +267,10 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
 
             // Sessions list
             SliverToBoxAdapter(child: _buildSessionList(sessionsAsync)),
+
+            // Remove student button
+            if (widget.groupId != null)
+              SliverToBoxAdapter(child: _buildRemoveButton()),
 
             const SliverToBoxAdapter(child: SizedBox(height: 32)),
           ],
@@ -967,6 +974,78 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
         ),
       ),
     );
+  }
+
+  Widget _buildRemoveButton() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+      child: SizedBox(
+        width: double.infinity,
+        height: 50,
+        child: ElevatedButton(
+          onPressed: () => _confirmRemoveStudent(),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: darkCardBg,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+              side: const BorderSide(color: Colors.black, width: 5),
+            ),
+            elevation: 0,
+          ),
+          child: Text(
+            'Remove Student',
+            style: GoogleFonts.nunito(
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+              color: Colors.red,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _confirmRemoveStudent() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1E0E3D),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Remove Student',
+          style: GoogleFonts.dmSerifDisplay(fontSize: 20, color: Colors.white),
+        ),
+        content: Text(
+          'Are you sure you want to remove ${widget.studentName} from your group?',
+          style: GoogleFonts.nunito(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: darkTextSecondary,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('Cancel',
+                style: GoogleFonts.nunito(
+                    fontWeight: FontWeight.w700, color: darkTextMuted)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text('Remove',
+                style: GoogleFonts.nunito(
+                    fontWeight: FontWeight.w700, color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && mounted) {
+      await ref
+          .read(groupServiceProvider)
+          .removeStudent(widget.groupId!, widget.studentId);
+      if (mounted) Navigator.of(context).pop(true);
+    }
   }
 
   void _showAllSessions(BuildContext context, List<PracticeSession> sessions) {
