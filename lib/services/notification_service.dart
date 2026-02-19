@@ -14,6 +14,8 @@ class NotificationService {
   static const _channelName = 'Practice Reminders';
   static const _channelDescription = 'Daily practice reminder notifications';
   static const _notificationId = 0;
+  static const _streakWarning2Id = 1;
+  static const _streakWarning3Id = 2;
 
   /// Call once at app startup.
   Future<void> init() async {
@@ -108,5 +110,83 @@ class NotificationService {
   /// Cancel the daily reminder notification.
   Future<void> cancelReminder() async {
     await _plugin.cancel(_notificationId);
+  }
+
+  /// Schedule streak warning notifications for 2 and 3 days from now.
+  /// Called after each practice session. [timeStr] is the user's reminder
+  /// time in "HH:mm" format. If null, no warnings are scheduled.
+  Future<void> scheduleStreakWarnings(String? timeStr) async {
+    await cancelStreakWarnings();
+    if (timeStr == null || timeStr.isEmpty) return;
+
+    final parts = timeStr.split(':');
+    final hour = int.parse(parts[0]);
+    final minute = int.parse(parts[1]);
+
+    final now = tz.TZDateTime.now(tz.local);
+
+    // Day 2: "Your streak is at risk!"
+    final day2 = tz.TZDateTime(
+      tz.local,
+      now.year,
+      now.month,
+      now.day + 2,
+      hour,
+      minute,
+    );
+
+    // Day 3: "Last chance!"
+    final day3 = tz.TZDateTime(
+      tz.local,
+      now.year,
+      now.month,
+      now.day + 3,
+      hour,
+      minute,
+    );
+
+    const androidDetails = AndroidNotificationDetails(
+      _channelId,
+      _channelName,
+      channelDescription: _channelDescription,
+      importance: Importance.high,
+      priority: Priority.high,
+      icon: '@mipmap/ic_launcher',
+    );
+    const iosDetails = DarwinNotificationDetails();
+    const details = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+
+    await _plugin.zonedSchedule(
+      _streakWarning2Id,
+      'Your streak is at risk!',
+      'Practice today to keep your streak alive.',
+      day2,
+      details,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      payload: 'streak_warning_2',
+    );
+
+    await _plugin.zonedSchedule(
+      _streakWarning3Id,
+      'Last chance!',
+      'Your streak will be lost if you don\'t practice today.',
+      day3,
+      details,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      payload: 'streak_warning_3',
+    );
+  }
+
+  /// Cancel any pending streak warning notifications.
+  Future<void> cancelStreakWarnings() async {
+    await _plugin.cancel(_streakWarning2Id);
+    await _plugin.cancel(_streakWarning3Id);
   }
 }

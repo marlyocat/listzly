@@ -39,41 +39,32 @@ class StatsService {
     final totalXp = sessionList.fold<int>(
         0, (sum, e) => sum + ((e as Map<String, dynamic>)['xp_earned'] as int));
 
-    // Calculate streak: count consecutive days with sessions ending today
-    final practiceDays = sessionList
+    // Calculate streak with 3-day grace period:
+    // The streak counts actual practice days but only resets after
+    // 3 consecutive days with no practice.
+    final practiceDaySet = sessionList
         .map((e) {
           final dt = DateTime.parse(
               (e as Map<String, dynamic>)['completed_at'] as String);
           return DateTime(dt.year, dt.month, dt.day);
         })
-        .toSet()
-        .toList()
-      ..sort((a, b) => b.compareTo(a)); // newest first
+        .toSet();
 
     int currentStreak = 0;
     final today = DateTime.now();
-    var checkDate = DateTime(today.year, today.month, today.day);
+    var date = DateTime(today.year, today.month, today.day);
 
-    for (final day in practiceDays) {
-      if (day == checkDate) {
-        currentStreak++;
-        checkDate = checkDate.subtract(const Duration(days: 1));
-      } else if (day.isBefore(checkDate)) {
-        break;
-      }
-    }
-
-    // If no session today, check if streak continues from yesterday
-    if (currentStreak == 0 && practiceDays.isNotEmpty) {
-      final yesterday = checkDate.subtract(const Duration(days: 1));
-      checkDate = yesterday;
-      for (final day in practiceDays) {
-        if (day == checkDate) {
+    if (practiceDaySet.isNotEmpty) {
+      int consecutiveGap = 0;
+      while (true) {
+        if (practiceDaySet.contains(date)) {
           currentStreak++;
-          checkDate = checkDate.subtract(const Duration(days: 1));
-        } else if (day.isBefore(checkDate)) {
-          break;
+          consecutiveGap = 0;
+        } else {
+          consecutiveGap++;
+          if (consecutiveGap >= 3) break;
         }
+        date = date.subtract(const Duration(days: 1));
       }
     }
 

@@ -32,6 +32,25 @@ Future<void> main() async {
       final reminderTime = result?['reminder_time'] as String?;
       if (reminderTime != null && reminderTime.isNotEmpty) {
         await NotificationService.instance.scheduleDailyReminder(reminderTime);
+
+        // Reschedule streak warnings based on last practice date
+        try {
+          final lastSession = await Supabase.instance.client
+              .from('practice_sessions')
+              .select('completed_at')
+              .eq('user_id', currentUser.id)
+              .order('completed_at', ascending: false)
+              .limit(1)
+              .maybeSingle();
+          if (lastSession != null) {
+            final lastDate = DateTime.parse(lastSession['completed_at'] as String);
+            final daysSince = DateTime.now().difference(lastDate).inDays;
+            // Only schedule if last practice was recent (within grace period)
+            if (daysSince < 3) {
+              await NotificationService.instance.scheduleStreakWarnings(reminderTime);
+            }
+          }
+        } catch (_) {}
       }
     } catch (_) {
       // Non-critical: if reschedule fails, user can re-set in settings

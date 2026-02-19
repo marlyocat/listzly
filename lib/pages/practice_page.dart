@@ -11,6 +11,8 @@ import 'package:listzly/providers/session_provider.dart';
 import 'package:listzly/providers/quest_provider.dart';
 import 'package:listzly/providers/stats_provider.dart';
 import 'package:listzly/providers/instrument_provider.dart';
+import 'package:listzly/providers/settings_provider.dart';
+import 'package:listzly/services/notification_service.dart';
 import 'package:listzly/theme/colors.dart';
 
 class PracticePage extends ConsumerStatefulWidget {
@@ -226,6 +228,14 @@ class _PracticePageState extends ConsumerState<PracticePage>
 
       // Recalculate stats (streak, XP)
       await ref.read(statsServiceProvider).recalculateStats(user.id);
+
+      // Schedule streak warning notifications (respects user's reminder time)
+      try {
+        final settings = await ref.read(settingsServiceProvider).getSettings(user.id);
+        await NotificationService.instance.scheduleStreakWarnings(settings.reminderTime);
+      } catch (_) {
+        // Non-critical: streak warnings are a nice-to-have
+      }
 
       // Invalidate providers so other pages see fresh data
       ref.invalidate(userStatsProvider);

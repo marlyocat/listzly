@@ -407,52 +407,6 @@ class StudentsPage extends ConsumerWidget {
     );
   }
 
-  Future<bool?> _showRemoveDialog(BuildContext context, String studentName) {
-    return showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1E0E3D),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          'Remove Student',
-          style: GoogleFonts.dmSerifDisplay(
-            fontSize: 20,
-            color: Colors.white,
-          ),
-        ),
-        content: Text(
-          'Are you sure you want to remove $studentName from your group?',
-          style: GoogleFonts.nunito(
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-            color: darkTextSecondary,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(
-              'Cancel',
-              style: GoogleFonts.nunito(
-                fontWeight: FontWeight.w700,
-                color: darkTextMuted,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(
-              'Remove',
-              style: GoogleFonts.nunito(
-                fontWeight: FontWeight.w700,
-                color: Colors.red,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 class _StudentTile extends StatelessWidget {
