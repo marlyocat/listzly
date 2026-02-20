@@ -1293,7 +1293,7 @@ class ProfilePage extends ConsumerWidget {
 
   void _showDailyGoalPicker(
       BuildContext context, WidgetRef ref, UserSettings settings) {
-    const goalOptions = [5, 10, 15, 20, 30, 45, 60];
+    const goalOptions = [5, 10, 15, 20, 30, 45, 60, 90, 120];
 
     showModalBottomSheet(
       context: context,
