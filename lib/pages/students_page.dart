@@ -10,6 +10,7 @@ import 'package:listzly/providers/group_provider.dart';
 import 'package:listzly/pages/assign_quest_sheet.dart';
 import 'package:listzly/pages/student_detail_page.dart';
 import 'package:listzly/theme/colors.dart';
+import 'package:listzly/utils/level_utils.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
 
 class StudentsPage extends ConsumerWidget {
@@ -860,6 +861,18 @@ class _StudentTile extends StatelessWidget {
                           color: darkTextSecondary,
                         ),
                       ),
+                      const SizedBox(width: 12),
+                      Icon(Icons.shield_rounded,
+                          size: 14, color: primaryColor.withAlpha(180)),
+                      const SizedBox(width: 3),
+                      Text(
+                        'Lv.${LevelUtils.levelFromXp(student.totalXp)}',
+                        style: GoogleFonts.nunito(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: darkTextSecondary,
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -1054,7 +1067,7 @@ class _ActiveQuestTile extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  '$studentName · ${quest.target} sessions · +${quest.rewardXp} XP',
+                  '$studentName · ${quest.target} sessions · +${quest.rewardXp} XP · ${quest.isRecurring ? 'Recurring Weekly' : 'One Time'}',
                   style: GoogleFonts.nunito(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,

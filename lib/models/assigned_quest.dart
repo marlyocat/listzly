@@ -22,6 +22,8 @@ class AssignedQuest {
   final String iconName;
   @JsonKey(name: 'is_active')
   final bool isActive;
+  @JsonKey(name: 'is_recurring')
+  final bool isRecurring;
   @JsonKey(name: 'created_at')
   final DateTime createdAt;
 
@@ -37,6 +39,7 @@ class AssignedQuest {
     this.rewardXp = 0,
     this.iconName = 'assignment_rounded',
     this.isActive = true,
+    this.isRecurring = false,
     required this.createdAt,
   });
 

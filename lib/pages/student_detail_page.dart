@@ -5,6 +5,7 @@ import 'package:listzly/models/practice_session.dart';
 import 'package:listzly/providers/student_data_provider.dart';
 import 'package:listzly/providers/group_provider.dart';
 import 'package:listzly/theme/colors.dart';
+import 'package:listzly/utils/level_utils.dart';
 
 class StudentDetailPage extends ConsumerStatefulWidget {
   final String studentId;
@@ -232,18 +233,24 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
                 child: studentStatsAsync.when(
-                  data: (stats) => Row(
+                  data: (stats) => Wrap(
+                    spacing: 10,
+                    runSpacing: 8,
                     children: [
                       _buildChip(
                         Icons.local_fire_department_rounded,
                         '${stats.currentStreak} day streak',
                         accentCoral,
                       ),
-                      const SizedBox(width: 10),
                       _buildChip(
                         Icons.star_rounded,
                         '${stats.totalXp} XP',
                         primaryLight,
+                      ),
+                      _buildChip(
+                        Icons.shield_rounded,
+                        'Lv. ${LevelUtils.levelFromXp(stats.totalXp)}',
+                        primaryColor,
                       ),
                     ],
                   ),

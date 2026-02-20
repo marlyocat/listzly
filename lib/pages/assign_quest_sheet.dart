@@ -32,6 +32,7 @@ class _AssignQuestDialogState extends ConsumerState<AssignQuestDialog> {
   late _Step _step;
   StudentSummary? _selectedStudent;
   bool _isSaving = false;
+  bool _isRecurring = false;
 
   bool get _isEditing => widget.editQuest != null;
 
@@ -50,6 +51,7 @@ class _AssignQuestDialogState extends ConsumerState<AssignQuestDialog> {
       _descriptionController.text = quest.description;
       _targetController.text = quest.target.toString();
       _rewardController.text = quest.rewardXp.toString();
+      _isRecurring = quest.isRecurring;
     } else {
       _step = _Step.selectStudent;
       _targetController.text = '1';
@@ -131,6 +133,7 @@ class _AssignQuestDialogState extends ConsumerState<AssignQuestDialog> {
           description: description,
           target: target,
           rewardXp: rewardXp,
+          isRecurring: _isRecurring,
         );
       } else {
         final now = DateTime.now().millisecondsSinceEpoch;
@@ -144,6 +147,7 @@ class _AssignQuestDialogState extends ConsumerState<AssignQuestDialog> {
           target: target,
           rewardXp: rewardXp,
           iconName: 'assignment_rounded',
+          isRecurring: _isRecurring,
         );
       }
 
@@ -394,6 +398,84 @@ class _AssignQuestDialogState extends ConsumerState<AssignQuestDialog> {
                 controller: _rewardController,
                 hint: '10',
                 keyboardType: TextInputType.number,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        // Frequency dropdown
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '* Frequency',
+              style: GoogleFonts.nunito(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: darkTextSecondary,
+              ),
+            ),
+            const SizedBox(height: 4),
+            PopupMenuButton<bool>(
+              initialValue: _isRecurring,
+              color: const Color(0xFF1E0E3D),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: const BorderSide(color: Colors.black, width: 3),
+              ),
+              position: PopupMenuPosition.under,
+              onSelected: (value) => setState(() => _isRecurring = value),
+              itemBuilder: (_) => [
+                PopupMenuItem(
+                  value: false,
+                  child: Text('One Time',
+                      style: GoogleFonts.nunito(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      )),
+                ),
+                PopupMenuItem(
+                  value: true,
+                  child: Row(
+                    children: [
+                      const Icon(Icons.repeat_rounded,
+                          size: 18, color: accentCoral),
+                      const SizedBox(width: 8),
+                      Text('Recurring Weekly',
+                          style: GoogleFonts.nunito(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          )),
+                    ],
+                  ),
+                ),
+              ],
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 12, vertical: 10),
+                decoration: BoxDecoration(
+                  color: darkCardBg,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.black, width: 3),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        _isRecurring ? 'Recurring Weekly' : 'One Time',
+                        style: GoogleFonts.nunito(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    const Icon(Icons.keyboard_arrow_down_rounded,
+                        color: darkTextSecondary),
+                  ],
+                ),
               ),
             ),
           ],

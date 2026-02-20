@@ -19,6 +19,7 @@ AssignedQuest _$AssignedQuestFromJson(Map<String, dynamic> json) =>
       rewardXp: (json['reward_xp'] as num?)?.toInt() ?? 0,
       iconName: json['icon_name'] as String? ?? 'assignment_rounded',
       isActive: json['is_active'] as bool? ?? true,
+      isRecurring: json['is_recurring'] as bool? ?? false,
       createdAt: DateTime.parse(json['created_at'] as String),
     );
 
@@ -35,5 +36,6 @@ Map<String, dynamic> _$AssignedQuestToJson(AssignedQuest instance) =>
       'reward_xp': instance.rewardXp,
       'icon_name': instance.iconName,
       'is_active': instance.isActive,
+      'is_recurring': instance.isRecurring,
       'created_at': instance.createdAt.toIso8601String(),
     };

@@ -14,6 +14,7 @@ import 'package:listzly/providers/settings_provider.dart';
 import 'package:listzly/providers/stats_provider.dart';
 import 'package:listzly/services/quest_service.dart';
 import 'package:listzly/theme/colors.dart';
+import 'package:listzly/utils/level_utils.dart';
 
 /// Maps quest keys to their display icons.
 const _questIconMap = <String, IconData>{
@@ -140,10 +141,15 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
             orElse: () => null,
           );
 
+      final desc = def?.description ?? '';
+      final isRecurring = def?.isRecurring ?? false;
+
       return _Quest(
         icon: _iconNameMap[def?.iconName] ?? Icons.assignment_rounded,
         title: def?.title ?? qp.questKey,
-        description: def?.description ?? '',
+        description: isRecurring
+            ? (desc.isNotEmpty ? '$desc (Resets weekly)' : 'Resets weekly')
+            : (desc.isNotEmpty ? '$desc (One time)' : 'One time'),
         currentProgress: qp.progress,
         targetProgress: qp.target,
         rewardAmount: def?.rewardXp ?? 0,
@@ -379,6 +385,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
 
   // ─── Stats chips row ──────────────────────────────────────────────
   Widget _buildStatsChips(UserStats stats) {
+    final level = LevelUtils.levelFromXp(stats.totalXp);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
       child: Row(
@@ -388,6 +395,8 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
             'Streak',
             Colors.white,
           ),
+          const SizedBox(width: 10),
+          _buildChip('$level', 'Level', Colors.white),
           const SizedBox(width: 10),
           _buildChip('${stats.totalXp}', 'Total XP', Colors.white),
         ],
@@ -412,20 +421,20 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
           child: Column(
           children: [
             Text(
-              value,
-              style: GoogleFonts.nunito(
-                fontSize: 16,
-                fontWeight: FontWeight.w800,
-                color: color,
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text(
               label,
               style: GoogleFonts.nunito(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
                 color: darkTextSecondary,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              value,
+              style: GoogleFonts.nunito(
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: color,
               ),
             ),
           ],

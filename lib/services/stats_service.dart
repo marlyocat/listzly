@@ -35,9 +35,45 @@ class StatsService {
 
     final sessionList = sessions as List;
 
-    // Total XP
-    final totalXp = sessionList.fold<int>(
+    // Practice session XP
+    final sessionXp = sessionList.fold<int>(
         0, (sum, e) => sum + ((e as Map<String, dynamic>)['xp_earned'] as int));
+
+    // Assigned quest reward XP
+    int questBonusXp = 0;
+    try {
+      final completedAssigned = await _client
+          .from('quest_progress')
+          .select('quest_key')
+          .eq('user_id', userId)
+          .eq('quest_type', 'assigned')
+          .eq('completed', true);
+
+      if ((completedAssigned as List).isNotEmpty) {
+        final assignedQuests = await _client
+            .from('assigned_quests')
+            .select('quest_key, reward_xp')
+            .eq('student_id', userId);
+
+        final rewardMap = <String, int>{};
+        for (final aq in assignedQuests as List) {
+          final m = aq as Map<String, dynamic>;
+          rewardMap[m['quest_key'] as String] = m['reward_xp'] as int;
+        }
+
+        // Each completed quest_progress row = one reward
+        // (recurring quests have multiple completed rows, one per week)
+        for (final cp in completedAssigned as List) {
+          final key = (cp as Map<String, dynamic>)['quest_key'] as String;
+          questBonusXp += rewardMap[key] ?? 0;
+        }
+      }
+    } catch (_) {
+      // Non-critical: if quest XP lookup fails, just use session XP
+    }
+
+    // Total XP
+    final totalXp = sessionXp + questBonusXp;
 
     // Calculate streak with 3-day grace period:
     // The streak counts actual practice days but only resets after
