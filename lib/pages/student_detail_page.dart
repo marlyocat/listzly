@@ -241,16 +241,19 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                         Icons.local_fire_department_rounded,
                         '${stats.currentStreak} day streak',
                         accentCoral,
+                        imagePath: 'lib/images/streak.png',
                       ),
                       _buildChip(
                         Icons.star_rounded,
                         '${stats.totalXp} XP',
                         primaryLight,
+                        imagePath: 'lib/images/xp.png',
                       ),
                       _buildChip(
                         Icons.shield_rounded,
                         'Lv. ${LevelUtils.levelFromXp(stats.totalXp)}',
                         primaryColor,
+                        imagePath: 'lib/images/level.png',
                       ),
                     ],
                   ),
@@ -286,7 +289,8 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
     );
   }
 
-  Widget _buildChip(IconData icon, String text, Color color) {
+  Widget _buildChip(IconData icon, String text, Color color,
+      {String? imagePath}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
@@ -297,7 +301,10 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: color),
+          if (imagePath != null)
+            Image.asset(imagePath, width: 16, height: 16)
+          else
+            Icon(icon, size: 16, color: color),
           const SizedBox(width: 6),
           Text(
             text,

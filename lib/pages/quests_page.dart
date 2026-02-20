@@ -394,17 +394,21 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
             '${stats.currentStreak} ${stats.currentStreak == 1 ? 'Day' : 'Days'}',
             'Streak',
             Colors.white,
+            imagePath: 'lib/images/streak.png',
           ),
           const SizedBox(width: 10),
-          _buildChip('$level', 'Level', Colors.white),
+          _buildChip('$level', 'Level', Colors.white,
+              imagePath: 'lib/images/level.png'),
           const SizedBox(width: 10),
-          _buildChip('${stats.totalXp}', 'Total XP', Colors.white),
+          _buildChip('${stats.totalXp}', 'Total XP', Colors.white,
+              imagePath: 'lib/images/xp.png'),
         ],
       ),
     );
   }
 
-  Widget _buildChip(String value, String label, Color color) {
+  Widget _buildChip(String value, String label, Color color,
+      {String? imagePath}) {
     return Expanded(
       child: Material(
         elevation: 12,
@@ -420,13 +424,22 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
           ),
           child: Column(
           children: [
-            Text(
-              label,
-              style: GoogleFonts.nunito(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: darkTextSecondary,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (imagePath != null) ...[
+                  Image.asset(imagePath, width: 14, height: 14),
+                  const SizedBox(width: 4),
+                ],
+                Text(
+                  label,
+                  style: GoogleFonts.nunito(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: darkTextSecondary,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 2),
             Text(

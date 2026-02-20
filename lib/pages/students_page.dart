@@ -838,8 +838,8 @@ class _StudentTile extends StatelessWidget {
                   const SizedBox(height: 2),
                   Row(
                     children: [
-                      Icon(Icons.local_fire_department_rounded,
-                          size: 14, color: accentCoral.withAlpha(180)),
+                      Image.asset('lib/images/streak.png',
+                          width: 14, height: 14),
                       const SizedBox(width: 3),
                       Text(
                         '${student.currentStreak}d',
@@ -850,8 +850,8 @@ class _StudentTile extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      Icon(Icons.star_rounded,
-                          size: 14, color: primaryLight.withAlpha(180)),
+                      Image.asset('lib/images/xp.png',
+                          width: 14, height: 14),
                       const SizedBox(width: 3),
                       Text(
                         '${student.totalXp} XP',
@@ -862,8 +862,8 @@ class _StudentTile extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      Icon(Icons.shield_rounded,
-                          size: 14, color: primaryColor.withAlpha(180)),
+                      Image.asset('lib/images/level.png',
+                          width: 14, height: 14),
                       const SizedBox(width: 3),
                       Text(
                         'Lv.${LevelUtils.levelFromXp(student.totalXp)}',

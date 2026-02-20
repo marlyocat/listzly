@@ -282,18 +282,8 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    ShaderMask(
-                      shaderCallback: (bounds) => const LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [Color(0xFFFFB74D), accentCoral],
-                      ).createShader(bounds),
-                      child: const Icon(
-                        Icons.local_fire_department_rounded,
-                        size: 18,
-                        color: Colors.white,
-                      ),
-                    ),
+                    Image.asset('lib/images/streak.png',
+                        width: 18, height: 18),
                     const SizedBox(width: 6),
                     Text(
                       '$streakDays day streak',
