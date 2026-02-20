@@ -3,8 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:listzly/models/assigned_quest.dart';
 import 'package:listzly/models/student_summary.dart';
+import 'package:listzly/providers/assigned_quest_provider.dart';
 import 'package:listzly/providers/group_provider.dart';
+import 'package:listzly/pages/assign_quest_sheet.dart';
 import 'package:listzly/pages/student_detail_page.dart';
 import 'package:listzly/theme/colors.dart';
 
@@ -71,6 +74,18 @@ class StudentsPage extends ConsumerWidget {
               ),
             ),
 
+            // Assign quest button + active quests
+            SliverToBoxAdapter(
+              child: groupAsync.when(
+                data: (group) {
+                  if (group == null) return const SizedBox.shrink();
+                  return _buildAssignedQuestsSection(context, ref, group.id);
+                },
+                loading: () => const SizedBox.shrink(),
+                error: (_, __) => const SizedBox.shrink(),
+              ),
+            ),
+
             // Student list
             SliverToBoxAdapter(
               child: studentsAsync.when(
@@ -102,6 +117,125 @@ class StudentsPage extends ConsumerWidget {
             ),
 
             const SliverToBoxAdapter(child: SizedBox(height: 100)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAssignedQuestsSection(
+      BuildContext context, WidgetRef ref, String groupId) {
+    final activeQuestsAsync = ref.watch(teacherAssignedQuestsProvider);
+    final students = ref.watch(teacherStudentsProvider).valueOrNull ?? [];
+    final studentNames = {
+      for (final s in students) s.studentId: s.displayName,
+    };
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: darkCardBg,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: Colors.black, width: 5),
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+              child: Row(
+                children: [
+                  Text(
+                    'Assigned Quest',
+                    style: GoogleFonts.nunito(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const Spacer(),
+                  GestureDetector(
+                    onTap: () async {
+                      final result = await showDialog<bool>(
+                        context: context,
+                        builder: (_) =>
+                            AssignQuestDialog(groupId: groupId),
+                      );
+                      if (result == true) {
+                        ref.invalidate(teacherAssignedQuestsProvider);
+                      }
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: accentCoral.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.black, width: 2),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.add_rounded,
+                              color: accentCoral, size: 16),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Assign',
+                            style: GoogleFonts.nunito(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: accentCoral,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 6),
+            activeQuestsAsync.when(
+              data: (quests) {
+                if (quests.isEmpty) {
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                    child: Text(
+                      'No quests assigned yet',
+                      style: GoogleFonts.nunito(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: darkTextSecondary,
+                      ),
+                    ),
+                  );
+                }
+                return _ActiveQuestList(
+                  quests: quests,
+                  studentNames: studentNames,
+                  groupId: groupId,
+                );
+              },
+              loading: () => const Padding(
+                padding: EdgeInsets.symmetric(vertical: 12),
+                child: Center(
+                  child: CircularProgressIndicator(
+                      color: accentCoral, strokeWidth: 2.5),
+                ),
+              ),
+              error: (_, __) => Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                child: Text(
+                  'Could not load quests.',
+                  style: GoogleFonts.nunito(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: darkTextMuted,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 6),
           ],
         ),
       ),
@@ -714,6 +848,217 @@ class _StudentTile extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+const _maxVisibleQuests = 5;
+
+class _ActiveQuestList extends ConsumerStatefulWidget {
+  final List<AssignedQuest> quests;
+  final Map<String, String> studentNames;
+  final String groupId;
+
+  const _ActiveQuestList({
+    required this.quests,
+    required this.studentNames,
+    required this.groupId,
+  });
+
+  @override
+  ConsumerState<_ActiveQuestList> createState() => _ActiveQuestListState();
+}
+
+class _ActiveQuestListState extends ConsumerState<_ActiveQuestList> {
+  bool _showAll = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final quests = widget.quests;
+    final visible =
+        _showAll ? quests : quests.take(_maxVisibleQuests).toList();
+    final hasMore = quests.length > _maxVisibleQuests;
+
+    return Column(
+      children: [
+        ...visible.map((quest) => Column(
+              children: [
+                const Divider(
+                  height: 1,
+                  indent: 16,
+                  endIndent: 16,
+                  color: darkDivider,
+                ),
+                _ActiveQuestTile(
+                  quest: quest,
+                  studentName:
+                      widget.studentNames[quest.studentId] ?? 'Unknown',
+                  onEdit: () async {
+                    final result = await showDialog<bool>(
+                      context: context,
+                      builder: (_) => AssignQuestDialog(
+                        groupId: widget.groupId,
+                        editQuest: quest,
+                        editStudentName:
+                            widget.studentNames[quest.studentId],
+                      ),
+                    );
+                    if (result == true) {
+                      ref.invalidate(teacherAssignedQuestsProvider);
+                    }
+                  },
+                  onDeactivate: () async {
+                    final confirm = await showDialog<bool>(
+                      context: context,
+                      builder: (_) => AlertDialog(
+                        backgroundColor: const Color(0xFF1E0E3D),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          side: const BorderSide(
+                              color: Colors.black, width: 5),
+                        ),
+                        title: Text(
+                          'Remove Quest',
+                          style: GoogleFonts.nunito(
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                          ),
+                        ),
+                        content: Text(
+                          'Are you sure you want to remove "${quest.title}"?',
+                          style: GoogleFonts.nunito(
+                            fontWeight: FontWeight.w600,
+                            color: darkTextSecondary,
+                          ),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () =>
+                                Navigator.pop(context, false),
+                            child: Text(
+                              'Cancel',
+                              style: GoogleFonts.nunito(
+                                fontWeight: FontWeight.w700,
+                                color: darkTextSecondary,
+                              ),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () =>
+                                Navigator.pop(context, true),
+                            child: Text(
+                              'Remove',
+                              style: GoogleFonts.nunito(
+                                fontWeight: FontWeight.w700,
+                                color: Colors.red,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                    if (confirm == true) {
+                      await ref
+                          .read(assignedQuestServiceProvider)
+                          .deactivateQuest(quest.id);
+                      ref.invalidate(teacherAssignedQuestsProvider);
+                    }
+                  },
+                ),
+              ],
+            )),
+        if (hasMore && !_showAll)
+          GestureDetector(
+            onTap: () => setState(() => _showAll = true),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Text(
+                'Show all ${quests.length} quests',
+                style: GoogleFonts.nunito(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: accentCoral,
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _ActiveQuestTile extends StatelessWidget {
+  final AssignedQuest quest;
+  final String studentName;
+  final VoidCallback onEdit;
+  final VoidCallback onDeactivate;
+
+  const _ActiveQuestTile({
+    required this.quest,
+    required this.studentName,
+    required this.onEdit,
+    required this.onDeactivate,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onEdit,
+      child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        children: [
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: primaryColor.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.black, width: 2),
+            ),
+            child: const Icon(Icons.assignment_rounded,
+                color: Colors.white, size: 20),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  quest.title,
+                  style: GoogleFonts.nunito(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
+                Text(
+                  '$studentName · ${quest.target} sessions · +${quest.rewardXp} XP',
+                  style: GoogleFonts.nunito(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: darkTextSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          GestureDetector(
+            onTap: onDeactivate,
+            child: Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: Colors.red.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.black, width: 2),
+              ),
+              child: const Icon(Icons.close_rounded,
+                  color: Colors.red, size: 16),
+            ),
+          ),
+        ],
+      ),
+    ),
     );
   }
 }

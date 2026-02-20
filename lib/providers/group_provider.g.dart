@@ -94,7 +94,7 @@ final teacherStudentsProvider =
 // ignore: unused_element
 typedef TeacherStudentsRef = AutoDisposeFutureProviderRef<List<StudentSummary>>;
 String _$unreadGroupNotificationsHash() =>
-    r'cfdf64fe972ab92abcb9c6610bf4eac5cdec8859';
+    r'10376fcf054e1ef774ca74da269d6c64a1dc0671';
 
 /// See also [unreadGroupNotifications].
 @ProviderFor(unreadGroupNotifications)

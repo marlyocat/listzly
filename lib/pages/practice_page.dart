@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:listzly/models/practice_session.dart';
 import 'package:listzly/providers/auth_provider.dart';
 import 'package:listzly/providers/session_provider.dart';
+import 'package:listzly/providers/assigned_quest_provider.dart';
 import 'package:listzly/providers/quest_provider.dart';
 import 'package:listzly/providers/stats_provider.dart';
 import 'package:listzly/providers/instrument_provider.dart';
@@ -226,6 +227,15 @@ class _PracticePageState extends ConsumerState<PracticePage>
           .read(questServiceProvider)
           .updateQuestProgressAfterSession(user.id, savedSession);
 
+      // Update assigned quest progress (for students in a group)
+      try {
+        await ref
+            .read(assignedQuestServiceProvider)
+            .updateAssignedQuestProgressAfterSession(user.id, savedSession);
+      } catch (_) {
+        // Non-critical: assigned quest update failure shouldn't block session save
+      }
+
       // Recalculate stats (streak, XP)
       await ref.read(statsServiceProvider).recalculateStats(user.id);
 
@@ -242,6 +252,8 @@ class _PracticePageState extends ConsumerState<PracticePage>
       ref.invalidate(dailyQuestsProvider);
       ref.invalidate(weeklyQuestsProvider);
       ref.invalidate(weekCompletionStatusProvider);
+      ref.invalidate(assignedQuestProgressProvider);
+      ref.invalidate(assignedQuestDefinitionsProvider);
       ref.invalidate(instrumentStatsProvider);
       ref.invalidate(sessionListProvider);
       ref.invalidate(weeklyBarDataProvider);

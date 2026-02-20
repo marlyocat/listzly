@@ -3,8 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:listzly/models/assigned_quest.dart';
 import 'package:listzly/models/quest.dart';
+import 'package:listzly/models/user_role.dart';
 import 'package:listzly/models/user_stats.dart';
+import 'package:listzly/providers/assigned_quest_provider.dart';
+import 'package:listzly/providers/profile_provider.dart';
 import 'package:listzly/providers/quest_provider.dart';
 import 'package:listzly/providers/settings_provider.dart';
 import 'package:listzly/providers/stats_provider.dart';
@@ -19,6 +23,16 @@ const _questIconMap = <String, IconData>{
   'weekly_xp_200': Icons.local_fire_department_rounded,
   'weekly_instruments_3': Icons.category_rounded,
   'weekly_streak_7': Icons.bolt_rounded,
+};
+
+/// Maps icon name strings (from assigned quests) to IconData.
+const _iconNameMap = <String, IconData>{
+  'timer_rounded': Icons.timer_rounded,
+  'calendar_today_rounded': Icons.calendar_today_rounded,
+  'star_rounded': Icons.star_rounded,
+  'music_note_rounded': Icons.music_note_rounded,
+  'category_rounded': Icons.category_rounded,
+  'assignment_rounded': Icons.assignment_rounded,
 };
 
 class QuestsPage extends ConsumerStatefulWidget {
@@ -115,13 +129,36 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
     }).toList();
   }
 
+  /// Builds a [_Quest] from an [AssignedQuest] definition and matching [QuestProgress].
+  List<_Quest> _mapAssignedQuests(
+    List<QuestProgress> progressList,
+    List<AssignedQuest> definitions,
+  ) {
+    return progressList.map((qp) {
+      final def = definitions.cast<AssignedQuest?>().firstWhere(
+            (d) => d!.questKey == qp.questKey,
+            orElse: () => null,
+          );
+
+      return _Quest(
+        icon: _iconNameMap[def?.iconName] ?? Icons.assignment_rounded,
+        title: def?.title ?? qp.questKey,
+        description: def?.description ?? '',
+        currentProgress: qp.progress,
+        targetProgress: qp.target,
+        rewardAmount: def?.rewardXp ?? 0,
+      );
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     final dailyQuestsAsync = ref.watch(dailyQuestsProvider);
-    final weeklyQuestsAsync = ref.watch(weeklyQuestsProvider);
     final weekCompletionAsync = ref.watch(weekCompletionStatusProvider);
     final userStatsAsync = ref.watch(userStatsProvider);
     final settingsAsync = ref.watch(userSettingsNotifierProvider);
+    final role =
+        ref.watch(currentProfileProvider).valueOrNull?.role;
 
     return Scaffold(
       backgroundColor: const Color(0xFF150833),
@@ -188,22 +225,50 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
               ),
             ),
 
-            // Weekly challenges section
-            SliverToBoxAdapter(
-              child: weeklyQuestsAsync.when(
-                data: (quests) => _buildQuestSection(
-                  title: 'Weekly Challenges',
-                  subtitle: 'Resets Monday',
-                  quests: _mapQuests(quests, weeklyQuestDefinitions),
-                ),
-                loading: () => _buildLoadingPlaceholder(height: 200),
-                error: (e, _) => _buildErrorPlaceholder(e),
+            // Assigned quests section (students only)
+            if (role == UserRole.student)
+              SliverToBoxAdapter(
+                child: _buildAssignedQuestsSection(),
               ),
-            ),
 
             // Bottom spacing for nav bar
             const SliverToBoxAdapter(child: SizedBox(height: 100)),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAssignedQuestsSection() {
+    final progressAsync = ref.watch(assignedQuestProgressProvider);
+    final defsAsync = ref.watch(assignedQuestDefinitionsProvider);
+
+    return progressAsync.when(
+      data: (progress) {
+        if (progress.isEmpty) {
+          return _buildEmptyAssignedSection();
+        }
+        final defs = defsAsync.valueOrNull ?? [];
+        return _buildQuestSection(
+          title: 'Assigned Quest',
+          subtitle: 'From teacher',
+          quests: _mapAssignedQuests(progress, defs),
+        );
+      },
+      loading: () => _buildLoadingPlaceholder(height: 200),
+      error: (e, _) => _buildErrorPlaceholder(e),
+    );
+  }
+
+  Widget _buildEmptyAssignedSection() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      child: Text(
+        'No quests assigned yet',
+        style: GoogleFonts.nunito(
+          fontSize: 15,
+          fontWeight: FontWeight.w600,
+          color: darkTextSecondary,
         ),
       ),
     );
