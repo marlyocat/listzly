@@ -10,6 +10,7 @@ import 'package:listzly/providers/group_provider.dart';
 import 'package:listzly/pages/assign_quest_sheet.dart';
 import 'package:listzly/pages/student_detail_page.dart';
 import 'package:listzly/theme/colors.dart';
+import 'package:turn_page_transition/turn_page_transition.dart';
 
 class StudentsPage extends ConsumerWidget {
   const StudentsPage({super.key});
@@ -465,12 +466,32 @@ class StudentsPage extends ConsumerWidget {
                       final groupAsync = ref.read(teacherGroupProvider);
                       final groupId = groupAsync.valueOrNull?.id;
                       final removed = await Navigator.of(context).push<bool>(
-                        MaterialPageRoute(
-                          builder: (_) => StudentDetailPage(
+                        PageRouteBuilder(
+                          transitionDuration:
+                              const Duration(milliseconds: 600),
+                          reverseTransitionDuration:
+                              const Duration(milliseconds: 300),
+                          pageBuilder: (context, animation,
+                                  secondaryAnimation) =>
+                              StudentDetailPage(
                             studentId: student.studentId,
                             studentName: student.displayName,
                             groupId: groupId,
                           ),
+                          transitionsBuilder: (context, animation,
+                              secondaryAnimation, child) {
+                            if (animation.status ==
+                                AnimationStatus.reverse) {
+                              return FadeTransition(
+                                  opacity: animation, child: child);
+                            }
+                            return TurnPageTransition(
+                              animation: animation,
+                              overleafColor: primaryDark,
+                              animationTransitionPoint: 0.5,
+                              child: child,
+                            );
+                          },
                         ),
                       );
                       if (removed == true) {
