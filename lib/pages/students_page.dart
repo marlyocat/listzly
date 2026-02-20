@@ -850,11 +850,11 @@ class _StudentTile extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      Image.asset('lib/images/xp.png',
+                      Image.asset('lib/images/level.png',
                           width: 14, height: 14),
                       const SizedBox(width: 3),
                       Text(
-                        '${student.totalXp} XP',
+                        'Lv.${LevelUtils.levelFromXp(student.totalXp)}',
                         style: GoogleFonts.nunito(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
@@ -862,11 +862,11 @@ class _StudentTile extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      Image.asset('lib/images/level.png',
+                      Image.asset('lib/images/xp.png',
                           width: 14, height: 14),
                       const SizedBox(width: 3),
                       Text(
-                        'Lv.${LevelUtils.levelFromXp(student.totalXp)}',
+                        '${student.totalXp} XP',
                         style: GoogleFonts.nunito(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,

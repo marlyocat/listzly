@@ -244,16 +244,16 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                         imagePath: 'lib/images/streak.png',
                       ),
                       _buildChip(
-                        Icons.star_rounded,
-                        '${stats.totalXp} XP',
-                        primaryLight,
-                        imagePath: 'lib/images/xp.png',
-                      ),
-                      _buildChip(
                         Icons.shield_rounded,
                         'Lv. ${LevelUtils.levelFromXp(stats.totalXp)}',
                         primaryColor,
                         imagePath: 'lib/images/level.png',
+                      ),
+                      _buildChip(
+                        Icons.star_rounded,
+                        '${stats.totalXp} XP',
+                        primaryLight,
+                        imagePath: 'lib/images/xp.png',
                       ),
                     ],
                   ),
