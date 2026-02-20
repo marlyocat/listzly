@@ -72,8 +72,8 @@ class StatsService {
       // Non-critical: if quest XP lookup fails, just use session XP
     }
 
-    // Total XP
-    final totalXp = sessionXp + questBonusXp;
+    // Total XP (capped at 999,999)
+    final totalXp = (sessionXp + questBonusXp).clamp(0, 999999);
 
     // Calculate streak with 3-day grace period:
     // The streak counts actual practice days but only resets after

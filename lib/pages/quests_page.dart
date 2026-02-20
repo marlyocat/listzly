@@ -442,12 +442,15 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
               ],
             ),
             const SizedBox(height: 2),
-            Text(
-              value,
-              style: GoogleFonts.nunito(
-                fontSize: 16,
-                fontWeight: FontWeight.w800,
-                color: color,
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                value,
+                style: GoogleFonts.nunito(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                  color: color,
+                ),
               ),
             ),
           ],
