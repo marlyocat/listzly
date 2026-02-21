@@ -109,13 +109,35 @@ class IntroPage extends StatelessWidget {
 
                     const Spacer(flex: 1),
 
-                    // Headline — overlapped by the image above
-                    Text(
-                      "THE SOUND\nOF MUSICAL\nINSTRUMENTS",
-                      style: GoogleFonts.dmSerifDisplay(
-                        fontSize: 42,
-                        color: Colors.white,
-                        height: 1.05,
+                    // Headline with accent on "PRACTICE"
+                    Text.rich(
+                      TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'YOUR MUSIC\n',
+                            style: GoogleFonts.dmSerifDisplay(
+                              fontSize: 42,
+                              color: Colors.white,
+                              height: 1.05,
+                            ),
+                          ),
+                          TextSpan(
+                            text: 'PRACTICE',
+                            style: GoogleFonts.dmSerifDisplay(
+                              fontSize: 42,
+                              color: accentCoral,
+                              height: 1.05,
+                            ),
+                          ),
+                          TextSpan(
+                            text: '\nCOMPANION',
+                            style: GoogleFonts.dmSerifDisplay(
+                              fontSize: 42,
+                              color: Colors.white,
+                              height: 1.05,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
 
@@ -139,7 +161,7 @@ class IntroPage extends StatelessWidget {
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            "Feel the sound of the most\nexciting instrument",
+                            "Set goals, build streaks, and\nmaster your instrument",
                             style: GoogleFonts.nunito(
                               fontSize: 15,
                               fontWeight: FontWeight.w600,
