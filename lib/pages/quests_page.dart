@@ -252,7 +252,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
     return progressAsync.when(
       data: (progress) {
         if (progress.isEmpty) {
-          return _buildEmptyAssignedSection();
+          return const SizedBox.shrink();
         }
         final defs = defsAsync.valueOrNull ?? [];
         return _buildQuestSection(
@@ -266,19 +266,6 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
     );
   }
 
-  Widget _buildEmptyAssignedSection() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-      child: Text(
-        'No quests assigned yet',
-        style: GoogleFonts.nunito(
-          fontSize: 15,
-          fontWeight: FontWeight.w600,
-          color: darkTextSecondary,
-        ),
-      ),
-    );
-  }
 
   // ─── Loading / error placeholders ────────────────────────────────
   Widget _buildLoadingPlaceholder({required double height}) {

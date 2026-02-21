@@ -1012,12 +1012,6 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                                 ),
                               ],
                             ),
-                            const SizedBox(width: 6),
-                            const Icon(
-                              Icons.chevron_right,
-                              color: darkTextSecondary,
-                              size: 20,
-                            ),
                           ],
                         ),
                       ),
