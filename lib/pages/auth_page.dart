@@ -88,7 +88,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Signed in as $name'),
-            backgroundColor: accentCoral,
+            backgroundColor: accentCoralDark,
           ),
         );
         Navigator.of(context).pushAndRemoveUntil(
