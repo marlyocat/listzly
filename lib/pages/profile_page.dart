@@ -6,7 +6,7 @@ import 'package:turn_page_transition/turn_page_transition.dart';
 import 'package:listzly/models/profile.dart';
 import 'package:listzly/models/user_role.dart';
 import 'package:listzly/models/user_settings.dart';
-import 'package:listzly/pages/intro_page.dart';
+import 'package:listzly/pages/auth_page.dart';
 import 'package:listzly/providers/auth_provider.dart';
 import 'package:listzly/providers/profile_provider.dart';
 import 'package:listzly/providers/settings_provider.dart';
@@ -123,7 +123,7 @@ class ProfilePage extends ConsumerWidget {
                               const Duration(milliseconds: 300),
                           pageBuilder:
                               (context, animation, secondaryAnimation) =>
-                                  const IntroPage(),
+                                  const AuthPage(),
                           transitionsBuilder: (context, animation,
                               secondaryAnimation, child) {
                             if (animation.status == AnimationStatus.reverse) {
