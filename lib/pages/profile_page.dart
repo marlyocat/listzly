@@ -14,6 +14,7 @@ import 'package:listzly/providers/instrument_provider.dart';
 import 'package:listzly/models/student_summary.dart';
 import 'package:listzly/providers/group_provider.dart';
 import 'package:listzly/theme/colors.dart';
+import 'package:listzly/utils/level_utils.dart';
 import 'package:listzly/services/notification_service.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -1142,30 +1143,58 @@ class ProfilePage extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 2),
-                    Row(
+                    Wrap(
+                      spacing: 12,
+                      runSpacing: 4,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        Icon(Icons.local_fire_department_rounded,
-                            size: 14, color: accentCoral.withAlpha(180)),
-                        const SizedBox(width: 3),
-                        Text(
-                          '${student.currentStreak}d',
-                          style: GoogleFonts.nunito(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: darkTextSecondary,
-                          ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Image.asset('lib/images/streak.png',
+                                width: 14, height: 14),
+                            const SizedBox(width: 3),
+                            Text(
+                              '${student.currentStreak}d',
+                              style: GoogleFonts.nunito(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: darkTextSecondary,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 12),
-                        Icon(Icons.star_rounded,
-                            size: 14, color: primaryLight.withAlpha(180)),
-                        const SizedBox(width: 3),
-                        Text(
-                          '${student.totalXp} XP',
-                          style: GoogleFonts.nunito(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: darkTextSecondary,
-                          ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Image.asset('lib/images/level.png',
+                                width: 14, height: 14),
+                            const SizedBox(width: 3),
+                            Text(
+                              'Lv.${LevelUtils.levelFromXp(student.totalXp)}',
+                              style: GoogleFonts.nunito(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: darkTextSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Image.asset('lib/images/xp.png',
+                                width: 14, height: 14),
+                            const SizedBox(width: 3),
+                            Text(
+                              '${student.totalXp} XP',
+                              style: GoogleFonts.nunito(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: darkTextSecondary,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
