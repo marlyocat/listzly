@@ -114,7 +114,46 @@ class ProfilePage extends ConsumerWidget {
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      final confirmed = await showDialog<bool>(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          backgroundColor: const Color(0xFF1E0E3D),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16)),
+                          title: Text(
+                            'Log Out?',
+                            style: GoogleFonts.dmSerifDisplay(
+                                fontSize: 20, color: Colors.white),
+                          ),
+                          content: Text(
+                            'Are you sure you want to log out?',
+                            style: GoogleFonts.nunito(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: darkTextSecondary,
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx, false),
+                              child: Text('Cancel',
+                                  style: GoogleFonts.nunito(
+                                      fontWeight: FontWeight.w700,
+                                      color: darkTextMuted)),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx, true),
+                              child: Text('Log Out',
+                                  style: GoogleFonts.nunito(
+                                      fontWeight: FontWeight.w700,
+                                      color: Colors.red)),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (confirmed != true) return;
+                      if (!context.mounted) return;
                       Navigator.of(context).pushAndRemoveUntil(
                         PageRouteBuilder(
                           transitionDuration:
