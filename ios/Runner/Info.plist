@@ -43,6 +43,8 @@
 	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>Camera is needed to scan QR codes for joining a group.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Microphone access is needed to record your practice sessions.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

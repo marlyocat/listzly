@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:record/record.dart';
 import 'package:listzly/models/practice_session.dart';
 import 'package:listzly/providers/auth_provider.dart';
 import 'package:listzly/providers/session_provider.dart';
@@ -13,6 +16,7 @@ import 'package:listzly/providers/quest_provider.dart';
 import 'package:listzly/providers/stats_provider.dart';
 import 'package:listzly/providers/instrument_provider.dart';
 import 'package:listzly/providers/settings_provider.dart';
+import 'package:listzly/providers/recording_provider.dart';
 import 'package:listzly/services/notification_service.dart';
 import 'package:listzly/theme/colors.dart';
 
@@ -46,6 +50,8 @@ class _PracticePageState extends ConsumerState<PracticePage>
     {'quote': 'One who plays wrong notes is a beginner; one who hesitates is an amateur.', 'author': 'Unknown'},
   ];
 
+  static const _maxRecordingSeconds = 300; // 5 minutes
+
   late int _remainingSeconds;
   late final DateTime _sessionStartTime;
   Timer? _timer;
@@ -68,6 +74,15 @@ class _PracticePageState extends ConsumerState<PracticePage>
   late Animation<double> _summaryOpacityAnimation;
   late Animation<double> _buttonScaleAnimation;
   late Animation<double> _buttonOpacityAnimation;
+
+  // Recording state
+  bool _isRecording = false;
+  bool _hasRecordedToday = false;
+  final AudioRecorder _recorder = AudioRecorder();
+  String? _recordingPath;
+  DateTime? _recordingStartTime;
+  int _recordingElapsedSeconds = 0;
+  late AnimationController _recPulseController;
 
   @override
   void initState() {
@@ -152,8 +167,30 @@ class _PracticePageState extends ConsumerState<PracticePage>
       ),
     );
 
+    _recPulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    );
+
     _startTimer();
     _startQuoteRotation();
+    _checkTodayRecording();
+  }
+
+  Future<void> _checkTodayRecording() async {
+    final user = ref.read(currentUserProvider);
+    if (user == null) return;
+    try {
+      final recordings = await ref
+          .read(recordingServiceProvider)
+          .getUserRecordings(user.id);
+      final now = DateTime.now();
+      final hasToday = recordings.any((r) =>
+          r.createdAt.year == now.year &&
+          r.createdAt.month == now.month &&
+          r.createdAt.day == now.day);
+      if (mounted) setState(() => _hasRecordedToday = hasToday);
+    } catch (_) {}
   }
 
   void _startQuoteRotation() {
@@ -167,7 +204,16 @@ class _PracticePageState extends ConsumerState<PracticePage>
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_remainingSeconds > 0) {
-        setState(() => _remainingSeconds--);
+        setState(() {
+          _remainingSeconds--;
+          // Track recording elapsed time
+          if (_isRecording && _recordingStartTime != null) {
+            _recordingElapsedSeconds++;
+            if (_recordingElapsedSeconds >= _maxRecordingSeconds) {
+              _stopRecording(showSnackBar: true);
+            }
+          }
+        });
       } else {
         _timer?.cancel();
         setState(() => _sessionCompleted = true);
@@ -185,19 +231,192 @@ class _PracticePageState extends ConsumerState<PracticePage>
         _timer?.cancel();
         _pulseController.repeat(reverse: true);
         _rippleController.repeat();
+        if (_isRecording) _recorder.pause();
       } else {
         _pulseController.stop();
         _rippleController.stop();
         _startTimer();
+        if (_isRecording) _recorder.resume();
       }
     });
   }
 
-  void _onSessionComplete() {
+  // ---- Recording methods ----
+
+  Future<void> _toggleRecording() async {
+    if (_isRecording) {
+      await _stopRecording();
+    } else {
+      if (_hasRecordedToday) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'You can only record once per day',
+                style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+              ),
+              backgroundColor: accentCoralDark,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+        return;
+      }
+      await _startRecording();
+    }
+  }
+
+  Future<void> _startRecording() async {
+    // Request microphone permission
+    final status = await Permission.microphone.request();
+    if (!status.isGranted) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Microphone permission is required to record',
+              style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+            ),
+            backgroundColor: const Color(0xFF1E0E3D),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+      return;
+    }
+
+    try {
+      final dir = await getTemporaryDirectory();
+      final path =
+          '${dir.path}/recording_${DateTime.now().millisecondsSinceEpoch}.m4a';
+
+      await _recorder.start(
+        const RecordConfig(
+          encoder: AudioEncoder.aacLc,
+          bitRate: 128000,
+          sampleRate: 22050,
+        ),
+        path: path,
+      );
+
+      setState(() {
+        _isRecording = true;
+        _recordingPath = path;
+        _recordingStartTime = DateTime.now();
+        _recordingElapsedSeconds = 0;
+      });
+      _recPulseController.repeat(reverse: true);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Could not start recording',
+              style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+            ),
+            backgroundColor: const Color(0xFF1E0E3D),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _stopRecording({bool showSnackBar = false}) async {
+    final path = _recordingPath;
+    final elapsed = _recordingElapsedSeconds;
+
+    try {
+      await _recorder.stop();
+    } catch (_) {}
+    _recPulseController.stop();
+    setState(() {
+      _isRecording = false;
+      _recordingPath = null;
+      _recordingElapsedSeconds = 0;
+      _recordingStartTime = null;
+    });
+
+    // Upload immediately
+    if (path != null && elapsed > 0) {
+      _uploadRecording(path, elapsed);
+    }
+
+    if (showSnackBar && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Recording reached 5-minute limit',
+            style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+          ),
+          backgroundColor: const Color(0xFF1E0E3D),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
+  Future<void> _uploadRecording(String localPath, int durationSeconds) async {
+    final user = ref.read(currentUserProvider);
+    if (user == null) return;
+
+    try {
+      await ref.read(recordingServiceProvider).uploadRecording(
+            userId: user.id,
+            sessionId: null,
+            instrumentName: widget.instrument,
+            durationSeconds: durationSeconds,
+            localFilePath: localPath,
+          );
+      ref.invalidate(userRecordingsProvider);
+      if (mounted) {
+        setState(() => _hasRecordedToday = true);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Recording saved',
+              style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+            ),
+            backgroundColor: const Color(0xFF1E0E3D),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Could not save recording',
+              style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+            ),
+            backgroundColor: const Color(0xFF1E0E3D),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
+  }
+
+  void _onSessionComplete() async {
     HapticFeedback.heavyImpact();
     _pulseController.stop();
     _rippleController.stop();
     _quoteTimer?.cancel();
+    // Stop and save recording if active
+    if (_isRecording) {
+      final path = _recordingPath;
+      final elapsed = _recordingElapsedSeconds;
+      try { await _recorder.stop(); } catch (_) {}
+      _recPulseController.stop();
+      _isRecording = false;
+      _recordingPath = null;
+      _recordingElapsedSeconds = 0;
+      _recordingStartTime = null;
+      if (path != null && elapsed > 0) {
+        _uploadRecording(path, elapsed);
+      }
+    }
     _celebrationController.forward();
     _sparkleController.repeat();
     _saveSession();
@@ -269,6 +488,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
     _timer?.cancel();
     final wasPaused = _isPaused;
     setState(() => _isPaused = true);
+    if (_isRecording) _recorder.pause();
 
     final shouldLeave = await showDialog<bool>(
       context: context,
@@ -302,12 +522,22 @@ class _PracticePageState extends ConsumerState<PracticePage>
       ),
     );
 
-    if (shouldLeave == true) return true;
+    if (shouldLeave == true) {
+      // Discard recording
+      if (_isRecording) {
+        try { await _recorder.stop(); } catch (_) {}
+        _recPulseController.stop();
+        _isRecording = false;
+      }
+      _recordingPath = null;
+      return true;
+    }
 
     // Resume if it wasn't paused before
     if (!wasPaused) {
       setState(() => _isPaused = false);
       _startTimer();
+      if (_isRecording) _recorder.resume();
     }
     return false;
   }
@@ -321,6 +551,8 @@ class _PracticePageState extends ConsumerState<PracticePage>
     _tapScaleController.dispose();
     _celebrationController.dispose();
     _sparkleController.dispose();
+    _recPulseController.dispose();
+    _recorder.dispose();
     super.dispose();
   }
 
@@ -499,6 +731,11 @@ class _PracticePageState extends ConsumerState<PracticePage>
                       },
                     ),
 
+                    const SizedBox(height: 16),
+
+                    // Mic / Record button
+                    _buildMicButton(),
+
                     const Spacer(flex: 2),
                   ],
                 ),
@@ -511,6 +748,84 @@ class _PracticePageState extends ConsumerState<PracticePage>
             ),
           ),
         ),
+    );
+  }
+
+  Widget _buildMicButton() {
+    return AnimatedBuilder(
+      animation: _recPulseController,
+      builder: (context, child) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Opacity(
+              opacity: _hasRecordedToday && !_isRecording ? 0.4 : 1.0,
+              child: GestureDetector(
+                onTap: _toggleRecording,
+                child: Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: _isRecording
+                        ? Colors.red.withAlpha(30)
+                        : darkSurfaceBg,
+                    border: Border.all(
+                      color: _isRecording
+                          ? Colors.red.withAlpha(
+                              (100 + _recPulseController.value * 155).toInt())
+                          : darkCardBorder,
+                      width: _isRecording ? 2 : 1,
+                    ),
+                  ),
+                  child: Icon(
+                    _isRecording ? Icons.stop_rounded : Icons.mic_rounded,
+                    size: 22,
+                    color: _isRecording ? Colors.red : darkTextSecondary,
+                  ),
+                ),
+              ),
+            ),
+            if (_isRecording) ...[
+              const SizedBox(height: 8),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 6,
+                    height: 6,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.red.withAlpha(
+                          (150 + _recPulseController.value * 105).toInt()),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    'REC ${_formatTime(_recordingElapsedSeconds)} / 5:00',
+                    style: GoogleFonts.nunito(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.red.shade300,
+                    ),
+                  ),
+                ],
+              ),
+            ] else
+              Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: Text(
+                  _hasRecordedToday ? 'Recorded today' : 'Record',
+                  style: GoogleFonts.nunito(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: darkTextMuted,
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 

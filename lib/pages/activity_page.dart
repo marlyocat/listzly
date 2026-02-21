@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:listzly/models/practice_session.dart';
+import 'package:listzly/models/practice_recording.dart';
 import 'package:listzly/providers/session_provider.dart';
+import 'package:listzly/providers/recording_provider.dart';
+import 'package:listzly/components/recording_list_tile.dart';
+import 'package:listzly/components/recording_player.dart';
 import 'package:listzly/theme/colors.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ActivityPage extends ConsumerStatefulWidget {
   const ActivityPage({super.key});
@@ -309,6 +314,9 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
 
               // Recent sessions list
               SliverToBoxAdapter(child: _buildSessionList(sessionsAsync)),
+
+              // My Recordings
+              SliverToBoxAdapter(child: _buildRecordingsList()),
 
               // Bottom spacing for nav bar
               const SliverToBoxAdapter(child: SizedBox(height: 100)),
@@ -1049,6 +1057,227 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
         ),
       ),
     );
+  }
+
+  // --- My Recordings section ---
+  Widget _buildRecordingsList() {
+    final recordingsAsync = ref.watch(userRecordingsProvider);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: darkCardBg,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: Colors.black, width: 5),
+        ),
+        child: Column(
+          children: [
+            // Header
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+              child: Row(
+                children: [
+                  Text(
+                    'My Recordings',
+                    style: GoogleFonts.nunito(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const Spacer(),
+                  recordingsAsync.whenOrNull(
+                        data: (recordings) => Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: accentCoral.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            '${recordings.length}',
+                            style: GoogleFonts.nunito(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: accentCoral,
+                            ),
+                          ),
+                        ),
+                      ) ??
+                      const SizedBox.shrink(),
+                ],
+              ),
+            ),
+            const SizedBox(height: 6),
+            // Recording rows
+            recordingsAsync.when(
+              data: (recordings) => recordings.isEmpty
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 24, horizontal: 16),
+                      child: Center(
+                        child: Text(
+                          'No recordings yet',
+                          style: GoogleFonts.nunito(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: darkTextSecondary,
+                          ),
+                        ),
+                      ),
+                    )
+                  : Column(
+                      children: recordings.map((recording) {
+                        return RecordingListTile(
+                          recording: recording,
+                          onPlay: () => _playRecording(recording),
+                          onDownload: () => _downloadRecording(recording),
+                          onDelete: () => _confirmDeleteRecording(recording),
+                        );
+                      }).toList(),
+                    ),
+              loading: () => const Padding(
+                padding: EdgeInsets.symmetric(vertical: 32),
+                child: Center(
+                  child: SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.5,
+                      color: accentCoral,
+                    ),
+                  ),
+                ),
+              ),
+              error: (_, __) => Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+                child: Text(
+                  'Could not load recordings.',
+                  style: GoogleFonts.nunito(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: darkTextMuted,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 6),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _playRecording(PracticeRecording recording) async {
+    try {
+      final url = await ref
+          .read(recordingServiceProvider)
+          .getSignedUrl(recording.filePath);
+      if (mounted) {
+        showRecordingPlayer(
+          context,
+          url: url,
+          instrumentName: recording.instrumentName,
+          date: _formatSessionDate(recording.createdAt),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Could not play recording',
+              style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+            ),
+            backgroundColor: const Color(0xFF1E0E3D),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _downloadRecording(PracticeRecording recording) async {
+    try {
+      final url = await ref
+          .read(recordingServiceProvider)
+          .getSignedUrl(recording.filePath);
+      final uri = Uri.parse(url);
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Could not download recording',
+              style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+            ),
+            backgroundColor: const Color(0xFF1E0E3D),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _confirmDeleteRecording(PracticeRecording recording) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1E0E3D),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Delete Recording',
+          style:
+              GoogleFonts.dmSerifDisplay(fontSize: 20, color: Colors.white),
+        ),
+        content: Text(
+          'Are you sure you want to delete this recording? This cannot be undone.',
+          style: GoogleFonts.nunito(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: darkTextSecondary,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('Cancel',
+                style: GoogleFonts.nunito(
+                    fontWeight: FontWeight.w700, color: darkTextMuted)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text('Delete',
+                style: GoogleFonts.nunito(
+                    fontWeight: FontWeight.w700, color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      try {
+        await ref.read(recordingServiceProvider).deleteRecording(
+              recording.id!,
+              recording.filePath,
+            );
+        ref.invalidate(userRecordingsProvider);
+      } catch (_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Could not delete recording',
+                style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+              ),
+              backgroundColor: const Color(0xFF1E0E3D),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+      }
+    }
   }
 
   void _showAllSessions(BuildContext context, List<PracticeSession> sessions) {

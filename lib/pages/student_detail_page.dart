@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:listzly/models/practice_session.dart';
+import 'package:listzly/models/practice_recording.dart';
 import 'package:listzly/providers/student_data_provider.dart';
 import 'package:listzly/providers/group_provider.dart';
+import 'package:listzly/providers/recording_provider.dart';
+import 'package:listzly/components/recording_list_tile.dart';
+import 'package:listzly/components/recording_player.dart';
 import 'package:listzly/theme/colors.dart';
 import 'package:listzly/utils/level_utils.dart';
 
@@ -277,6 +281,9 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
 
             // Sessions list
             SliverToBoxAdapter(child: _buildSessionList(sessionsAsync)),
+
+            // Student recordings (teacher view)
+            SliverToBoxAdapter(child: _buildRecordingsList()),
 
             // Remove student button
             if (widget.groupId != null)
@@ -988,6 +995,144 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
         ),
       ),
     );
+  }
+
+  // --- Student Recordings (teacher view, play only) ---
+  Widget _buildRecordingsList() {
+    final recordingsAsync = ref.watch(
+      studentRecordingsProvider(studentId: widget.studentId),
+    );
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: darkCardBg,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: Colors.black, width: 5),
+        ),
+        child: Column(
+          children: [
+            // Header
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+              child: Row(
+                children: [
+                  Text(
+                    'Recordings',
+                    style: GoogleFonts.nunito(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const Spacer(),
+                  recordingsAsync.whenOrNull(
+                        data: (recordings) => Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: accentCoral.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            '${recordings.length}',
+                            style: GoogleFonts.nunito(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: accentCoral,
+                            ),
+                          ),
+                        ),
+                      ) ??
+                      const SizedBox.shrink(),
+                ],
+              ),
+            ),
+            const SizedBox(height: 6),
+            recordingsAsync.when(
+              data: (recordings) => recordings.isEmpty
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 24, horizontal: 16),
+                      child: Center(
+                        child: Text(
+                          'No recordings yet',
+                          style: GoogleFonts.nunito(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: darkTextSecondary,
+                          ),
+                        ),
+                      ),
+                    )
+                  : Column(
+                      children: recordings.map((recording) {
+                        return RecordingListTile(
+                          recording: recording,
+                          onPlay: () => _playRecording(recording),
+                        );
+                      }).toList(),
+                    ),
+              loading: () => const Padding(
+                padding: EdgeInsets.symmetric(vertical: 32),
+                child: Center(
+                  child: SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.5,
+                      color: accentCoral,
+                    ),
+                  ),
+                ),
+              ),
+              error: (_, __) => Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+                child: Text(
+                  'Could not load recordings.',
+                  style: GoogleFonts.nunito(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: darkTextMuted,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 6),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _playRecording(PracticeRecording recording) async {
+    try {
+      final url = await ref
+          .read(recordingServiceProvider)
+          .getSignedUrl(recording.filePath);
+      if (mounted) {
+        showRecordingPlayer(
+          context,
+          url: url,
+          instrumentName: recording.instrumentName,
+          date: _formatSessionDate(recording.createdAt),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Could not play recording',
+              style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+            ),
+            backgroundColor: const Color(0xFF1E0E3D),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
   }
 
   Widget _buildRemoveButton() {
