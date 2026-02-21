@@ -1728,11 +1728,11 @@ class ProfilePage extends ConsumerWidget {
   }
 
   Future<void> _setReminder(WidgetRef ref, String timeStr) async {
-    ref
-        .read(userSettingsNotifierProvider.notifier)
-        .updateSetting('reminder_time', timeStr);
     final granted = await NotificationService.instance.requestPermission();
     if (granted) {
+      ref
+          .read(userSettingsNotifierProvider.notifier)
+          .updateSetting('reminder_time', timeStr);
       await NotificationService.instance.scheduleDailyReminder(timeStr);
     }
   }

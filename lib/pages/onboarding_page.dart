@@ -141,12 +141,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
         final timeStr =
             '${h24.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}';
         settingsUpdates['reminder_time'] = timeStr;
-
-        // Schedule notification
-        final granted = await NotificationService.instance.requestPermission();
-        if (granted) {
-          await NotificationService.instance.scheduleDailyReminder(timeStr);
-        }
+        await NotificationService.instance.scheduleDailyReminder(timeStr);
       }
 
       await settingsService.updateSettings(user.id, settingsUpdates);
@@ -603,7 +598,14 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
 
           // Reminder toggle card
           GestureDetector(
-            onTap: () => setState(() => _reminderEnabled = !_reminderEnabled),
+            onTap: () async {
+              if (!_reminderEnabled) {
+                final granted =
+                    await NotificationService.instance.requestPermission();
+                if (!granted) return;
+              }
+              setState(() => _reminderEnabled = !_reminderEnabled);
+            },
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.all(20),

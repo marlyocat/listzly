@@ -77,20 +77,9 @@ class _AuthPageState extends ConsumerState<AuthPage> {
 
     try {
       final authService = ref.read(authServiceProvider);
-      final response = await authService.signInWithGoogle();
+      await authService.signInWithGoogle();
 
       if (mounted) {
-        final user = response.user;
-        final name = user?.userMetadata?['full_name'] as String? ??
-            user?.userMetadata?['name'] as String? ??
-            user?.email ??
-            'Google';
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Signed in as $name'),
-            backgroundColor: accentCoralDark,
-          ),
-        );
         Navigator.of(context).pushAndRemoveUntil(
           _turnPageRoute(const AuthGate()),
           (route) => false,
