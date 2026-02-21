@@ -95,6 +95,9 @@ flutter:
     - lib/images/xp.png
     - lib/images/level.png
     - lib/images/streak.png
+    - lib/images/copy.png
+    - lib/images/key.png
+    - lib/images/qr_code.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

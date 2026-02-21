@@ -266,9 +266,10 @@ class StudentsPage extends ConsumerWidget {
                   decoration: BoxDecoration(
                     color: accentCoral.withAlpha(30),
                     borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.black, width: 2),
                   ),
-                  child: const Icon(Icons.vpn_key_rounded,
-                      color: accentCoral, size: 20),
+                  child: Image.asset('lib/images/key.png',
+                      width: 20, height: 20),
                 ),
                 const SizedBox(width: 12),
                 Text(
@@ -324,8 +325,8 @@ class StudentsPage extends ConsumerWidget {
                         border: Border.all(
                             color: Colors.black, width: 2),
                       ),
-                      child: const Icon(Icons.qr_code_rounded,
-                          color: accentCoral, size: 18),
+                      child: Image.asset('lib/images/qr_code.png',
+                          width: 18, height: 18),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -337,7 +338,7 @@ class StudentsPage extends ConsumerWidget {
                           content: Text('Invite code copied!',
                               style: GoogleFonts.nunito(
                                   fontWeight: FontWeight.w600)),
-                          backgroundColor: accentCoral,
+                          backgroundColor: accentCoralDark,
                           duration: const Duration(seconds: 2),
                         ),
                       );
@@ -350,8 +351,8 @@ class StudentsPage extends ConsumerWidget {
                         border: Border.all(
                             color: Colors.black, width: 2),
                       ),
-                      child: const Icon(Icons.copy_rounded,
-                          color: accentCoral, size: 18),
+                      child: Image.asset('lib/images/copy.png',
+                          width: 18, height: 18),
                     ),
                   ),
                 ],

@@ -355,7 +355,7 @@ class ProfilePage extends ConsumerWidget {
               SnackBar(
                 content: Text('Invite code copied!',
                     style: GoogleFonts.nunito(fontWeight: FontWeight.w600)),
-                backgroundColor: accentCoral,
+                backgroundColor: accentCoralDark,
                 duration: const Duration(seconds: 2),
               ),
             );
