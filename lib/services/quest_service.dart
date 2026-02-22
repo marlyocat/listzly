@@ -119,7 +119,8 @@ class QuestService {
         .select()
         .eq('user_id', userId)
         .eq('quest_type', 'daily')
-        .eq('period_start', dateStr);
+        .eq('period_start', dateStr)
+        .order('quest_key');
 
     if (existing.isNotEmpty) {
       final quests = _deduplicateByQuestKey(existing);
@@ -146,7 +147,8 @@ class QuestService {
             .select()
             .eq('user_id', userId)
             .eq('quest_type', 'daily')
-            .eq('period_start', dateStr);
+            .eq('period_start', dateStr)
+            .order('quest_key');
         return _deduplicateByQuestKey(refreshed);
       }
 
@@ -184,7 +186,8 @@ class QuestService {
         .select()
         .eq('user_id', userId)
         .eq('quest_type', 'weekly')
-        .eq('period_start', dateStr);
+        .eq('period_start', dateStr)
+        .order('quest_key');
 
     if (existing.isNotEmpty) {
       return _deduplicateByQuestKey(existing);
