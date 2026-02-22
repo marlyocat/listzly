@@ -84,6 +84,10 @@ class _PracticePageState extends ConsumerState<PracticePage>
   int _recordingElapsedSeconds = 0;
   late AnimationController _recPulseController;
 
+  // Pending recording (stopped but not yet saved)
+  String? _pendingRecordingPath;
+  int _pendingRecordingDuration = 0;
+
   @override
   void initState() {
     super.initState();
@@ -335,12 +339,12 @@ class _PracticePageState extends ConsumerState<PracticePage>
       _recordingPath = null;
       _recordingElapsedSeconds = 0;
       _recordingStartTime = null;
+      // Hold the recording for user to save or discard
+      if (path != null && elapsed > 0) {
+        _pendingRecordingPath = path;
+        _pendingRecordingDuration = elapsed;
+      }
     });
-
-    // Upload immediately
-    if (path != null && elapsed > 0) {
-      _uploadRecording(path, elapsed);
-    }
 
     if (showSnackBar && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -350,6 +354,25 @@ class _PracticePageState extends ConsumerState<PracticePage>
             style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
           ),
           backgroundColor: const Color(0xFF1E0E3D),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
+  void _discardRecording() {
+    setState(() {
+      _pendingRecordingPath = null;
+      _pendingRecordingDuration = 0;
+    });
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Recording discarded',
+            style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+          ),
+          backgroundColor: accentCoralDark,
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -403,7 +426,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
     _pulseController.stop();
     _rippleController.stop();
     _quoteTimer?.cancel();
-    // Stop and save recording if active
+    // Stop active recording and hold as pending
     if (_isRecording) {
       final path = _recordingPath;
       final elapsed = _recordingElapsedSeconds;
@@ -414,8 +437,15 @@ class _PracticePageState extends ConsumerState<PracticePage>
       _recordingElapsedSeconds = 0;
       _recordingStartTime = null;
       if (path != null && elapsed > 0) {
-        _uploadRecording(path, elapsed);
+        _pendingRecordingPath = path;
+        _pendingRecordingDuration = elapsed;
       }
+    }
+    // Auto-save any pending recording when session completes
+    if (_pendingRecordingPath != null) {
+      _uploadRecording(_pendingRecordingPath!, _pendingRecordingDuration);
+      _pendingRecordingPath = null;
+      _pendingRecordingDuration = 0;
     }
     _celebrationController.forward();
     _sparkleController.repeat();
@@ -523,13 +553,15 @@ class _PracticePageState extends ConsumerState<PracticePage>
     );
 
     if (shouldLeave == true) {
-      // Discard recording
+      // Discard active and pending recordings
       if (_isRecording) {
         try { await _recorder.stop(); } catch (_) {}
         _recPulseController.stop();
         _isRecording = false;
       }
       _recordingPath = null;
+      _pendingRecordingPath = null;
+      _pendingRecordingDuration = 0;
       return true;
     }
 
@@ -752,6 +784,49 @@ class _PracticePageState extends ConsumerState<PracticePage>
   }
 
   Widget _buildMicButton() {
+    // Show save/discard buttons when recording is pending
+    if (_pendingRecordingPath != null) {
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.check_circle_outline_rounded, size: 20, color: accentCoral),
+          const SizedBox(height: 4),
+          Text(
+            'Recorded ${_formatTime(_pendingRecordingDuration)}',
+            style: GoogleFonts.nunito(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: darkTextSecondary,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            'Complete the practice session to save the recording.\nExiting early will discard it.',
+            textAlign: TextAlign.center,
+            style: GoogleFonts.nunito(
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+              color: darkTextMuted,
+            ),
+          ),
+          const SizedBox(height: 6),
+          GestureDetector(
+            onTap: _discardRecording,
+            child: Text(
+              'Discard Recording',
+              style: GoogleFonts.nunito(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: Colors.red,
+                decoration: TextDecoration.underline,
+                decorationColor: Colors.red,
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
     return AnimatedBuilder(
       animation: _recPulseController,
       builder: (context, child) {
