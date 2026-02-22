@@ -576,7 +576,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
                             color: isComplete
-                                ? darkTextMuted
+                                ? primaryLight
                                 : accentCoral,
                           ),
                         ),
