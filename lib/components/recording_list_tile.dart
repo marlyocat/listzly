@@ -97,6 +97,7 @@ class RecordingListTile extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: accentCoral.withAlpha(30),
                     shape: BoxShape.circle,
+                    border: Border.all(color: Colors.black, width: 2),
                   ),
                   child: const Icon(Icons.play_arrow_rounded,
                       color: accentCoral, size: 18),
