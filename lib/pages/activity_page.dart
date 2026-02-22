@@ -11,6 +11,7 @@ import 'package:listzly/models/user_role.dart';
 import 'package:listzly/components/recording_list_tile.dart';
 import 'package:listzly/components/recording_player.dart';
 import 'package:listzly/theme/colors.dart';
+import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:path_provider/path_provider.dart';
 
 class ActivityPage extends ConsumerStatefulWidget {
@@ -1216,7 +1217,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
           .read(recordingServiceProvider)
           .getSignedUrl(recording.filePath);
 
-      // Download file bytes
+      // Download file to temp directory
       final httpClient = HttpClient();
       final request = await httpClient.getUrl(Uri.parse(url));
       final response = await request.close();
@@ -1226,35 +1227,27 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
       );
       httpClient.close();
 
-      // Save to downloads directory
-      final dir = await getDownloadsDirectory() ??
-          await getApplicationDocumentsDirectory();
+      final tempDir = await getTemporaryDirectory();
       final fileName =
           '${recording.instrumentName}_${recording.createdAt.millisecondsSinceEpoch}.m4a';
-      final file = File('${dir.path}/$fileName');
+      final file = File('${tempDir.path}/$fileName');
       await file.writeAsBytes(bytes);
 
+      // Open native Save As dialog
+      final params = SaveFileDialogParams(sourceFilePath: file.path);
+      await FlutterFileDialog.saveFile(params: params);
+    } catch (e) {
+      debugPrint('Download error: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Recording saved to ${file.path}',
+              'Could not download recording: $e',
               style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
             ),
             backgroundColor: accentCoralDark,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-    } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Could not download recording',
-              style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
-            ),
-            backgroundColor: const Color(0xFF1E0E3D),
             behavior: SnackBarBehavior.floating,
           ),
         );
