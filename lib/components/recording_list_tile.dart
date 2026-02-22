@@ -127,34 +127,6 @@ class RecordingListTile extends StatelessWidget {
                     }
                   },
                   itemBuilder: (_) => [
-                    if (onToggleShare != null)
-                      PopupMenuItem(
-                        value: 'share',
-                        child: Row(
-                          children: [
-                            Icon(
-                              recording.sharedWithTeacher
-                                  ? Icons.people_rounded
-                                  : Icons.people_outline_rounded,
-                              color: recording.sharedWithTeacher
-                                  ? accentCoral
-                                  : Colors.white,
-                              size: 18,
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              recording.sharedWithTeacher
-                                  ? 'Unshare with Teacher'
-                                  : 'Share with Teacher',
-                              style: GoogleFonts.nunito(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
                     if (onDownload != null)
                       PopupMenuItem(
                         value: 'download',
@@ -169,6 +141,34 @@ class RecordingListTile extends StatelessWidget {
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
                                 color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    if (onToggleShare != null)
+                      PopupMenuItem(
+                        value: 'share',
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.people_outline_rounded,
+                              color: recording.sharedWithTeacher
+                                  ? Colors.red.shade300
+                                  : Colors.white,
+                              size: 18,
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              recording.sharedWithTeacher
+                                  ? 'Unshare with Teacher'
+                                  : 'Share with Teacher',
+                              style: GoogleFonts.nunito(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: recording.sharedWithTeacher
+                                    ? Colors.red.shade300
+                                    : Colors.white,
                               ),
                             ),
                           ],

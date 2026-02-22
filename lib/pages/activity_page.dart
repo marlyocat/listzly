@@ -1257,6 +1257,83 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
 
   Future<void> _toggleShareRecording(PracticeRecording recording) async {
     final newShared = !recording.sharedWithTeacher;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: const Color(0xFF1E0E3D),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(color: Colors.black, width: 5),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                newShared ? 'Share with Teacher?' : 'Unshare with Teacher?',
+                style: GoogleFonts.nunito(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                newShared
+                    ? 'Your teacher will be able to listen to this recording.'
+                    : 'Your teacher will no longer be able to listen to this recording.',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.nunito(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: darkTextSecondary,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(ctx, false),
+                      child: Text(
+                        'Cancel',
+                        style: GoogleFonts.nunito(
+                          fontWeight: FontWeight.w700,
+                          color: darkTextMuted,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(ctx, true),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: newShared ? accentCoral : Colors.red,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        newShared ? 'Share' : 'Unshare',
+                        style: GoogleFonts.nunito(
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    if (confirmed != true) return;
+
     try {
       await ref.read(recordingServiceProvider).setShared(
             recording.id!,
@@ -1272,7 +1349,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                   : 'Recording unshared',
               style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
             ),
-            backgroundColor: const Color(0xFF1E0E3D),
+            backgroundColor: accentCoralDark,
             behavior: SnackBarBehavior.floating,
           ),
         );
