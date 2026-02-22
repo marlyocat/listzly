@@ -41,24 +41,6 @@ final dailyQuestsProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef DailyQuestsRef = AutoDisposeFutureProviderRef<List<QuestProgress>>;
-String _$weeklyQuestsHash() => r'd0cb9966e0f48217e2863e316975164ae9d214db';
-
-/// See also [weeklyQuests].
-@ProviderFor(weeklyQuests)
-final weeklyQuestsProvider =
-    AutoDisposeFutureProvider<List<QuestProgress>>.internal(
-      weeklyQuests,
-      name: r'weeklyQuestsProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$weeklyQuestsHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef WeeklyQuestsRef = AutoDisposeFutureProviderRef<List<QuestProgress>>;
 String _$weekCompletionStatusHash() =>
     r'f68a8f9d3ae7491de87ede8493539995b75300a5';
 

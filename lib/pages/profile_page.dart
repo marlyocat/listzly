@@ -16,6 +16,9 @@ import 'package:listzly/providers/group_provider.dart';
 import 'package:listzly/theme/colors.dart';
 import 'package:listzly/utils/level_utils.dart';
 import 'package:listzly/services/notification_service.dart';
+import 'package:listzly/providers/subscription_provider.dart';
+import 'package:listzly/models/subscription_tier.dart';
+import 'package:listzly/pages/paywall_page.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
@@ -65,6 +68,11 @@ class ProfilePage extends ConsumerWidget {
                 loading: () => _buildProfileCardLoading(),
                 error: (err, _) => _buildErrorCard('Failed to load profile'),
               ),
+            ),
+
+            // Subscription section
+            SliverToBoxAdapter(
+              child: _buildSubscriptionSection(context, ref),
             ),
 
             // Role & Group section
@@ -208,6 +216,103 @@ class ProfilePage extends ConsumerWidget {
 
             // Bottom spacing for nav bar
             const SliverToBoxAdapter(child: SizedBox(height: 100)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ─── Subscription section ─────────────────────────────────────────
+  Widget _buildSubscriptionSection(BuildContext context, WidgetRef ref) {
+    final tier = ref.watch(effectiveSubscriptionTierProvider);
+
+    final Color badgeColor;
+    final IconData badgeIcon;
+    switch (tier) {
+      case SubscriptionTier.pro:
+        badgeColor = accentCoral;
+        badgeIcon = Icons.star_rounded;
+      default:
+        badgeColor = darkTextMuted;
+        badgeIcon = Icons.person_rounded;
+    }
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: darkCardBg,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.black, width: 5),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: badgeColor.withAlpha(30),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(badgeIcon, color: badgeColor, size: 24),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Listzly ${tier.displayName}',
+                    style: GoogleFonts.nunito(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    tier.isFree
+                        ? 'Upgrade to unlock all features'
+                        : 'You have full access',
+                    style: GoogleFonts.nunito(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: darkTextMuted,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const PaywallPage()),
+                );
+              },
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                decoration: BoxDecoration(
+                  gradient: tier.isFree
+                      ? const LinearGradient(
+                          colors: [Color(0xFFF4A68E), accentCoralDark],
+                        )
+                      : null,
+                  color: tier.isFree ? null : Colors.white.withAlpha(15),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  tier.isFree ? 'Upgrade' : 'Manage',
+                  style: GoogleFonts.nunito(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),

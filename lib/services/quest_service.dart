@@ -48,33 +48,6 @@ const dailyQuestDefinitions = [
   ),
 ];
 
-const weeklyQuestDefinitions = [
-  QuestDefinition(
-    key: 'weekly_xp_200',
-    type: 'weekly',
-    title: 'Earn 200 XP',
-    description: 'Keep up the momentum!',
-    target: 200,
-    rewardXp: 50,
-  ),
-  QuestDefinition(
-    key: 'weekly_instruments_3',
-    type: 'weekly',
-    title: 'Try 3 instruments',
-    description: 'Variety is the spice of music',
-    target: 3,
-    rewardXp: 30,
-  ),
-  QuestDefinition(
-    key: 'weekly_streak_7',
-    type: 'weekly',
-    title: '7 day streak',
-    description: 'Practice every day this week',
-    target: 7,
-    rewardXp: 100,
-  ),
-];
-
 class QuestService {
   final SupabaseClient _client;
   QuestService(this._client);
@@ -176,94 +149,18 @@ class QuestService {
     return _deduplicateByQuestKey(result);
   }
 
-  /// Get or initialize this week's weekly quests.
-  Future<List<QuestProgress>> getWeeklyQuests(String userId) async {
-    final weekStart = _weekStart();
-    final dateStr = weekStart.toIso8601String().split('T')[0];
-
-    final existing = await _client
-        .from('quest_progress')
-        .select()
-        .eq('user_id', userId)
-        .eq('quest_type', 'weekly')
-        .eq('period_start', dateStr)
-        .order('quest_key');
-
-    if (existing.isNotEmpty) {
-      return _deduplicateByQuestKey(existing);
-    }
-
-    final inserts = weeklyQuestDefinitions
-        .map((d) => {
-              'user_id': userId,
-              'quest_key': d.key,
-              'quest_type': 'weekly',
-              'progress': 0,
-              'target': d.target,
-              'completed': false,
-              'period_start': dateStr,
-            })
-        .toList();
-
-    final result =
-        await _client.from('quest_progress').insert(inserts).select();
-
-    return _deduplicateByQuestKey(result);
-  }
-
   /// Update quest progress after a session is saved.
   Future<void> updateQuestProgressAfterSession(
     String userId,
     PracticeSession session,
   ) async {
     final today = _todayStart();
-    final weekStart = _weekStart();
     final minutesPracticed = (session.durationSeconds / 60).ceil();
-    final xpEarned = session.xpEarned;
 
     // --- Daily quests ---
     await _incrementQuest(userId, 'daily_xp_30', today, 1);
     await _incrementQuest(userId, 'daily_practice_20m', today, minutesPracticed);
     await _incrementQuest(userId, 'daily_sessions_2', today, 1);
-
-    // --- Weekly quests ---
-    await _incrementQuest(userId, 'weekly_xp_200', weekStart, xpEarned);
-
-    // Weekly instruments: count distinct instruments this week
-    final weekEnd = weekStart.add(const Duration(days: 7));
-    final weekSessions = await _client
-        .from('practice_sessions')
-        .select('instrument_name')
-        .eq('user_id', userId)
-        .gte('completed_at', weekStart.toIso8601String())
-        .lte('completed_at', weekEnd.toIso8601String());
-
-    final distinctInstruments = (weekSessions as List)
-        .map((e) => (e as Map<String, dynamic>)['instrument_name'])
-        .toSet()
-        .length;
-
-    await _setQuestProgress(
-        userId, 'weekly_instruments_3', weekStart, distinctInstruments);
-
-    // Weekly streak: count distinct practice days this week
-    final weekSessionsFull = await _client
-        .from('practice_sessions')
-        .select('completed_at')
-        .eq('user_id', userId)
-        .gte('completed_at', weekStart.toIso8601String())
-        .lte('completed_at', weekEnd.toIso8601String());
-
-    final distinctDays = (weekSessionsFull as List)
-        .map((e) {
-          final dt = DateTime.parse(
-              (e as Map<String, dynamic>)['completed_at'] as String);
-          return DateTime(dt.year, dt.month, dt.day);
-        })
-        .toSet()
-        .length;
-
-    await _setQuestProgress(userId, 'weekly_streak_7', weekStart, distinctDays);
   }
 
   Future<void> _incrementQuest(
@@ -293,37 +190,6 @@ class QuestService {
         .update({
           'progress': newProgress,
           'completed': newProgress >= target,
-        })
-        .eq('user_id', userId)
-        .eq('quest_key', questKey)
-        .eq('period_start', dateStr);
-  }
-
-  Future<void> _setQuestProgress(
-    String userId,
-    String questKey,
-    DateTime periodStart,
-    int value,
-  ) async {
-    final dateStr = periodStart.toIso8601String().split('T')[0];
-
-    final existing = await _client
-        .from('quest_progress')
-        .select()
-        .eq('user_id', userId)
-        .eq('quest_key', questKey)
-        .eq('period_start', dateStr)
-        .maybeSingle();
-
-    if (existing == null) return;
-
-    final target = existing['target'] as int;
-
-    await _client
-        .from('quest_progress')
-        .update({
-          'progress': value,
-          'completed': value >= target,
         })
         .eq('user_id', userId)
         .eq('quest_key', questKey)

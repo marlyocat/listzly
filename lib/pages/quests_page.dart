@@ -21,9 +21,6 @@ const _questIconMap = <String, IconData>{
   'daily_xp_30': Icons.music_note_rounded,
   'daily_practice_20m': Icons.timer_rounded,
   'daily_sessions_2': Icons.piano_rounded,
-  'weekly_xp_200': Icons.local_fire_department_rounded,
-  'weekly_instruments_3': Icons.category_rounded,
-  'weekly_streak_7': Icons.bolt_rounded,
 };
 
 /// Maps icon name strings (from assigned quests) to IconData.

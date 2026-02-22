@@ -23,13 +23,6 @@ Future<List<QuestProgress>> dailyQuests(DailyQuestsRef ref) async {
 }
 
 @riverpod
-Future<List<QuestProgress>> weeklyQuests(WeeklyQuestsRef ref) async {
-  final user = ref.watch(currentUserProvider);
-  if (user == null) throw Exception('Not authenticated');
-  return ref.watch(questServiceProvider).getWeeklyQuests(user.id);
-}
-
-@riverpod
 Future<List<bool>> weekCompletionStatus(WeekCompletionStatusRef ref) async {
   final user = ref.watch(currentUserProvider);
   if (user == null) throw Exception('Not authenticated');

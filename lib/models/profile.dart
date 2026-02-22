@@ -18,6 +18,8 @@ class Profile {
   final UserRole role;
   @JsonKey(name: 'role_selected')
   final bool roleSelected;
+  @JsonKey(name: 'subscription_tier', defaultValue: 'free')
+  final String subscriptionTier;
 
   const Profile({
     required this.id,
@@ -26,6 +28,7 @@ class Profile {
     required this.createdAt,
     this.role = UserRole.selfLearner,
     this.roleSelected = false,
+    this.subscriptionTier = 'free',
   });
 
   factory Profile.fromJson(Map<String, dynamic> json) =>
@@ -37,6 +40,7 @@ class Profile {
     String? avatarUrl,
     UserRole? role,
     bool? roleSelected,
+    String? subscriptionTier,
   }) =>
       Profile(
         id: id,
@@ -45,6 +49,7 @@ class Profile {
         createdAt: createdAt,
         role: role ?? this.role,
         roleSelected: roleSelected ?? this.roleSelected,
+        subscriptionTier: subscriptionTier ?? this.subscriptionTier,
       );
 
   bool get isTeacher => role == UserRole.teacher;

@@ -67,4 +67,39 @@ class ProfileService {
 
     return Profile.fromJson(result);
   }
+
+  Future<void> updateSubscriptionTier(String userId, String tier) async {
+    await _client
+        .from('profiles')
+        .update({'subscription_tier': tier})
+        .eq('id', userId);
+  }
+
+  /// Get the teacher's profile for a student (via group membership).
+  Future<Profile?> getTeacherProfile(String studentId) async {
+    final membership = await _client
+        .from('group_members')
+        .select('group_id')
+        .eq('student_id', studentId)
+        .maybeSingle();
+
+    if (membership == null) return null;
+
+    final group = await _client
+        .from('teacher_groups')
+        .select('teacher_id')
+        .eq('id', membership['group_id'])
+        .maybeSingle();
+
+    if (group == null) return null;
+
+    final teacherProfile = await _client
+        .from('profiles')
+        .select()
+        .eq('id', group['teacher_id'])
+        .maybeSingle();
+
+    if (teacherProfile == null) return null;
+    return Profile.fromJson(teacherProfile);
+  }
 }

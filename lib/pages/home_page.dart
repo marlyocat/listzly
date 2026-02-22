@@ -16,6 +16,8 @@ import 'package:listzly/providers/stats_provider.dart';
 import 'package:listzly/providers/session_provider.dart';
 import 'package:listzly/providers/settings_provider.dart';
 import 'package:listzly/providers/profile_provider.dart';
+import 'package:listzly/providers/subscription_provider.dart';
+import 'package:listzly/components/upgrade_prompt.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -191,6 +193,12 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
   }
 
   void _onGoTap() {
+    final tier = ref.read(effectiveSubscriptionTierProvider);
+    if (!tier.canUseAllInstruments && _currentPage != 0) {
+      showUpgradePrompt(context, feature: 'All instruments');
+      return;
+    }
+
     final instrument = _instruments[_currentPage];
     Navigator.push(
       context,
@@ -333,18 +341,42 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                   onPageChanged: (index) => setState(() => _currentPage = index),
                   itemBuilder: (context, index) {
                     final inst = _instruments[index];
+                    final tier = ref.watch(effectiveSubscriptionTierProvider);
+                    final isLocked = !tier.canUseAllInstruments && index != 0;
                     return Column(
                         children: [
                           if (inst.lottiePath != null)
                             Expanded(
-                              child: Lottie.asset(
-                                inst.lottiePath!,
-                                fit: BoxFit.contain,
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  Opacity(
+                                    opacity: isLocked ? 0.4 : 1.0,
+                                    child: Lottie.asset(
+                                      inst.lottiePath!,
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                  if (isLocked)
+                                    Container(
+                                      width: 56,
+                                      height: 56,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.black.withAlpha(120),
+                                      ),
+                                      child: const Icon(
+                                        Icons.lock_rounded,
+                                        size: 28,
+                                        color: Colors.white70,
+                                      ),
+                                    ),
+                                ],
                               ),
                             )
                           else
                             Expanded(
-                              child: Icon(inst.icon, size: 200, color: Colors.white.withAlpha(180)),
+                              child: Icon(inst.icon, size: 200, color: Colors.white.withAlpha(isLocked ? 60 : 180)),
                             ),
                           const SizedBox(height: 16),
                           Row(

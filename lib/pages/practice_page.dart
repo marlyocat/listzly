@@ -17,6 +17,8 @@ import 'package:listzly/providers/stats_provider.dart';
 import 'package:listzly/providers/instrument_provider.dart';
 import 'package:listzly/providers/settings_provider.dart';
 import 'package:listzly/providers/recording_provider.dart';
+import 'package:listzly/providers/subscription_provider.dart';
+import 'package:listzly/components/upgrade_prompt.dart';
 import 'package:listzly/services/notification_service.dart';
 import 'package:listzly/theme/colors.dart';
 
@@ -248,6 +250,13 @@ class _PracticePageState extends ConsumerState<PracticePage>
   // ---- Recording methods ----
 
   Future<void> _toggleRecording() async {
+    // Gate recording behind Pro
+    final tier = ref.read(effectiveSubscriptionTierProvider);
+    if (!tier.canRecord) {
+      showUpgradePrompt(context, feature: 'Practice recordings');
+      return;
+    }
+
     if (_isRecording) {
       await _stopRecording();
     } else {
@@ -499,7 +508,6 @@ class _PracticePageState extends ConsumerState<PracticePage>
       // Invalidate providers so other pages see fresh data
       ref.invalidate(userStatsProvider);
       ref.invalidate(dailyQuestsProvider);
-      ref.invalidate(weeklyQuestsProvider);
       ref.invalidate(weekCompletionStatusProvider);
       ref.invalidate(assignedQuestProgressProvider);
       ref.invalidate(assignedQuestDefinitionsProvider);

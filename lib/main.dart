@@ -9,6 +9,8 @@ import 'package:listzly/pages/home_page.dart';
 import 'package:listzly/pages/auth_page.dart';
 import 'package:listzly/pages/auth_gate.dart';
 import 'package:listzly/services/notification_service.dart';
+import 'package:listzly/config/revenuecat_config.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,9 +22,16 @@ Future<void> main() async {
     anonKey: supabaseAnonKey,
   );
 
+  // Initialize RevenueCat
+  await Purchases.configure(
+    PurchasesConfiguration(revenueCatApiKey),
+  );
+
   // Reschedule reminder if user is logged in and has one set
   final currentUser = Supabase.instance.client.auth.currentUser;
   if (currentUser != null) {
+    // Set RevenueCat user ID to match Supabase auth
+    await Purchases.logIn(currentUser.id);
     try {
       final result = await Supabase.instance.client
           .from('user_settings')

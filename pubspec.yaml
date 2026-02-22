@@ -55,6 +55,7 @@ dependencies:
   url_launcher: ^6.2.5
   share_plus: ^10.1.4
   flutter_file_dialog: ^3.0.2
+  purchases_flutter: ^8.0.0
 
 dev_dependencies:
   flutter_test:

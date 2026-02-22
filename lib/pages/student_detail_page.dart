@@ -10,6 +10,8 @@ import 'package:listzly/components/recording_list_tile.dart';
 import 'package:listzly/components/recording_player.dart';
 import 'package:listzly/theme/colors.dart';
 import 'package:listzly/utils/level_utils.dart';
+import 'package:listzly/providers/subscription_provider.dart';
+import 'package:listzly/components/upgrade_prompt.dart';
 
 class StudentDetailPage extends ConsumerStatefulWidget {
   final String studentId;
@@ -1000,6 +1002,66 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
 
   // --- Student Recordings (teacher view, play only) ---
   Widget _buildRecordingsList() {
+    final tier = ref.watch(effectiveSubscriptionTierProvider);
+
+    if (!tier.canViewStudentRecordings) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+        child: GestureDetector(
+          onTap: () =>
+              showUpgradePrompt(context, feature: 'Student recordings'),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: darkCardBg,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: Colors.black, width: 5),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: darkSurfaceBg,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(Icons.lock_rounded,
+                      color: Colors.white54, size: 20),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Recordings',
+                        style: GoogleFonts.nunito(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Upgrade to Pro to listen to student recordings',
+                        style: GoogleFonts.nunito(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: darkTextMuted,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.chevron_right, color: darkTextMuted),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     final recordingsAsync = ref.watch(
       studentRecordingsProvider(studentId: widget.studentId),
     );

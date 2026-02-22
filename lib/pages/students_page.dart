@@ -11,6 +11,8 @@ import 'package:listzly/pages/assign_quest_sheet.dart';
 import 'package:listzly/pages/student_detail_page.dart';
 import 'package:listzly/theme/colors.dart';
 import 'package:listzly/utils/level_utils.dart';
+import 'package:listzly/providers/subscription_provider.dart';
+import 'package:listzly/components/upgrade_prompt.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
 
 class StudentsPage extends ConsumerWidget {
@@ -158,6 +160,12 @@ class StudentsPage extends ConsumerWidget {
                   const Spacer(),
                   GestureDetector(
                     onTap: () async {
+                      final tier = ref.read(effectiveSubscriptionTierProvider);
+                      if (!tier.canAssignQuests) {
+                        showUpgradePrompt(context,
+                            feature: 'Custom quest assignment');
+                        return;
+                      }
                       final result = await showDialog<bool>(
                         context: context,
                         builder: (_) =>
@@ -246,6 +254,10 @@ class StudentsPage extends ConsumerWidget {
 
   Widget _buildInviteCodeCard(BuildContext context, WidgetRef ref,
       String inviteCode, String groupId, int studentCount) {
+    final tier = ref.watch(effectiveSubscriptionTierProvider);
+    final maxStudents = tier.maxStudents;
+    final atLimit = maxStudents != null && studentCount >= maxStudents;
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       child: Container(
@@ -282,15 +294,39 @@ class StudentsPage extends ConsumerWidget {
                 ),
                 const Spacer(),
                 Text(
-                  '$studentCount/20',
+                  '$studentCount/${maxStudents ?? '∞'} Students',
                   style: GoogleFonts.nunito(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color: darkTextSecondary,
+                    color: atLimit ? accentCoral : darkTextSecondary,
                   ),
                 ),
               ],
             ),
+            if (atLimit) ...[
+              const SizedBox(height: 8),
+              GestureDetector(
+                onTap: () => showUpgradePrompt(context,
+                    feature: 'More students'),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  decoration: BoxDecoration(
+                    color: accentCoral.withAlpha(20),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    'Student limit reached. Upgrade for more.',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.nunito(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: accentCoral,
+                    ),
+                  ),
+                ),
+              ),
+            ],
             const SizedBox(height: 16),
             // Code display
             Container(

@@ -15,6 +15,7 @@ Profile _$ProfileFromJson(Map<String, dynamic> json) => Profile(
       ? UserRole.selfLearner
       : UserRole.fromJson(json['role'] as String),
   roleSelected: json['role_selected'] as bool? ?? false,
+  subscriptionTier: json['subscription_tier'] as String? ?? 'free',
 );
 
 Map<String, dynamic> _$ProfileToJson(Profile instance) => <String, dynamic>{
@@ -24,4 +25,5 @@ Map<String, dynamic> _$ProfileToJson(Profile instance) => <String, dynamic>{
   'created_at': instance.createdAt.toIso8601String(),
   'role': _roleToJson(instance.role),
   'role_selected': instance.roleSelected,
+  'subscription_tier': instance.subscriptionTier,
 };

@@ -11,6 +11,8 @@ import 'package:listzly/models/user_role.dart';
 import 'package:listzly/components/recording_list_tile.dart';
 import 'package:listzly/components/recording_player.dart';
 import 'package:listzly/theme/colors.dart';
+import 'package:listzly/providers/subscription_provider.dart';
+import 'package:listzly/components/upgrade_prompt.dart';
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -266,6 +268,92 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
 
   @override
   Widget build(BuildContext context) {
+    final tier = ref.watch(effectiveSubscriptionTierProvider);
+
+    // Lock entire activity page for free users
+    if (!tier.canViewActivity) {
+      return Scaffold(
+        backgroundColor: const Color(0xFF150833),
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: [
+                          accentCoral.withAlpha(40),
+                          accentCoralDark.withAlpha(40),
+                        ],
+                      ),
+                    ),
+                    child: const Icon(
+                      Icons.lock_rounded,
+                      size: 40,
+                      color: accentCoral,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Activity',
+                    style: GoogleFonts.dmSerifDisplay(
+                      fontSize: 28,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Track your practice sessions, view stats, and manage recordings with Pro.',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.nunito(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: darkTextSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  GestureDetector(
+                    onTap: () => showUpgradePrompt(context, feature: 'Activity'),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 32, vertical: 14),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFFF4A68E), accentCoralDark],
+                        ),
+                        borderRadius: BorderRadius.circular(14),
+                        boxShadow: [
+                          BoxShadow(
+                            color: accentCoral.withAlpha(80),
+                            blurRadius: 12,
+                            spreadRadius: 1,
+                          ),
+                        ],
+                      ),
+                      child: Text(
+                        'Upgrade to Pro',
+                        style: GoogleFonts.nunito(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     // Watch providers using the current date range
     final sessionsAsync = ref.watch(
       sessionListProvider(start: _rangeStart, end: _rangeEnd),
@@ -1066,6 +1154,66 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
 
   // --- My Recordings section ---
   Widget _buildRecordingsList() {
+    final tier = ref.watch(effectiveSubscriptionTierProvider);
+
+    // Free users see locked card
+    if (!tier.canRecord) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+        child: GestureDetector(
+          onTap: () => showUpgradePrompt(context, feature: 'Recordings'),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: darkCardBg,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: Colors.black, width: 5),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: darkSurfaceBg,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(Icons.lock_rounded,
+                      color: Colors.white54, size: 20),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'My Recordings',
+                        style: GoogleFonts.nunito(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Upgrade to Pro to record your practice',
+                        style: GoogleFonts.nunito(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: darkTextMuted,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.chevron_right, color: darkTextMuted),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     final recordingsAsync = ref.watch(userRecordingsProvider);
     final role = ref.watch(currentProfileProvider).valueOrNull?.role;
     return Padding(
