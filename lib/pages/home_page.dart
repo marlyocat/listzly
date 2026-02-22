@@ -13,6 +13,8 @@ import 'package:listzly/pages/students_page.dart';
 import 'package:listzly/theme/colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:listzly/providers/stats_provider.dart';
+import 'package:listzly/providers/session_provider.dart';
+import 'package:listzly/providers/settings_provider.dart';
 import 'package:listzly/providers/profile_provider.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
 
@@ -119,7 +121,8 @@ class _HomeTab extends ConsumerStatefulWidget {
 class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixin {
   final PageController _pageController = PageController();
   int _currentPage = 0;
-  double _selectedDuration = 15;
+  double? _selectedDuration;
+  int? _lastKnownGoal;
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
   late AnimationController _rippleController;
@@ -198,7 +201,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
         pageBuilder: (context, animation, secondaryAnimation) => PracticePage(
           instrument: instrument.name,
           instrumentIcon: instrument.icon,
-          durationMinutes: _selectedDuration.toInt(),
+          durationMinutes: (_selectedDuration ?? 15).toInt(),
         ),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           // Only apply turn-page effect for forward animation
@@ -221,6 +224,29 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
   Widget build(BuildContext context) {
     final statsAsync = ref.watch(userStatsProvider);
     final streakDays = statsAsync.valueOrNull?.currentStreak ?? 0;
+
+    // Set slider to remaining daily goal on first load or when goal changes
+    final settings = ref.watch(userSettingsNotifierProvider).valueOrNull;
+    final now = DateTime.now();
+    final todayStart = DateTime(now.year, now.month, now.day);
+    final todayEnd = todayStart.add(const Duration(days: 1));
+    final todayStats = ref.watch(summaryStatsProvider(
+      start: todayStart,
+      end: todayEnd,
+    )).valueOrNull;
+
+    if (settings != null && todayStats != null) {
+      final goalMinutes = settings.dailyGoalMinutes;
+      if (_selectedDuration == null || _lastKnownGoal != goalMinutes) {
+        final practicedMinutes = todayStats.totalTime.inMinutes;
+        final remaining = goalMinutes - practicedMinutes;
+        // Round up to nearest 5, clamp to slider range (5–120), default to 15 if goal met
+        _selectedDuration = remaining > 0
+            ? ((remaining / 5).ceil() * 5).toDouble().clamp(5, 120)
+            : 15;
+        _lastKnownGoal = goalMinutes;
+      }
+    }
 
     return Scaffold(
       backgroundColor: const Color(0xFF150833),
@@ -378,7 +404,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                                 child: Column(
                                   children: [
                                     Text(
-                                      '${_selectedDuration.toInt()}',
+                                      '${(_selectedDuration ?? 15).toInt()}',
                                       style: GoogleFonts.dmSerifDisplay(
                                         fontSize: 16,
                                         color: accentCoral,
@@ -407,7 +433,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                                             overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
                                           ),
                                           child: Slider(
-                                            value: _selectedDuration,
+                                            value: _selectedDuration ?? 15,
                                             min: 5,
                                             max: 120,
                                             divisions: 23,
