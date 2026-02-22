@@ -5,6 +5,8 @@ import 'package:listzly/models/practice_session.dart';
 import 'package:listzly/models/practice_recording.dart';
 import 'package:listzly/providers/session_provider.dart';
 import 'package:listzly/providers/recording_provider.dart';
+import 'package:listzly/providers/profile_provider.dart';
+import 'package:listzly/models/user_role.dart';
 import 'package:listzly/components/recording_list_tile.dart';
 import 'package:listzly/components/recording_player.dart';
 import 'package:listzly/theme/colors.dart';
@@ -919,6 +921,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                       decoration: BoxDecoration(
                         color: accentCoral.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: Colors.black, width: 2),
                       ),
                       child: Text(
                         'View All',
@@ -1062,6 +1065,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
   // --- My Recordings section ---
   Widget _buildRecordingsList() {
     final recordingsAsync = ref.watch(userRecordingsProvider);
+    final role = ref.watch(currentProfileProvider).valueOrNull?.role;
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       child: Container(
@@ -1086,25 +1090,29 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                     ),
                   ),
                   const Spacer(),
-                  recordingsAsync.whenOrNull(
-                        data: (recordings) => Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: accentCoral.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            '${recordings.length}',
-                            style: GoogleFonts.nunito(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: accentCoral,
-                            ),
-                          ),
+                  GestureDetector(
+                    onTap: () {
+                      _showAllRecordings(
+                          recordingsAsync.valueOrNull ?? []);
+                    },
+                    child: Container(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: accentCoral.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: Colors.black, width: 2),
+                      ),
+                      child: Text(
+                        'View All',
+                        style: GoogleFonts.nunito(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: accentCoral,
                         ),
-                      ) ??
-                      const SizedBox.shrink(),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -1127,10 +1135,13 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                       ),
                     )
                   : Column(
-                      children: recordings.map((recording) {
+                      children: recordings.take(5).map((recording) {
                         return RecordingListTile(
                           recording: recording,
                           onPlay: () => _playRecording(recording),
+                          onToggleShare: role == UserRole.student
+                              ? () => _toggleShareRecording(recording)
+                              : null,
                           onDownload: () => _downloadRecording(recording),
                           onDelete: () => _confirmDeleteRecording(recording),
                         );
@@ -1221,6 +1232,44 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
     }
   }
 
+  Future<void> _toggleShareRecording(PracticeRecording recording) async {
+    final newShared = !recording.sharedWithTeacher;
+    try {
+      await ref.read(recordingServiceProvider).setShared(
+            recording.id!,
+            newShared,
+          );
+      ref.invalidate(userRecordingsProvider);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              newShared
+                  ? 'Recording shared with teacher'
+                  : 'Recording unshared',
+              style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+            ),
+            backgroundColor: const Color(0xFF1E0E3D),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Could not update sharing',
+              style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+            ),
+            backgroundColor: accentCoralDark,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
+  }
+
   Future<void> _confirmDeleteRecording(PracticeRecording recording) async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -1281,149 +1330,230 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
   }
 
   void _showAllSessions(BuildContext context, List<PracticeSession> sessions) {
-    showModalBottomSheet(
+    showDialog(
       context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
       builder: (ctx) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.75,
-          minChildSize: 0.4,
-          maxChildSize: 0.95,
-          builder: (context, scrollController) {
-            return Container(
-              decoration: const BoxDecoration(
-                color: Color(0xFF1E0E3D),
-                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                border: Border(
-                  top: BorderSide(color: Colors.black, width: 5),
-                  left: BorderSide(color: Colors.black, width: 5),
-                  right: BorderSide(color: Colors.black, width: 5),
+        return Dialog(
+          backgroundColor: const Color(0xFF1E0E3D),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: const BorderSide(color: Colors.black, width: 5),
+          ),
+          insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 20),
+              Text(
+                'All Sessions',
+                style: GoogleFonts.nunito(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
                 ),
               ),
-              child: Column(
-                children: [
-                  const SizedBox(height: 12),
-                  Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: darkTextMuted,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'All Sessions',
-                    style: GoogleFonts.nunito(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${sessions.length} session${sessions.length == 1 ? '' : 's'}',
-                    style: GoogleFonts.nunito(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: darkTextSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Expanded(
-                    child: sessions.isEmpty
-                        ? Center(
-                            child: Text(
-                              'No recent sessions yet',
-                              style: GoogleFonts.nunito(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: darkTextSecondary,
-                              ),
-                            ),
-                          )
-                        : ListView.builder(
-                      controller: scrollController,
-                      padding: EdgeInsets.only(
-                        bottom: MediaQuery.of(ctx).padding.bottom + 16,
-                      ),
-                      itemCount: sessions.length,
-                      itemBuilder: (context, i) {
-                        final s = sessions[i];
-                        final instIcon = _instrumentIcons[s.instrumentName] ??
-                            Icons.music_note;
-                        return Column(
-                          children: [
-                            const Divider(
-                              height: 1,
-                              color: darkDivider,
-                              indent: 16,
-                              endIndent: 16,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 12),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 38,
-                                    height: 38,
-                                    decoration: BoxDecoration(
-                                      color: darkSurfaceBg,
-                                      borderRadius: BorderRadius.circular(10),
-                                      border: Border.all(
-                                          color: Colors.black, width: 2),
-                                    ),
-                                    child: Icon(instIcon,
-                                        color: Colors.white, size: 20),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          s.instrumentName,
-                                          style: GoogleFonts.nunito(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w700,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 1),
-                                        Text(
-                                          _formatSessionDate(s.startedAt),
-                                          style: GoogleFonts.nunito(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w600,
-                                            color: darkTextMuted,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Text(
-                                    _formatSessionDuration(s.durationSeconds),
-                                    style: GoogleFonts.nunito(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w800,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                  ),
-                ],
+              const SizedBox(height: 4),
+              Text(
+                '${sessions.length} session${sessions.length == 1 ? '' : 's'}',
+                style: GoogleFonts.nunito(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: darkTextSecondary,
+                ),
               ),
-            );
-          },
+              const SizedBox(height: 12),
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(ctx).size.height * 0.5,
+                ),
+                child: sessions.isEmpty
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 24),
+                        child: Text(
+                          'No recent sessions yet',
+                          style: GoogleFonts.nunito(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: darkTextSecondary,
+                          ),
+                        ),
+                      )
+                    : ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: sessions.length,
+                        itemBuilder: (context, i) {
+                          final s = sessions[i];
+                          final instIcon = _instrumentIcons[s.instrumentName] ??
+                              Icons.music_note;
+                          return Column(
+                            children: [
+                              const Divider(
+                                height: 1,
+                                color: darkDivider,
+                                indent: 16,
+                                endIndent: 16,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 12),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 38,
+                                      height: 38,
+                                      decoration: BoxDecoration(
+                                        color: darkSurfaceBg,
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: Border.all(
+                                            color: Colors.black, width: 2),
+                                      ),
+                                      child: Icon(instIcon,
+                                          color: Colors.white, size: 20),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            s.instrumentName,
+                                            style: GoogleFonts.nunito(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w700,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 1),
+                                          Text(
+                                            _formatSessionDate(s.startedAt),
+                                            style: GoogleFonts.nunito(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600,
+                                              color: darkTextMuted,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Text(
+                                      _formatSessionDuration(s.durationSeconds),
+                                      style: GoogleFonts.nunito(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w800,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+              ),
+              const SizedBox(height: 8),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: Text(
+                  'Close',
+                  style: GoogleFonts.nunito(
+                    fontWeight: FontWeight.w700,
+                    color: accentCoral,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showAllRecordings(List<PracticeRecording> recordings) {
+    final role = ref.read(currentProfileProvider).valueOrNull?.role;
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return Dialog(
+          backgroundColor: const Color(0xFF1E0E3D),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: const BorderSide(color: Colors.black, width: 5),
+          ),
+          insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 20),
+              Text(
+                'All Recordings',
+                style: GoogleFonts.nunito(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '${recordings.length} recording${recordings.length == 1 ? '' : 's'}',
+                style: GoogleFonts.nunito(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: darkTextSecondary,
+                ),
+              ),
+              const SizedBox(height: 12),
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(ctx).size.height * 0.5,
+                ),
+                child: recordings.isEmpty
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 24),
+                        child: Text(
+                          'No recordings yet',
+                          style: GoogleFonts.nunito(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: darkTextSecondary,
+                          ),
+                        ),
+                      )
+                    : ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: recordings.length,
+                        itemBuilder: (context, i) {
+                          final recording = recordings[i];
+                          return RecordingListTile(
+                            recording: recording,
+                            onPlay: () => _playRecording(recording),
+                            onToggleShare: role == UserRole.student
+                                ? () => _toggleShareRecording(recording)
+                                : null,
+                            onDownload: () => _downloadRecording(recording),
+                            onDelete: () {
+                              _confirmDeleteRecording(recording);
+                            },
+                          );
+                        },
+                      ),
+              ),
+              const SizedBox(height: 8),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: Text(
+                  'Close',
+                  style: GoogleFonts.nunito(
+                    fontWeight: FontWeight.w700,
+                    color: accentCoral,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
         );
       },
     );

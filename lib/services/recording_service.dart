@@ -59,18 +59,27 @@ class RecordingService {
         .toList();
   }
 
-  /// Fetch recordings for a specific student (teacher view).
+  /// Fetch shared recordings for a specific student (teacher view).
   Future<List<PracticeRecording>> getStudentRecordings(
       String studentId) async {
     final result = await _client
         .from('practice_recordings')
         .select()
         .eq('user_id', studentId)
+        .eq('shared_with_teacher', true)
         .order('created_at', ascending: false);
 
     return (result as List)
         .map((e) => PracticeRecording.fromJson(e as Map<String, dynamic>))
         .toList();
+  }
+
+  /// Toggle sharing a recording with the teacher.
+  Future<void> setShared(String recordingId, bool shared) async {
+    await _client
+        .from('practice_recordings')
+        .update({'shared_with_teacher': shared})
+        .eq('id', recordingId);
   }
 
   /// Get a signed URL for playback (1 hour expiry).

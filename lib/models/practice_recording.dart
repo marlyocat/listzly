@@ -17,6 +17,8 @@ class PracticeRecording {
   final String filePath;
   @JsonKey(name: 'file_size_bytes')
   final int? fileSizeBytes;
+  @JsonKey(name: 'shared_with_teacher')
+  final bool sharedWithTeacher;
   @JsonKey(name: 'created_at')
   final DateTime createdAt;
 
@@ -28,6 +30,7 @@ class PracticeRecording {
     required this.durationSeconds,
     required this.filePath,
     this.fileSizeBytes,
+    this.sharedWithTeacher = false,
     required this.createdAt,
   });
 

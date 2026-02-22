@@ -15,6 +15,7 @@ PracticeRecording _$PracticeRecordingFromJson(Map<String, dynamic> json) =>
       durationSeconds: (json['duration_seconds'] as num).toInt(),
       filePath: json['file_path'] as String,
       fileSizeBytes: (json['file_size_bytes'] as num?)?.toInt(),
+      sharedWithTeacher: json['shared_with_teacher'] as bool? ?? false,
       createdAt: DateTime.parse(json['created_at'] as String),
     );
 
@@ -27,5 +28,6 @@ Map<String, dynamic> _$PracticeRecordingToJson(PracticeRecording instance) =>
       'duration_seconds': instance.durationSeconds,
       'file_path': instance.filePath,
       'file_size_bytes': instance.fileSizeBytes,
+      'shared_with_teacher': instance.sharedWithTeacher,
       'created_at': instance.createdAt.toIso8601String(),
     };

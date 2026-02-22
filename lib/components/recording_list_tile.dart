@@ -8,6 +8,7 @@ class RecordingListTile extends StatelessWidget {
   final VoidCallback onPlay;
   final VoidCallback? onDownload;
   final VoidCallback? onDelete;
+  final VoidCallback? onToggleShare;
 
   static const _monthNames = [
     'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
@@ -20,6 +21,7 @@ class RecordingListTile extends StatelessWidget {
     required this.onPlay,
     this.onDownload,
     this.onDelete,
+    this.onToggleShare,
   });
 
   String _formatDuration(int seconds) {
@@ -58,7 +60,7 @@ class RecordingListTile extends StatelessWidget {
                   border: Border.all(color: Colors.black, width: 2),
                 ),
                 child: const Icon(Icons.mic_rounded,
-                    color: accentCoral, size: 20),
+                    color: Colors.white, size: 20),
               ),
               const SizedBox(width: 12),
               // Info
@@ -100,6 +102,31 @@ class RecordingListTile extends StatelessWidget {
                       color: accentCoral, size: 18),
                 ),
               ),
+              if (onToggleShare != null) ...[
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: onToggleShare,
+                  child: Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: recording.sharedWithTeacher
+                          ? accentCoral.withAlpha(30)
+                          : darkSurfaceBg,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      recording.sharedWithTeacher
+                          ? Icons.people_rounded
+                          : Icons.people_outline_rounded,
+                      color: recording.sharedWithTeacher
+                          ? accentCoral
+                          : darkTextMuted,
+                      size: 16,
+                    ),
+                  ),
+                ),
+              ],
               if (onDownload != null) ...[
                 const SizedBox(width: 8),
                 GestureDetector(
