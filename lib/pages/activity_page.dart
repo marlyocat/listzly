@@ -1118,6 +1118,17 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                 ],
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+              child: Text(
+                'Recordings are automatically deleted after 30 days.',
+                style: GoogleFonts.nunito(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: darkTextMuted,
+                ),
+              ),
+            ),
             const SizedBox(height: 6),
             // Recording rows
             recordingsAsync.when(

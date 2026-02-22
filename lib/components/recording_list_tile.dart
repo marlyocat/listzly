@@ -36,6 +36,11 @@ class RecordingListTile extends StatelessWidget {
     return '${dt.day} ${_monthNames[dt.month - 1]} ${dt.year}';
   }
 
+  int _daysRemaining() {
+    final expiryDate = recording.createdAt.add(const Duration(days: 30));
+    return expiryDate.difference(DateTime.now()).inDays;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -83,6 +88,19 @@ class RecordingListTile extends StatelessWidget {
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: darkTextMuted,
+                      ),
+                    ),
+                    const SizedBox(height: 1),
+                    Text(
+                      _daysRemaining() <= 0
+                          ? 'Expiring soon'
+                          : _daysRemaining() == 1
+                              ? 'Expires in 1 day'
+                              : 'Expires in ${_daysRemaining()} days',
+                      style: GoogleFonts.nunito(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: _daysRemaining() <= 7 ? Colors.red.shade300 : darkTextMuted,
                       ),
                     ),
                   ],
