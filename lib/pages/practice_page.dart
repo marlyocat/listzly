@@ -400,7 +400,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
               'Recording saved',
               style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
             ),
-            backgroundColor: const Color(0xFF1E0E3D),
+            backgroundColor: accentCoralDark,
             behavior: SnackBarBehavior.floating,
           ),
         );

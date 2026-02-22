@@ -88,7 +88,7 @@ class RecordingListTile extends StatelessWidget {
                   ],
                 ),
               ),
-              // Action buttons
+              // Play button
               GestureDetector(
                 onTap: onPlay,
                 child: Container(
@@ -102,61 +102,97 @@ class RecordingListTile extends StatelessWidget {
                       color: accentCoral, size: 18),
                 ),
               ),
-              if (onToggleShare != null) ...[
-                const SizedBox(width: 8),
-                GestureDetector(
-                  onTap: onToggleShare,
-                  child: Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: recording.sharedWithTeacher
-                          ? accentCoral.withAlpha(30)
-                          : darkSurfaceBg,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      recording.sharedWithTeacher
-                          ? Icons.people_rounded
-                          : Icons.people_outline_rounded,
-                      color: recording.sharedWithTeacher
-                          ? accentCoral
-                          : darkTextMuted,
-                      size: 16,
-                    ),
+              // More actions menu
+              if (onToggleShare != null || onDownload != null || onDelete != null) ...[
+                const SizedBox(width: 4),
+                PopupMenuButton<String>(
+                  icon: const Icon(Icons.more_vert_rounded,
+                      color: darkTextMuted, size: 20),
+                  color: const Color(0xFF1E0E3D),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: const BorderSide(color: Colors.black, width: 2),
                   ),
-                ),
-              ],
-              if (onDownload != null) ...[
-                const SizedBox(width: 8),
-                GestureDetector(
-                  onTap: onDownload,
-                  child: Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: darkSurfaceBg,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(Icons.download_rounded,
-                        color: Colors.white, size: 16),
-                  ),
-                ),
-              ],
-              if (onDelete != null) ...[
-                const SizedBox(width: 8),
-                GestureDetector(
-                  onTap: onDelete,
-                  child: Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: Colors.red.withAlpha(20),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(Icons.delete_outline_rounded,
-                        color: Colors.red.shade300, size: 16),
-                  ),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(minWidth: 160),
+                  onSelected: (value) {
+                    switch (value) {
+                      case 'share':
+                        onToggleShare?.call();
+                      case 'download':
+                        onDownload?.call();
+                      case 'delete':
+                        onDelete?.call();
+                    }
+                  },
+                  itemBuilder: (_) => [
+                    if (onToggleShare != null)
+                      PopupMenuItem(
+                        value: 'share',
+                        child: Row(
+                          children: [
+                            Icon(
+                              recording.sharedWithTeacher
+                                  ? Icons.people_rounded
+                                  : Icons.people_outline_rounded,
+                              color: recording.sharedWithTeacher
+                                  ? accentCoral
+                                  : Colors.white,
+                              size: 18,
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              recording.sharedWithTeacher
+                                  ? 'Unshare with Teacher'
+                                  : 'Share with Teacher',
+                              style: GoogleFonts.nunito(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    if (onDownload != null)
+                      PopupMenuItem(
+                        value: 'download',
+                        child: Row(
+                          children: [
+                            const Icon(Icons.download_rounded,
+                                color: Colors.white, size: 18),
+                            const SizedBox(width: 10),
+                            Text(
+                              'Download',
+                              style: GoogleFonts.nunito(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    if (onDelete != null)
+                      PopupMenuItem(
+                        value: 'delete',
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete_outline_rounded,
+                                color: Colors.red.shade300, size: 18),
+                            const SizedBox(width: 10),
+                            Text(
+                              'Delete',
+                              style: GoogleFonts.nunito(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.red.shade300,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
                 ),
               ],
             ],

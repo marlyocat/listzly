@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -10,7 +11,7 @@ import 'package:listzly/models/user_role.dart';
 import 'package:listzly/components/recording_list_tile.dart';
 import 'package:listzly/components/recording_player.dart';
 import 'package:listzly/theme/colors.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:path_provider/path_provider.dart';
 
 class ActivityPage extends ConsumerStatefulWidget {
   const ActivityPage({super.key});
@@ -1214,8 +1215,37 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
       final url = await ref
           .read(recordingServiceProvider)
           .getSignedUrl(recording.filePath);
-      final uri = Uri.parse(url);
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+
+      // Download file bytes
+      final httpClient = HttpClient();
+      final request = await httpClient.getUrl(Uri.parse(url));
+      final response = await request.close();
+      final bytes = await response.fold<List<int>>(
+        [],
+        (prev, chunk) => prev..addAll(chunk),
+      );
+      httpClient.close();
+
+      // Save to downloads directory
+      final dir = await getDownloadsDirectory() ??
+          await getApplicationDocumentsDirectory();
+      final fileName =
+          '${recording.instrumentName}_${recording.createdAt.millisecondsSinceEpoch}.m4a';
+      final file = File('${dir.path}/$fileName');
+      await file.writeAsBytes(bytes);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Recording saved to ${file.path}',
+              style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+            ),
+            backgroundColor: accentCoralDark,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
