@@ -254,6 +254,7 @@ class ProfilePage extends ConsumerWidget {
               decoration: BoxDecoration(
                 color: badgeColor.withAlpha(30),
                 borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.black, width: 2),
               ),
               child: Icon(badgeIcon, color: badgeColor, size: 24),
             ),
@@ -263,7 +264,7 @@ class ProfilePage extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Listzly ${tier.displayName}',
+                    '${tier.displayName} Plan',
                     style: GoogleFonts.nunito(
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
