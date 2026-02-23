@@ -256,7 +256,7 @@ class StudentsPage extends ConsumerWidget {
       String inviteCode, String groupId, int studentCount) {
     final tier = ref.watch(effectiveSubscriptionTierProvider);
     final maxStudents = tier.maxStudents;
-    final atLimit = maxStudents != null && studentCount >= maxStudents;
+    final atLimit = studentCount >= maxStudents;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
@@ -294,7 +294,7 @@ class StudentsPage extends ConsumerWidget {
                 ),
                 const Spacer(),
                 Text(
-                  '$studentCount/${maxStudents ?? '∞'} Students',
+                  '$studentCount/$maxStudents Students',
                   style: GoogleFonts.nunito(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,

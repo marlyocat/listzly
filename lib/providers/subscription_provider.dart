@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:listzly/models/subscription_tier.dart';
 import 'package:listzly/services/subscription_service.dart';
@@ -22,6 +23,7 @@ class OwnSubscriptionTier extends _$OwnSubscriptionTier {
     // Listen for changes from RevenueCat
     final sub = service.onTierChanged.listen((tier) {
       state = tier;
+      _syncToSupabase(tier);
     });
     ref.onDispose(() => sub.cancel());
 
@@ -32,16 +34,30 @@ class OwnSubscriptionTier extends _$OwnSubscriptionTier {
   }
 
   Future<void> _loadTier(SubscriptionService service) async {
-    state = await service.getCurrentTier();
+    final tier = await service.getCurrentTier();
+    state = tier;
+    _syncToSupabase(tier);
   }
 
   void setTier(SubscriptionTier tier) {
     state = tier;
+    _syncToSupabase(tier);
+  }
+
+  Future<void> _syncToSupabase(SubscriptionTier tier) async {
+    try {
+      final user = ref.read(currentUserProvider);
+      if (user == null) return;
+      final profileService = ref.read(profileServiceProvider);
+      await profileService.updateSubscriptionTier(user.id, tier);
+    } catch (e) {
+      debugPrint('Failed to sync subscription tier to Supabase: $e');
+    }
   }
 }
 
 /// The effective tier: user's own tier, or teacher's tier if student is in a
-/// paid teacher's group (whichever is higher).
+/// paid teacher's group (only if teacher has teacherPro).
 @riverpod
 SubscriptionTier effectiveSubscriptionTier(EffectiveSubscriptionTierRef ref) {
   final ownTier = ref.watch(ownSubscriptionTierProvider);
@@ -53,9 +69,13 @@ SubscriptionTier effectiveSubscriptionTier(EffectiveSubscriptionTierRef ref) {
   if (profile.isStudent) {
     final membership = ref.watch(studentMembershipProvider).valueOrNull;
     if (membership != null) {
-      final teacherTier = ref.watch(teacherSubscriptionTierProvider).valueOrNull;
-      if (teacherTier != null && teacherTier.index > ownTier.index) {
-        return teacherTier;
+      final teacherTier =
+          ref.watch(teacherSubscriptionTierProvider).valueOrNull;
+      // Only inherit Pro if teacher has teacherPro (studentsInheritPro)
+      if (teacherTier != null &&
+          teacherTier.studentsInheritPro &&
+          ownTier.index < SubscriptionTier.pro.index) {
+        return SubscriptionTier.pro;
       }
     }
   }

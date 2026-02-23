@@ -45,16 +45,30 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
     }
   }
 
+  SubscriptionTier _tierFromPurchase(CustomerInfo customerInfo) {
+    final proEntitlement = customerInfo.entitlements.active['pro'];
+    if (proEntitlement == null) return SubscriptionTier.free;
+
+    final productId = proEntitlement.productIdentifier;
+    if (productId == 'teacher_premium_monthly') {
+      return SubscriptionTier.teacherPremium;
+    }
+    if (productId == 'teacher_pro_monthly') {
+      return SubscriptionTier.teacherPro;
+    }
+    if (productId == 'teacher_lite_monthly') {
+      return SubscriptionTier.teacherLite;
+    }
+    return SubscriptionTier.pro;
+  }
+
   Future<void> _purchase(Package package) async {
     if (_purchasing) return;
     setState(() => _purchasing = true);
 
     try {
       final customerInfo = await Purchases.purchasePackage(package);
-      SubscriptionTier newTier = SubscriptionTier.free;
-      if (customerInfo.entitlements.active.containsKey('pro')) {
-        newTier = SubscriptionTier.pro;
-      }
+      final newTier = _tierFromPurchase(customerInfo);
 
       if (mounted) {
         ref.read(ownSubscriptionTierProvider.notifier).setTier(newTier);
@@ -62,7 +76,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Welcome to Listzly Pro!',
+              'Welcome to Listzly ${newTier.displayName}!',
               style: GoogleFonts.nunito(fontWeight: FontWeight.w700),
             ),
             backgroundColor: accentCoralDark,
@@ -94,10 +108,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
     setState(() => _purchasing = true);
     try {
       final customerInfo = await Purchases.restorePurchases();
-      SubscriptionTier newTier = SubscriptionTier.free;
-      if (customerInfo.entitlements.active.containsKey('pro')) {
-        newTier = SubscriptionTier.pro;
-      }
+      final newTier = _tierFromPurchase(customerInfo);
 
       if (mounted) {
         ref.read(ownSubscriptionTierProvider.notifier).setTier(newTier);
@@ -106,7 +117,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
             content: Text(
               newTier.isFree
                   ? 'No previous purchases found.'
-                  : 'Restored Pro plan!',
+                  : 'Restored ${newTier.displayName} plan!',
               style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
             ),
             backgroundColor: accentCoralDark,
@@ -219,6 +230,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: Column(
                             children: [
+                              // Free plan (always shown)
                               _buildPlanCard(
                                 title: 'Free',
                                 price: '\$0',
@@ -227,33 +239,100 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                   '1 instrument',
                                   'Daily quests',
                                   'Streaks & XP',
-                                  if (isTeacher) 'Up to 3 students',
                                 ],
                                 isCurrentPlan: currentTier.isFree,
                                 accentColor: darkTextMuted,
                               ),
                               const SizedBox(height: 12),
-                              _buildPlanCard(
-                                title: isTeacher ? 'Teacher Pro' : 'Pro',
-                                price: _getProPrice(isTeacher),
-                                period: '/month',
-                                features: [
-                                  'All 4 instruments',
-                                  'Daily quests',
-                                  'Activity tracking & stats',
-                                  'Recordings',
-                                  'Sheet music scanner',
-                                  if (isTeacher) ...[
-                                    'Up to 30 students',
+                              if (!isTeacher) ...[
+                                // Self-learner: Personal Pro
+                                _buildPlanCard(
+                                  title: 'Personal Pro',
+                                  price: _getPrice(
+                                      'pro_yearly', '\$7.99'),
+                                  period: '/year',
+                                  features: [
+                                    'All 4 instruments',
+                                    'Activity tracking & stats',
+                                    'Recordings',
+                                    'Sheet music scanner',
+                                  ],
+                                  isCurrentPlan:
+                                      currentTier == SubscriptionTier.pro,
+                                  isPopular: true,
+                                  accentColor: accentCoral,
+                                  onTap: () =>
+                                      _purchaseProduct('pro_yearly'),
+                                ),
+                              ],
+                              if (isTeacher) ...[
+                                // Teacher Lite
+                                _buildPlanCard(
+                                  title: 'Teacher Lite',
+                                  price: _getPrice(
+                                      'teacher_lite_monthly', '\$4.99'),
+                                  period: '/month',
+                                  features: [
+                                    'All 4 instruments',
+                                    'Activity tracking & stats',
+                                    'Recordings',
+                                    'Sheet music scanner',
+                                    'Up to 10 students',
                                     'Custom quest assignment',
                                     'Students get Pro free',
                                   ],
-                                ],
-                                isCurrentPlan: currentTier.isPro,
-                                isPopular: true,
-                                accentColor: accentCoral,
-                                onTap: () => _purchasePro(isTeacher),
-                              ),
+                                  isCurrentPlan: currentTier ==
+                                      SubscriptionTier.teacherLite,
+                                  accentColor: accentCoral,
+                                  onTap: () => _purchaseProduct(
+                                      'teacher_lite_monthly'),
+                                ),
+                                const SizedBox(height: 12),
+                                // Teacher Pro
+                                _buildPlanCard(
+                                  title: 'Teacher Pro',
+                                  price: _getPrice(
+                                      'teacher_pro_monthly', '\$9.99'),
+                                  period: '/month',
+                                  features: [
+                                    'All 4 instruments',
+                                    'Activity tracking & stats',
+                                    'Recordings',
+                                    'Sheet music scanner',
+                                    'Up to 25 students',
+                                    'Custom quest assignment',
+                                    'Students get Pro free',
+                                  ],
+                                  isCurrentPlan: currentTier ==
+                                      SubscriptionTier.teacherPro,
+                                  isPopular: true,
+                                  accentColor: accentCoral,
+                                  onTap: () => _purchaseProduct(
+                                      'teacher_pro_monthly'),
+                                ),
+                                const SizedBox(height: 12),
+                                // Teacher Premium
+                                _buildPlanCard(
+                                  title: 'Teacher Premium',
+                                  price: _getPrice(
+                                      'teacher_premium_monthly', '\$14.99'),
+                                  period: '/month',
+                                  features: [
+                                    'All 4 instruments',
+                                    'Activity tracking & stats',
+                                    'Recordings',
+                                    'Sheet music scanner',
+                                    'Up to 50 students',
+                                    'Custom quest assignment',
+                                    'Students get Pro free',
+                                  ],
+                                  isCurrentPlan: currentTier ==
+                                      SubscriptionTier.teacherPremium,
+                                  accentColor: accentCoral,
+                                  onTap: () => _purchaseProduct(
+                                      'teacher_premium_monthly'),
+                                ),
+                              ],
                               const SizedBox(height: 32),
                             ],
                           ),
@@ -265,18 +344,15 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
     );
   }
 
-  String _getProPrice(bool isTeacher) {
-    final identifier = isTeacher ? 'teacher_pro_monthly' : 'pro_monthly';
+  String _getPrice(String identifier, String fallback) {
     final offering = _offerings?.current;
     final package = offering?.availablePackages
         .where((p) => p.identifier == identifier)
         .firstOrNull;
-    return package?.storeProduct.priceString ??
-        (isTeacher ? '\$9.99' : '\$4.99');
+    return package?.storeProduct.priceString ?? fallback;
   }
 
-  void _purchasePro(bool isTeacher) {
-    final identifier = isTeacher ? 'teacher_pro_monthly' : 'pro_monthly';
+  void _purchaseProduct(String identifier) {
     final offering = _offerings?.current;
     final package = offering?.availablePackages
         .where((p) => p.identifier == identifier)

@@ -54,9 +54,19 @@ class SubscriptionService {
   }
 
   SubscriptionTier _tierFromEntitlements(CustomerInfo info) {
-    if (info.entitlements.active.containsKey(entitlementPro)) {
-      return SubscriptionTier.pro;
+    final proEntitlement = info.entitlements.active[entitlementPro];
+    if (proEntitlement == null) return SubscriptionTier.free;
+
+    final productId = proEntitlement.productIdentifier;
+    if (productId == productTeacherPremiumMonthly) {
+      return SubscriptionTier.teacherPremium;
     }
-    return SubscriptionTier.free;
+    if (productId == productTeacherProMonthly) {
+      return SubscriptionTier.teacherPro;
+    }
+    if (productId == productTeacherLiteMonthly) {
+      return SubscriptionTier.teacherLite;
+    }
+    return SubscriptionTier.pro;
   }
 }

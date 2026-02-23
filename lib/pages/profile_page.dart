@@ -230,6 +230,9 @@ class ProfilePage extends ConsumerWidget {
     final IconData badgeIcon;
     switch (tier) {
       case SubscriptionTier.pro:
+      case SubscriptionTier.teacherLite:
+      case SubscriptionTier.teacherPro:
+      case SubscriptionTier.teacherPremium:
         badgeColor = accentCoral;
         badgeIcon = Icons.star_rounded;
       default:
@@ -275,7 +278,9 @@ class ProfilePage extends ConsumerWidget {
                   Text(
                     tier.isFree
                         ? 'Upgrade to unlock all features'
-                        : 'You have full access',
+                        : tier.isTeacherPlan
+                            ? 'Full teacher access'
+                            : 'You have full access',
                     style: GoogleFonts.nunito(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -616,6 +621,15 @@ class ProfilePage extends ConsumerWidget {
                             await _showDisbandConfirmDialog(context);
                         if (confirmed != true) return;
                       }
+                      // If switching to student, require invite code first
+                      if (role == UserRole.student) {
+                        if (!context.mounted) return;
+                        final joined = await _showInviteCodeDialog(
+                            context, ref,
+                            hasStudents: hasStudents);
+                        if (joined != true) return;
+                        return;
+                      }
                       await _changeRole(context, ref, role,
                           hasStudents: hasStudents);
                     },
@@ -711,6 +725,7 @@ class ProfilePage extends ConsumerWidget {
           ),
         );
       }
+      rethrow;
     }
   }
 
@@ -750,6 +765,161 @@ class ProfilePage extends ConsumerWidget {
     );
   }
 
+  Future<bool?> _showInviteCodeDialog(BuildContext context, WidgetRef ref,
+      {bool hasStudents = false}) {
+    final controller = TextEditingController();
+    String? errorText;
+
+    return showDialog<bool>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setState) => AlertDialog(
+          backgroundColor: const Color(0xFF1E0E3D),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: Text(
+            'Join a Teacher',
+            style:
+                GoogleFonts.dmSerifDisplay(fontSize: 20, color: Colors.white),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Enter your teacher\'s invite code to join their group.',
+                style: GoogleFonts.nunito(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: darkTextSecondary,
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: controller,
+                textCapitalization: TextCapitalization.characters,
+                style: GoogleFonts.nunito(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
+                decoration: InputDecoration(
+                  hintText: 'Invite code',
+                  hintStyle: GoogleFonts.nunito(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: darkTextMuted,
+                  ),
+                  filled: true,
+                  fillColor: Colors.white.withAlpha(10),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16, vertical: 14),
+                ),
+              ),
+              if (errorText != null) ...[
+                const SizedBox(height: 12),
+                Container(
+                  width: double.infinity,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withAlpha(25),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.red.withAlpha(60)),
+                  ),
+                  child: Text(
+                    errorText!,
+                    style: GoogleFonts.nunito(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.redAccent,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text('Cancel',
+                  style: GoogleFonts.nunito(
+                      fontWeight: FontWeight.w700, color: darkTextMuted)),
+            ),
+            TextButton(
+              onPressed: () async {
+                final code = controller.text.trim();
+                if (code.isEmpty) {
+                  setState(() => errorText = 'Please enter an invite code');
+                  return;
+                }
+
+                try {
+                  final groupService = ref.read(groupServiceProvider);
+                  final group =
+                      await groupService.findGroupByInviteCode(code);
+                  if (group == null) {
+                    setState(() => errorText = 'Invalid invite code');
+                    return;
+                  }
+
+                  final user = ref.read(currentUserProvider);
+                  if (user == null) return;
+
+                  final previousRole = ref
+                      .read(currentProfileProvider)
+                      .valueOrNull
+                      ?.role;
+
+                  // Change role to student first (needed for RLS)
+                  await _changeRole(ctx, ref, UserRole.student,
+                      hasStudents: hasStudents);
+
+                  try {
+                    // Then join the group
+                    await groupService.joinGroup(user.id, group.id);
+                    ref.invalidate(studentMembershipProvider);
+                    if (ctx.mounted) Navigator.pop(ctx, true);
+                  } catch (e) {
+                    debugPrint('joinGroup error: $e');
+                    // Join failed — revert role
+                    if (previousRole != null && ctx.mounted) {
+                      try {
+                        await _changeRole(ctx, ref, previousRole);
+                      } catch (_) {}
+                    }
+                    final msg = e.toString();
+                    setState(() {
+                      if (msg.contains('already in a group')) {
+                        errorText =
+                            'You are already in a group. Leave it first.';
+                      } else if (msg.contains('full')) {
+                        errorText = 'This group is full.';
+                      } else {
+                        errorText =
+                            'Could not join group. Please try again.';
+                      }
+                    });
+                  }
+                } catch (e) {
+                  debugPrint('invite code dialog error: $e');
+                  setState(() => errorText =
+                      'Something went wrong. Please try again.');
+                }
+              },
+              child: Text('Join',
+                  style: GoogleFonts.nunito(
+                      fontWeight: FontWeight.w700, color: accentCoral)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _showLeaveGroupAndChangeRoleDialog(
       BuildContext context, WidgetRef ref, Profile profile) {
     showDialog(
@@ -783,8 +953,13 @@ class ProfilePage extends ConsumerWidget {
                 final user = ref.read(currentUserProvider);
                 if (user == null) return;
                 await ref.read(groupServiceProvider).leaveGroup(user.id);
+                await ref.read(profileServiceProvider).updateProfile(
+                      user.id,
+                      role: UserRole.selfLearner,
+                    );
                 ref.invalidate(studentMembershipProvider);
                 ref.invalidate(isInGroupProvider);
+                ref.invalidate(currentProfileProvider);
               } catch (e) {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -797,7 +972,8 @@ class ProfilePage extends ConsumerWidget {
                 return;
               }
               if (context.mounted) {
-                _showRoleChangePicker(context, ref, profile);
+                _showRoleChangePicker(
+                    context, ref, profile.copyWith(role: UserRole.selfLearner));
               }
             },
             child: Text('Leave & Continue',
@@ -840,8 +1016,13 @@ class ProfilePage extends ConsumerWidget {
               final user = ref.read(currentUserProvider);
               if (user == null) return;
               await ref.read(groupServiceProvider).leaveGroup(user.id);
+              await ref.read(profileServiceProvider).updateProfile(
+                    user.id,
+                    role: UserRole.selfLearner,
+                  );
               ref.invalidate(studentMembershipProvider);
               ref.invalidate(isInGroupProvider);
+              ref.invalidate(currentProfileProvider);
             },
             child: Text('Leave',
                 style: GoogleFonts.nunito(

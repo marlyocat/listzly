@@ -25,10 +25,10 @@ final subscriptionServiceProvider = Provider<SubscriptionService>.internal(
 // ignore: unused_element
 typedef SubscriptionServiceRef = ProviderRef<SubscriptionService>;
 String _$effectiveSubscriptionTierHash() =>
-    r'4fdcc41f229a79180260b5e42ab3938e5e59ef4b';
+    r'be91f2fac451a18e8e59a25cdaa89ccc9349cf3f';
 
 /// The effective tier: user's own tier, or teacher's tier if student is in a
-/// paid teacher's group (whichever is higher).
+/// paid teacher's group (only if teacher has teacherPro).
 ///
 /// Copied from [effectiveSubscriptionTier].
 @ProviderFor(effectiveSubscriptionTier)
@@ -69,7 +69,7 @@ final teacherSubscriptionTierProvider =
 typedef TeacherSubscriptionTierRef =
     AutoDisposeFutureProviderRef<SubscriptionTier>;
 String _$ownSubscriptionTierHash() =>
-    r'defa887881d6fadb8eeb7275e08071715bc35704';
+    r'1c6cdea6b8d1d078fa2a96c0484b72932782d824';
 
 /// The user's own subscription tier from RevenueCat.
 ///

@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:listzly/models/profile.dart';
+import 'package:listzly/models/subscription_tier.dart';
 import 'package:listzly/models/user_role.dart';
 
 class ProfileService {
@@ -68,10 +69,11 @@ class ProfileService {
     return Profile.fromJson(result);
   }
 
-  Future<void> updateSubscriptionTier(String userId, String tier) async {
+  Future<void> updateSubscriptionTier(
+      String userId, SubscriptionTier tier) async {
     await _client
         .from('profiles')
-        .update({'subscription_tier': tier})
+        .update({'subscription_tier': tier.toDbString()})
         .eq('id', userId);
   }
 
