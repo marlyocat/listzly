@@ -314,6 +314,7 @@ class StudentsPage extends ConsumerWidget {
                   decoration: BoxDecoration(
                     color: accentCoral.withAlpha(20),
                     borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.black, width: 2),
                   ),
                   child: Text(
                     'Student limit reached. Upgrade for more.',

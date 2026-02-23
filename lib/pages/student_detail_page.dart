@@ -237,7 +237,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
             // Streak + XP chips
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+                padding: const EdgeInsets.fromLTRB(20, 4, 20, 0),
                 child: studentStatsAsync.when(
                   data: (stats) => Wrap(
                     spacing: 10,
@@ -263,8 +263,8 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                       ),
                     ],
                   ),
-                  loading: () => const SizedBox(height: 36),
-                  error: (_, __) => const SizedBox(height: 36),
+                  loading: () => const SizedBox.shrink(),
+                  error: (_, __) => const SizedBox.shrink(),
                 ),
               ),
             ),
@@ -331,7 +331,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
   Widget _buildSegmentedTabs() {
     const labels = ['Week', 'Month', 'Year'];
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
       child: Container(
         height: 42,
         decoration: BoxDecoration(
