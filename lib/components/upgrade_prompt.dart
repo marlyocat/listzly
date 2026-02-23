@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:listzly/providers/profile_provider.dart';
 import 'package:listzly/theme/colors.dart';
 import 'package:listzly/pages/paywall_page.dart';
 
@@ -15,12 +17,18 @@ Future<void> showUpgradePrompt(
   );
 }
 
-class _UpgradePromptSheet extends StatelessWidget {
+class _UpgradePromptSheet extends ConsumerWidget {
   final String feature;
   const _UpgradePromptSheet({required this.feature});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isTeacher =
+        ref.watch(currentProfileProvider).valueOrNull?.isTeacher ?? false;
+    final planName = isTeacher ? 'Teacher Lite' : 'Pro';
+    final priceText =
+        isTeacher ? 'Starting at \$4.99/month' : 'Only \$7.99/year';
+
     final bottomPadding = MediaQuery.of(context).viewPadding.bottom;
     return Container(
       padding: EdgeInsets.fromLTRB(24, 16, 24, 32 + bottomPadding),
@@ -69,7 +77,7 @@ class _UpgradePromptSheet extends StatelessWidget {
           const SizedBox(height: 20),
 
           Text(
-            'Upgrade to Pro',
+            'Upgrade to $planName',
             style: GoogleFonts.dmSerifDisplay(
               fontSize: 22,
               color: Colors.white,
@@ -78,7 +86,7 @@ class _UpgradePromptSheet extends StatelessWidget {
           const SizedBox(height: 8),
 
           Text(
-            '$feature is available on the Pro plan.',
+            '$feature is available on the $planName plan.',
             textAlign: TextAlign.center,
             style: GoogleFonts.nunito(
               fontSize: 14,
@@ -88,7 +96,7 @@ class _UpgradePromptSheet extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            'Starting at \$4.99/month',
+            priceText,
             style: GoogleFonts.nunito(
               fontSize: 13,
               fontWeight: FontWeight.w700,
