@@ -18,6 +18,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
   Offerings? _offerings;
   bool _loading = true;
   bool _purchasing = false;
+  bool _trialEligible = false;
   String? _error;
 
   @override
@@ -28,10 +29,15 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
 
   Future<void> _loadOfferings() async {
     try {
-      final offerings = await Purchases.getOfferings();
+      final results = await Future.wait([
+        Purchases.getOfferings(),
+        Purchases.getCustomerInfo(),
+      ]);
       if (mounted) {
+        final customerInfo = results[1] as CustomerInfo;
         setState(() {
-          _offerings = offerings;
+          _offerings = results[0] as Offerings;
+          _trialEligible = !customerInfo.entitlements.all.containsKey('pro');
           _loading = false;
         });
       }
@@ -261,6 +267,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                       currentTier == SubscriptionTier.pro,
                                   isPopular: true,
                                   accentColor: accentCoral,
+                                  trialInfo: _getTrialInfo('pro_yearly'),
                                   onTap: () =>
                                       _purchaseProduct('pro_yearly'),
                                 ),
@@ -284,6 +291,8 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                   isCurrentPlan: currentTier ==
                                       SubscriptionTier.teacherLite,
                                   accentColor: accentCoral,
+                                  trialInfo: _getTrialInfo(
+                                      'teacher_lite_monthly'),
                                   onTap: () => _purchaseProduct(
                                       'teacher_lite_monthly'),
                                 ),
@@ -307,6 +316,8 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                       SubscriptionTier.teacherPro,
                                   isPopular: true,
                                   accentColor: accentCoral,
+                                  trialInfo: _getTrialInfo(
+                                      'teacher_pro_monthly'),
                                   onTap: () => _purchaseProduct(
                                       'teacher_pro_monthly'),
                                 ),
@@ -329,6 +340,8 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                   isCurrentPlan: currentTier ==
                                       SubscriptionTier.teacherPremium,
                                   accentColor: accentCoral,
+                                  trialInfo: _getTrialInfo(
+                                      'teacher_premium_monthly'),
                                   onTap: () => _purchaseProduct(
                                       'teacher_premium_monthly'),
                                 ),
@@ -360,6 +373,33 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
     if (package != null) _purchase(package);
   }
 
+  String? _getTrialInfo(String identifier) {
+    if (!_trialEligible) return null;
+    final offering = _offerings?.current;
+    final package = offering?.availablePackages
+        .where((p) => p.identifier == identifier)
+        .firstOrNull;
+    final intro = package?.storeProduct.introductoryPrice;
+    if (intro == null || intro.price != 0) return null;
+    final count = intro.periodNumberOfUnits;
+    final unit = intro.periodUnit == PeriodUnit.day
+        ? count == 1
+            ? 'day'
+            : 'days'
+        : intro.periodUnit == PeriodUnit.week
+            ? count == 1
+                ? 'week'
+                : 'weeks'
+            : intro.periodUnit == PeriodUnit.month
+                ? count == 1
+                    ? 'month'
+                    : 'months'
+                : count == 1
+                    ? 'year'
+                    : 'years';
+    return '$count-$unit free trial';
+  }
+
   Widget _buildPlanCard({
     required String title,
     required String price,
@@ -367,6 +407,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
     required List<String> features,
     required bool isCurrentPlan,
     required Color accentColor,
+    String? trialInfo,
     bool isPopular = false,
     VoidCallback? onTap,
   }) {
@@ -469,6 +510,24 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
               ),
             ],
           ),
+          if (trialInfo != null) ...[
+            const SizedBox(height: 6),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(
+                color: accentCoral.withAlpha(20),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(
+                trialInfo,
+                style: GoogleFonts.nunito(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: accentCoral,
+                ),
+              ),
+            ),
+          ],
           const SizedBox(height: 16),
 
           // Features
@@ -511,7 +570,11 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  _purchasing ? 'Processing...' : 'Subscribe',
+                  _purchasing
+                      ? 'Processing...'
+                      : trialInfo != null
+                          ? 'Start free trial'
+                          : 'Subscribe',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.nunito(
                     fontSize: 15,

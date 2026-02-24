@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:listzly/providers/profile_provider.dart';
+import 'package:listzly/providers/subscription_provider.dart';
 import 'package:listzly/theme/colors.dart';
 import 'package:listzly/pages/paywall_page.dart';
 
@@ -26,8 +27,15 @@ class _UpgradePromptSheet extends ConsumerWidget {
     final isTeacher =
         ref.watch(currentProfileProvider).valueOrNull?.isTeacher ?? false;
     final planName = isTeacher ? 'Teacher Lite' : 'Pro';
-    final priceText =
-        isTeacher ? 'Starting at \$4.99/month' : 'Only \$7.99/year';
+    final trialEligible =
+        ref.watch(isTrialEligibleProvider).valueOrNull ?? false;
+    final priceText = trialEligible
+        ? isTeacher
+            ? 'Free for 14 days, then \$4.99/month'
+            : 'Free for 14 days, then \$7.99/year'
+        : isTeacher
+            ? 'Starting at \$4.99/month'
+            : 'Only \$7.99/year';
 
     final bottomPadding = MediaQuery.of(context).viewPadding.bottom;
     return Container(

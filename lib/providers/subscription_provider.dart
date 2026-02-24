@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:listzly/models/subscription_tier.dart';
 import 'package:listzly/services/subscription_service.dart';
@@ -95,4 +96,16 @@ Future<SubscriptionTier> teacherSubscriptionTier(
   if (teacherProfile == null) return SubscriptionTier.free;
 
   return SubscriptionTier.fromString(teacherProfile.subscriptionTier);
+}
+
+/// Whether the user is eligible for a free trial (has never had 'pro').
+@riverpod
+Future<bool> isTrialEligible(IsTrialEligibleRef ref) async {
+  try {
+    final customerInfo = await Purchases.getCustomerInfo();
+    return !customerInfo.entitlements.all.containsKey('pro');
+  } catch (e) {
+    debugPrint('isTrialEligible error: $e');
+    return false;
+  }
 }

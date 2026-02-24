@@ -68,6 +68,25 @@ final teacherSubscriptionTierProvider =
 // ignore: unused_element
 typedef TeacherSubscriptionTierRef =
     AutoDisposeFutureProviderRef<SubscriptionTier>;
+String _$isTrialEligibleHash() => r'21bde8626131a96989a134afda8574dcfb6cfc5b';
+
+/// Whether the user is eligible for a free trial (has never had 'pro').
+///
+/// Copied from [isTrialEligible].
+@ProviderFor(isTrialEligible)
+final isTrialEligibleProvider = AutoDisposeFutureProvider<bool>.internal(
+  isTrialEligible,
+  name: r'isTrialEligibleProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$isTrialEligibleHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef IsTrialEligibleRef = AutoDisposeFutureProviderRef<bool>;
 String _$ownSubscriptionTierHash() =>
     r'1c6cdea6b8d1d078fa2a96c0484b72932782d824';
 
