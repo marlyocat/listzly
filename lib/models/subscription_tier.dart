@@ -44,7 +44,6 @@ enum SubscriptionTier {
   bool get canRecord => isPro;
   bool get canUseAllInstruments => isPro;
   bool get canViewActivity => isPro;
-  bool get canUseSheetMusicScanner => isPro;
 
   // Teacher-specific Pro features (only with teacher plans)
   bool get canAssignQuests => isTeacherPlan;

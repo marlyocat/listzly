@@ -575,9 +575,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                           style: GoogleFonts.nunito(
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
-                            color: isComplete
-                                ? primaryLight
-                                : accentCoral,
+                            color: Colors.white,
                           ),
                         ),
                       ],
