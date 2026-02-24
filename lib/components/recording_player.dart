@@ -5,17 +5,22 @@ import 'package:just_audio/just_audio.dart';
 import 'package:listzly/theme/colors.dart';
 
 /// Shows a mini audio player bottom sheet for playing a recording.
+///
+/// Provide either [url] for remote playback or [filePath] for local playback.
 Future<void> showRecordingPlayer(
   BuildContext context, {
-  required String url,
+  String? url,
+  String? filePath,
   required String instrumentName,
   required String date,
 }) {
+  assert(url != null || filePath != null, 'Provide either url or filePath');
   return showModalBottomSheet(
     context: context,
     backgroundColor: Colors.transparent,
     builder: (ctx) => _RecordingPlayerSheet(
       url: url,
+      filePath: filePath,
       instrumentName: instrumentName,
       date: date,
     ),
@@ -23,12 +28,14 @@ Future<void> showRecordingPlayer(
 }
 
 class _RecordingPlayerSheet extends StatefulWidget {
-  final String url;
+  final String? url;
+  final String? filePath;
   final String instrumentName;
   final String date;
 
   const _RecordingPlayerSheet({
-    required this.url,
+    this.url,
+    this.filePath,
     required this.instrumentName,
     required this.date,
   });
@@ -51,7 +58,11 @@ class _RecordingPlayerSheetState extends State<_RecordingPlayerSheet> {
 
   Future<void> _initPlayer() async {
     try {
-      await _player.setUrl(widget.url);
+      if (widget.filePath != null) {
+        await _player.setFilePath(widget.filePath!);
+      } else {
+        await _player.setUrl(widget.url!);
+      }
       setState(() => _isLoading = false);
       await _player.play();
     } catch (e) {

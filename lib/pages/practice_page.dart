@@ -19,6 +19,7 @@ import 'package:listzly/providers/settings_provider.dart';
 import 'package:listzly/providers/recording_provider.dart';
 import 'package:listzly/providers/subscription_provider.dart';
 import 'package:listzly/components/upgrade_prompt.dart';
+import 'package:listzly/components/recording_player.dart';
 import 'package:listzly/services/notification_service.dart';
 import 'package:listzly/theme/colors.dart';
 
@@ -817,7 +818,39 @@ class _PracticePageState extends ConsumerState<PracticePage>
               color: darkTextSecondary,
             ),
           ),
-          const SizedBox(height: 2),
+          const SizedBox(height: 6),
+          GestureDetector(
+            onTap: () => showRecordingPlayer(
+              context,
+              filePath: _pendingRecordingPath!,
+              instrumentName: widget.instrument,
+              date: 'Just now',
+            ),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: accentCoral.withAlpha(30),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: accentCoral.withAlpha(80)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.play_arrow_rounded, size: 16, color: accentCoral),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Play Back',
+                    style: GoogleFonts.nunito(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: accentCoral,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 4),
           Text(
             'Complete the practice session to save the recording.\nExiting early will discard it.',
             textAlign: TextAlign.center,
