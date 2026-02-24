@@ -306,8 +306,11 @@ class _PracticePageState extends ConsumerState<PracticePage>
       await _recorder.start(
         const RecordConfig(
           encoder: AudioEncoder.aacLc,
-          bitRate: 128000,
-          sampleRate: 22050,
+          sampleRate: 44100,
+          bitRate: 192000,
+          noiseSuppress: true,
+          autoGain: false,
+          echoCancel: false,
         ),
         path: path,
       );
