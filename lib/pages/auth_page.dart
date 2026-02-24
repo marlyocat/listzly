@@ -332,7 +332,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                     ),
                     padding: const EdgeInsets.all(12),
                     child: Image.asset(
-                      'lib/images/g_logo.png',
+                      'lib/images/google_logo.png',
                     ),
                   ),
                 ),

@@ -36,7 +36,6 @@ dependencies:
   cupertino_icons: ^1.0.8
   google_fonts:
   cool_nav: ^0.1.1
-  lottie: ^3.3.1
   turn_page_transition: ^0.5.0
   google_sign_in: ^6.2.1
   supabase_flutter: ^2.8.0
@@ -95,11 +94,11 @@ flutter:
     - lib/images/settings_unselected.png
     - lib/images/students_selected.png
     - lib/images/students_unselected.png
-    - lib/images/playing_piano.json
-    - lib/images/playing_guitar.json
-    - lib/images/playing_violin.json
-    - lib/images/playing_drums.json
-    - lib/images/g_logo.png
+    - lib/images/piano_sticker.png
+    - lib/images/guitar_sticker.png
+    - lib/images/violin_sticker.png
+    - lib/images/drum-set_sticker.png
+    - lib/images/google_logo.png
     - lib/images/xp.png
     - lib/images/level.png
     - lib/images/streak.png
