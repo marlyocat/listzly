@@ -465,6 +465,15 @@ class _PracticePageState extends ConsumerState<PracticePage>
     final user = ref.read(currentUserProvider);
     if (user == null) return;
 
+    // Capture services and container before async gaps so they remain valid
+    // even if the widget is disposed when the user navigates away.
+    final container = ProviderScope.containerOf(context);
+    final sessionService = ref.read(sessionServiceProvider);
+    final questService = ref.read(questServiceProvider);
+    final assignedQuestService = ref.read(assignedQuestServiceProvider);
+    final statsService = ref.read(statsServiceProvider);
+    final settingsService = ref.read(settingsServiceProvider);
+
     final totalSeconds = widget.durationMinutes * 60;
     final actualSeconds = totalSeconds - _remainingSeconds;
 
@@ -477,44 +486,42 @@ class _PracticePageState extends ConsumerState<PracticePage>
     );
 
     try {
-      final savedSession =
-          await ref.read(sessionServiceProvider).saveSession(session);
+      final savedSession = await sessionService.saveSession(session);
 
       // Update quest progress
-      await ref
-          .read(questServiceProvider)
-          .updateQuestProgressAfterSession(user.id, savedSession);
+      await questService.updateQuestProgressAfterSession(
+          user.id, savedSession);
 
       // Update assigned quest progress (for students in a group)
       try {
-        await ref
-            .read(assignedQuestServiceProvider)
+        await assignedQuestService
             .updateAssignedQuestProgressAfterSession(user.id, savedSession);
       } catch (_) {
         // Non-critical: assigned quest update failure shouldn't block session save
       }
 
       // Recalculate stats (streak, XP)
-      await ref.read(statsServiceProvider).recalculateStats(user.id);
+      await statsService.recalculateStats(user.id);
 
       // Schedule streak warning notifications (respects user's reminder time)
       try {
-        final settings = await ref.read(settingsServiceProvider).getSettings(user.id);
+        final settings = await settingsService.getSettings(user.id);
         await NotificationService.instance.scheduleStreakWarnings(settings.reminderTime);
       } catch (_) {
         // Non-critical: streak warnings are a nice-to-have
       }
 
-      // Invalidate providers so other pages see fresh data
-      ref.invalidate(userStatsProvider);
-      ref.invalidate(dailyQuestsProvider);
-      ref.invalidate(weekCompletionStatusProvider);
-      ref.invalidate(assignedQuestProgressProvider);
-      ref.invalidate(assignedQuestDefinitionsProvider);
-      ref.invalidate(instrumentStatsProvider);
-      ref.invalidate(sessionListProvider);
-      ref.invalidate(weeklyBarDataProvider);
-      ref.invalidate(summaryStatsProvider);
+      // Invalidate providers so other pages see fresh data.
+      // Uses container directly so this works even after widget disposal.
+      container.invalidate(userStatsProvider);
+      container.invalidate(dailyQuestsProvider);
+      container.invalidate(weekCompletionStatusProvider);
+      container.invalidate(assignedQuestProgressProvider);
+      container.invalidate(assignedQuestDefinitionsProvider);
+      container.invalidate(instrumentStatsProvider);
+      container.invalidate(sessionListProvider);
+      container.invalidate(weeklyBarDataProvider);
+      container.invalidate(summaryStatsProvider);
     } catch (_) {
       // Session save failed silently — don't disrupt celebration UI
     }
