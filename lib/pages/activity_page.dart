@@ -358,9 +358,6 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
     final sessionsAsync = ref.watch(
       sessionListProvider(start: _rangeStart, end: _rangeEnd),
     );
-    final barDataAsync = ref.watch(
-      weeklyBarDataProvider(weekStart: _rangeStart),
-    );
     final statsAsync = ref.watch(
       summaryStatsProvider(start: _rangeStart, end: _rangeEnd),
     );
@@ -402,7 +399,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
               SliverToBoxAdapter(child: _buildSummaryStats(statsAsync)),
 
               // Bar chart
-              SliverToBoxAdapter(child: _buildBarChart(barDataAsync)),
+              SliverToBoxAdapter(child: _buildBarChart(sessionsAsync)),
 
               // Recent sessions list
               SliverToBoxAdapter(child: _buildSessionList(sessionsAsync)),
@@ -713,41 +710,97 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
   }
 
   // --- Animated bar chart with gradient fill ---
-  Widget _buildBarChart(AsyncValue<Map<DateTime, int>> barDataAsync) {
-    return barDataAsync.when(
-      data: (barMap) => _buildBarChartContent(_barMapToList(barMap)),
-      loading: () => _buildBarChartContent(List.filled(7, 0.0)),
-      error: (_, _) => _buildBarChartContent(List.filled(7, 0.0)),
+  Widget _buildBarChart(AsyncValue<List<PracticeSession>> sessionsAsync) {
+    return sessionsAsync.when(
+      data: (sessions) {
+        final chart = _computeChartData(sessions);
+        return _buildBarChartContent(chart.values, chart.labels, chart.sublabels, chart.highlightIndex);
+      },
+      loading: () {
+        final chart = _computeChartData([]);
+        return _buildBarChartContent(chart.values, chart.labels, chart.sublabels, chart.highlightIndex);
+      },
+      error: (_, _) {
+        final chart = _computeChartData([]);
+        return _buildBarChartContent(chart.values, chart.labels, chart.sublabels, chart.highlightIndex);
+      },
     );
   }
 
-  /// Convert the [Map<DateTime, int>] from the provider into a 7-element list
-  /// ordered Sunday..Saturday matching the week starting at [_rangeStart].
-  List<double> _barMapToList(Map<DateTime, int> barMap) {
-    final result = List<double>.filled(7, 0.0);
-    for (var i = 0; i < 7; i++) {
-      final day = _rangeStart.add(Duration(days: i));
-      final key = DateTime(day.year, day.month, day.day);
-      result[i] = (barMap[key] ?? 0).toDouble();
+  ({List<double> values, List<String> labels, List<String>? sublabels, int highlightIndex}) _computeChartData(List<PracticeSession> sessions) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    switch (_selectedTab) {
+      case 1: // Month – one bar per week chunk (days 1-7, 8-14, …)
+        final daysInMonth = DateTime(_rangeStart.year, _rangeStart.month + 1, 0).day;
+        final weekCount = ((daysInMonth - 1) ~/ 7) + 1;
+        final values = List<double>.filled(weekCount, 0.0);
+        final labels = <String>[];
+        final sublabels = <String>[];
+        for (var w = 0; w < weekCount; w++) {
+          final startDay = w * 7 + 1;
+          final endDay = ((w + 1) * 7).clamp(1, daysInMonth);
+          labels.add('WK ${w + 1}');
+          sublabels.add('$startDay–$endDay');
+        }
+        for (final session in sessions) {
+          final completed = session.completedAt ?? session.startedAt;
+          final weekIndex = (completed.day - 1) ~/ 7;
+          if (weekIndex < weekCount) {
+            values[weekIndex] += (session.durationSeconds ~/ 60).toDouble();
+          }
+        }
+        var monthHighlight = -1;
+        if (_rangeStart.year == today.year && _rangeStart.month == today.month) {
+          monthHighlight = (today.day - 1) ~/ 7;
+        }
+        return (values: values, labels: labels, sublabels: sublabels, highlightIndex: monthHighlight);
+
+      case 2: // Year – one bar per month
+        final values = List<double>.filled(12, 0.0);
+        const labels = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+        for (final session in sessions) {
+          final completed = session.completedAt ?? session.startedAt;
+          final monthIndex = completed.month - 1;
+          values[monthIndex] += (session.durationSeconds ~/ 60).toDouble();
+        }
+        var yearHighlight = -1;
+        if (_rangeStart.year == today.year) {
+          yearHighlight = today.month - 1;
+        }
+        return (values: values, labels: labels, sublabels: null, highlightIndex: yearHighlight);
+
+      default: // Week – one bar per day (SUN–SAT)
+        final values = List<double>.filled(7, 0.0);
+        final rangeStartDate = DateTime(_rangeStart.year, _rangeStart.month, _rangeStart.day);
+        for (final session in sessions) {
+          final completed = session.completedAt ?? session.startedAt;
+          final day = DateTime(completed.year, completed.month, completed.day);
+          final index = day.difference(rangeStartDate).inDays;
+          if (index >= 0 && index < 7) {
+            values[index] += (session.durationSeconds ~/ 60).toDouble();
+          }
+        }
+        final weekHighlight = today.difference(rangeStartDate).inDays;
+        final sublabels = List.generate(7, (i) {
+          final d = _rangeStart.add(Duration(days: i));
+          return '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}';
+        });
+        return (values: values, labels: _dayLabels.toList(), sublabels: sublabels, highlightIndex: weekHighlight);
     }
-    return result;
   }
 
-  Widget _buildBarChartContent(List<double> weeklyBarData) {
+  Widget _buildBarChartContent(List<double> barData, List<String> barLabels, List<String>? barSublabels, int highlightIndex) {
+    final barCount = barData.length;
     final dataMax =
-        weeklyBarData.reduce((a, b) => a > b ? a : b).ceilToDouble();
+        barData.reduce((a, b) => a > b ? a : b).ceilToDouble();
     // Round y-axis max up to a nice interval for minutes
     final rawMax = dataMax < 30 ? 30.0 : dataMax;
     final interval = rawMax <= 15 ? 5.0 : rawMax <= 30 ? 10.0 : rawMax <= 60 ? 15.0 : 30.0;
     final yMax = (rawMax / interval).ceil() * interval;
     final ySteps = (yMax / interval).toInt();
     const chartHeight = 170.0;
-
-    // Determine which bar index represents today (if today falls within the range)
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final rangeStartDate = DateTime(_rangeStart.year, _rangeStart.month, _rangeStart.day);
-    final todayIndex = today.difference(rangeStartDate).inDays;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
@@ -765,7 +818,11 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
             Padding(
               padding: const EdgeInsets.only(left: 4, bottom: 12),
               child: Text(
-                'Weekly Overview',
+                _selectedTab == 0
+                    ? 'Weekly Overview'
+                    : _selectedTab == 1
+                        ? 'Monthly Overview'
+                        : 'Yearly Overview',
                 style: GoogleFonts.nunito(
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
@@ -829,26 +886,26 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                                   child: Row(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.end,
-                                    children: List.generate(7, (i) {
-                                      final val = weeklyBarData[i];
+                                    children: List.generate(barCount, (i) {
+                                      final val = barData[i];
                                       final fullBarH = yMax > 0
                                           ? (val / yMax) * h
                                           : 0.0;
                                       // Stagger: each bar starts slightly after the previous
                                       final stagger =
-                                          (i / 7.0) * 0.3; // 0..0.3
+                                          (i / barCount.toDouble()) * 0.3;
                                       final progress = ((_barAnim.value -
                                                   stagger) /
                                               (1.0 - stagger))
                                           .clamp(0.0, 1.0);
                                       final barH = fullBarH * progress;
-                                      final isToday = i == todayIndex;
+                                      final isToday = i == highlightIndex;
 
                                       return Expanded(
                                         child: Padding(
                                           padding:
-                                              const EdgeInsets.symmetric(
-                                                  horizontal: 5),
+                                              EdgeInsets.symmetric(
+                                                  horizontal: barCount > 7 ? 2 : 5),
                                           child: Container(
                                             height:
                                                 barH > 0 ? barH : 0,
@@ -915,42 +972,43 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
               ),
             ),
             const SizedBox(height: 8),
-            // X-axis labels (day + date)
+            // X-axis labels
             Padding(
               padding: const EdgeInsets.only(left: 40),
               child: Row(
                 children: List.generate(
-                  7,
+                  barCount,
                   (i) {
-                    final isToday = i == todayIndex;
-                    final dayDate = _rangeStart.add(Duration(days: i));
+                    final isHighlighted = i == highlightIndex;
                     return Expanded(
                       child: Column(
                         children: [
                           Text(
-                            _dayLabels[i],
+                            barLabels[i],
                             textAlign: TextAlign.center,
                             style: GoogleFonts.nunito(
-                              fontSize: 10,
+                              fontSize: barCount > 7 ? 8 : 10,
                               fontWeight: FontWeight.w700,
-                              color: isToday
+                              color: isHighlighted
                                   ? accentCoral
                                   : darkTextMuted,
                             ),
                           ),
-                          const SizedBox(height: 1),
-                          Text(
-                            '${dayDate.day.toString().padLeft(2, '0')}/${dayDate.month.toString().padLeft(2, '0')}',
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.nunito(
-                              fontSize: 9,
-                              fontWeight: FontWeight.w600,
-                              color: isToday
-                                  ? accentCoral
-                                  : darkTextMuted.withValues(alpha: 0.6),
+                          if (barSublabels != null) ...[
+                            const SizedBox(height: 1),
+                            Text(
+                              barSublabels[i],
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.nunito(
+                                fontSize: barCount > 7 ? 7 : 9,
+                                fontWeight: FontWeight.w600,
+                                color: isHighlighted
+                                    ? accentCoral
+                                    : darkTextMuted.withValues(alpha: 0.6),
+                              ),
                             ),
-                          ),
-                          if (isToday) ...[
+                          ],
+                          if (isHighlighted) ...[
                             const SizedBox(height: 2),
                             Container(
                               width: 4,
