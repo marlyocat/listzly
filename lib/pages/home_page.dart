@@ -231,6 +231,8 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
   Widget build(BuildContext context) {
     final statsAsync = ref.watch(userStatsProvider);
     final streakDays = statsAsync.valueOrNull?.currentStreak ?? 0;
+    final longestStreak = statsAsync.valueOrNull?.longestStreak ?? 0;
+    final streakBroken = streakDays == 0 && longestStreak > 0;
 
     // Set slider to remaining daily goal on first load or when goal changes
     final settings = ref.watch(userSettingsNotifierProvider).valueOrNull;
@@ -318,13 +320,27 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                     Image.asset('lib/images/streak.png',
                         width: 18, height: 18),
                     const SizedBox(width: 6),
-                    Text(
-                      '$streakDays day streak',
-                      style: GoogleFonts.nunito(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          '$streakDays day streak',
+                          style: GoogleFonts.nunito(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
+                        ),
+                        if (streakBroken)
+                          Text(
+                            'Streak Broken',
+                            style: GoogleFonts.nunito(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: accentCoral,
+                            ),
+                          ),
+                      ],
                     ),
                   ],
                 ),
