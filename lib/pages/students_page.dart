@@ -26,7 +26,16 @@ class StudentsPage extends ConsumerWidget {
     return Scaffold(
       backgroundColor: const Color(0xFF150833),
       body: SafeArea(
-        child: CustomScrollView(
+        child: RefreshIndicator(
+          color: accentCoral,
+          backgroundColor: darkCardBg,
+          onRefresh: () async {
+            ref.invalidate(teacherStudentsProvider);
+            ref.invalidate(teacherGroupProvider);
+            ref.invalidate(teacherAssignedQuestsProvider);
+            await ref.read(teacherStudentsProvider.future);
+          },
+          child: CustomScrollView(
           slivers: [
             // Title + notification bell
             SliverToBoxAdapter(
@@ -122,6 +131,7 @@ class StudentsPage extends ConsumerWidget {
 
             const SliverToBoxAdapter(child: SizedBox(height: 100)),
           ],
+        ),
         ),
       ),
     );
@@ -504,7 +514,7 @@ class StudentsPage extends ConsumerWidget {
                     onTap: () async {
                       final groupAsync = ref.read(teacherGroupProvider);
                       final groupId = groupAsync.valueOrNull?.id;
-                      final removed = await Navigator.of(context).push<bool>(
+                      await Navigator.of(context).push<bool>(
                         PageRouteBuilder(
                           transitionDuration:
                               const Duration(milliseconds: 600),
@@ -533,9 +543,9 @@ class StudentsPage extends ConsumerWidget {
                           },
                         ),
                       );
-                      if (removed == true) {
-                        ref.invalidate(teacherStudentsProvider);
-                      }
+                      // Always refresh student data when returning from detail page
+                      // so updated XP, streaks, etc. are reflected.
+                      ref.invalidate(teacherStudentsProvider);
                     },
                   ),
                 ],
