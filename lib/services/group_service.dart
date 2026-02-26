@@ -73,15 +73,8 @@ class GroupService {
     return result != null ? TeacherGroup.fromJson(result) : null;
   }
 
-  Future<GroupMember> joinGroup(String studentId, String groupId) async {
-    final countResult = await _client
-        .from('group_members')
-        .select('id')
-        .eq('group_id', groupId);
-    if ((countResult as List).length >= 20) {
-      throw Exception('This group is full (20 students max).');
-    }
-
+  Future<GroupMember> joinGroup(String studentId, String groupId,
+      {required String teacherId}) async {
     final existing = await _client
         .from('group_members')
         .select()

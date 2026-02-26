@@ -880,7 +880,8 @@ class ProfilePage extends ConsumerWidget {
 
                   try {
                     // Then join the group
-                    await groupService.joinGroup(user.id, group.id);
+                    await groupService.joinGroup(user.id, group.id,
+                        teacherId: group.teacherId);
                     ref.invalidate(studentMembershipProvider);
                     if (ctx.mounted) Navigator.pop(ctx, true);
                   } catch (e) {
@@ -891,13 +892,15 @@ class ProfilePage extends ConsumerWidget {
                         await _changeRole(ctx, ref, previousRole);
                       } catch (_) {}
                     }
-                    final msg = e.toString();
+                    final msg = e.toString().toLowerCase();
                     setState(() {
                       if (msg.contains('already in a group')) {
                         errorText =
                             'You are already in a group. Leave it first.';
-                      } else if (msg.contains('full')) {
-                        errorText = 'This group is full.';
+                      } else if (msg.contains('full') ||
+                          msg.contains('max')) {
+                        errorText =
+                            'This group is full. Ask your teacher to upgrade their plan.';
                       } else {
                         errorText =
                             'Could not join group. Please try again.';
@@ -1273,7 +1276,8 @@ class ProfilePage extends ConsumerWidget {
                   return;
                 }
                 try {
-                  await groupService.joinGroup(user.id, group.id);
+                  await groupService.joinGroup(user.id, group.id,
+                      teacherId: group.teacherId);
                   ref.invalidate(studentMembershipProvider);
                   ref.invalidate(isInGroupProvider);
                   if (ctx.mounted) Navigator.pop(ctx);

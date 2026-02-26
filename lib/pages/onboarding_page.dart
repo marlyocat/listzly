@@ -111,7 +111,8 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
               curve: Curves.easeInOut);
           return;
         }
-        await groupService.joinGroup(user.id, group.id);
+        await groupService.joinGroup(user.id, group.id,
+            teacherId: group.teacherId);
       } else if (_selectedRole == UserRole.teacher) {
         await groupService.createGroup(user.id);
       }
@@ -156,7 +157,17 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
         );
       }
     } catch (e) {
-      setState(() => _errorMessage = e.toString());
+      final msg = e.toString().toLowerCase();
+      setState(() {
+        if (msg.contains('already in a group')) {
+          _errorMessage = 'You are already in a group. Leave it first.';
+        } else if (msg.contains('full') || msg.contains('max')) {
+          _errorMessage =
+              'This group is full. Ask your teacher to upgrade their plan.';
+        } else {
+          _errorMessage = 'Could not join group. Please try again.';
+        }
+      });
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
