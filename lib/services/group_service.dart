@@ -239,6 +239,16 @@ class GroupService {
         .eq('group_id', groupId)
         .eq('student_id', studentId);
 
+    // Revert student role to self-learner
+    try {
+      await _client
+          .from('profiles')
+          .update({'role': 'self_learner'})
+          .eq('id', studentId);
+    } catch (e) {
+      debugPrint('Failed to revert student role: $e');
+    }
+
     // Notify
     final name = studentName ?? 'A student';
     try {
