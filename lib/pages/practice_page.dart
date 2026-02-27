@@ -681,22 +681,25 @@ class _PracticePageState extends ConsumerState<PracticePage>
                     const Spacer(flex: 3),
 
                     // Large countdown timer
-                    ShaderMask(
-                      shaderCallback: (bounds) => const LinearGradient(
-                        colors: [accentCoralLight, Color(0xFFF4A68E)],
-                      ).createShader(bounds),
-                      child: Text(
-                        _formatTime(_remainingSeconds),
-                        style: GoogleFonts.dmSerifDisplay(
-                          fontSize: 85,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w400,
-                          shadows: [
-                            Shadow(
-                              color: accentCoral.withAlpha(80),
-                              blurRadius: 12,
-                            ),
-                          ],
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: ShaderMask(
+                        shaderCallback: (bounds) => const LinearGradient(
+                          colors: [accentCoralLight, Color(0xFFF4A68E)],
+                        ).createShader(bounds),
+                        child: Text(
+                          _formatTime(_remainingSeconds),
+                          style: GoogleFonts.dmSerifDisplay(
+                            fontSize: 85,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w400,
+                            shadows: [
+                              Shadow(
+                                color: accentCoral.withAlpha(80),
+                                blurRadius: 12,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
