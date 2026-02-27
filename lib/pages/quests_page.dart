@@ -370,29 +370,34 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
   // ─── Stats chips row ──────────────────────────────────────────────
   Widget _buildStatsChips(UserStats stats) {
     final level = LevelUtils.levelFromXp(stats.totalXp);
+    final levelProgress = LevelUtils.progressToNextLevel(stats.totalXp);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-      child: Row(
-        children: [
-          _buildChip(
-            '${stats.currentStreak} ${stats.currentStreak == 1 ? 'Day' : 'Days'}',
-            'Streak',
-            Colors.white,
-            imagePath: 'lib/images/streak.png',
-          ),
-          const SizedBox(width: 10),
-          _buildChip('$level', 'Level', Colors.white,
-              imagePath: 'lib/images/level.png'),
-          const SizedBox(width: 10),
-          _buildChip('${stats.totalXp}', 'Total XP', Colors.white,
-              imagePath: 'lib/images/xp.png'),
-        ],
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _buildChip(
+              '${stats.currentStreak} ${stats.currentStreak == 1 ? 'Day' : 'Days'}',
+              'Streak',
+              Colors.white,
+              imagePath: 'lib/images/streak.png',
+            ),
+            const SizedBox(width: 10),
+            _buildChip('$level', 'Level', Colors.white,
+                imagePath: 'lib/images/level.png',
+                progress: levelProgress),
+            const SizedBox(width: 10),
+            _buildChip('${stats.totalXp}', 'Total XP', Colors.white,
+                imagePath: 'lib/images/xp.png'),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildChip(String value, String label, Color color,
-      {String? imagePath}) {
+      {String? imagePath, double? progress}) {
     return Expanded(
       child: Material(
         elevation: 12,
@@ -407,6 +412,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
             border: Border.all(color: Colors.black, width: 5),
           ),
           child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -437,6 +443,18 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                 ),
               ),
             ),
+            if (progress != null) ...[
+              const SizedBox(height: 6),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(
+                  value: progress,
+                  minHeight: 5,
+                  backgroundColor: Colors.white.withValues(alpha: 0.1),
+                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.green),
+                ),
+              ),
+            ],
           ],
         ),
       ),
