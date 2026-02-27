@@ -14,12 +14,10 @@ class AuthGate extends ConsumerWidget {
 
     return profileAsync.when(
       data: (profile) {
-        // TODO: temporary — always show onboarding for testing
-        // if (!profile.roleSelected) {
-        //   return const OnboardingPage();
-        // }
-        // return const HomePage();
-        return const OnboardingPage();
+        if (!profile.roleSelected) {
+          return const OnboardingPage();
+        }
+        return const HomePage();
       },
       loading: () => const Scaffold(
         backgroundColor: Color(0xFF150833),
