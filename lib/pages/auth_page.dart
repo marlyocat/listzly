@@ -7,6 +7,7 @@ import 'package:listzly/pages/auth_gate.dart';
 import 'package:listzly/pages/role_selection_page.dart';
 import 'package:listzly/providers/auth_provider.dart';
 import 'package:listzly/theme/colors.dart';
+import 'package:listzly/utils/responsive.dart';
 
 class AuthPage extends ConsumerStatefulWidget {
   const AuthPage({super.key});
@@ -157,6 +158,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
     return Scaffold(
       backgroundColor: const Color(0xFF150833),
       body: SafeArea(
+        child: ContentConstraint(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 28),
           child: Column(
@@ -373,6 +375,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
               const SizedBox(height: 40),
             ],
           ),
+        ),
         ),
       ),
     );

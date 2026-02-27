@@ -6,6 +6,7 @@ import 'package:listzly/models/subscription_tier.dart';
 import 'package:listzly/providers/subscription_provider.dart';
 import 'package:listzly/providers/profile_provider.dart';
 import 'package:listzly/theme/colors.dart';
+import 'package:listzly/utils/responsive.dart';
 
 class PaywallPage extends ConsumerStatefulWidget {
   const PaywallPage({super.key});
@@ -159,6 +160,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
     return Scaffold(
       backgroundColor: const Color(0xFF150833),
       body: SafeArea(
+        child: ContentConstraint(
         child: Column(
           children: [
             // Header
@@ -348,6 +350,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                         ),
             ),
           ],
+        ),
         ),
       ),
     );

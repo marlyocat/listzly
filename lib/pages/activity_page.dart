@@ -11,6 +11,7 @@ import 'package:listzly/models/user_role.dart';
 import 'package:listzly/components/recording_list_tile.dart';
 import 'package:listzly/components/recording_player.dart';
 import 'package:listzly/theme/colors.dart';
+import 'package:listzly/utils/responsive.dart';
 import 'package:listzly/providers/subscription_provider.dart';
 import 'package:listzly/components/upgrade_prompt.dart';
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
@@ -368,7 +369,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
         child: CustomScrollView(
           slivers: [
               // Title with gradient text
-              SliverToBoxAdapter(
+              SliverContentConstraint(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
                   child: ShaderMask(
@@ -390,25 +391,25 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
               ),
 
               // Week / Month / Year tabs
-              SliverToBoxAdapter(child: _buildSegmentedTabs()),
+              SliverContentConstraint(child: _buildSegmentedTabs()),
 
               // Date range + session count
-              SliverToBoxAdapter(child: _buildDateStats(statsAsync)),
+              SliverContentConstraint(child: _buildDateStats(statsAsync)),
 
               // Summary stats row
-              SliverToBoxAdapter(child: _buildSummaryStats(statsAsync)),
+              SliverContentConstraint(child: _buildSummaryStats(statsAsync)),
 
               // Bar chart
-              SliverToBoxAdapter(child: _buildBarChart(sessionsAsync)),
+              SliverContentConstraint(child: _buildBarChart(sessionsAsync)),
 
               // Recent sessions list
-              SliverToBoxAdapter(child: _buildSessionList(sessionsAsync)),
+              SliverContentConstraint(child: _buildSessionList(sessionsAsync)),
 
               // My Recordings
-              SliverToBoxAdapter(child: _buildRecordingsList()),
+              SliverContentConstraint(child: _buildRecordingsList()),
 
               // Bottom spacing for nav bar
-              const SliverToBoxAdapter(child: SizedBox(height: 100)),
+              const SliverContentConstraint(child: SizedBox(height: 100)),
             ],
           ),
         ),

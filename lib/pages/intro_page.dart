@@ -4,6 +4,7 @@ import 'package:turn_page_transition/turn_page_transition.dart';
 import 'package:listzly/components/button.dart';
 import 'package:listzly/pages/auth_page.dart';
 import 'package:listzly/theme/colors.dart';
+import 'package:listzly/utils/responsive.dart';
 
 class IntroPage extends StatelessWidget {
   const IntroPage({super.key});
@@ -71,6 +72,7 @@ class IntroPage extends StatelessWidget {
 
             // Main content
             SafeArea(
+              child: ContentConstraint(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 28),
                 child: Column(
@@ -211,6 +213,7 @@ class IntroPage extends StatelessWidget {
                     const SizedBox(height: 40),
                   ],
                 ),
+              ),
               ),
             ),
           ],

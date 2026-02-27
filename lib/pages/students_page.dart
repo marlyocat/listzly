@@ -11,6 +11,7 @@ import 'package:listzly/pages/assign_quest_sheet.dart';
 import 'package:listzly/pages/student_detail_page.dart';
 import 'package:listzly/theme/colors.dart';
 import 'package:listzly/utils/level_utils.dart';
+import 'package:listzly/utils/responsive.dart';
 import 'package:listzly/providers/subscription_provider.dart';
 import 'package:listzly/components/upgrade_prompt.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
@@ -38,7 +39,7 @@ class StudentsPage extends ConsumerWidget {
           child: CustomScrollView(
           slivers: [
             // Title + notification bell
-            SliverToBoxAdapter(
+            SliverContentConstraint(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
                 child: Row(
@@ -67,7 +68,7 @@ class StudentsPage extends ConsumerWidget {
             ),
 
             // Invite code card
-            SliverToBoxAdapter(
+            SliverContentConstraint(
               child: groupAsync.when(
                 data: (group) {
                   if (group == null) return const SizedBox.shrink();
@@ -88,7 +89,7 @@ class StudentsPage extends ConsumerWidget {
             ),
 
             // Assign quest button + active quests
-            SliverToBoxAdapter(
+            SliverContentConstraint(
               child: groupAsync.when(
                 data: (group) {
                   if (group == null) return const SizedBox.shrink();
@@ -100,7 +101,7 @@ class StudentsPage extends ConsumerWidget {
             ),
 
             // Student list
-            SliverToBoxAdapter(
+            SliverContentConstraint(
               child: studentsAsync.when(
                 data: (students) {
                   if (students.isEmpty) {
@@ -129,7 +130,7 @@ class StudentsPage extends ConsumerWidget {
               ),
             ),
 
-            const SliverToBoxAdapter(child: SizedBox(height: 100)),
+            const SliverContentConstraint(child: SizedBox(height: 100)),
           ],
         ),
         ),

@@ -15,6 +15,16 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Lock phones to portrait; let tablets rotate freely
+  final view = WidgetsBinding.instance.platformDispatcher.views.first;
+  final shortestSide =
+      view.physicalSize.shortestSide / view.devicePixelRatio;
+  if (shortestSide < 600) {
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
+  }
+
   await NotificationService.instance.init();
 
   await Supabase.initialize(

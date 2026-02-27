@@ -10,6 +10,7 @@ import 'package:listzly/pages/profile_page.dart';
 import 'package:listzly/pages/practice_page.dart';
 import 'package:listzly/pages/students_page.dart';
 import 'package:listzly/theme/colors.dart';
+import 'package:listzly/utils/responsive.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:listzly/providers/stats_provider.dart';
 import 'package:listzly/providers/session_provider.dart';
@@ -299,6 +300,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
               ),
             ),
             SafeArea(
+          child: ContentConstraint(
           child: Column(
             children: [
               const SizedBox(height: 12),
@@ -593,6 +595,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
               ),
             ],
           ),
+        ),
         ),
           ],
         ),

@@ -10,6 +10,7 @@ import 'package:listzly/components/recording_list_tile.dart';
 import 'package:listzly/components/recording_player.dart';
 import 'package:listzly/theme/colors.dart';
 import 'package:listzly/utils/level_utils.dart';
+import 'package:listzly/utils/responsive.dart';
 import 'package:listzly/providers/subscription_provider.dart';
 import 'package:listzly/components/upgrade_prompt.dart';
 
@@ -197,7 +198,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
         child: CustomScrollView(
           slivers: [
             // Header with back button
-            SliverToBoxAdapter(
+            SliverContentConstraint(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(8, 8, 20, 0),
                 child: Row(
@@ -231,7 +232,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
             ),
 
             // Streak + XP chips
-            SliverToBoxAdapter(
+            SliverContentConstraint(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 4, 20, 0),
                 child: studentStatsAsync.when(
@@ -266,28 +267,28 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
             ),
 
             // Segmented tabs
-            SliverToBoxAdapter(child: _buildSegmentedTabs()),
+            SliverContentConstraint(child: _buildSegmentedTabs()),
 
             // Date stats
-            SliverToBoxAdapter(child: _buildDateStats(statsAsync)),
+            SliverContentConstraint(child: _buildDateStats(statsAsync)),
 
             // Summary stats
-            SliverToBoxAdapter(child: _buildSummaryStats(statsAsync)),
+            SliverContentConstraint(child: _buildSummaryStats(statsAsync)),
 
             // Bar chart
-            SliverToBoxAdapter(child: _buildBarChart(sessionsAsync)),
+            SliverContentConstraint(child: _buildBarChart(sessionsAsync)),
 
             // Sessions list
-            SliverToBoxAdapter(child: _buildSessionList(sessionsAsync)),
+            SliverContentConstraint(child: _buildSessionList(sessionsAsync)),
 
             // Student recordings (teacher view)
-            SliverToBoxAdapter(child: _buildRecordingsList()),
+            SliverContentConstraint(child: _buildRecordingsList()),
 
             // Remove student button
             if (widget.groupId != null)
-              SliverToBoxAdapter(child: _buildRemoveButton()),
+              SliverContentConstraint(child: _buildRemoveButton()),
 
-            const SliverToBoxAdapter(child: SizedBox(height: 32)),
+            const SliverContentConstraint(child: SizedBox(height: 32)),
           ],
         ),
       ),

@@ -15,6 +15,7 @@ import 'package:listzly/models/student_summary.dart';
 import 'package:listzly/providers/group_provider.dart';
 import 'package:listzly/theme/colors.dart';
 import 'package:listzly/utils/level_utils.dart';
+import 'package:listzly/utils/responsive.dart';
 import 'package:listzly/services/notification_service.dart';
 import 'package:listzly/providers/subscription_provider.dart';
 import 'package:listzly/models/subscription_tier.dart';
@@ -37,7 +38,7 @@ class ProfilePage extends ConsumerWidget {
         child: CustomScrollView(
           slivers: [
             // Title
-            SliverToBoxAdapter(
+            SliverContentConstraint(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
                 child: ShaderMask(
@@ -59,7 +60,7 @@ class ProfilePage extends ConsumerWidget {
             ),
 
             // Profile card
-            SliverToBoxAdapter(
+            SliverContentConstraint(
               child: profileAsync.when(
                 data: (profile) {
                   final email = ref.watch(currentUserProvider)?.email;
@@ -71,12 +72,12 @@ class ProfilePage extends ConsumerWidget {
             ),
 
             // Subscription section
-            SliverToBoxAdapter(
+            SliverContentConstraint(
               child: _buildSubscriptionSection(context, ref),
             ),
 
             // Role & Group section
-            SliverToBoxAdapter(
+            SliverContentConstraint(
               child: profileAsync.when(
                 data: (profile) =>
                     _buildRoleGroupSection(context, ref, profile),
@@ -86,7 +87,7 @@ class ProfilePage extends ConsumerWidget {
             ),
 
             // Display section
-            SliverToBoxAdapter(
+            SliverContentConstraint(
               child: settingsAsync.when(
                 data: (settings) => _buildDisplaySection(ref, settings),
                 loading: () => _buildSectionLoading('Display'),
@@ -96,7 +97,7 @@ class ProfilePage extends ConsumerWidget {
             ),
 
             // Practice section
-            SliverToBoxAdapter(
+            SliverContentConstraint(
               child: settingsAsync.when(
                 data: (settings) => _buildPracticeSection(context, ref, settings),
                 loading: () => _buildSectionLoading('Practice'),
@@ -106,7 +107,7 @@ class ProfilePage extends ConsumerWidget {
             ),
 
             // Instruments section
-            SliverToBoxAdapter(
+            SliverContentConstraint(
               child: instrumentsAsync.when(
                 data: (instruments) => _buildInstrumentsSection(instruments),
                 loading: () => _buildSectionLoading('My Instruments'),
@@ -116,7 +117,7 @@ class ProfilePage extends ConsumerWidget {
             ),
 
             // Log Out button
-            SliverToBoxAdapter(
+            SliverContentConstraint(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
                 child: SizedBox(
@@ -215,7 +216,7 @@ class ProfilePage extends ConsumerWidget {
             ),
 
             // Bottom spacing for nav bar
-            const SliverToBoxAdapter(child: SizedBox(height: 100)),
+            const SliverContentConstraint(child: SizedBox(height: 100)),
           ],
         ),
       ),

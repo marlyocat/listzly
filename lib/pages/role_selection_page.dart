@@ -9,6 +9,7 @@ import 'package:listzly/providers/profile_provider.dart';
 import 'package:listzly/providers/group_provider.dart';
 import 'package:listzly/pages/home_page.dart';
 import 'package:listzly/theme/colors.dart';
+import 'package:listzly/utils/responsive.dart';
 
 class RoleSelectionPage extends ConsumerStatefulWidget {
   const RoleSelectionPage({super.key});
@@ -121,6 +122,7 @@ class _RoleSelectionPageState extends ConsumerState<RoleSelectionPage> {
     return Scaffold(
       backgroundColor: const Color(0xFF150833),
       body: SafeArea(
+        child: ContentConstraint(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 28),
           child: Column(
@@ -321,6 +323,7 @@ class _RoleSelectionPageState extends ConsumerState<RoleSelectionPage> {
               const SizedBox(height: 40),
             ],
           ),
+        ),
         ),
       ),
     );

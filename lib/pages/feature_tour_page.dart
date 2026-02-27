@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
 import 'package:listzly/pages/home_page.dart';
 import 'package:listzly/theme/colors.dart';
+import 'package:listzly/utils/responsive.dart';
 
 class _TourCard {
   final String imagePath;
@@ -105,6 +106,7 @@ class _FeatureTourPageState extends State<FeatureTourPage> {
     return Scaffold(
       backgroundColor: const Color(0xFF150833),
       body: SafeArea(
+        child: ContentConstraint(
         child: Column(
           children: [
             // Header: brand + skip
@@ -262,6 +264,7 @@ class _FeatureTourPageState extends State<FeatureTourPage> {
               ),
             ),
           ],
+        ),
         ),
       ),
     );

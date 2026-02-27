@@ -10,6 +10,7 @@ import 'package:listzly/providers/group_provider.dart';
 import 'package:listzly/providers/settings_provider.dart';
 import 'package:listzly/pages/home_page.dart';
 import 'package:listzly/theme/colors.dart';
+import 'package:listzly/utils/responsive.dart';
 import 'package:listzly/services/notification_service.dart';
 
 class OnboardingPage extends ConsumerStatefulWidget {
@@ -247,6 +248,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
     return Scaffold(
       backgroundColor: const Color(0xFF150833),
       body: SafeArea(
+        child: ContentConstraint(
         child: Column(
           children: [
             // Top section: brand + progress
@@ -397,6 +399,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
               ),
             ),
           ],
+        ),
         ),
       ),
     );
@@ -631,7 +634,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                 onTap: () => setState(() => _selectedGoalMinutes = minutes),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
-                  width: (MediaQuery.of(context).size.width - 56 - 24) / 3,
+                  width: (MediaQuery.of(context).size.width.clamp(0, 500) - 56 - 24) / 3,
                   padding: const EdgeInsets.symmetric(vertical: 20),
                   decoration: BoxDecoration(
                     color: isSelected

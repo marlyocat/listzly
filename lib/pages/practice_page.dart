@@ -22,6 +22,7 @@ import 'package:listzly/components/upgrade_prompt.dart';
 import 'package:listzly/components/recording_player.dart';
 import 'package:listzly/services/notification_service.dart';
 import 'package:listzly/theme/colors.dart';
+import 'package:listzly/utils/responsive.dart';
 
 class PracticePage extends ConsumerStatefulWidget {
   final String instrument;
@@ -651,6 +652,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
       child: Scaffold(
         backgroundColor: const Color(0xFF150833),
         body: SafeArea(
+            child: ContentConstraint(
             child: Stack(
               children: [
                 // Radial glow behind the timer
@@ -824,6 +826,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
 
               ],
             ),
+          ),
           ),
         ),
     );

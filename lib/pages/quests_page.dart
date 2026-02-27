@@ -15,6 +15,7 @@ import 'package:listzly/providers/stats_provider.dart';
 import 'package:listzly/services/quest_service.dart';
 import 'package:listzly/theme/colors.dart';
 import 'package:listzly/utils/level_utils.dart';
+import 'package:listzly/utils/responsive.dart';
 
 /// Maps quest keys to their display icons.
 const _questIconMap = <String, IconData>{
@@ -169,7 +170,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
           child: CustomScrollView(
           slivers: [
             // Title
-            SliverToBoxAdapter(
+            SliverContentConstraint(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
                 child: ShaderMask(
@@ -191,7 +192,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
             ),
 
             // Weekly overview card
-            SliverToBoxAdapter(
+            SliverContentConstraint(
               child: weekCompletionAsync.when(
                 data: (weekDays) => _buildWeeklyOverview(weekDays),
                 loading: () => _buildLoadingPlaceholder(height: 90),
@@ -200,7 +201,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
             ),
 
             // Stats chips
-            SliverToBoxAdapter(
+            SliverContentConstraint(
               child: userStatsAsync.when(
                 data: (stats) => _buildStatsChips(stats),
                 loading: () => _buildLoadingPlaceholder(height: 60),
@@ -209,7 +210,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
             ),
 
             // Daily quests section
-            SliverToBoxAdapter(
+            SliverContentConstraint(
               child: dailyQuestsAsync.when(
                 data: (quests) {
                   final goalMinutes = settingsAsync.value?.dailyGoalMinutes;
@@ -230,12 +231,12 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
 
             // Assigned quests section (students only)
             if (role == UserRole.student)
-              SliverToBoxAdapter(
+              SliverContentConstraint(
                 child: _buildAssignedQuestsSection(),
               ),
 
             // Bottom spacing for nav bar
-            const SliverToBoxAdapter(child: SizedBox(height: 100)),
+            const SliverContentConstraint(child: SizedBox(height: 100)),
           ],
         ),
       ),
