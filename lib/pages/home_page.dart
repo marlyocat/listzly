@@ -154,8 +154,8 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
   static const List<_InstrumentData> _instruments = [
     _InstrumentData(name: 'Piano', icon: Icons.piano, imagePath: 'lib/images/piano_sticker.png', quotes: [
       {'quote': 'Simplicity is the final achievement.', 'author': 'Frederic Chopin'},
-      {'quote': 'The piano keys are black and white, but they sound like a million colours in your mind.', 'author': 'Maria Cristina Mena'},
-      {'quote': 'The piano is able to communicate the subtlest universal truths.', 'author': 'Vladimir Horowitz'},
+      {'quote': 'There is no such thing as a difficult piece. It is either impossible or it is easy.', 'author': 'Sergei Rachmaninoff'},
+      {'quote': 'To play a wrong note is insignificant; to play without passion is inexcusable.', 'author': 'Ludwig van Beethoven'},
       {'quote': 'The piano is the silence between the notes.', 'author': 'Claude Debussy'},
       {'quote': 'The piano is a beautiful instrument to express the deepest feelings of the soul.', 'author': 'Franz Liszt'},
       {'quote': 'Beware of missing chances; otherwise it may be altogether too late some day.', 'author': 'Franz Liszt'},
@@ -164,22 +164,22 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
       {'quote': 'The guitar is a small orchestra.', 'author': 'Andres Segovia'},
       {'quote': 'The guitar chose me, and I gave my life to it.', 'author': 'Paco de Lucia'},
       {'quote': 'A guitar is more than just a sound box. It is part of your soul.', 'author': 'Manuel Barrueco'},
-      {'quote': 'The tone of the guitar is between a flute and a harp.', 'author': 'Fernando Sor'},
-      {'quote': 'Music embodies feeling without forcing it to contend with thought.', 'author': 'Franz Liszt'},
+      {'quote': 'The guitar has a kind of grit and excitement possessed by nothing else.', 'author': 'Brian May'},
+      {'quote': 'My guitar is not a thing. It is an extension of myself. It is who I am.', 'author': 'Willie Nelson'},
     ]),
     _InstrumentData(name: 'Violin', icon: Icons.music_note_outlined, imagePath: 'lib/images/violin_sticker.png', quotes: [
       {'quote': 'The violin can be the most beautiful voice in the world.', 'author': 'Niccolo Paganini'},
       {'quote': 'A violin sings from the depths of the human soul.', 'author': 'Itzhak Perlman'},
       {'quote': 'The violin is the perfect instrument of the heart.', 'author': 'Antonio Vivaldi'},
-      {'quote': 'When words leave off, the violin begins.', 'author': 'Heinrich Heine'},
-      {'quote': 'Inspiration is enough to give expression to the tone in singing, especially when the song is without words.', 'author': 'Franz Liszt'},
+      {'quote': 'Every difficulty I have ever faced playing the violin has been overcome by practice.', 'author': 'Jascha Heifetz'},
+      {'quote': 'Practicing is not about being perfect. It is about getting better every day.', 'author': 'Hilary Hahn'},
     ]),
     _InstrumentData(name: 'Drums', icon: Icons.surround_sound, imagePath: 'lib/images/drum-set_sticker.png', quotes: [
       {'quote': 'The drummer drives. Everyone else rides.', 'author': 'Buddy Rich'},
       {'quote': 'A good drummer listens as much as he plays.', 'author': 'Indian Proverb'},
       {'quote': 'Drums are the heartbeat of music.', 'author': 'Ringo Starr'},
       {'quote': 'Rhythm is the soul of life. The whole universe revolves in rhythm.', 'author': 'Babatunde Olatunji'},
-      {'quote': 'Music is the heart of life. Without it, there is no possible good and with it everything is beautiful.', 'author': 'Franz Liszt'},
+      {'quote': 'A drummer is the conductor of the band.', 'author': 'Gene Krupa'},
     ]),
   ];
 
