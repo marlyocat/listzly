@@ -19,9 +19,58 @@ class OnboardingPage extends ConsumerStatefulWidget {
   ConsumerState<OnboardingPage> createState() => _OnboardingPageState();
 }
 
+class _TourCard {
+  final String imagePath;
+  final String title;
+  final String description;
+  const _TourCard({
+    required this.imagePath,
+    required this.title,
+    required this.description,
+  });
+}
+
 class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   final _pageController = PageController();
   int _currentPage = 0;
+
+  // Tour cards (pages 0–4), then setup pages (5–7)
+  static const _tourCards = [
+    _TourCard(
+      imagePath: 'lib/images/onboarding_practice_sticker.png',
+      title: 'Start Practicing',
+      description:
+          'Pick an instrument, set a timer, and begin a focused practice session. Piano is available on the free plan.',
+    ),
+    _TourCard(
+      imagePath: 'lib/images/onboarding_target_sticker.png',
+      title: 'Build Your Streak',
+      description:
+          'Practice every day to build your streak and stay consistent. Don\'t break the chain!',
+    ),
+    _TourCard(
+      imagePath: 'lib/images/onboarding_quests_sticker.png',
+      title: 'Complete Quests',
+      description:
+          'Take on daily and weekly quests to challenge yourself and earn XP as you improve.',
+    ),
+    _TourCard(
+      imagePath: 'lib/images/onboarding_education_sticker.png',
+      title: 'Learn Together',
+      description:
+          'Join your teacher\'s group with an invite code, or create your own group as a teacher to track student progress.',
+    ),
+    _TourCard(
+      imagePath: 'lib/images/onboarding_gift_sticker.png',
+      title: 'Unlock More with Pro',
+      description:
+          'Go Pro to unlock all instruments, record and share your practice sessions, view activity history, and more. Start with everything you need for free.',
+    ),
+  ];
+
+  static const _totalPages = 8; // 5 tour + 3 setup
+  static const _rolePageIndex = 5;
+  static const _lastPageIndex = 7;
 
   // Step 1: Role
   UserRole _selectedRole = UserRole.selfLearner;
@@ -52,8 +101,8 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   }
 
   void _nextPage() {
-    // Validate step 1 before advancing
-    if (_currentPage == 0 && _selectedRole == UserRole.student) {
+    // Validate role page before advancing
+    if (_currentPage == _rolePageIndex && _selectedRole == UserRole.student) {
       final code = _inviteCodeController.text.trim();
       if (code.isEmpty) {
         setState(() => _errorMessage = 'Please enter an invite code');
@@ -105,8 +154,8 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
             _errorMessage = 'Invalid invite code';
             _isLoading = false;
           });
-          // Go back to step 1 to show error
-          _pageController.animateToPage(0,
+          // Go back to role page to show error
+          _pageController.animateToPage(_rolePageIndex,
               duration: const Duration(milliseconds: 350),
               curve: Curves.easeInOut);
           return;
@@ -207,7 +256,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                 children: [
                   ShaderMask(
                     shaderCallback: (bounds) => const LinearGradient(
-                      colors: [Colors.white, accentCoral],
+                      colors: [Colors.white, primaryLight],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ).createShader(bounds),
@@ -222,20 +271,20 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                   const Spacer(),
                   // Step indicator
                   Row(
-                    children: List.generate(3, (i) {
+                    children: List.generate(_totalPages, (i) {
                       final isActive = i == _currentPage;
                       final isPast = i < _currentPage;
                       return Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 4),
-                        width: isActive ? 24 : 8,
-                        height: 8,
+                        margin: const EdgeInsets.symmetric(horizontal: 3),
+                        width: isActive ? 20 : 6,
+                        height: 6,
                         decoration: BoxDecoration(
                           color: isActive
                               ? accentCoral
                               : isPast
                                   ? accentCoral.withAlpha(100)
                                   : Colors.white.withAlpha(30),
-                          borderRadius: BorderRadius.circular(4),
+                          borderRadius: BorderRadius.circular(3),
                         ),
                       );
                     }),
@@ -251,6 +300,10 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                 physics: const NeverScrollableScrollPhysics(),
                 onPageChanged: (page) => setState(() => _currentPage = page),
                 children: [
+                  // Tour cards (pages 0–4)
+                  for (final card in _tourCards)
+                    _buildTourCardPage(card),
+                  // Setup pages (5–7)
                   _buildRolePage(),
                   _buildGoalPage(),
                   _buildReminderPage(),
@@ -263,7 +316,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
               padding: const EdgeInsets.fromLTRB(28, 0, 28, 24),
               child: Row(
                 children: [
-                  // Back button
+                  // Back button (not on first tour card)
                   if (_currentPage > 0)
                     GestureDetector(
                       onTap: _previousPage,
@@ -307,7 +360,9 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                         child: ElevatedButton(
                           onPressed: _isLoading
                               ? null
-                              : (_currentPage < 2 ? _nextPage : _finish),
+                              : (_currentPage < _lastPageIndex
+                                  ? _nextPage
+                                  : _finish),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.transparent,
                             shadowColor: Colors.transparent,
@@ -325,7 +380,9 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                                   ),
                                 )
                               : Text(
-                                  _currentPage < 2 ? 'Next' : 'Get Started',
+                                  _currentPage < _lastPageIndex
+                                      ? 'Next'
+                                      : 'Get Started',
                                   style: GoogleFonts.nunito(
                                     fontSize: 17,
                                     fontWeight: FontWeight.w800,
@@ -341,6 +398,46 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  // ─── Tour Card Page ────────────────────────────────────────────
+  Widget _buildTourCardPage(_TourCard card) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 28),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(
+            card.imagePath,
+            height: 180,
+            fit: BoxFit.contain,
+          ),
+          const SizedBox(height: 40),
+          Text(
+            card.title,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.dmSerifDisplay(
+              fontSize: 30,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Text(
+              card.description,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.nunito(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: darkTextSecondary,
+                height: 1.5,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -480,7 +577,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           ],
 
           // Error message
-          if (_errorMessage != null && _currentPage == 0) ...[
+          if (_errorMessage != null && _currentPage == _rolePageIndex) ...[
             const SizedBox(height: 16),
             Text(
               _errorMessage!,
@@ -881,7 +978,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           ],
 
           // Error message
-          if (_errorMessage != null && _currentPage == 2) ...[
+          if (_errorMessage != null && _currentPage == _lastPageIndex) ...[
             const SizedBox(height: 16),
             Text(
               _errorMessage!,

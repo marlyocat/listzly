@@ -121,6 +121,11 @@ flutter:
     - lib/images/copy.png
     - lib/images/key.png
     - lib/images/qr_code.png
+    - lib/images/onboarding_practice_sticker.png
+    - lib/images/onboarding_target_sticker.png
+    - lib/images/onboarding_quests_sticker.png
+    - lib/images/onboarding_gift_sticker.png
+    - lib/images/onboarding_education_sticker.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
