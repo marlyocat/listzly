@@ -41,17 +41,39 @@ class PracticePage extends ConsumerStatefulWidget {
 
 class _PracticePageState extends ConsumerState<PracticePage>
     with TickerProviderStateMixin {
-  static const _quotes = [
-    {'quote': 'Every note you play is a step closer to mastery.', 'author': 'Unknown'},
-    {'quote': 'The only way to do great work is to love what you do.', 'author': 'Steve Jobs'},
-    {'quote': 'Practice does not make perfect. Practice makes permanent.', 'author': 'Bobby Robson'},
-    {'quote': 'Music expresses that which cannot be said.', 'author': 'Victor Hugo'},
-    {'quote': 'It is not enough to do your best; you must know what to do, and then do your best.', 'author': 'W. Edwards Deming'},
-    {'quote': 'The beautiful thing about learning is nobody can take it away from you.', 'author': 'B.B. King'},
-    {'quote': 'Without craftsmanship, inspiration is a mere reed shaken in the wind.', 'author': 'Johannes Brahms'},
-    {'quote': 'Genius is one percent inspiration and ninety-nine percent perspiration.', 'author': 'Thomas Edison'},
-    {'quote': 'One who plays wrong notes is a beginner; one who hesitates is an amateur.', 'author': 'Unknown'},
-  ];
+  static const _quotes = <String, List<Map<String, String>>>{
+    'Piano': [
+      {'quote': 'I have spent my whole life practicing for the moment I walk on stage.', 'author': 'Arthur Rubinstein'},
+      {'quote': 'I was obliged to work hard. Whoever is equally industrious will succeed just as well.', 'author': 'Clara Schumann'},
+      {'quote': 'There are no wrong notes on the piano, only wrong relationships between notes.', 'author': 'Thelonious Monk'},
+      {'quote': 'There is no limit to what you can accomplish at the keyboard if you practice hard enough.', 'author': 'Oscar Peterson'},
+      {'quote': 'To send light into the darkness of men\'s hearts, such is the duty of the artist.', 'author': 'Robert Schumann'},
+    ],
+    'Guitar': [
+      {'quote': 'Sometimes you want to give up the guitar. You\'ll hate the guitar. But if you stick with it, you\'re gonna be rewarded.', 'author': 'Jimi Hendrix'},
+      {'quote': 'I have always worked very hard on my music. Practice is everything.', 'author': 'Eric Clapton'},
+      {'quote': 'The guitar is a wonderful instrument which is understood by few.', 'author': 'John Williams'},
+      {'quote': 'What I do is not so difficult. I play the guitar and I make music.', 'author': 'Django Reinhardt'},
+      {'quote': 'The beautiful thing about learning is nobody can take it away from you.', 'author': 'B.B. King'},
+    ],
+    'Violin': [
+      {'quote': 'The violin is not just played, it is brought to life through practice.', 'author': 'Yehudi Menuhin'},
+      {'quote': 'Study and practice are only the means to arrive at the art of playing.', 'author': 'Fritz Kreisler'},
+      {'quote': 'When you perform, you are sharing a piece of your soul.', 'author': 'Joshua Bell'},
+      {'quote': 'Without hard work and discipline it is difficult to be a top professional.', 'author': 'Maxim Vengerov'},
+      {'quote': 'Music is the one thing that connects all human beings.', 'author': 'Midori'},
+    ],
+    'Drums': [
+      {'quote': 'Dedicated practice is the price of excellence.', 'author': 'Neil Peart'},
+      {'quote': 'Music washes away the dust of everyday life.', 'author': 'Art Blakey'},
+      {'quote': 'You only get better by playing. The more you play, the more confident you become.', 'author': 'Max Roach'},
+      {'quote': 'I just go where the music takes me. Let the rhythm guide your hands.', 'author': 'John Bonham'},
+      {'quote': 'The goal is not to play louder or faster, but to play with more feeling.', 'author': 'Tony Williams'},
+    ],
+  };
+
+  List<Map<String, String>> get _instrumentQuotes =>
+      _quotes[widget.instrument] ?? _quotes['Piano']!;
 
   static const _maxRecordingSeconds = 300; // 5 minutes
 
@@ -96,7 +118,9 @@ class _PracticePageState extends ConsumerState<PracticePage>
     super.initState();
     _remainingSeconds = widget.durationMinutes * 60;
     _sessionStartTime = DateTime.now();
-    _quoteIndex = Random().nextInt(_quotes.length);
+    _quoteIndex = Random().nextInt(
+      (_quotes[widget.instrument] ?? _quotes['Piano']!).length,
+    );
 
     _pulseController = AnimationController(
       vsync: this,
@@ -203,7 +227,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
   void _startQuoteRotation() {
     _quoteTimer = Timer.periodic(const Duration(seconds: 30), (_) {
       if (!_isPaused) {
-        setState(() => _quoteIndex = (_quoteIndex + 1) % _quotes.length);
+        setState(() => _quoteIndex = (_quoteIndex + 1) % _instrumentQuotes.length);
       }
     });
   }
@@ -688,7 +712,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
                           key: ValueKey<int>(_quoteIndex),
                           children: [
                             Text(
-                              '"${_quotes[_quoteIndex]['quote']}"',
+                              '"${_instrumentQuotes[_quoteIndex]['quote']}"',
                               textAlign: TextAlign.center,
                               style: GoogleFonts.dmSerifDisplay(
                                 fontSize: 14,
@@ -698,7 +722,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              '- ${_quotes[_quoteIndex]['author']}',
+                              '- ${_instrumentQuotes[_quoteIndex]['author']}',
                               style: GoogleFonts.dmSerifDisplay(
                                 fontSize: 12,
                                 color: darkTextMuted,

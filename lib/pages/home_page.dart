@@ -176,7 +176,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
     ]),
     _InstrumentData(name: 'Drums', icon: Icons.surround_sound, imagePath: 'lib/images/drum-set_sticker.png', quotes: [
       {'quote': 'The drummer drives. Everyone else rides.', 'author': 'Buddy Rich'},
-      {'quote': 'A good drummer listens as much as he plays.', 'author': 'Indian Proverb'},
+      {'quote': 'A great drummer is not just keeping time, he is making time.', 'author': 'Elvin Jones'},
       {'quote': 'Drums are the heartbeat of music.', 'author': 'Ringo Starr'},
       {'quote': 'Rhythm is the soul of life. The whole universe revolves in rhythm.', 'author': 'Babatunde Olatunji'},
       {'quote': 'A drummer is the conductor of the band.', 'author': 'Gene Krupa'},
