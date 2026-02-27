@@ -72,7 +72,7 @@ class StudentsPage extends ConsumerWidget {
                 data: (group) {
                   if (group == null) return const SizedBox.shrink();
                   final studentCount =
-                      studentsAsync.valueOrNull?.length ?? 0;
+                      studentsAsync.value?.length ?? 0;
                   return _buildInviteCodeCard(context, ref, group.inviteCode,
                       group.id, studentCount);
                 },
@@ -83,7 +83,7 @@ class StudentsPage extends ConsumerWidget {
                         color: accentCoral, strokeWidth: 2.5),
                   ),
                 ),
-                error: (_, __) => const SizedBox.shrink(),
+                error: (_, _) => const SizedBox.shrink(),
               ),
             ),
 
@@ -95,7 +95,7 @@ class StudentsPage extends ConsumerWidget {
                   return _buildAssignedQuestsSection(context, ref, group.id);
                 },
                 loading: () => const SizedBox.shrink(),
-                error: (_, __) => const SizedBox.shrink(),
+                error: (_, _) => const SizedBox.shrink(),
               ),
             ),
 
@@ -115,7 +115,7 @@ class StudentsPage extends ConsumerWidget {
                         color: accentCoral, strokeWidth: 2.5),
                   ),
                 ),
-                error: (_, __) => Padding(
+                error: (_, _) => Padding(
                   padding: const EdgeInsets.all(20),
                   child: Text(
                     'Could not load students.',
@@ -140,7 +140,7 @@ class StudentsPage extends ConsumerWidget {
   Widget _buildAssignedQuestsSection(
       BuildContext context, WidgetRef ref, String groupId) {
     final activeQuestsAsync = ref.watch(teacherAssignedQuestsProvider);
-    final students = ref.watch(teacherStudentsProvider).valueOrNull ?? [];
+    final students = ref.watch(teacherStudentsProvider).value ?? [];
     final studentNames = {
       for (final s in students) s.studentId: s.displayName,
     };
@@ -243,7 +243,7 @@ class StudentsPage extends ConsumerWidget {
                       color: accentCoral, strokeWidth: 2.5),
                 ),
               ),
-              error: (_, __) => Padding(
+              error: (_, _) => Padding(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
                 child: Text(
                   'Could not load quests.',
@@ -513,7 +513,7 @@ class StudentsPage extends ConsumerWidget {
                     student: student,
                     onTap: () async {
                       final groupAsync = ref.read(teacherGroupProvider);
-                      final groupId = groupAsync.valueOrNull?.id;
+                      final groupId = groupAsync.value?.id;
                       await Navigator.of(context).push<bool>(
                         PageRouteBuilder(
                           transitionDuration:
@@ -560,7 +560,7 @@ class StudentsPage extends ConsumerWidget {
 
   Widget _buildNotificationBell(BuildContext context, WidgetRef ref) {
     final notificationsAsync = ref.watch(unreadGroupNotificationsProvider);
-    final count = notificationsAsync.valueOrNull?.length ?? 0;
+    final count = notificationsAsync.value?.length ?? 0;
 
     return GestureDetector(
       onTap: () => _showNotificationsDialog(context, ref),
@@ -602,11 +602,11 @@ class StudentsPage extends ConsumerWidget {
   }
 
   void _showNotificationsDialog(BuildContext context, WidgetRef ref) {
-    final group = ref.read(teacherGroupProvider).valueOrNull;
+    final group = ref.read(teacherGroupProvider).value;
     if (group == null) return;
 
     final hasUnread =
-        (ref.read(unreadGroupNotificationsProvider).valueOrNull?.length ?? 0) >
+        (ref.read(unreadGroupNotificationsProvider).value?.length ?? 0) >
             0;
 
     showDialog(

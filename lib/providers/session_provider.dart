@@ -6,12 +6,12 @@ import 'package:listzly/providers/auth_provider.dart';
 part 'session_provider.g.dart';
 
 @riverpod
-SessionService sessionService(SessionServiceRef ref) =>
+SessionService sessionService(Ref ref) =>
     SessionService(ref.watch(supabaseClientProvider));
 
 @riverpod
 Future<List<PracticeSession>> sessionList(
-  SessionListRef ref, {
+  Ref ref, {
   required DateTime start,
   required DateTime end,
 }) async {
@@ -26,7 +26,7 @@ Future<List<PracticeSession>> sessionList(
 
 @riverpod
 Future<Map<DateTime, int>> weeklyBarData(
-  WeeklyBarDataRef ref, {
+  Ref ref, {
   required DateTime weekStart,
 }) async {
   final user = ref.watch(currentUserProvider);
@@ -39,7 +39,7 @@ Future<Map<DateTime, int>> weeklyBarData(
 
 @riverpod
 Future<({Duration totalTime, int sessionCount})> summaryStats(
-  SummaryStatsRef ref, {
+  Ref ref, {
   required DateTime start,
   required DateTime end,
 }) async {

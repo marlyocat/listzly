@@ -6,42 +6,92 @@ part of 'settings_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$settingsServiceHash() => r'9de8de87c78dcd8aa8a7691834c275e7765d2224';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
 
-/// See also [settingsService].
 @ProviderFor(settingsService)
-final settingsServiceProvider = AutoDisposeProvider<SettingsService>.internal(
-  settingsService,
-  name: r'settingsServiceProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$settingsServiceHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final settingsServiceProvider = SettingsServiceProvider._();
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef SettingsServiceRef = AutoDisposeProviderRef<SettingsService>;
+final class SettingsServiceProvider
+    extends
+        $FunctionalProvider<SettingsService, SettingsService, SettingsService>
+    with $Provider<SettingsService> {
+  SettingsServiceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'settingsServiceProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$settingsServiceHash();
+
+  @$internal
+  @override
+  $ProviderElement<SettingsService> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  SettingsService create(Ref ref) {
+    return settingsService(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(SettingsService value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<SettingsService>(value),
+    );
+  }
+}
+
+String _$settingsServiceHash() => r'501cf3d1d872f097adda3099151ddd6c1b604563';
+
+@ProviderFor(UserSettingsNotifier)
+final userSettingsProvider = UserSettingsNotifierProvider._();
+
+final class UserSettingsNotifierProvider
+    extends $AsyncNotifierProvider<UserSettingsNotifier, UserSettings> {
+  UserSettingsNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'userSettingsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$userSettingsNotifierHash();
+
+  @$internal
+  @override
+  UserSettingsNotifier create() => UserSettingsNotifier();
+}
+
 String _$userSettingsNotifierHash() =>
     r'a12f52a551a912a31b21d49c791d9af336d30921';
 
-/// See also [UserSettingsNotifier].
-@ProviderFor(UserSettingsNotifier)
-final userSettingsNotifierProvider =
-    AutoDisposeAsyncNotifierProvider<
-      UserSettingsNotifier,
-      UserSettings
-    >.internal(
-      UserSettingsNotifier.new,
-      name: r'userSettingsNotifierProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$userSettingsNotifierHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-typedef _$UserSettingsNotifier = AutoDisposeAsyncNotifier<UserSettings>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+abstract class _$UserSettingsNotifier extends $AsyncNotifier<UserSettings> {
+  FutureOr<UserSettings> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<AsyncValue<UserSettings>, UserSettings>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<UserSettings>, UserSettings>,
+              AsyncValue<UserSettings>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}

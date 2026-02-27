@@ -8,7 +8,7 @@ part 'student_data_provider.g.dart';
 
 @riverpod
 Future<UserStats> studentStats(
-  StudentStatsRef ref, {
+  Ref ref, {
   required String studentId,
 }) async {
   return ref.watch(statsServiceProvider).getStats(studentId);
@@ -16,7 +16,7 @@ Future<UserStats> studentStats(
 
 @riverpod
 Future<List<PracticeSession>> studentSessions(
-  StudentSessionsRef ref, {
+  Ref ref, {
   required String studentId,
   required DateTime start,
   required DateTime end,
@@ -30,7 +30,7 @@ Future<List<PracticeSession>> studentSessions(
 
 @riverpod
 Future<Map<DateTime, int>> studentWeeklyBarData(
-  StudentWeeklyBarDataRef ref, {
+  Ref ref, {
   required String studentId,
   required DateTime weekStart,
 }) async {
@@ -42,7 +42,7 @@ Future<Map<DateTime, int>> studentWeeklyBarData(
 
 @riverpod
 Future<({Duration totalTime, int sessionCount})> studentSummaryStats(
-  StudentSummaryStatsRef ref, {
+  Ref ref, {
   required String studentId,
   required DateTime start,
   required DateTime end,
@@ -56,7 +56,7 @@ Future<({Duration totalTime, int sessionCount})> studentSummaryStats(
 
 @riverpod
 Future<List<Map<String, dynamic>>> studentInstrumentStats(
-  StudentInstrumentStatsRef ref, {
+  Ref ref, {
   required String studentId,
 }) async {
   return ref.watch(sessionServiceProvider).getInstrumentStats(studentId);

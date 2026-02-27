@@ -6,112 +6,240 @@ part of 'group_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$groupServiceHash() => r'45c0d9b9e3edeec12e239a085203bb9f37c54098';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
 
-/// See also [groupService].
 @ProviderFor(groupService)
-final groupServiceProvider = AutoDisposeProvider<GroupService>.internal(
-  groupService,
-  name: r'groupServiceProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$groupServiceHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final groupServiceProvider = GroupServiceProvider._();
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef GroupServiceRef = AutoDisposeProviderRef<GroupService>;
-String _$teacherGroupHash() => r'6d0377d91f5cf85a0a527334b1b6b860254dc360';
+final class GroupServiceProvider
+    extends $FunctionalProvider<GroupService, GroupService, GroupService>
+    with $Provider<GroupService> {
+  GroupServiceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'groupServiceProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
-/// See also [teacherGroup].
+  @override
+  String debugGetCreateSourceHash() => _$groupServiceHash();
+
+  @$internal
+  @override
+  $ProviderElement<GroupService> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  GroupService create(Ref ref) {
+    return groupService(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(GroupService value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<GroupService>(value),
+    );
+  }
+}
+
+String _$groupServiceHash() => r'c63246105d44797694624a0605775cc5a5bf348a';
+
 @ProviderFor(teacherGroup)
-final teacherGroupProvider = AutoDisposeFutureProvider<TeacherGroup?>.internal(
-  teacherGroup,
-  name: r'teacherGroupProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$teacherGroupHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final teacherGroupProvider = TeacherGroupProvider._();
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef TeacherGroupRef = AutoDisposeFutureProviderRef<TeacherGroup?>;
-String _$studentMembershipHash() => r'fc77e76f7516e7d462c783654c35ccdd41be24e9';
+final class TeacherGroupProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<TeacherGroup?>,
+          TeacherGroup?,
+          FutureOr<TeacherGroup?>
+        >
+    with $FutureModifier<TeacherGroup?>, $FutureProvider<TeacherGroup?> {
+  TeacherGroupProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'teacherGroupProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
-/// See also [studentMembership].
+  @override
+  String debugGetCreateSourceHash() => _$teacherGroupHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<TeacherGroup?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<TeacherGroup?> create(Ref ref) {
+    return teacherGroup(ref);
+  }
+}
+
+String _$teacherGroupHash() => r'550122c6a214988966260490751db4662bc8f43c';
+
 @ProviderFor(studentMembership)
-final studentMembershipProvider =
-    AutoDisposeFutureProvider<GroupMember?>.internal(
-      studentMembership,
-      name: r'studentMembershipProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$studentMembershipHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+final studentMembershipProvider = StudentMembershipProvider._();
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef StudentMembershipRef = AutoDisposeFutureProviderRef<GroupMember?>;
-String _$isInGroupHash() => r'9a50e760c77c8234f5fe10adcd5f6264568712ea';
+final class StudentMembershipProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<GroupMember?>,
+          GroupMember?,
+          FutureOr<GroupMember?>
+        >
+    with $FutureModifier<GroupMember?>, $FutureProvider<GroupMember?> {
+  StudentMembershipProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'studentMembershipProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
-/// See also [isInGroup].
+  @override
+  String debugGetCreateSourceHash() => _$studentMembershipHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<GroupMember?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<GroupMember?> create(Ref ref) {
+    return studentMembership(ref);
+  }
+}
+
+String _$studentMembershipHash() => r'8e027c9836e37c411ac28fe3710250b1aba98c81';
+
 @ProviderFor(isInGroup)
-final isInGroupProvider = AutoDisposeFutureProvider<bool>.internal(
-  isInGroup,
-  name: r'isInGroupProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$isInGroupHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final isInGroupProvider = IsInGroupProvider._();
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef IsInGroupRef = AutoDisposeFutureProviderRef<bool>;
-String _$teacherStudentsHash() => r'870b3577069de7596fd28c7448e752b0fa1a5928';
+final class IsInGroupProvider
+    extends $FunctionalProvider<AsyncValue<bool>, bool, FutureOr<bool>>
+    with $FutureModifier<bool>, $FutureProvider<bool> {
+  IsInGroupProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'isInGroupProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
-/// See also [teacherStudents].
+  @override
+  String debugGetCreateSourceHash() => _$isInGroupHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<bool> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<bool> create(Ref ref) {
+    return isInGroup(ref);
+  }
+}
+
+String _$isInGroupHash() => r'12f60570e2e06dc26e3db37ccae7b2cace157eda';
+
 @ProviderFor(teacherStudents)
-final teacherStudentsProvider =
-    AutoDisposeFutureProvider<List<StudentSummary>>.internal(
-      teacherStudents,
-      name: r'teacherStudentsProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$teacherStudentsHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+final teacherStudentsProvider = TeacherStudentsProvider._();
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef TeacherStudentsRef = AutoDisposeFutureProviderRef<List<StudentSummary>>;
-String _$unreadGroupNotificationsHash() =>
-    r'10376fcf054e1ef774ca74da269d6c64a1dc0671';
+final class TeacherStudentsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<StudentSummary>>,
+          List<StudentSummary>,
+          FutureOr<List<StudentSummary>>
+        >
+    with
+        $FutureModifier<List<StudentSummary>>,
+        $FutureProvider<List<StudentSummary>> {
+  TeacherStudentsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'teacherStudentsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
-/// See also [unreadGroupNotifications].
+  @override
+  String debugGetCreateSourceHash() => _$teacherStudentsHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<StudentSummary>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<StudentSummary>> create(Ref ref) {
+    return teacherStudents(ref);
+  }
+}
+
+String _$teacherStudentsHash() => r'8e285c3f66540e51516b94abf1b557a0ac60578f';
+
 @ProviderFor(unreadGroupNotifications)
-final unreadGroupNotificationsProvider =
-    AutoDisposeStreamProvider<List<GroupNotification>>.internal(
-      unreadGroupNotifications,
-      name: r'unreadGroupNotificationsProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$unreadGroupNotificationsHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+final unreadGroupNotificationsProvider = UnreadGroupNotificationsProvider._();
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef UnreadGroupNotificationsRef =
-    AutoDisposeStreamProviderRef<List<GroupNotification>>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+final class UnreadGroupNotificationsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<GroupNotification>>,
+          List<GroupNotification>,
+          Stream<List<GroupNotification>>
+        >
+    with
+        $FutureModifier<List<GroupNotification>>,
+        $StreamProvider<List<GroupNotification>> {
+  UnreadGroupNotificationsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'unreadGroupNotificationsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$unreadGroupNotificationsHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<List<GroupNotification>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<GroupNotification>> create(Ref ref) {
+    return unreadGroupNotifications(ref);
+  }
+}
+
+String _$unreadGroupNotificationsHash() =>
+    r'efdd82e743f19c45b5687644123a2255c4354229';

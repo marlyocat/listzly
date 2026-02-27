@@ -6,56 +6,113 @@ part of 'profile_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$profileServiceHash() => r'3a7d90e7212e9b95d832ffd4ea8cef8bf79a2c85';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
 
-/// See also [profileService].
 @ProviderFor(profileService)
-final profileServiceProvider = AutoDisposeProvider<ProfileService>.internal(
-  profileService,
-  name: r'profileServiceProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$profileServiceHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final profileServiceProvider = ProfileServiceProvider._();
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef ProfileServiceRef = AutoDisposeProviderRef<ProfileService>;
-String _$currentProfileHash() => r'3b2c321af4138ec4b1ae716932b96ffb059c05b2';
+final class ProfileServiceProvider
+    extends $FunctionalProvider<ProfileService, ProfileService, ProfileService>
+    with $Provider<ProfileService> {
+  ProfileServiceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'profileServiceProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
-/// See also [currentProfile].
+  @override
+  String debugGetCreateSourceHash() => _$profileServiceHash();
+
+  @$internal
+  @override
+  $ProviderElement<ProfileService> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  ProfileService create(Ref ref) {
+    return profileService(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(ProfileService value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ProfileService>(value),
+    );
+  }
+}
+
+String _$profileServiceHash() => r'dac5470bd27e8e032780ae49c3f0e2f52cf81caa';
+
 @ProviderFor(currentProfile)
-final currentProfileProvider = AutoDisposeFutureProvider<Profile>.internal(
-  currentProfile,
-  name: r'currentProfileProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$currentProfileHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final currentProfileProvider = CurrentProfileProvider._();
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef CurrentProfileRef = AutoDisposeFutureProviderRef<Profile>;
-String _$currentUserRoleHash() => r'40a8c75e67a59bbd48efd2664b169adbe5b92e01';
+final class CurrentProfileProvider
+    extends $FunctionalProvider<AsyncValue<Profile>, Profile, FutureOr<Profile>>
+    with $FutureModifier<Profile>, $FutureProvider<Profile> {
+  CurrentProfileProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'currentProfileProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
-/// See also [currentUserRole].
+  @override
+  String debugGetCreateSourceHash() => _$currentProfileHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<Profile> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<Profile> create(Ref ref) {
+    return currentProfile(ref);
+  }
+}
+
+String _$currentProfileHash() => r'69e59767bcc8ba24bbf3f35fbf982ef0cfe0d76a';
+
 @ProviderFor(currentUserRole)
-final currentUserRoleProvider = AutoDisposeFutureProvider<UserRole>.internal(
-  currentUserRole,
-  name: r'currentUserRoleProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$currentUserRoleHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final currentUserRoleProvider = CurrentUserRoleProvider._();
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef CurrentUserRoleRef = AutoDisposeFutureProviderRef<UserRole>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+final class CurrentUserRoleProvider
+    extends
+        $FunctionalProvider<AsyncValue<UserRole>, UserRole, FutureOr<UserRole>>
+    with $FutureModifier<UserRole>, $FutureProvider<UserRole> {
+  CurrentUserRoleProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'currentUserRoleProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$currentUserRoleHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<UserRole> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<UserRole> create(Ref ref) {
+    return currentUserRole(ref);
+  }
+}
+
+String _$currentUserRoleHash() => r'8c7493e8185bad699297bb76263cee6d069d2a3e';

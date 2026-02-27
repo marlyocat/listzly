@@ -6,11 +6,11 @@ import 'package:listzly/providers/auth_provider.dart';
 part 'recording_provider.g.dart';
 
 @riverpod
-RecordingService recordingService(RecordingServiceRef ref) =>
+RecordingService recordingService(Ref ref) =>
     RecordingService(ref.watch(supabaseClientProvider));
 
 @riverpod
-Future<List<PracticeRecording>> userRecordings(UserRecordingsRef ref) async {
+Future<List<PracticeRecording>> userRecordings(Ref ref) async {
   final user = ref.watch(currentUserProvider);
   if (user == null) throw Exception('Not authenticated');
   return ref.watch(recordingServiceProvider).getUserRecordings(user.id);
@@ -18,7 +18,7 @@ Future<List<PracticeRecording>> userRecordings(UserRecordingsRef ref) async {
 
 @riverpod
 Future<List<PracticeRecording>> studentRecordings(
-  StudentRecordingsRef ref, {
+  Ref ref, {
   required String studentId,
 }) async {
   return ref.watch(recordingServiceProvider).getStudentRecordings(studentId);

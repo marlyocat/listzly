@@ -9,32 +9,32 @@ import 'package:listzly/providers/auth_provider.dart';
 part 'group_provider.g.dart';
 
 @riverpod
-GroupService groupService(GroupServiceRef ref) =>
+GroupService groupService(Ref ref) =>
     GroupService(ref.watch(supabaseClientProvider));
 
 @riverpod
-Future<TeacherGroup?> teacherGroup(TeacherGroupRef ref) async {
+Future<TeacherGroup?> teacherGroup(Ref ref) async {
   final user = ref.watch(currentUserProvider);
   if (user == null) throw Exception('Not authenticated');
   return ref.watch(groupServiceProvider).getTeacherGroup(user.id);
 }
 
 @riverpod
-Future<GroupMember?> studentMembership(StudentMembershipRef ref) async {
+Future<GroupMember?> studentMembership(Ref ref) async {
   final user = ref.watch(currentUserProvider);
   if (user == null) throw Exception('Not authenticated');
   return ref.watch(groupServiceProvider).getStudentMembership(user.id);
 }
 
 @riverpod
-Future<bool> isInGroup(IsInGroupRef ref) async {
+Future<bool> isInGroup(Ref ref) async {
   final user = ref.watch(currentUserProvider);
   if (user == null) return false;
   return ref.watch(groupServiceProvider).isStudentInGroup(user.id);
 }
 
 @riverpod
-Future<List<StudentSummary>> teacherStudents(TeacherStudentsRef ref) async {
+Future<List<StudentSummary>> teacherStudents(Ref ref) async {
   final user = ref.watch(currentUserProvider);
   if (user == null) throw Exception('Not authenticated');
   return ref.watch(groupServiceProvider).getStudentsWithStats(user.id);
@@ -42,7 +42,7 @@ Future<List<StudentSummary>> teacherStudents(TeacherStudentsRef ref) async {
 
 @riverpod
 Stream<List<GroupNotification>> unreadGroupNotifications(
-    UnreadGroupNotificationsRef ref) async* {
+    Ref ref) async* {
   final group = await ref.watch(teacherGroupProvider.future);
   if (group == null) {
     yield [];

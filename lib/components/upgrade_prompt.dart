@@ -25,10 +25,10 @@ class _UpgradePromptSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isTeacher =
-        ref.watch(currentProfileProvider).valueOrNull?.isTeacher ?? false;
+        ref.watch(currentProfileProvider).value?.isTeacher ?? false;
     final planName = isTeacher ? 'Teacher Lite' : 'Pro';
     final trialEligible =
-        ref.watch(isTrialEligibleProvider).valueOrNull ?? false;
+        ref.watch(isTrialEligibleProvider).value ?? false;
     final priceText = trialEligible
         ? isTeacher
             ? 'Free for 14 days, then \$4.99/month'

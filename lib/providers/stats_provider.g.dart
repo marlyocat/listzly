@@ -6,39 +6,84 @@ part of 'stats_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$statsServiceHash() => r'9e1b5d2d047b7583cdbc39deb55b67c678213d51';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
 
-/// See also [statsService].
 @ProviderFor(statsService)
-final statsServiceProvider = AutoDisposeProvider<StatsService>.internal(
-  statsService,
-  name: r'statsServiceProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$statsServiceHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final statsServiceProvider = StatsServiceProvider._();
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef StatsServiceRef = AutoDisposeProviderRef<StatsService>;
-String _$userStatsHash() => r'7b1f923404b6539a917c8a77c48ace29bb61286e';
+final class StatsServiceProvider
+    extends $FunctionalProvider<StatsService, StatsService, StatsService>
+    with $Provider<StatsService> {
+  StatsServiceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'statsServiceProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
-/// See also [userStats].
+  @override
+  String debugGetCreateSourceHash() => _$statsServiceHash();
+
+  @$internal
+  @override
+  $ProviderElement<StatsService> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  StatsService create(Ref ref) {
+    return statsService(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(StatsService value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<StatsService>(value),
+    );
+  }
+}
+
+String _$statsServiceHash() => r'ac76dc2bb32acd4c2a1a673bc1ecf90871da98df';
+
 @ProviderFor(userStats)
-final userStatsProvider = AutoDisposeFutureProvider<UserStats>.internal(
-  userStats,
-  name: r'userStatsProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$userStatsHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final userStatsProvider = UserStatsProvider._();
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef UserStatsRef = AutoDisposeFutureProviderRef<UserStats>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+final class UserStatsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<UserStats>,
+          UserStats,
+          FutureOr<UserStats>
+        >
+    with $FutureModifier<UserStats>, $FutureProvider<UserStats> {
+  UserStatsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'userStatsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$userStatsHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<UserStats> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<UserStats> create(Ref ref) {
+    return userStats(ref);
+  }
+}
+
+String _$userStatsHash() => r'c82d5f6bcb3803ba6d1edd3b28901c38aaa0c3b0';

@@ -32,17 +32,12 @@ class AuthService {
   }
 
   Future<AuthResponse> signInWithGoogle() async {
-    final googleSignIn = GoogleSignIn(
+    final googleSignIn = GoogleSignIn.instance;
+    await googleSignIn.initialize(
       serverClientId: googleWebClientId,
     );
-    final googleUser = await googleSignIn.signIn();
-    if (googleUser == null) {
-      throw const AuthException('Google sign-in was cancelled.');
-    }
-
-    final googleAuth = await googleUser.authentication;
-    final idToken = googleAuth.idToken;
-    final accessToken = googleAuth.accessToken;
+    final googleUser = await googleSignIn.authenticate();
+    final idToken = googleUser.authentication.idToken;
 
     if (idToken == null) {
       throw const AuthException('Failed to get Google ID token.');
@@ -51,12 +46,11 @@ class AuthService {
     return _client.auth.signInWithIdToken(
       provider: OAuthProvider.google,
       idToken: idToken,
-      accessToken: accessToken,
     );
   }
 
   Future<void> signOut() async {
-    await GoogleSignIn().signOut();
+    await GoogleSignIn.instance.signOut();
     await _client.auth.signOut();
   }
 }

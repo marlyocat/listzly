@@ -6,189 +6,169 @@ part of 'recording_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$recordingServiceHash() => r'ce863c2e090979e6f4b6b16b286d38f189e43610';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
 
-/// See also [recordingService].
 @ProviderFor(recordingService)
-final recordingServiceProvider = AutoDisposeProvider<RecordingService>.internal(
-  recordingService,
-  name: r'recordingServiceProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$recordingServiceHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final recordingServiceProvider = RecordingServiceProvider._();
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef RecordingServiceRef = AutoDisposeProviderRef<RecordingService>;
-String _$userRecordingsHash() => r'56003af72ba9a7deaa3c60efddf153b17808aae3';
-
-/// See also [userRecordings].
-@ProviderFor(userRecordings)
-final userRecordingsProvider =
-    AutoDisposeFutureProvider<List<PracticeRecording>>.internal(
-      userRecordings,
-      name: r'userRecordingsProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$userRecordingsHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef UserRecordingsRef =
-    AutoDisposeFutureProviderRef<List<PracticeRecording>>;
-String _$studentRecordingsHash() => r'e99fbfd9c5bf070cbbe0c979ea0631a0ea4bff8d';
-
-/// Copied from Dart SDK
-class _SystemHash {
-  _SystemHash._();
-
-  static int combine(int hash, int value) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + value);
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
-    return hash ^ (hash >> 6);
-  }
-
-  static int finish(int hash) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
-    // ignore: parameter_assignments
-    hash = hash ^ (hash >> 11);
-    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
-  }
-}
-
-/// See also [studentRecordings].
-@ProviderFor(studentRecordings)
-const studentRecordingsProvider = StudentRecordingsFamily();
-
-/// See also [studentRecordings].
-class StudentRecordingsFamily
-    extends Family<AsyncValue<List<PracticeRecording>>> {
-  /// See also [studentRecordings].
-  const StudentRecordingsFamily();
-
-  /// See also [studentRecordings].
-  StudentRecordingsProvider call({required String studentId}) {
-    return StudentRecordingsProvider(studentId: studentId);
-  }
-
-  @override
-  StudentRecordingsProvider getProviderOverride(
-    covariant StudentRecordingsProvider provider,
-  ) {
-    return call(studentId: provider.studentId);
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'studentRecordingsProvider';
-}
-
-/// See also [studentRecordings].
-class StudentRecordingsProvider
-    extends AutoDisposeFutureProvider<List<PracticeRecording>> {
-  /// See also [studentRecordings].
-  StudentRecordingsProvider({required String studentId})
-    : this._internal(
-        (ref) => studentRecordings(
-          ref as StudentRecordingsRef,
-          studentId: studentId,
-        ),
-        from: studentRecordingsProvider,
-        name: r'studentRecordingsProvider',
-        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-            ? null
-            : _$studentRecordingsHash,
-        dependencies: StudentRecordingsFamily._dependencies,
-        allTransitiveDependencies:
-            StudentRecordingsFamily._allTransitiveDependencies,
-        studentId: studentId,
+final class RecordingServiceProvider
+    extends
+        $FunctionalProvider<
+          RecordingService,
+          RecordingService,
+          RecordingService
+        >
+    with $Provider<RecordingService> {
+  RecordingServiceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'recordingServiceProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
       );
 
-  StudentRecordingsProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.studentId,
-  }) : super.internal();
+  @override
+  String debugGetCreateSourceHash() => _$recordingServiceHash();
 
-  final String studentId;
+  @$internal
+  @override
+  $ProviderElement<RecordingService> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
 
   @override
-  Override overrideWith(
-    FutureOr<List<PracticeRecording>> Function(StudentRecordingsRef provider)
-    create,
-  ) {
-    return ProviderOverride(
-      origin: this,
-      override: StudentRecordingsProvider._internal(
-        (ref) => create(ref as StudentRecordingsRef),
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        studentId: studentId,
-      ),
-    );
+  RecordingService create(Ref ref) {
+    return recordingService(ref);
   }
 
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(RecordingService value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<RecordingService>(value),
+    );
+  }
+}
+
+String _$recordingServiceHash() => r'b054fb059b3396f77895c660b87ceb3978e0f10a';
+
+@ProviderFor(userRecordings)
+final userRecordingsProvider = UserRecordingsProvider._();
+
+final class UserRecordingsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<PracticeRecording>>,
+          List<PracticeRecording>,
+          FutureOr<List<PracticeRecording>>
+        >
+    with
+        $FutureModifier<List<PracticeRecording>>,
+        $FutureProvider<List<PracticeRecording>> {
+  UserRecordingsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'userRecordingsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
   @override
-  AutoDisposeFutureProviderElement<List<PracticeRecording>> createElement() {
-    return _StudentRecordingsProviderElement(this);
+  String debugGetCreateSourceHash() => _$userRecordingsHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<PracticeRecording>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<PracticeRecording>> create(Ref ref) {
+    return userRecordings(ref);
+  }
+}
+
+String _$userRecordingsHash() => r'5e5743c795f76e9a644a5acda6abc542e8debc0d';
+
+@ProviderFor(studentRecordings)
+final studentRecordingsProvider = StudentRecordingsFamily._();
+
+final class StudentRecordingsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<PracticeRecording>>,
+          List<PracticeRecording>,
+          FutureOr<List<PracticeRecording>>
+        >
+    with
+        $FutureModifier<List<PracticeRecording>>,
+        $FutureProvider<List<PracticeRecording>> {
+  StudentRecordingsProvider._({
+    required StudentRecordingsFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'studentRecordingsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$studentRecordingsHash();
+
+  @override
+  String toString() {
+    return r'studentRecordingsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<List<PracticeRecording>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<PracticeRecording>> create(Ref ref) {
+    final argument = this.argument as String;
+    return studentRecordings(ref, studentId: argument);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is StudentRecordingsProvider && other.studentId == studentId;
+    return other is StudentRecordingsProvider && other.argument == argument;
   }
 
   @override
   int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, studentId.hashCode);
-
-    return _SystemHash.finish(hash);
+    return argument.hashCode;
   }
 }
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-mixin StudentRecordingsRef
-    on AutoDisposeFutureProviderRef<List<PracticeRecording>> {
-  /// The parameter `studentId` of this provider.
-  String get studentId;
-}
+String _$studentRecordingsHash() => r'8ba7456454d7e85c233aed97c08ef86cf8672d3a';
 
-class _StudentRecordingsProviderElement
-    extends AutoDisposeFutureProviderElement<List<PracticeRecording>>
-    with StudentRecordingsRef {
-  _StudentRecordingsProviderElement(super.provider);
+final class StudentRecordingsFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<List<PracticeRecording>>, String> {
+  StudentRecordingsFamily._()
+    : super(
+        retry: null,
+        name: r'studentRecordingsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  StudentRecordingsProvider call({required String studentId}) =>
+      StudentRecordingsProvider._(argument: studentId, from: this);
 
   @override
-  String get studentId => (origin as StudentRecordingsProvider).studentId;
+  String toString() => r'studentRecordingsProvider';
 }
-
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

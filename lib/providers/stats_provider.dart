@@ -6,11 +6,11 @@ import 'package:listzly/providers/auth_provider.dart';
 part 'stats_provider.g.dart';
 
 @riverpod
-StatsService statsService(StatsServiceRef ref) =>
+StatsService statsService(Ref ref) =>
     StatsService(ref.watch(supabaseClientProvider));
 
 @riverpod
-Future<UserStats> userStats(UserStatsRef ref) async {
+Future<UserStats> userStats(Ref ref) async {
   final user = ref.watch(currentUserProvider);
   if (user == null) throw Exception('Not authenticated');
   return ref.watch(statsServiceProvider).getStats(user.id);

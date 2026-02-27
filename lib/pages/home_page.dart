@@ -38,7 +38,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   @override
   Widget build(BuildContext context) {
     final isTeacher =
-        ref.watch(currentProfileProvider).valueOrNull?.isTeacher ?? false;
+        ref.watch(currentProfileProvider).value?.isTeacher ?? false;
 
     final pages = <Widget>[
       const _HomeTab(),
@@ -230,19 +230,19 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
   @override
   Widget build(BuildContext context) {
     final statsAsync = ref.watch(userStatsProvider);
-    final streakDays = statsAsync.valueOrNull?.currentStreak ?? 0;
-    final longestStreak = statsAsync.valueOrNull?.longestStreak ?? 0;
+    final streakDays = statsAsync.value?.currentStreak ?? 0;
+    final longestStreak = statsAsync.value?.longestStreak ?? 0;
     final streakBroken = streakDays == 0 && longestStreak > 0;
 
     // Set slider to remaining daily goal on first load or when goal changes
-    final settings = ref.watch(userSettingsNotifierProvider).valueOrNull;
+    final settings = ref.watch(userSettingsProvider).value;
     final now = DateTime.now();
     final todayStart = DateTime(now.year, now.month, now.day);
     final todayEnd = todayStart.add(const Duration(days: 1));
     final todayStats = ref.watch(summaryStatsProvider(
       start: todayStart,
       end: todayEnd,
-    )).valueOrNull;
+    )).value;
 
     if (settings != null && todayStats != null) {
       final goalMinutes = settings.dailyGoalMinutes;

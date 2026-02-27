@@ -6,59 +6,126 @@ part of 'quest_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$questServiceHash() => r'b6a1ba20dc37d1a691ebeba2eca3bb13a1b545eb';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
 
-/// See also [questService].
 @ProviderFor(questService)
-final questServiceProvider = AutoDisposeProvider<QuestService>.internal(
-  questService,
-  name: r'questServiceProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$questServiceHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final questServiceProvider = QuestServiceProvider._();
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef QuestServiceRef = AutoDisposeProviderRef<QuestService>;
-String _$dailyQuestsHash() => r'e1f26ab3d48c6cd45844876b27f0434170bfdb0f';
+final class QuestServiceProvider
+    extends $FunctionalProvider<QuestService, QuestService, QuestService>
+    with $Provider<QuestService> {
+  QuestServiceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'questServiceProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
-/// See also [dailyQuests].
+  @override
+  String debugGetCreateSourceHash() => _$questServiceHash();
+
+  @$internal
+  @override
+  $ProviderElement<QuestService> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  QuestService create(Ref ref) {
+    return questService(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(QuestService value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<QuestService>(value),
+    );
+  }
+}
+
+String _$questServiceHash() => r'274e8ebdf7184f6f57c491102a31e8f429698dcd';
+
 @ProviderFor(dailyQuests)
-final dailyQuestsProvider =
-    AutoDisposeFutureProvider<List<QuestProgress>>.internal(
-      dailyQuests,
-      name: r'dailyQuestsProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$dailyQuestsHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+final dailyQuestsProvider = DailyQuestsProvider._();
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef DailyQuestsRef = AutoDisposeFutureProviderRef<List<QuestProgress>>;
-String _$weekCompletionStatusHash() =>
-    r'f68a8f9d3ae7491de87ede8493539995b75300a5';
+final class DailyQuestsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<QuestProgress>>,
+          List<QuestProgress>,
+          FutureOr<List<QuestProgress>>
+        >
+    with
+        $FutureModifier<List<QuestProgress>>,
+        $FutureProvider<List<QuestProgress>> {
+  DailyQuestsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'dailyQuestsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
-/// See also [weekCompletionStatus].
+  @override
+  String debugGetCreateSourceHash() => _$dailyQuestsHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<QuestProgress>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<QuestProgress>> create(Ref ref) {
+    return dailyQuests(ref);
+  }
+}
+
+String _$dailyQuestsHash() => r'5f56cff3c343f41f24d87dd901c039db6eba7f54';
+
 @ProviderFor(weekCompletionStatus)
-final weekCompletionStatusProvider =
-    AutoDisposeFutureProvider<List<bool>>.internal(
-      weekCompletionStatus,
-      name: r'weekCompletionStatusProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$weekCompletionStatusHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+final weekCompletionStatusProvider = WeekCompletionStatusProvider._();
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef WeekCompletionStatusRef = AutoDisposeFutureProviderRef<List<bool>>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+final class WeekCompletionStatusProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<bool>>,
+          List<bool>,
+          FutureOr<List<bool>>
+        >
+    with $FutureModifier<List<bool>>, $FutureProvider<List<bool>> {
+  WeekCompletionStatusProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'weekCompletionStatusProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$weekCompletionStatusHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<bool>> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<bool>> create(Ref ref) {
+    return weekCompletionStatus(ref);
+  }
+}
+
+String _$weekCompletionStatusHash() =>
+    r'0e62d09b48633505a37b2d80b9fb6aebd5cb27cd';

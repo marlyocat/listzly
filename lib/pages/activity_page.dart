@@ -1061,7 +1061,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                   GestureDetector(
                     onTap: () {
                       _showAllSessions(
-                          context, sessionsAsync.valueOrNull ?? []);
+                          context, sessionsAsync.value ?? []);
                     },
                     child: Container(
                       padding:
@@ -1273,7 +1273,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
     }
 
     final recordingsAsync = ref.watch(userRecordingsProvider);
-    final role = ref.watch(currentProfileProvider).valueOrNull?.role;
+    final role = ref.watch(currentProfileProvider).value?.role;
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       child: Container(
@@ -1301,7 +1301,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                   GestureDetector(
                     onTap: () {
                       _showAllRecordings(
-                          recordingsAsync.valueOrNull ?? []);
+                          recordingsAsync.value ?? []);
                     },
                     child: Container(
                       padding:
@@ -1379,7 +1379,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                   ),
                 ),
               ),
-              error: (_, __) => Padding(
+              error: (_, _) => Padding(
                 padding:
                     const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
                 child: Text(
@@ -1789,7 +1789,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
   }
 
   void _showAllRecordings(List<PracticeRecording> recordings) {
-    final role = ref.read(currentProfileProvider).valueOrNull?.role;
+    final role = ref.read(currentProfileProvider).value?.role;
     showDialog(
       context: context,
       builder: (ctx) {

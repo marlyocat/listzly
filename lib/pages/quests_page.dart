@@ -159,9 +159,9 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
     final dailyQuestsAsync = ref.watch(dailyQuestsProvider);
     final weekCompletionAsync = ref.watch(weekCompletionStatusProvider);
     final userStatsAsync = ref.watch(userStatsProvider);
-    final settingsAsync = ref.watch(userSettingsNotifierProvider);
+    final settingsAsync = ref.watch(userSettingsProvider);
     final role =
-        ref.watch(currentProfileProvider).valueOrNull?.role;
+        ref.watch(currentProfileProvider).value?.role;
 
     return Scaffold(
       backgroundColor: const Color(0xFF150833),
@@ -212,7 +212,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
             SliverToBoxAdapter(
               child: dailyQuestsAsync.when(
                 data: (quests) {
-                  final goalMinutes = settingsAsync.valueOrNull?.dailyGoalMinutes;
+                  final goalMinutes = settingsAsync.value?.dailyGoalMinutes;
                   return _buildQuestSection(
                     title: 'Daily Quests',
                     subtitle: _formatCountdown(_timeRemaining),
@@ -251,7 +251,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
         if (progress.isEmpty) {
           return const SizedBox.shrink();
         }
-        final defs = defsAsync.valueOrNull ?? [];
+        final defs = defsAsync.value ?? [];
         return _buildQuestSection(
           title: 'Assigned Quest',
           subtitle: 'From teacher',

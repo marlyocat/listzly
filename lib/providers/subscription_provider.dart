@@ -10,7 +10,7 @@ import 'package:listzly/providers/profile_provider.dart';
 part 'subscription_provider.g.dart';
 
 @Riverpod(keepAlive: true)
-SubscriptionService subscriptionService(SubscriptionServiceRef ref) {
+SubscriptionService subscriptionService(Ref ref) {
   return SubscriptionService();
 }
 
@@ -60,18 +60,18 @@ class OwnSubscriptionTier extends _$OwnSubscriptionTier {
 /// The effective tier: user's own tier, or teacher's tier if student is in a
 /// paid teacher's group (only if teacher has teacherPro).
 @riverpod
-SubscriptionTier effectiveSubscriptionTier(EffectiveSubscriptionTierRef ref) {
+SubscriptionTier effectiveSubscriptionTier(Ref ref) {
   final ownTier = ref.watch(ownSubscriptionTierProvider);
-  final profile = ref.watch(currentProfileProvider).valueOrNull;
+  final profile = ref.watch(currentProfileProvider).value;
 
   if (profile == null) return ownTier;
 
   // If user is a student in a group, check teacher's tier
   if (profile.isStudent) {
-    final membership = ref.watch(studentMembershipProvider).valueOrNull;
+    final membership = ref.watch(studentMembershipProvider).value;
     if (membership != null) {
       final teacherTier =
-          ref.watch(teacherSubscriptionTierProvider).valueOrNull;
+          ref.watch(teacherSubscriptionTierProvider).value;
       // Only inherit Pro if teacher has teacherPro (studentsInheritPro)
       if (teacherTier != null &&
           teacherTier.studentsInheritPro &&
@@ -87,7 +87,7 @@ SubscriptionTier effectiveSubscriptionTier(EffectiveSubscriptionTierRef ref) {
 /// Fetches the teacher's subscription tier from Supabase profile.
 @riverpod
 Future<SubscriptionTier> teacherSubscriptionTier(
-    TeacherSubscriptionTierRef ref) async {
+    Ref ref) async {
   final user = ref.watch(currentUserProvider);
   if (user == null) return SubscriptionTier.free;
 
@@ -100,7 +100,7 @@ Future<SubscriptionTier> teacherSubscriptionTier(
 
 /// Whether the user is eligible for a free trial (has never had 'pro').
 @riverpod
-Future<bool> isTrialEligible(IsTrialEligibleRef ref) async {
+Future<bool> isTrialEligible(Ref ref) async {
   try {
     final customerInfo = await Purchases.getCustomerInfo();
     return !customerInfo.entitlements.all.containsKey('pro');

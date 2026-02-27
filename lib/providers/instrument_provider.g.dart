@@ -6,26 +6,50 @@ part of 'instrument_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$instrumentStatsHash() => r'ccd79818c451705034126d017a8e8ea955f80b52';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+/// Per-instrument stats for Profile page (minutes + sessions).
+
+@ProviderFor(instrumentStats)
+final instrumentStatsProvider = InstrumentStatsProvider._();
 
 /// Per-instrument stats for Profile page (minutes + sessions).
-///
-/// Copied from [instrumentStats].
-@ProviderFor(instrumentStats)
-final instrumentStatsProvider =
-    AutoDisposeFutureProvider<List<Map<String, dynamic>>>.internal(
-      instrumentStats,
-      name: r'instrumentStatsProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$instrumentStatsHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef InstrumentStatsRef =
-    AutoDisposeFutureProviderRef<List<Map<String, dynamic>>>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+final class InstrumentStatsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Map<String, dynamic>>>,
+          List<Map<String, dynamic>>,
+          FutureOr<List<Map<String, dynamic>>>
+        >
+    with
+        $FutureModifier<List<Map<String, dynamic>>>,
+        $FutureProvider<List<Map<String, dynamic>>> {
+  /// Per-instrument stats for Profile page (minutes + sessions).
+  InstrumentStatsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'instrumentStatsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$instrumentStatsHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<Map<String, dynamic>>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<Map<String, dynamic>>> create(Ref ref) {
+    return instrumentStats(ref);
+  }
+}
+
+String _$instrumentStatsHash() => r'f2bf14beb4894ec46d045fc2b1a457fc80611b59';

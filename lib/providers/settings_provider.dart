@@ -6,7 +6,7 @@ import 'package:listzly/providers/auth_provider.dart';
 part 'settings_provider.g.dart';
 
 @riverpod
-SettingsService settingsService(SettingsServiceRef ref) =>
+SettingsService settingsService(Ref ref) =>
     SettingsService(ref.watch(supabaseClientProvider));
 
 @riverpod

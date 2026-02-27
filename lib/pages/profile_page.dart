@@ -28,7 +28,7 @@ class ProfilePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsync = ref.watch(currentProfileProvider);
-    final settingsAsync = ref.watch(userSettingsNotifierProvider);
+    final settingsAsync = ref.watch(userSettingsProvider);
     final instrumentsAsync = ref.watch(instrumentStatsProvider);
 
     return Scaffold(
@@ -81,7 +81,7 @@ class ProfilePage extends ConsumerWidget {
                 data: (profile) =>
                     _buildRoleGroupSection(context, ref, profile),
                 loading: () => const SizedBox.shrink(),
-                error: (_, __) => const SizedBox.shrink(),
+                error: (_, _) => const SizedBox.shrink(),
               ),
             ),
 
@@ -453,8 +453,8 @@ class ProfilePage extends ConsumerWidget {
     if (profile.isTeacher) {
       final groupAsync = ref.watch(teacherGroupProvider);
       final studentsAsync = ref.watch(teacherStudentsProvider);
-      final studentCount = studentsAsync.valueOrNull?.length ?? 0;
-      final inviteCode = groupAsync.valueOrNull?.inviteCode;
+      final studentCount = studentsAsync.value?.length ?? 0;
+      final inviteCode = groupAsync.value?.inviteCode;
 
       if (inviteCode != null) {
         items.add(_SettingsRow(
@@ -497,10 +497,10 @@ class ProfilePage extends ConsumerWidget {
       ));
     } else if (profile.isStudent) {
       final membershipAsync = ref.watch(studentMembershipProvider);
-      final isInGroup = membershipAsync.valueOrNull != null;
+      final isInGroup = membershipAsync.value != null;
 
       if (isInGroup) {
-        final membership = membershipAsync.valueOrNull!;
+        final membership = membershipAsync.value!;
         items.add(_SettingsRow(
           icon: Icons.school_rounded,
           label: 'Your Group',
@@ -621,9 +621,9 @@ class ProfilePage extends ConsumerWidget {
                             await _showDisbandConfirmDialog(context);
                         if (confirmed != true) return;
                       }
+                      if (!context.mounted) return;
                       // If switching to student, require invite code first
                       if (role == UserRole.student) {
-                        if (!context.mounted) return;
                         final joined = await _showInviteCodeDialog(
                             context, ref,
                             hasStudents: hasStudents);
@@ -861,6 +861,7 @@ class ProfilePage extends ConsumerWidget {
                   final groupService = ref.read(groupServiceProvider);
                   final group =
                       await groupService.findGroupByInviteCode(code);
+                  if (!ctx.mounted) return;
                   if (group == null) {
                     setState(() => errorText = 'Invalid invite code');
                     return;
@@ -871,10 +872,11 @@ class ProfilePage extends ConsumerWidget {
 
                   final previousRole = ref
                       .read(currentProfileProvider)
-                      .valueOrNull
+                      .value
                       ?.role;
 
                   // Change role to student first (needed for RLS)
+                  if (!ctx.mounted) return;
                   await _changeRole(ctx, ref, UserRole.student,
                       hasStudents: hasStudents);
 
@@ -1229,6 +1231,7 @@ class ProfilePage extends ConsumerWidget {
                   final scanned = await Navigator.of(ctx).push<String>(
                     MaterialPageRoute(builder: (_) => const _QrScannerPage()),
                   );
+                  if (!ctx.mounted) return;
                   if (scanned != null && scanned.isNotEmpty) {
                     codeController.text = scanned;
                     setDialogState(() => errorText = null);
@@ -1271,6 +1274,7 @@ class ProfilePage extends ConsumerWidget {
                 if (user == null) return;
                 final groupService = ref.read(groupServiceProvider);
                 final group = await groupService.findGroupByInviteCode(code);
+                if (!ctx.mounted) return;
                 if (group == null) {
                   setDialogState(() => errorText = 'Invalid invite code');
                   return;
@@ -1297,9 +1301,9 @@ class ProfilePage extends ConsumerWidget {
 
   void _showStudentListSheet(BuildContext context, WidgetRef ref) {
     final studentsAsync = ref.read(teacherStudentsProvider);
-    final students = studentsAsync.valueOrNull ?? [];
+    final students = studentsAsync.value ?? [];
     final groupAsync = ref.read(teacherGroupProvider);
-    final groupId = groupAsync.valueOrNull?.id;
+    final groupId = groupAsync.value?.id;
 
     showDialog(
       context: context,
@@ -1535,6 +1539,7 @@ class ProfilePage extends ConsumerWidget {
                     await ref
                         .read(groupServiceProvider)
                         .removeStudent(groupId, student.studentId);
+                    if (!context.mounted) return;
                     ref.invalidate(unreadGroupNotificationsProvider);
                     onRemoved();
                   }
@@ -1707,7 +1712,7 @@ class ProfilePage extends ConsumerWidget {
                   return GestureDetector(
                     onTap: () {
                       ref
-                          .read(userSettingsNotifierProvider.notifier)
+                          .read(userSettingsProvider.notifier)
                           .updateSetting('daily_goal_minutes', minutes);
                       Navigator.pop(ctx);
                     },
@@ -2090,7 +2095,7 @@ class ProfilePage extends ConsumerWidget {
     final granted = await NotificationService.instance.requestPermission();
     if (granted) {
       ref
-          .read(userSettingsNotifierProvider.notifier)
+          .read(userSettingsProvider.notifier)
           .updateSetting('reminder_time', timeStr);
       await NotificationService.instance.scheduleDailyReminder(timeStr);
     }
@@ -2098,7 +2103,7 @@ class ProfilePage extends ConsumerWidget {
 
   Future<void> _clearReminder(WidgetRef ref) async {
     ref
-        .read(userSettingsNotifierProvider.notifier)
+        .read(userSettingsProvider.notifier)
         .updateSetting('reminder_time', null);
     await NotificationService.instance.cancelReminder();
   }

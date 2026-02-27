@@ -148,7 +148,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
       await settingsService.updateSettings(user.id, settingsUpdates);
 
       ref.invalidate(currentProfileProvider);
-      ref.invalidate(userSettingsNotifierProvider);
+      ref.invalidate(userSettingsProvider);
 
       if (mounted) {
         Navigator.of(context).pushAndRemoveUntil(

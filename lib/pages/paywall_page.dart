@@ -73,8 +73,8 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
     setState(() => _purchasing = true);
 
     try {
-      final customerInfo = await Purchases.purchasePackage(package);
-      final newTier = _tierFromPurchase(customerInfo);
+      final result = await Purchases.purchase(PurchaseParams.package(package));
+      final newTier = _tierFromPurchase(result.customerInfo);
 
       if (mounted) {
         ref.read(ownSubscriptionTierProvider.notifier).setTier(newTier);
@@ -153,7 +153,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
   @override
   Widget build(BuildContext context) {
     final currentTier = ref.watch(effectiveSubscriptionTierProvider);
-    final profile = ref.watch(currentProfileProvider).valueOrNull;
+    final profile = ref.watch(currentProfileProvider).value;
     final isTeacher = profile?.isTeacher ?? false;
 
     return Scaffold(

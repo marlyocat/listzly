@@ -25,7 +25,7 @@ class AuthGate extends ConsumerWidget {
           child: CircularProgressIndicator(color: primaryLight),
         ),
       ),
-      error: (_, __) => const HomePage(),
+      error: (_, _) => const HomePage(),
     );
   }
 }

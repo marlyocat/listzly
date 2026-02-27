@@ -43,7 +43,7 @@ class NotificationService {
       iOS: iosSettings,
     );
 
-    await _plugin.initialize(settings);
+    await _plugin.initialize(settings: settings);
   }
 
   /// Request notification permission (Android 13+).
@@ -94,14 +94,12 @@ class NotificationService {
     );
 
     await _plugin.zonedSchedule(
-      _notificationId,
-      'Time to Practice!',
-      'Your daily music practice session is waiting for you.',
-      scheduledDate,
-      details,
+      id: _notificationId,
+      title: 'Time to Practice!',
+      body: 'Your daily music practice session is waiting for you.',
+      scheduledDate: scheduledDate,
+      notificationDetails: details,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
       payload: 'daily_reminder',
     );
@@ -109,7 +107,7 @@ class NotificationService {
 
   /// Cancel the daily reminder notification.
   Future<void> cancelReminder() async {
-    await _plugin.cancel(_notificationId);
+    await _plugin.cancel(id: _notificationId);
   }
 
   /// Schedule streak warning notifications for 2 and 3 days from now.
@@ -160,33 +158,29 @@ class NotificationService {
     );
 
     await _plugin.zonedSchedule(
-      _streakWarning2Id,
-      'Your streak is at risk!',
-      'Practice today to keep your streak alive.',
-      day2,
-      details,
+      id: _streakWarning2Id,
+      title: 'Your streak is at risk!',
+      body: 'Practice today to keep your streak alive.',
+      scheduledDate: day2,
+      notificationDetails: details,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
       payload: 'streak_warning_2',
     );
 
     await _plugin.zonedSchedule(
-      _streakWarning3Id,
-      'Last chance!',
-      'Your streak will be lost if you don\'t practice today.',
-      day3,
-      details,
+      id: _streakWarning3Id,
+      title: 'Last chance!',
+      body: 'Your streak will be lost if you don\'t practice today.',
+      scheduledDate: day3,
+      notificationDetails: details,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
       payload: 'streak_warning_3',
     );
   }
 
   /// Cancel any pending streak warning notifications.
   Future<void> cancelStreakWarnings() async {
-    await _plugin.cancel(_streakWarning2Id);
-    await _plugin.cancel(_streakWarning3Id);
+    await _plugin.cancel(id: _streakWarning2Id);
+    await _plugin.cancel(id: _streakWarning3Id);
   }
 }

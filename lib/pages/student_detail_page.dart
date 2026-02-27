@@ -260,7 +260,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                     ],
                   ),
                   loading: () => const SizedBox.shrink(),
-                  error: (_, __) => const SizedBox.shrink(),
+                  error: (_, _) => const SizedBox.shrink(),
                 ),
               ),
             ),
@@ -439,7 +439,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
-                  error: (_, __) => Text(
+                  error: (_, _) => Text(
                     '\u2014',
                     style: GoogleFonts.nunito(
                       fontSize: 15,
@@ -518,7 +518,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                 color: primaryLight),
           ],
         ),
-        error: (_, __) => Row(
+        error: (_, _) => Row(
           children: [
             _buildStatCard(
                 icon: Icons.access_time_rounded,
@@ -603,7 +603,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
         final chart = _computeChartData([]);
         return _buildBarChartContent(chart.values, chart.labels, chart.sublabels, chart.highlightIndex);
       },
-      error: (_, __) {
+      error: (_, _) {
         final chart = _computeChartData([]);
         return _buildBarChartContent(chart.values, chart.labels, chart.sublabels, chart.highlightIndex);
       },
@@ -918,7 +918,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                   const Spacer(),
                   GestureDetector(
                     onTap: () => _showAllSessions(
-                        context, sessionsAsync.valueOrNull ?? []),
+                        context, sessionsAsync.value ?? []),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 4),
@@ -1039,7 +1039,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                   ),
                 ),
               ),
-              error: (_, __) => Padding(
+              error: (_, _) => Padding(
                 padding:
                     const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
                 child: Text(
@@ -1209,7 +1209,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                   ),
                 ),
               ),
-              error: (_, __) => Padding(
+              error: (_, _) => Padding(
                 padding:
                     const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
                 child: Text(
@@ -1262,7 +1262,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
     final recordingsAsync = ref.read(
       studentRecordingsProvider(studentId: widget.studentId),
     );
-    final recordings = recordingsAsync.valueOrNull ?? [];
+    final recordings = recordingsAsync.value ?? [];
     showDialog(
       context: context,
       builder: (ctx) {

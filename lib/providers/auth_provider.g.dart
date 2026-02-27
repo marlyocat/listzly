@@ -6,73 +6,161 @@ part of 'auth_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$supabaseClientHash() => r'ba808f73c41a83ae06a878d4b96fd70df0864679';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
 
-/// See also [supabaseClient].
 @ProviderFor(supabaseClient)
-final supabaseClientProvider = AutoDisposeProvider<SupabaseClient>.internal(
-  supabaseClient,
-  name: r'supabaseClientProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$supabaseClientHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final supabaseClientProvider = SupabaseClientProvider._();
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef SupabaseClientRef = AutoDisposeProviderRef<SupabaseClient>;
-String _$authServiceHash() => r'6a93466f86d5684af1fa5732cfc2ea7dd89bf497';
+final class SupabaseClientProvider
+    extends $FunctionalProvider<SupabaseClient, SupabaseClient, SupabaseClient>
+    with $Provider<SupabaseClient> {
+  SupabaseClientProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'supabaseClientProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
-/// See also [authService].
+  @override
+  String debugGetCreateSourceHash() => _$supabaseClientHash();
+
+  @$internal
+  @override
+  $ProviderElement<SupabaseClient> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  SupabaseClient create(Ref ref) {
+    return supabaseClient(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(SupabaseClient value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<SupabaseClient>(value),
+    );
+  }
+}
+
+String _$supabaseClientHash() => r'de6240783d7dddb57e07d034deb0ddf8e2fcc3e4';
+
 @ProviderFor(authService)
-final authServiceProvider = AutoDisposeProvider<AuthService>.internal(
-  authService,
-  name: r'authServiceProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$authServiceHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final authServiceProvider = AuthServiceProvider._();
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef AuthServiceRef = AutoDisposeProviderRef<AuthService>;
-String _$authStateChangesHash() => r'1dd991a3df57703f8665d7d332da9b95dd8dd6ee';
+final class AuthServiceProvider
+    extends $FunctionalProvider<AuthService, AuthService, AuthService>
+    with $Provider<AuthService> {
+  AuthServiceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'authServiceProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
-/// See also [authStateChanges].
+  @override
+  String debugGetCreateSourceHash() => _$authServiceHash();
+
+  @$internal
+  @override
+  $ProviderElement<AuthService> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  AuthService create(Ref ref) {
+    return authService(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AuthService value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<AuthService>(value),
+    );
+  }
+}
+
+String _$authServiceHash() => r'1675f641f55e4e27e4a119b1ab80d6697154bb0e';
+
 @ProviderFor(authStateChanges)
-final authStateChangesProvider = AutoDisposeStreamProvider<AuthState>.internal(
-  authStateChanges,
-  name: r'authStateChangesProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$authStateChangesHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final authStateChangesProvider = AuthStateChangesProvider._();
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef AuthStateChangesRef = AutoDisposeStreamProviderRef<AuthState>;
-String _$currentUserHash() => r'8c41616b7a7084e12b93424cd834b76d794ff440';
+final class AuthStateChangesProvider
+    extends
+        $FunctionalProvider<AsyncValue<AuthState>, AuthState, Stream<AuthState>>
+    with $FutureModifier<AuthState>, $StreamProvider<AuthState> {
+  AuthStateChangesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'authStateChangesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
-/// See also [currentUser].
+  @override
+  String debugGetCreateSourceHash() => _$authStateChangesHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<AuthState> $createElement($ProviderPointer pointer) =>
+      $StreamProviderElement(pointer);
+
+  @override
+  Stream<AuthState> create(Ref ref) {
+    return authStateChanges(ref);
+  }
+}
+
+String _$authStateChangesHash() => r'32d48015401a91f3eb0074ddd099236a9137d853';
+
 @ProviderFor(currentUser)
-final currentUserProvider = AutoDisposeProvider<User?>.internal(
-  currentUser,
-  name: r'currentUserProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$currentUserHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final currentUserProvider = CurrentUserProvider._();
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef CurrentUserRef = AutoDisposeProviderRef<User?>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+final class CurrentUserProvider extends $FunctionalProvider<User?, User?, User?>
+    with $Provider<User?> {
+  CurrentUserProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'currentUserProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$currentUserHash();
+
+  @$internal
+  @override
+  $ProviderElement<User?> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  User? create(Ref ref) {
+    return currentUser(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(User? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<User?>(value),
+    );
+  }
+}
+
+String _$currentUserHash() => r'b1261bbe3d77a12ef76543ff919fbd5d6c0cb19a';

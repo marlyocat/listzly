@@ -34,8 +34,8 @@ class SubscriptionService {
 
   /// Purchase a package.
   Future<SubscriptionTier> purchase(Package package) async {
-    final result = await Purchases.purchasePackage(package);
-    return _tierFromEntitlements(result);
+    final result = await Purchases.purchase(PurchaseParams.package(package));
+    return _tierFromEntitlements(result.customerInfo);
   }
 
   /// Restore previous purchases.
