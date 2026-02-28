@@ -216,6 +216,50 @@ final class TeacherSubscriptionTierProvider
 String _$teacherSubscriptionTierHash() =>
     r'77bb61ac61936ee8ffe790c3a41eca01c7cf2f90';
 
+/// Full subscription details (tier, expiration, renewal status, etc.).
+
+@ProviderFor(subscriptionInfo)
+final subscriptionInfoProvider = SubscriptionInfoProvider._();
+
+/// Full subscription details (tier, expiration, renewal status, etc.).
+
+final class SubscriptionInfoProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<SubscriptionInfo>,
+          SubscriptionInfo,
+          FutureOr<SubscriptionInfo>
+        >
+    with $FutureModifier<SubscriptionInfo>, $FutureProvider<SubscriptionInfo> {
+  /// Full subscription details (tier, expiration, renewal status, etc.).
+  SubscriptionInfoProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'subscriptionInfoProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$subscriptionInfoHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<SubscriptionInfo> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<SubscriptionInfo> create(Ref ref) {
+    return subscriptionInfo(ref);
+  }
+}
+
+String _$subscriptionInfoHash() => r'c17e05f78c0efebc7d772a7e1a924f2dbd4d22b1';
+
 /// Whether the user is eligible for a free trial (has never had 'pro').
 
 @ProviderFor(isTrialEligible)

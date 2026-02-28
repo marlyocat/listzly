@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:listzly/models/subscription_info.dart';
 import 'package:listzly/models/subscription_tier.dart';
 import 'package:listzly/services/subscription_service.dart';
 import 'package:listzly/providers/auth_provider.dart';
@@ -96,6 +97,15 @@ Future<SubscriptionTier> teacherSubscriptionTier(
   if (teacherProfile == null) return SubscriptionTier.free;
 
   return SubscriptionTier.fromString(teacherProfile.subscriptionTier);
+}
+
+/// Full subscription details (tier, expiration, renewal status, etc.).
+@riverpod
+Future<SubscriptionInfo> subscriptionInfo(Ref ref) async {
+  // Re-fetch when the user's own tier changes (e.g. after purchase).
+  ref.watch(ownSubscriptionTierProvider);
+  final service = ref.watch(subscriptionServiceProvider);
+  return service.getSubscriptionInfo();
 }
 
 /// Whether the user is eligible for a free trial (has never had 'pro').

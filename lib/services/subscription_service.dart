@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:listzly/config/revenuecat_config.dart';
+import 'package:listzly/models/subscription_info.dart';
 import 'package:listzly/models/subscription_tier.dart';
 
 class SubscriptionService {
@@ -42,6 +43,32 @@ class SubscriptionService {
   Future<SubscriptionTier> restorePurchases() async {
     final customerInfo = await Purchases.restorePurchases();
     return _tierFromEntitlements(customerInfo);
+  }
+
+  /// Full subscription details including expiration and renewal status.
+  Future<SubscriptionInfo> getSubscriptionInfo() async {
+    try {
+      final customerInfo = await Purchases.getCustomerInfo();
+      final tier = _tierFromEntitlements(customerInfo);
+      if (tier.isFree) return SubscriptionInfo.free;
+
+      final entitlement = customerInfo.entitlements.active[entitlementPro]!;
+      DateTime? expirationDate;
+      if (entitlement.expirationDate != null) {
+        expirationDate = DateTime.tryParse(entitlement.expirationDate!);
+      }
+
+      return SubscriptionInfo(
+        tier: tier,
+        expirationDate: expirationDate,
+        willRenew: entitlement.willRenew,
+        isInTrial: entitlement.periodType == PeriodType.trial,
+        managementURL: customerInfo.managementURL,
+      );
+    } catch (e) {
+      debugPrint('SubscriptionService.getSubscriptionInfo error: $e');
+      return SubscriptionInfo.free;
+    }
   }
 
   /// Stream that emits whenever the subscription status changes.

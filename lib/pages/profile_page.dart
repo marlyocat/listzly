@@ -19,8 +19,9 @@ import 'package:listzly/utils/level_utils.dart';
 import 'package:listzly/utils/responsive.dart';
 import 'package:listzly/services/notification_service.dart';
 import 'package:listzly/providers/subscription_provider.dart';
-import 'package:listzly/models/subscription_tier.dart';
+import 'package:listzly/models/subscription_info.dart';
 import 'package:listzly/pages/paywall_page.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
@@ -115,6 +116,11 @@ class ProfilePage extends ConsumerWidget {
                 error: (err, _) =>
                     _buildErrorCard('Failed to load instruments'),
               ),
+            ),
+
+            // Support section
+            SliverContentConstraint(
+              child: _buildSupportSection(),
             ),
 
             // Log Out button
@@ -228,23 +234,46 @@ class ProfilePage extends ConsumerWidget {
   Widget _buildSubscriptionSection(BuildContext context, WidgetRef ref) {
     final tier = ref.watch(effectiveSubscriptionTierProvider);
 
-    final Color badgeColor;
-    final IconData badgeIcon;
-    switch (tier) {
-      case SubscriptionTier.pro:
-      case SubscriptionTier.teacherLite:
-      case SubscriptionTier.teacherPro:
-      case SubscriptionTier.teacherPremium:
-        badgeColor = accentCoral;
-        badgeIcon = Icons.star_rounded;
-      default:
-        badgeColor = darkTextMuted;
-        badgeIcon = Icons.person_rounded;
+    final Widget card;
+    if (tier.isFree) {
+      card = _buildFreeSubscriptionCard(context);
+    } else {
+      final infoAsync = ref.watch(subscriptionInfoProvider);
+      card = infoAsync.when(
+        data: (info) => _buildPaidSubscriptionCard(context, ref, info),
+        loading: () => _buildSubscriptionLoading(),
+        error: (_, _) => _buildPaidSubscriptionCard(
+          context,
+          ref,
+          SubscriptionInfo(tier: tier),
+        ),
+      );
     }
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-      child: Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 4, bottom: 8),
+            child: Text(
+              'My Subscription',
+              style: GoogleFonts.nunito(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: darkTextSecondary,
+              ),
+            ),
+          ),
+          card,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFreeSubscriptionCard(BuildContext context) {
+    return Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: darkCardBg,
@@ -257,11 +286,12 @@ class ProfilePage extends ConsumerWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: badgeColor.withAlpha(30),
+                color: darkTextMuted.withAlpha(30),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Colors.black, width: 2),
               ),
-              child: Icon(badgeIcon, color: badgeColor, size: 24),
+              child: const Icon(Icons.person_rounded,
+                  color: darkTextMuted, size: 24),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -269,7 +299,7 @@ class ProfilePage extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${tier.displayName} Plan',
+                    'Free Plan',
                     style: GoogleFonts.nunito(
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
@@ -278,11 +308,7 @@ class ProfilePage extends ConsumerWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    tier.isFree
-                        ? 'Upgrade to unlock all features'
-                        : tier.isTeacherPlan
-                            ? 'Full teacher access'
-                            : 'You have full access',
+                    'Upgrade to unlock all features',
                     style: GoogleFonts.nunito(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -303,16 +329,13 @@ class ProfilePage extends ConsumerWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 decoration: BoxDecoration(
-                  gradient: tier.isFree
-                      ? const LinearGradient(
-                          colors: [Color(0xFFF4A68E), accentCoralDark],
-                        )
-                      : null,
-                  color: tier.isFree ? null : Colors.white.withAlpha(15),
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFF4A68E), accentCoralDark],
+                  ),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
-                  tier.isFree ? 'Upgrade' : 'Manage',
+                  'Upgrade',
                   style: GoogleFonts.nunito(
                     fontSize: 13,
                     fontWeight: FontWeight.w800,
@@ -323,7 +346,346 @@ class ProfilePage extends ConsumerWidget {
             ),
           ],
         ),
+    );
+  }
+
+  Widget _buildSubscriptionLoading() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: darkCardBg,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.black, width: 5),
       ),
+      child: const Center(
+        child: SizedBox(
+          width: 24,
+          height: 24,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPaidSubscriptionCard(
+    BuildContext context,
+    WidgetRef ref,
+    SubscriptionInfo info,
+  ) {
+    final tier = info.tier;
+    final isCancelled = info.isCancelled;
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: darkCardBg,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.black, width: 5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header: badge + plan name + trial badge
+          Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: accentCoral.withAlpha(30),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.black, width: 2),
+                  ),
+                  child: const Icon(Icons.star_rounded,
+                      color: accentCoral, size: 24),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${tier.displayName} Plan',
+                        style: GoogleFonts.nunito(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        tier.isTeacherPlan
+                            ? 'Full teacher access'
+                            : 'You have full access',
+                        style: GoogleFonts.nunito(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: darkTextMuted,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (info.isInTrial)
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF22C55E).withAlpha(25),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                          color: const Color(0xFF22C55E).withAlpha(80)),
+                    ),
+                    child: Text(
+                      'Trial',
+                      style: GoogleFonts.nunito(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF22C55E),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+
+            const SizedBox(height: 16),
+            Container(
+              height: 1,
+              color: Colors.white.withAlpha(15),
+            ),
+            const SizedBox(height: 16),
+
+            // Status row
+            Row(
+              children: [
+                Icon(
+                  isCancelled
+                      ? Icons.info_outline_rounded
+                      : Icons.check_circle_outline_rounded,
+                  color: isCancelled
+                      ? const Color(0xFFFBBF24)
+                      : const Color(0xFF22C55E),
+                  size: 18,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  isCancelled ? 'Cancelled' : 'Active',
+                  style: GoogleFonts.nunito(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: isCancelled
+                        ? const Color(0xFFFBBF24)
+                        : const Color(0xFF22C55E),
+                  ),
+                ),
+              ],
+            ),
+
+            // Expiration / renewal date
+            if (info.expirationDate != null) ...[
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Icon(
+                    Icons.calendar_today_rounded,
+                    color: darkTextMuted,
+                    size: 16,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    isCancelled
+                        ? 'Access until ${_formatDate(info.expirationDate!)}'
+                        : 'Renews ${_formatDate(info.expirationDate!)}',
+                    style: GoogleFonts.nunito(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: darkTextMuted,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+
+            // Cancellation note
+            if (isCancelled && info.expirationDate != null) ...[
+              const SizedBox(height: 12),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFBBF24).withAlpha(15),
+                  borderRadius: BorderRadius.circular(10),
+                  border:
+                      Border.all(color: const Color(0xFFFBBF24).withAlpha(40)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.info_outline_rounded,
+                        color: Color(0xFFFBBF24), size: 16),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Your features will remain active until ${_formatDate(info.expirationDate!)}',
+                        style: GoogleFonts.nunito(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFFFBBF24),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+
+            const SizedBox(height: 16),
+
+            // Action buttons
+            Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const PaywallPage()),
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withAlpha(15),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Change Plan',
+                          style: GoogleFonts.nunito(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                if (!isCancelled) ...[
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => _showCancelDialog(context, ref, info),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withAlpha(15),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Cancel Subscription',
+                            style: GoogleFonts.nunito(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFFFBBF24),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ],
+        ),
+    );
+  }
+
+  Future<void> _showCancelDialog(
+    BuildContext context,
+    WidgetRef ref,
+    SubscriptionInfo info,
+  ) async {
+    final expirationText = info.expirationDate != null
+        ? ' until ${_formatDate(info.expirationDate!)}'
+        : '';
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1E0E3D),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Cancel Subscription?',
+          style:
+              GoogleFonts.dmSerifDisplay(fontSize: 20, color: Colors.white),
+        ),
+        content: Text(
+          'Your subscription will not renew, but you\'ll keep all your features$expirationText.',
+          style: GoogleFonts.nunito(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: darkTextSecondary,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('Keep Subscription',
+                style: GoogleFonts.nunito(
+                    fontWeight: FontWeight.w700, color: darkTextMuted)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text('Cancel Subscription',
+                style: GoogleFonts.nunito(
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFFFBBF24))),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    // Open the platform's subscription management page
+    final url = info.managementURL;
+    if (url != null) {
+      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    }
+
+    // Refresh subscription info when user returns
+    ref.invalidate(subscriptionInfoProvider);
+  }
+
+  String _formatDate(DateTime date) {
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    ];
+    return '${months[date.month - 1]} ${date.day}, ${date.year}';
+  }
+
+  // ─── Support section ──────────────────────────────────────────────
+  Widget _buildSupportSection() {
+    return _buildSettingsSection(
+      title: 'Support',
+      items: [
+        _SettingsRow(
+          icon: Icons.mail_outline_rounded,
+          label: 'Contact Support',
+          trailing: const _TrailingText(''),
+          onTap: () => launchUrl(
+            Uri.parse(
+                'mailto:help.caplock@gmail.com?subject=Listzly%20Support'),
+            mode: LaunchMode.externalApplication,
+          ),
+        ),
+      ],
     );
   }
 
