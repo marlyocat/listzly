@@ -7,7 +7,7 @@ const String _revenueCatGoogleApiKey = 'goog_qgOlVdiKfQXELMhRPWxstycYtmK';
 const String entitlementPro = 'pro';
 
 /// Product identifiers configured in RevenueCat dashboard.
-const String productProYearly = 'pro_yearly';
+const String productProYearly = 'personal_pro_yearly';
 const String productTeacherLiteMonthly = 'teacher_lite_monthly';
 const String productTeacherProMonthly = 'teacher_pro_monthly';
 const String productTeacherPremiumMonthly = 'teacher_premium_monthly';

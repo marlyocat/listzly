@@ -258,7 +258,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                 _buildPlanCard(
                                   title: 'Personal Pro',
                                   price: _getPrice(
-                                      'pro_yearly', '\$7.99'),
+                                      'personal_pro_yearly', '\$7.99'),
                                   period: '/year',
                                   features: [
                                     'All 4 instruments',
@@ -269,9 +269,9 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                       currentTier == SubscriptionTier.pro,
                                   isPopular: true,
                                   accentColor: accentCoral,
-                                  trialInfo: _getTrialInfo('pro_yearly'),
+                                  trialInfo: _getTrialInfo('personal_pro_yearly'),
                                   onTap: () =>
-                                      _purchaseProduct('pro_yearly'),
+                                      _purchaseProduct('personal_pro_yearly'),
                                 ),
                               ],
                               if (isTeacher) ...[
