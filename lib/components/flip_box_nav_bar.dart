@@ -2,6 +2,7 @@
 import 'dart:math' show pi;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:listzly/theme/colors.dart';
 
@@ -211,7 +212,7 @@ class _FlipBoxTileState extends State<_FlipBoxTile> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   if (widget.item.selectedImage != null)
-                    Image.asset(widget.item.selectedImage!,
+                    SvgPicture.asset(widget.item.selectedImage!,
                         width: widget.iconSize, height: widget.iconSize)
                   else
                     Icon(widget.item.icon, size: widget.iconSize,
@@ -231,7 +232,7 @@ class _FlipBoxTileState extends State<_FlipBoxTile> {
         color: navBarBg,
         child: Center(
           child: widget.item.unselectedImage != null
-              ? Image.asset(widget.item.unselectedImage!,
+              ? SvgPicture.asset(widget.item.unselectedImage!,
                   width: widget.iconSize, height: widget.iconSize)
               : Icon(widget.item.icon, size: widget.iconSize,
                   color: Colors.white.withAlpha(140)),

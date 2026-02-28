@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
 import 'package:listzly/components/button.dart';
@@ -102,8 +103,8 @@ class IntroPage extends StatelessWidget {
                     Center(
                       child: Transform.translate(
                         offset: const Offset(0, 30),
-                        child: Image.asset(
-                          'lib/images/music_instrument.png',
+                        child: SvgPicture.asset(
+                          'lib/images/licensed/music-instrument.svg',
                           height: 220,
                         ),
                       ),

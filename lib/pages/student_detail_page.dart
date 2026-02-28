@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:listzly/models/practice_session.dart';
 import 'package:listzly/models/practice_recording.dart';
@@ -244,19 +245,19 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                         Icons.local_fire_department_rounded,
                         '${stats.currentStreak} day streak',
                         accentCoral,
-                        imagePath: 'lib/images/streak.png',
+                        imagePath: 'lib/images/licensed/streak.svg',
                       ),
                       _buildChip(
                         Icons.shield_rounded,
                         'Lv. ${LevelUtils.levelFromXp(stats.totalXp)}',
                         primaryColor,
-                        imagePath: 'lib/images/level.png',
+                        imagePath: 'lib/images/licensed/level.svg',
                       ),
                       _buildChip(
                         Icons.star_rounded,
                         '${stats.totalXp} XP',
                         primaryLight,
-                        imagePath: 'lib/images/xp.png',
+                        imagePath: 'lib/images/licensed/xp.svg',
                       ),
                     ],
                   ),
@@ -308,7 +309,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
         mainAxisSize: MainAxisSize.min,
         children: [
           if (imagePath != null)
-            Image.asset(imagePath, width: 16, height: 16)
+            SvgPicture.asset(imagePath, width: 16, height: 16)
           else
             Icon(icon, size: 16, color: color),
           const SizedBox(width: 6),

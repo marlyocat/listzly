@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
 import 'package:listzly/pages/home_page.dart';
@@ -29,31 +30,31 @@ class _FeatureTourPageState extends State<FeatureTourPage> {
 
   static const _cards = [
     _TourCard(
-      imagePath: 'lib/images/onboarding_practice_sticker.png',
+      imagePath: 'lib/images/licensed/onboarding-practice-sticker.svg',
       title: 'Start Practicing',
       description:
           'Pick an instrument, set a timer, and begin a focused practice session. Piano is available on the free plan.',
     ),
     _TourCard(
-      imagePath: 'lib/images/onboarding_target_sticker.png',
+      imagePath: 'lib/images/licensed/onboarding-target-sticker.svg',
       title: 'Build Your Streak',
       description:
           'Practice every day to build your streak and stay consistent. Don\'t break the chain!',
     ),
     _TourCard(
-      imagePath: 'lib/images/onboarding_quests_sticker.png',
+      imagePath: 'lib/images/licensed/onboarding-quests-sticker.svg',
       title: 'Complete Quests',
       description:
           'Take on daily and weekly quests to challenge yourself and earn XP as you improve.',
     ),
     _TourCard(
-      imagePath: 'lib/images/onboarding_education_sticker.png',
+      imagePath: 'lib/images/licensed/onboarding-education-sticker.svg',
       title: 'Learn Together',
       description:
           'Join your teacher\'s group with an invite code, or create your own group as a teacher to track student progress.',
     ),
     _TourCard(
-      imagePath: 'lib/images/onboarding_gift_sticker.png',
+      imagePath: 'lib/images/licensed/onboarding-gift-sticker.svg',
       title: 'Unlock More with Pro',
       description:
           'Go Pro to unlock all instruments, record and share your practice sessions, view activity history, and more. Start with everything you need for free.',
@@ -158,7 +159,7 @@ class _FeatureTourPageState extends State<FeatureTourPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         // Sticker image
-                        Image.asset(
+                        SvgPicture.asset(
                           card.imagePath,
                           height: 180,
                           fit: BoxFit.contain,

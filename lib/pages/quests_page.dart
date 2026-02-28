@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:listzly/models/assigned_quest.dart';
 import 'package:listzly/models/quest.dart';
@@ -382,15 +383,15 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
               '${stats.currentStreak} ${stats.currentStreak == 1 ? 'Day' : 'Days'}',
               'Streak',
               Colors.white,
-              imagePath: 'lib/images/streak.png',
+              imagePath: 'lib/images/licensed/streak.svg',
             ),
             const SizedBox(width: 10),
             _buildChip('$level', 'Level', Colors.white,
-                imagePath: 'lib/images/level.png',
+                imagePath: 'lib/images/licensed/level.svg',
                 progress: levelProgress),
             const SizedBox(width: 10),
             _buildChip('${stats.totalXp}', 'Total XP', Colors.white,
-                imagePath: 'lib/images/xp.png'),
+                imagePath: 'lib/images/licensed/xp.svg'),
           ],
         ),
       ),
@@ -419,7 +420,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 if (imagePath != null) ...[
-                  Image.asset(imagePath, width: 14, height: 14),
+                  SvgPicture.asset(imagePath, width: 14, height: 14),
                   const SizedBox(width: 4),
                 ],
                 Text(

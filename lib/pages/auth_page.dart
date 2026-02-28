@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
@@ -333,8 +334,8 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                       ),
                     ),
                     padding: const EdgeInsets.all(12),
-                    child: Image.asset(
-                      'lib/images/google_logo.png',
+                    child: SvgPicture.asset(
+                      'lib/images/licensed/google-logo.svg',
                     ),
                   ),
                 ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
 import 'package:listzly/models/profile.dart';
@@ -1447,7 +1448,7 @@ class ProfilePage extends ConsumerWidget {
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Image.asset('lib/images/streak.png',
+                            SvgPicture.asset('lib/images/licensed/streak.svg',
                                 width: 14, height: 14),
                             const SizedBox(width: 3),
                             Text(
@@ -1463,7 +1464,7 @@ class ProfilePage extends ConsumerWidget {
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Image.asset('lib/images/level.png',
+                            SvgPicture.asset('lib/images/licensed/level.svg',
                                 width: 14, height: 14),
                             const SizedBox(width: 3),
                             Text(
@@ -1479,7 +1480,7 @@ class ProfilePage extends ConsumerWidget {
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Image.asset('lib/images/xp.png',
+                            SvgPicture.asset('lib/images/licensed/xp.svg',
                                 width: 14, height: 14),
                             const SizedBox(width: 3),
                             Text(

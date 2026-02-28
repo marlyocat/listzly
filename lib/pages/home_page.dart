@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:listzly/components/flip_box_nav_bar.dart';
@@ -52,37 +53,37 @@ class _HomePageState extends ConsumerState<HomePage> {
     final navItems = <FlipBoxNavItem>[
       FlipBoxNavItem(
         name: 'Home',
-        selectedImage: 'lib/images/home_selected.png',
-        unselectedImage: 'lib/images/home_unselected.png',
+        selectedImage: 'lib/images/licensed/home-selected.svg',
+        unselectedImage: 'lib/images/licensed/home-unselected.svg',
         selectedBackgroundColor: primaryColor,
         unselectedBackgroundColor: primaryColor.withValues(alpha: 0.6),
       ),
       FlipBoxNavItem(
         name: 'Quests',
-        selectedImage: 'lib/images/quest_selected.png',
-        unselectedImage: 'lib/images/quest_unselected.png',
+        selectedImage: 'lib/images/licensed/quest-selected.svg',
+        unselectedImage: 'lib/images/licensed/quest-unselected.svg',
         selectedBackgroundColor: primaryColor,
         unselectedBackgroundColor: primaryColor.withValues(alpha: 0.6),
       ),
       FlipBoxNavItem(
         name: 'Activity',
-        selectedImage: 'lib/images/trophy_selected.png',
-        unselectedImage: 'lib/images/trophy_unselected.png',
+        selectedImage: 'lib/images/licensed/trophy-selected.svg',
+        unselectedImage: 'lib/images/licensed/trophy-unselected.svg',
         selectedBackgroundColor: primaryColor,
         unselectedBackgroundColor: primaryColor.withValues(alpha: 0.6),
       ),
       if (isTeacher)
         FlipBoxNavItem(
           name: 'Students',
-          selectedImage: 'lib/images/students_selected.png',
-          unselectedImage: 'lib/images/students_unselected.png',
+          selectedImage: 'lib/images/licensed/students-selected.svg',
+          unselectedImage: 'lib/images/licensed/students-unselected.svg',
           selectedBackgroundColor: primaryColor,
           unselectedBackgroundColor: primaryColor.withValues(alpha: 0.6),
         ),
       FlipBoxNavItem(
         name: 'Profile',
-        selectedImage: 'lib/images/settings_selected.png',
-        unselectedImage: 'lib/images/settings_unselected.png',
+        selectedImage: 'lib/images/licensed/settings-selected.svg',
+        unselectedImage: 'lib/images/licensed/settings-unselected.svg',
         selectedBackgroundColor: primaryColor,
         unselectedBackgroundColor: primaryColor.withValues(alpha: 0.6),
       ),
@@ -153,7 +154,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
   }
 
   static const List<_InstrumentData> _instruments = [
-    _InstrumentData(name: 'Piano', icon: Icons.piano, imagePath: 'lib/images/piano_sticker.png', quotes: [
+    _InstrumentData(name: 'Piano', icon: Icons.piano, imagePath: 'lib/images/licensed/piano-sticker.svg', quotes: [
       {'quote': 'Simplicity is the final achievement.', 'author': 'Frederic Chopin'},
       {'quote': 'There is no such thing as a difficult piece. It is either impossible or it is easy.', 'author': 'Sergei Rachmaninoff'},
       {'quote': 'To play a wrong note is insignificant; to play without passion is inexcusable.', 'author': 'Ludwig van Beethoven'},
@@ -161,21 +162,21 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
       {'quote': 'The piano is a beautiful instrument to express the deepest feelings of the soul.', 'author': 'Franz Liszt'},
       {'quote': 'Beware of missing chances; otherwise it may be altogether too late some day.', 'author': 'Franz Liszt'},
     ]),
-    _InstrumentData(name: 'Guitar', icon: Icons.music_note, imagePath: 'lib/images/guitar_sticker.png', quotes: [
+    _InstrumentData(name: 'Guitar', icon: Icons.music_note, imagePath: 'lib/images/licensed/guitar-sticker.svg', quotes: [
       {'quote': 'The guitar is a small orchestra.', 'author': 'Andres Segovia'},
       {'quote': 'The guitar chose me, and I gave my life to it.', 'author': 'Paco de Lucia'},
       {'quote': 'A guitar is more than just a sound box. It is part of your soul.', 'author': 'Manuel Barrueco'},
       {'quote': 'The guitar has a kind of grit and excitement possessed by nothing else.', 'author': 'Brian May'},
       {'quote': 'My guitar is not a thing. It is an extension of myself. It is who I am.', 'author': 'Willie Nelson'},
     ]),
-    _InstrumentData(name: 'Violin', icon: Icons.music_note_outlined, imagePath: 'lib/images/violin_sticker.png', quotes: [
+    _InstrumentData(name: 'Violin', icon: Icons.music_note_outlined, imagePath: 'lib/images/licensed/violin-sticker.svg', quotes: [
       {'quote': 'The violin can be the most beautiful voice in the world.', 'author': 'Niccolo Paganini'},
       {'quote': 'A violin sings from the depths of the human soul.', 'author': 'Itzhak Perlman'},
       {'quote': 'The violin is the perfect instrument of the heart.', 'author': 'Antonio Vivaldi'},
       {'quote': 'Every difficulty I have ever faced playing the violin has been overcome by practice.', 'author': 'Jascha Heifetz'},
       {'quote': 'Practicing is not about being perfect. It is about getting better every day.', 'author': 'Hilary Hahn'},
     ]),
-    _InstrumentData(name: 'Drums', icon: Icons.surround_sound, imagePath: 'lib/images/drum-set_sticker.png', quotes: [
+    _InstrumentData(name: 'Drums', icon: Icons.surround_sound, imagePath: 'lib/images/licensed/drum-set-sticker.svg', quotes: [
       {'quote': 'The drummer drives. Everyone else rides.', 'author': 'Buddy Rich'},
       {'quote': 'A great drummer is not just keeping time, he is making time.', 'author': 'Elvin Jones'},
       {'quote': 'Drums are the heartbeat of music.', 'author': 'Ringo Starr'},
@@ -319,7 +320,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Image.asset('lib/images/streak.png',
+                    SvgPicture.asset('lib/images/licensed/streak.svg',
                         width: 18, height: 18),
                     const SizedBox(width: 6),
                     Column(
@@ -369,7 +370,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                                 children: [
                                   Opacity(
                                     opacity: isLocked ? 0.4 : 1.0,
-                                    child: Image.asset(
+                                    child: SvgPicture.asset(
                                       inst.imagePath!,
                                       fit: BoxFit.contain,
                                     ),

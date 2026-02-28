@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:listzly/models/assigned_quest.dart';
@@ -291,7 +292,7 @@ class StudentsPage extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: Colors.black, width: 2),
                   ),
-                  child: Image.asset('lib/images/key.png',
+                  child: SvgPicture.asset('lib/images/licensed/key.svg',
                       width: 20, height: 20),
                 ),
                 const SizedBox(width: 12),
@@ -373,7 +374,7 @@ class StudentsPage extends ConsumerWidget {
                         border: Border.all(
                             color: Colors.black, width: 2),
                       ),
-                      child: Image.asset('lib/images/qr_code.png',
+                      child: SvgPicture.asset('lib/images/licensed/qr-code.svg',
                           width: 18, height: 18),
                     ),
                   ),
@@ -399,7 +400,7 @@ class StudentsPage extends ConsumerWidget {
                         border: Border.all(
                             color: Colors.black, width: 2),
                       ),
-                      child: Image.asset('lib/images/copy.png',
+                      child: SvgPicture.asset('lib/images/licensed/copy.svg',
                           width: 18, height: 18),
                     ),
                   ),
@@ -887,7 +888,7 @@ class _StudentTile extends StatelessWidget {
                   const SizedBox(height: 2),
                   Row(
                     children: [
-                      Image.asset('lib/images/streak.png',
+                      SvgPicture.asset('lib/images/licensed/streak.svg',
                           width: 14, height: 14),
                       const SizedBox(width: 3),
                       Text(
@@ -899,7 +900,7 @@ class _StudentTile extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      Image.asset('lib/images/level.png',
+                      SvgPicture.asset('lib/images/licensed/level.svg',
                           width: 14, height: 14),
                       const SizedBox(width: 3),
                       Text(
@@ -911,7 +912,7 @@ class _StudentTile extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      Image.asset('lib/images/xp.png',
+                      SvgPicture.asset('lib/images/licensed/xp.svg',
                           width: 14, height: 14),
                       const SizedBox(width: 3),
                       Text(
