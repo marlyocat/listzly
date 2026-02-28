@@ -960,7 +960,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                       ),
                     )
                   : Column(
-                      children: List.generate(sessions.length, (i) {
+                      children: List.generate(sessions.length > 5 ? 5 : sessions.length, (i) {
                         final s = sessions[i];
                         final instIcon = _instrumentIcons[s.instrumentName] ??
                             Icons.music_note;
