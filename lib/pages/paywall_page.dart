@@ -359,7 +359,9 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                             mode: LaunchMode
                                                 .externalApplication);
                                       }
-                                    } catch (_) {}
+                                    } catch (e) {
+                                      debugPrint('Failed to launch management URL: $e');
+                                    }
                                   },
                                   child: Text(
                                     'Cancel Subscription',

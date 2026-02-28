@@ -125,7 +125,9 @@ class GroupService {
             .eq('id', studentId)
             .maybeSingle();
         studentName = profile?['display_name'] as String?;
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('Failed to fetch student name: $e');
+      }
     }
 
     await _client.from('group_members').delete().eq('student_id', studentId);
@@ -231,7 +233,9 @@ class GroupService {
           .eq('id', studentId)
           .maybeSingle();
       studentName = profile?['display_name'] as String?;
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('Failed to fetch student name: $e');
+    }
 
     await _client
         .from('group_members')

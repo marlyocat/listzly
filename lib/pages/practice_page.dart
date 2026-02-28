@@ -223,7 +223,9 @@ class _PracticePageState extends ConsumerState<PracticePage>
           r.createdAt.month == now.month &&
           r.createdAt.day == now.day);
       if (mounted) setState(() => _hasRecordedToday = hasToday);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('Failed to check today recordings: $e');
+    }
   }
 
   void _startQuoteRotation() {
@@ -371,7 +373,9 @@ class _PracticePageState extends ConsumerState<PracticePage>
 
     try {
       await _recorder.stop();
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('Failed to stop recorder: $e');
+    }
     _recPulseController.stop();
     setState(() {
       _isRecording = false;
@@ -470,7 +474,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
     if (_isRecording) {
       final path = _recordingPath;
       final elapsed = _recordingElapsedSeconds;
-      try { await _recorder.stop(); } catch (_) {}
+      try { await _recorder.stop(); } catch (e) { debugPrint('Failed to stop recorder: $e'); }
       _recPulseController.stop();
       _isRecording = false;
       _recordingPath = null;
@@ -601,7 +605,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
     if (shouldLeave == true) {
       // Discard active and pending recordings
       if (_isRecording) {
-        try { await _recorder.stop(); } catch (_) {}
+        try { await _recorder.stop(); } catch (e) { debugPrint('Failed to stop recorder: $e'); }
         _recPulseController.stop();
         _isRecording = false;
       }

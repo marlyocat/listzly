@@ -69,10 +69,13 @@ Future<void> main() async {
               await NotificationService.instance.scheduleStreakWarnings(reminderTime);
             }
           }
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('Failed to schedule streak warnings: $e');
+        }
       }
-    } catch (_) {
+    } catch (e) {
       // Non-critical: if reschedule fails, user can re-set in settings
+      debugPrint('Failed to reschedule notifications: $e');
     }
   }
 

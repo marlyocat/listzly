@@ -1186,7 +1186,9 @@ class ProfilePage extends ConsumerWidget {
                     if (previousRole != null && ctx.mounted) {
                       try {
                         await _changeRole(ctx, ref, previousRole);
-                      } catch (_) {}
+                      } catch (e) {
+                        debugPrint('Failed to revert role: $e');
+                      }
                     }
                     final msg = e.toString().toLowerCase();
                     setState(() {

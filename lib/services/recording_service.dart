@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:listzly/models/practice_recording.dart';
 
@@ -7,6 +8,7 @@ class RecordingService {
   RecordingService(this._client);
 
   /// Upload a recording file to Supabase Storage, then insert metadata row.
+  /// Retries the storage upload up to 3 times on failure.
   Future<PracticeRecording> uploadRecording({
     required String userId,
     required String? sessionId,
@@ -19,12 +21,22 @@ class RecordingService {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final storagePath = '$userId/$timestamp.m4a';
 
-    // Upload to storage
-    await _client.storage.from('recordings').upload(
-          storagePath,
-          file,
-          fileOptions: const FileOptions(contentType: 'audio/mp4'),
-        );
+    // Upload to storage with retry
+    const maxAttempts = 3;
+    for (var attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        await _client.storage.from('recordings').upload(
+              storagePath,
+              file,
+              fileOptions: const FileOptions(contentType: 'audio/mp4'),
+            );
+        break;
+      } catch (e) {
+        if (attempt == maxAttempts) rethrow;
+        debugPrint('Recording upload attempt $attempt failed: $e');
+        await Future.delayed(Duration(seconds: attempt));
+      }
+    }
 
     // Insert metadata row
     final data = {
@@ -94,8 +106,9 @@ class RecordingService {
     // Remove storage file
     try {
       await _client.storage.from('recordings').remove([filePath]);
-    } catch (_) {
+    } catch (e) {
       // Storage deletion failure shouldn't block DB cleanup
+      debugPrint('Failed to delete storage file: $e');
     }
 
     // Remove database row
