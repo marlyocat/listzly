@@ -800,25 +800,67 @@ class ProfilePage extends ConsumerWidget {
                 controller: controller,
                 textCapitalization: TextCapitalization.characters,
                 style: GoogleFonts.nunito(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
                   color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 2,
                 ),
                 decoration: InputDecoration(
-                  hintText: 'Invite code',
-                  hintStyle: GoogleFonts.nunito(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                  labelText: 'Invite Code',
+                  labelStyle: GoogleFonts.nunito(
                     color: darkTextMuted,
+                    fontWeight: FontWeight.w600,
                   ),
+                  prefixIcon: const Icon(Icons.vpn_key_rounded,
+                      color: darkTextMuted, size: 20),
                   filled: true,
-                  fillColor: Colors.white.withAlpha(10),
+                  fillColor: Colors.white.withAlpha(12),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(color: Colors.white.withAlpha(30)),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 14),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(color: Colors.white.withAlpha(30)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(color: accentCoral, width: 1.5),
+                  ),
+                  hintText: 'Enter your teacher\'s code',
+                  hintStyle: GoogleFonts.nunito(
+                    color: darkTextMuted.withAlpha(100),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              GestureDetector(
+                onTap: () async {
+                  final scanned = await Navigator.of(ctx).push<String>(
+                    MaterialPageRoute(
+                        builder: (_) => const _QrScannerPage()),
+                  );
+                  if (!ctx.mounted) return;
+                  if (scanned != null && scanned.isNotEmpty) {
+                    controller.text = scanned;
+                    setState(() => errorText = null);
+                  }
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.qr_code_scanner_rounded,
+                        color: primaryLight, size: 18),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Scan QR Code',
+                      style: GoogleFonts.nunito(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: primaryLight,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               if (errorText != null) ...[
