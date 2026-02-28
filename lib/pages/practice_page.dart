@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -987,79 +988,22 @@ class _PracticePageState extends ConsumerState<PracticePage>
 
   Widget _buildCelebrationView() {
     return AnimatedBuilder(
-      animation: Listenable.merge([_celebrationController, _sparkleController]),
+      animation: _celebrationController,
       builder: (context, child) {
         return Column(
           children: [
             const Spacer(flex: 3),
 
-            // Checkmark with sparkles
-            SizedBox(
-              width: 200,
-              height: 200,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  // Sparkle particles
-                  for (int i = 0; i < 8; i++)
-                    Builder(builder: (context) {
-                      final angle = (i / 8) * 2 * pi + _sparkleController.value * 2 * pi;
-                      final radius = 70.0 + sin(_sparkleController.value * 2 * pi + i) * 15.0;
-                      final sparkleOpacity =
-                          (sin(_sparkleController.value * 2 * pi * 2 + i * 0.8) * 0.5 + 0.5) *
-                          _checkOpacityAnimation.value;
-                      return Transform.translate(
-                        offset: Offset(cos(angle) * radius, sin(angle) * radius),
-                        child: Container(
-                          width: 4,
-                          height: 4,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: accentCoral.withAlpha((sparkleOpacity * 200).toInt()),
-                            boxShadow: [
-                              BoxShadow(
-                                color: accentCoral.withAlpha((sparkleOpacity * 100).toInt()),
-                                blurRadius: 4,
-                                spreadRadius: 1,
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }),
-
-                  // Checkmark circle
-                  Transform.scale(
-                    scale: _checkScaleAnimation.value,
-                    child: Opacity(
-                      opacity: _checkOpacityAnimation.value.clamp(0.0, 1.0),
-                      child: Container(
-                        width: 110,
-                        height: 110,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: const LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [Color(0xFFF4A68E), accentCoralDark],
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: accentCoral.withAlpha(100),
-                              blurRadius: 30,
-                              spreadRadius: 5,
-                            ),
-                          ],
-                        ),
-                        child: const Icon(
-                          Icons.check_rounded,
-                          size: 60,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+            // Musical notes icon
+            Transform.scale(
+              scale: _checkScaleAnimation.value,
+              child: Opacity(
+                opacity: _checkOpacityAnimation.value.clamp(0.0, 1.0),
+                child: SvgPicture.asset(
+                  'lib/images/licensed/session-completed.svg',
+                  width: 200,
+                  height: 200,
+                ),
               ),
             ),
 
