@@ -259,7 +259,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                 children: [
                   ShaderMask(
                     shaderCallback: (bounds) => const LinearGradient(
-                      colors: [Colors.white, primaryLight],
+                      colors: [Colors.white, accentCoral],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ).createShader(bounds),
@@ -300,7 +300,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
             Expanded(
               child: PageView(
                 controller: _pageController,
-                physics: const NeverScrollableScrollPhysics(),
+                physics: const ClampingScrollPhysics(),
                 onPageChanged: (page) => setState(() => _currentPage = page),
                 children: [
                   // Tour cards (pages 0–4)

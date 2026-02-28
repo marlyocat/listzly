@@ -93,7 +93,12 @@ class _AuthPageState extends ConsumerState<AuthPage> {
     } catch (e, stackTrace) {
       debugPrint('Google sign-in error: $e');
       debugPrint('Stack trace: $stackTrace');
-      _showError('Google sign-in failed: $e');
+      final msg = e.toString().toLowerCase();
+      if (msg.contains('cancel') || msg.contains('abort') || msg.contains('dismissed')) {
+        _showError('Google sign-in cancelled');
+      } else {
+        _showError('Google sign-in failed. Please try again.');
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
