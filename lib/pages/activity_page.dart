@@ -1453,7 +1453,20 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
 
       // Open native Save As dialog
       final params = SaveFileDialogParams(sourceFilePath: file.path);
-      await FlutterFileDialog.saveFile(params: params);
+      final savedPath = await FlutterFileDialog.saveFile(params: params);
+
+      if (savedPath != null && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Recording downloaded successfully',
+              style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+            ),
+            backgroundColor: accentCoralDark,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
     } catch (e) {
       debugPrint('Download error: $e');
       if (mounted) {

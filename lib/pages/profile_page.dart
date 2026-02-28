@@ -451,37 +451,10 @@ class ProfilePage extends ConsumerWidget {
               ],
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             Container(
               height: 1,
               color: Colors.white.withAlpha(15),
-            ),
-            const SizedBox(height: 16),
-
-            // Status row
-            Row(
-              children: [
-                Icon(
-                  isCancelled
-                      ? Icons.info_outline_rounded
-                      : Icons.check_circle_outline_rounded,
-                  color: isCancelled
-                      ? const Color(0xFFFBBF24)
-                      : const Color(0xFF22C55E),
-                  size: 18,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  isCancelled ? 'Cancelled' : 'Active',
-                  style: GoogleFonts.nunito(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: isCancelled
-                        ? const Color(0xFFFBBF24)
-                        : const Color(0xFF22C55E),
-                  ),
-                ),
-              ],
             ),
 
             // Expiration / renewal date
@@ -541,126 +514,41 @@ class ProfilePage extends ConsumerWidget {
               ),
             ],
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
 
-            // Action buttons
-            Row(
-              children: [
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => const PaywallPage()),
-                      );
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withAlpha(15),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'Change Plan',
-                          style: GoogleFonts.nunito(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
+            // Manage subscription button
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const PaywallPage()),
+                );
+              },
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withAlpha(15),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.black, width: 2),
+                ),
+                child: Center(
+                  child: Text(
+                    'Manage Subscription',
+                    style: GoogleFonts.nunito(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
                     ),
                   ),
                 ),
-                if (!isCancelled) ...[
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () => _showCancelDialog(context, ref, info),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withAlpha(15),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Cancel Subscription',
-                            style: GoogleFonts.nunito(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w800,
-                              color: const Color(0xFFFBBF24),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ],
+              ),
             ),
           ],
         ),
     );
   }
 
-  Future<void> _showCancelDialog(
-    BuildContext context,
-    WidgetRef ref,
-    SubscriptionInfo info,
-  ) async {
-    final expirationText = info.expirationDate != null
-        ? ' until ${_formatDate(info.expirationDate!)}'
-        : '';
-
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF1E0E3D),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          'Cancel Subscription?',
-          style:
-              GoogleFonts.dmSerifDisplay(fontSize: 20, color: Colors.white),
-        ),
-        content: Text(
-          'Your subscription will not renew, but you\'ll keep all your features$expirationText.',
-          style: GoogleFonts.nunito(
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-            color: darkTextSecondary,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text('Keep Subscription',
-                style: GoogleFonts.nunito(
-                    fontWeight: FontWeight.w700, color: darkTextMuted)),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text('Cancel Subscription',
-                style: GoogleFonts.nunito(
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFFFBBF24))),
-          ),
-        ],
-      ),
-    );
-    if (confirmed != true) return;
-
-    // Open the platform's subscription management page
-    final url = info.managementURL;
-    if (url != null) {
-      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
-    }
-
-    // Refresh subscription info when user returns
-    ref.invalidate(subscriptionInfoProvider);
-  }
 
   String _formatDate(DateTime date) {
     const months = [

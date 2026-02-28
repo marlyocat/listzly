@@ -444,7 +444,8 @@ class _PracticePageState extends ConsumerState<PracticePage>
           ),
         );
       }
-    } catch (_) {
+    } catch (e, st) {
+      debugPrint('Recording upload failed: $e\n$st');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -452,7 +453,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
               'Could not save recording',
               style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
             ),
-            backgroundColor: const Color(0xFF1E0E3D),
+            backgroundColor: accentCoralDark,
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -816,6 +817,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
 
                     // Mic / Record button
                     _buildMicButton(),
+
 
                     const Spacer(flex: 2),
                   ],

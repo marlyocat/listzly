@@ -5,6 +5,7 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:listzly/models/subscription_tier.dart';
 import 'package:listzly/providers/subscription_provider.dart';
 import 'package:listzly/providers/profile_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:listzly/theme/colors.dart';
 import 'package:listzly/utils/responsive.dart';
 
@@ -342,6 +343,35 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                       'teacher_premium_monthly'),
                                   onTap: () => _purchaseProduct(
                                       'teacher_premium_monthly'),
+                                ),
+                              ],
+                              if (!currentTier.isFree) ...[
+                                const SizedBox(height: 16),
+                                GestureDetector(
+                                  onTap: () async {
+                                    try {
+                                      final customerInfo =
+                                          await Purchases.getCustomerInfo();
+                                      final url =
+                                          customerInfo.managementURL;
+                                      if (url != null) {
+                                        await launchUrl(Uri.parse(url),
+                                            mode: LaunchMode
+                                                .externalApplication);
+                                      }
+                                    } catch (_) {}
+                                  },
+                                  child: Text(
+                                    'Cancel Subscription',
+                                    style: GoogleFonts.nunito(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w700,
+                                      color: darkTextMuted,
+                                      decoration:
+                                          TextDecoration.underline,
+                                      decorationColor: darkTextMuted,
+                                    ),
+                                  ),
                                 ),
                               ],
                               const SizedBox(height: 32),
