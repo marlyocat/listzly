@@ -323,20 +323,11 @@ class _AuthPageState extends ConsumerState<AuthPage> {
               Center(
                 child: GestureDetector(
                   onTap: _isLoading ? null : _signInWithGoogle,
-                  child: Container(
-                    width: 54,
-                    height: 54,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: const Color(0xFF747775),
-                      ),
-                    ),
-                    padding: const EdgeInsets.all(12),
-                    child: SvgPicture.asset(
-                      'lib/images/licensed/google-logo.svg',
-                    ),
+                  child: SvgPicture.asset(
+                    _isLogin
+                        ? 'lib/images/licensed/google-logo-sign-in.svg'
+                        : 'lib/images/licensed/google-logo-sign-up.svg',
+                    height: 40,
                   ),
                 ),
               ),
