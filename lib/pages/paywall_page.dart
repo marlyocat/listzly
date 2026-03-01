@@ -153,16 +153,18 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
     }
   }
 
-  /// Whether this student is covered by their teacher's paid plan.
-  /// Uses group membership directly to avoid a loading race where the
-  /// effective tier hasn't resolved yet and the student sees Restore.
-  bool _isCoveredByTeacher(WidgetRef ref) {
+  /// Whether this student is covered by a paid teacher's plan.
+  /// Hides Restore only for these students to prevent RevenueCat subscription
+  /// transfer. Students under free teachers can still purchase and restore.
+  bool _isCoveredByPaidTeacher(WidgetRef ref) {
     final profile = ref.watch(currentProfileProvider).value;
     if (profile == null || !profile.isStudent) return false;
     final membershipAsync = ref.watch(studentMembershipProvider);
     // While loading, assume covered (safe default — prevents accidental restore)
     if (membershipAsync.isLoading) return true;
-    return membershipAsync.value != null;
+    if (membershipAsync.value == null) return false;
+    final teacherTier = ref.watch(teacherSubscriptionTierProvider).value;
+    return teacherTier != null && teacherTier.studentsInheritPro;
   }
 
   @override
@@ -170,7 +172,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
     final currentTier = ref.watch(effectiveSubscriptionTierProvider);
     final profile = ref.watch(currentProfileProvider).value;
     final isTeacher = profile?.isTeacher ?? false;
-    final coveredByTeacher = _isCoveredByTeacher(ref);
+    final coveredByPaidTeacher = _isCoveredByPaidTeacher(ref);
 
     return Scaffold(
       backgroundColor: const Color(0xFF150833),
@@ -188,7 +190,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                     icon: const Icon(Icons.close, color: Colors.white),
                   ),
                   const Spacer(),
-                  if (!coveredByTeacher)
+                  if (!coveredByPaidTeacher)
                     GestureDetector(
                       onTap: _purchasing ? null : _restore,
                       child: Text(
@@ -211,7 +213,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                 colors: [Colors.white, accentCoral],
               ).createShader(bounds),
               child: Text(
-                coveredByTeacher ? 'Pro' : 'Upgrade to Pro',
+                'Upgrade to Pro',
                 style: GoogleFonts.dmSerifDisplay(
                   fontSize: 28,
                   color: Colors.white,
@@ -220,9 +222,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
             ),
             const SizedBox(height: 4),
             Text(
-              coveredByTeacher
-                  ? 'Included with your teacher\'s plan'
-                  : 'Unlock your full potential',
+              'Unlock your full potential',
               style: GoogleFonts.nunito(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -233,9 +233,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
 
             // Content
             Expanded(
-              child: coveredByTeacher
-                  ? _buildTeacherCoveredView()
-                  : _loading
+              child: _loading
                       ? const Center(
                           child: CircularProgressIndicator(color: accentCoral),
                         )
@@ -403,84 +401,6 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
           ],
         ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildTeacherCoveredView() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: [
-                  accentCoral.withAlpha(40),
-                  accentCoralDark.withAlpha(40),
-                ],
-              ),
-            ),
-            child: const Icon(
-              Icons.school_rounded,
-              size: 40,
-              color: accentCoral,
-            ),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            'You\'re covered!',
-            style: GoogleFonts.dmSerifDisplay(
-              fontSize: 24,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'Your teacher\'s plan includes Pro benefits for all students. You have full access to every Pro feature.',
-            textAlign: TextAlign.center,
-            style: GoogleFonts.nunito(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-              color: darkTextSecondary,
-              height: 1.5,
-            ),
-          ),
-          const SizedBox(height: 32),
-          // Pro features list
-          ...[
-            'All 4 instruments',
-            'Activity tracking & stats',
-            'Recordings',
-          ].map(
-            (f) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(
-                    Icons.check_circle_rounded,
-                    size: 20,
-                    color: accentCoral,
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    f,
-                    style: GoogleFonts.nunito(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
