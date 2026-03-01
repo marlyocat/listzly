@@ -502,6 +502,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                   decoration: BoxDecoration(
                     color: Colors.white.withAlpha(15),
                     borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.black, width: 1.5),
                   ),
                   child: Text(
                     'CURRENT',
@@ -548,6 +549,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
               decoration: BoxDecoration(
                 color: accentCoral.withAlpha(20),
                 borderRadius: BorderRadius.circular(6),
+                border: Border.all(color: Colors.black, width: 1.5),
               ),
               child: Text(
                 trialInfo,
