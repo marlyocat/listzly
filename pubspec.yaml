@@ -77,15 +77,15 @@ dev_dependencies:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/icon/listzly_app_icon.png"
-  adaptive_icon_foreground: "assets/icon/listzly_foreground_app_icon.png"
-  adaptive_icon_background: "assets/icon/listzly_app_icon_background.png"
+  image_path: "assets/icon/rounded/listzly_app_icon.png"
+  adaptive_icon_foreground: "assets/icon/base/listzly_foreground_app_icon.png"
+  adaptive_icon_background: "assets/icon/base/listzly_app_icon_background.png"
 
 flutter_native_splash:
-  image: "assets/icon/listzly_foreground_app_icon.png"
-  background_image: "assets/icon/listzly_app_icon_background.png"
+  image: "assets/icon/base/listzly_foreground_app_icon.png"
+  background_image: "assets/icon/base/listzly_app_icon_background.png"
   android_12:
-    image: "assets/icon/listzly_foreground_app_icon.png"
+    image: "assets/icon/base/listzly_foreground_app_icon.png"
     color: "#7B33EA"
 
 # For information on the generic Dart part of this file, see the
