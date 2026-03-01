@@ -21,6 +21,9 @@ class OwnSubscriptionTier extends _$OwnSubscriptionTier {
   @override
   SubscriptionTier build() {
     final service = ref.watch(subscriptionServiceProvider);
+    // Re-run when auth state changes (login/logout) so RevenueCat
+    // is re-associated with the correct user.
+    final user = ref.watch(currentUserProvider);
 
     // Listen for changes from RevenueCat
     final sub = service.onTierChanged.listen((tier) {
@@ -30,20 +33,18 @@ class OwnSubscriptionTier extends _$OwnSubscriptionTier {
     ref.onDispose(() => sub.cancel());
 
     // Fetch initial tier
-    _loadTier(service);
+    if (user != null) {
+      _loadTier(service, user.id);
+    }
 
     return SubscriptionTier.free;
   }
 
-  Future<void> _loadTier(SubscriptionService service) async {
-    // Ensure RevenueCat is associated with the current user
-    final user = ref.read(currentUserProvider);
-    if (user != null) {
-      try {
-        await Purchases.logIn(user.id);
-      } catch (e) {
-        debugPrint('RevenueCat logIn failed: $e');
-      }
+  Future<void> _loadTier(SubscriptionService service, String userId) async {
+    try {
+      await Purchases.logIn(userId);
+    } catch (e) {
+      debugPrint('RevenueCat logIn failed: $e');
     }
 
     final tier = await service.getCurrentTier();
