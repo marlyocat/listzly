@@ -94,7 +94,7 @@ final class OwnSubscriptionTierProvider
 }
 
 String _$ownSubscriptionTierHash() =>
-    r'1c6cdea6b8d1d078fa2a96c0484b72932782d824';
+    r'88d84bba7db2d74470babc380f42655a303ba30d';
 
 /// The user's own subscription tier from RevenueCat.
 

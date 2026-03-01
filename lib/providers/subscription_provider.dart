@@ -36,6 +36,16 @@ class OwnSubscriptionTier extends _$OwnSubscriptionTier {
   }
 
   Future<void> _loadTier(SubscriptionService service) async {
+    // Ensure RevenueCat is associated with the current user
+    final user = ref.read(currentUserProvider);
+    if (user != null) {
+      try {
+        await Purchases.logIn(user.id);
+      } catch (e) {
+        debugPrint('RevenueCat logIn failed: $e');
+      }
+    }
+
     final tier = await service.getCurrentTier();
     state = tier;
     _syncToSupabase(tier);
