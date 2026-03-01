@@ -152,11 +152,21 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
     }
   }
 
+  /// Whether this student is covered by their teacher's paid plan.
+  bool _isCoveredByTeacher(WidgetRef ref) {
+    final profile = ref.watch(currentProfileProvider).value;
+    if (profile == null || !profile.isStudent) return false;
+    final ownTier = ref.watch(ownSubscriptionTierProvider);
+    final effectiveTier = ref.watch(effectiveSubscriptionTierProvider);
+    return effectiveTier.isPro && ownTier.isFree;
+  }
+
   @override
   Widget build(BuildContext context) {
     final currentTier = ref.watch(effectiveSubscriptionTierProvider);
     final profile = ref.watch(currentProfileProvider).value;
     final isTeacher = profile?.isTeacher ?? false;
+    final coveredByTeacher = _isCoveredByTeacher(ref);
 
     return Scaffold(
       backgroundColor: const Color(0xFF150833),
@@ -174,17 +184,18 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                     icon: const Icon(Icons.close, color: Colors.white),
                   ),
                   const Spacer(),
-                  GestureDetector(
-                    onTap: _purchasing ? null : _restore,
-                    child: Text(
-                      'Restore',
-                      style: GoogleFonts.nunito(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: accentCoral,
+                  if (!coveredByTeacher)
+                    GestureDetector(
+                      onTap: _purchasing ? null : _restore,
+                      child: Text(
+                        'Restore',
+                        style: GoogleFonts.nunito(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: accentCoral,
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ),
@@ -196,7 +207,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                 colors: [Colors.white, accentCoral],
               ).createShader(bounds),
               child: Text(
-                'Upgrade to Pro',
+                coveredByTeacher ? 'Pro' : 'Upgrade to Pro',
                 style: GoogleFonts.dmSerifDisplay(
                   fontSize: 28,
                   color: Colors.white,
@@ -205,7 +216,9 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
             ),
             const SizedBox(height: 4),
             Text(
-              'Unlock your full potential',
+              coveredByTeacher
+                  ? 'Included with your teacher\'s plan'
+                  : 'Unlock your full potential',
               style: GoogleFonts.nunito(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -214,176 +227,256 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
             ),
             const SizedBox(height: 24),
 
-            // Plans
+            // Content
             Expanded(
-              child: _loading
-                  ? const Center(
-                      child: CircularProgressIndicator(color: accentCoral),
-                    )
-                  : _error != null
-                      ? Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(32),
-                            child: Text(
-                              _error!,
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.nunito(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                                color: darkTextSecondary,
-                              ),
-                            ),
-                          ),
+              child: coveredByTeacher
+                  ? _buildTeacherCoveredView()
+                  : _loading
+                      ? const Center(
+                          child: CircularProgressIndicator(color: accentCoral),
                         )
-                      : SingleChildScrollView(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Column(
-                            children: [
-                              // Free plan (always shown)
-                              _buildPlanCard(
-                                title: 'Free',
-                                price: '\$0',
-                                period: 'forever',
-                                features: [
-                                  '1 instrument',
-                                  'Daily quests',
-                                  'Streaks & XP',
-                                ],
-                                isCurrentPlan: currentTier.isFree,
-                                accentColor: darkTextMuted,
-                              ),
-                              const SizedBox(height: 12),
-                              if (!isTeacher) ...[
-                                // Self-learner: Personal Pro
-                                _buildPlanCard(
-                                  title: 'Personal Pro',
-                                  price: _getPrice(
-                                      'personal_pro_yearly', '\$7.99'),
-                                  period: '/year',
-                                  features: [
-                                    'All 4 instruments',
-                                    'Activity tracking & stats',
-                                    'Recordings',
-                                  ],
-                                  isCurrentPlan:
-                                      currentTier == SubscriptionTier.pro,
-                                  isPopular: true,
-                                  accentColor: accentCoral,
-                                  trialInfo: _getTrialInfo('personal_pro_yearly'),
-                                  onTap: () =>
-                                      _purchaseProduct('personal_pro_yearly'),
-                                ),
-                              ],
-                              if (isTeacher) ...[
-                                // Teacher Lite
-                                _buildPlanCard(
-                                  title: 'Teacher Lite',
-                                  price: _getPrice(
-                                      'teacher_lite_monthly', '\$4.99'),
-                                  period: '/month',
-                                  features: [
-                                    'All 4 instruments',
-                                    'Activity tracking & stats',
-                                    'Recordings',
-                                    'Up to 10 students',
-                                    'Custom quest assignment',
-                                    'Students get Pro free',
-                                  ],
-                                  isCurrentPlan: currentTier ==
-                                      SubscriptionTier.teacherLite,
-                                  accentColor: accentCoral,
-                                  trialInfo: _getTrialInfo(
-                                      'teacher_lite_monthly'),
-                                  onTap: () => _purchaseProduct(
-                                      'teacher_lite_monthly'),
-                                ),
-                                const SizedBox(height: 12),
-                                // Teacher Pro
-                                _buildPlanCard(
-                                  title: 'Teacher Pro',
-                                  price: _getPrice(
-                                      'teacher_pro_monthly', '\$9.99'),
-                                  period: '/month',
-                                  features: [
-                                    'All 4 instruments',
-                                    'Activity tracking & stats',
-                                    'Recordings',
-                                    'Up to 25 students',
-                                    'Custom quest assignment',
-                                    'Students get Pro free',
-                                  ],
-                                  isCurrentPlan: currentTier ==
-                                      SubscriptionTier.teacherPro,
-                                  isPopular: true,
-                                  accentColor: accentCoral,
-                                  trialInfo: _getTrialInfo(
-                                      'teacher_pro_monthly'),
-                                  onTap: () => _purchaseProduct(
-                                      'teacher_pro_monthly'),
-                                ),
-                                const SizedBox(height: 12),
-                                // Teacher Premium
-                                _buildPlanCard(
-                                  title: 'Teacher Premium',
-                                  price: _getPrice(
-                                      'teacher_premium_monthly', '\$14.99'),
-                                  period: '/month',
-                                  features: [
-                                    'All 4 instruments',
-                                    'Activity tracking & stats',
-                                    'Recordings',
-                                    'Up to 50 students',
-                                    'Custom quest assignment',
-                                    'Students get Pro free',
-                                  ],
-                                  isCurrentPlan: currentTier ==
-                                      SubscriptionTier.teacherPremium,
-                                  accentColor: accentCoral,
-                                  trialInfo: _getTrialInfo(
-                                      'teacher_premium_monthly'),
-                                  onTap: () => _purchaseProduct(
-                                      'teacher_premium_monthly'),
-                                ),
-                              ],
-                              if (!currentTier.isFree) ...[
-                                const SizedBox(height: 16),
-                                GestureDetector(
-                                  onTap: () async {
-                                    try {
-                                      final customerInfo =
-                                          await Purchases.getCustomerInfo();
-                                      final url =
-                                          customerInfo.managementURL;
-                                      if (url != null) {
-                                        await launchUrl(Uri.parse(url),
-                                            mode: LaunchMode
-                                                .externalApplication);
-                                      }
-                                    } catch (e) {
-                                      debugPrint('Failed to launch management URL: $e');
-                                    }
-                                  },
-                                  child: Text(
-                                    'Cancel Subscription',
-                                    style: GoogleFonts.nunito(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w700,
-                                      color: darkTextMuted,
-                                      decoration:
-                                          TextDecoration.underline,
-                                      decorationColor: darkTextMuted,
-                                    ),
+                      : _error != null
+                          ? Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(32),
+                                child: Text(
+                                  _error!,
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.nunito(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                    color: darkTextSecondary,
                                   ),
                                 ),
-                              ],
-                              const SizedBox(height: 32),
-                            ],
-                          ),
-                        ),
+                              ),
+                            )
+                          : SingleChildScrollView(
+                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                              child: Column(
+                                children: [
+                                  // Free plan (always shown)
+                                  _buildPlanCard(
+                                    title: 'Free',
+                                    price: '\$0',
+                                    period: 'forever',
+                                    features: [
+                                      '1 instrument',
+                                      'Daily quests',
+                                      'Streaks & XP',
+                                    ],
+                                    isCurrentPlan: currentTier.isFree,
+                                    accentColor: darkTextMuted,
+                                  ),
+                                  const SizedBox(height: 12),
+                                  if (!isTeacher) ...[
+                                    // Self-learner / student: Personal Pro
+                                    _buildPlanCard(
+                                      title: 'Personal Pro',
+                                      price: _getPrice(
+                                          'personal_pro_yearly', '\$7.99'),
+                                      period: '/year',
+                                      features: [
+                                        'All 4 instruments',
+                                        'Activity tracking & stats',
+                                        'Recordings',
+                                      ],
+                                      isCurrentPlan:
+                                          currentTier == SubscriptionTier.pro,
+                                      isPopular: true,
+                                      accentColor: accentCoral,
+                                      trialInfo: _getTrialInfo('personal_pro_yearly'),
+                                      onTap: () =>
+                                          _purchaseProduct('personal_pro_yearly'),
+                                    ),
+                                  ],
+                                  if (isTeacher) ...[
+                                    // Teacher Lite
+                                    _buildPlanCard(
+                                      title: 'Teacher Lite',
+                                      price: _getPrice(
+                                          'teacher_lite_monthly', '\$4.99'),
+                                      period: '/month',
+                                      features: [
+                                        'All 4 instruments',
+                                        'Activity tracking & stats',
+                                        'Recordings',
+                                        'Up to 10 students',
+                                        'Custom quest assignment',
+                                        'Students get Pro free',
+                                      ],
+                                      isCurrentPlan: currentTier ==
+                                          SubscriptionTier.teacherLite,
+                                      accentColor: accentCoral,
+                                      trialInfo: _getTrialInfo(
+                                          'teacher_lite_monthly'),
+                                      onTap: () => _purchaseProduct(
+                                          'teacher_lite_monthly'),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    // Teacher Pro
+                                    _buildPlanCard(
+                                      title: 'Teacher Pro',
+                                      price: _getPrice(
+                                          'teacher_pro_monthly', '\$9.99'),
+                                      period: '/month',
+                                      features: [
+                                        'All 4 instruments',
+                                        'Activity tracking & stats',
+                                        'Recordings',
+                                        'Up to 25 students',
+                                        'Custom quest assignment',
+                                        'Students get Pro free',
+                                      ],
+                                      isCurrentPlan: currentTier ==
+                                          SubscriptionTier.teacherPro,
+                                      isPopular: true,
+                                      accentColor: accentCoral,
+                                      trialInfo: _getTrialInfo(
+                                          'teacher_pro_monthly'),
+                                      onTap: () => _purchaseProduct(
+                                          'teacher_pro_monthly'),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    // Teacher Premium
+                                    _buildPlanCard(
+                                      title: 'Teacher Premium',
+                                      price: _getPrice(
+                                          'teacher_premium_monthly', '\$14.99'),
+                                      period: '/month',
+                                      features: [
+                                        'All 4 instruments',
+                                        'Activity tracking & stats',
+                                        'Recordings',
+                                        'Up to 50 students',
+                                        'Custom quest assignment',
+                                        'Students get Pro free',
+                                      ],
+                                      isCurrentPlan: currentTier ==
+                                          SubscriptionTier.teacherPremium,
+                                      accentColor: accentCoral,
+                                      trialInfo: _getTrialInfo(
+                                          'teacher_premium_monthly'),
+                                      onTap: () => _purchaseProduct(
+                                          'teacher_premium_monthly'),
+                                    ),
+                                  ],
+                                  if (!currentTier.isFree) ...[
+                                    const SizedBox(height: 16),
+                                    GestureDetector(
+                                      onTap: () async {
+                                        try {
+                                          final customerInfo =
+                                              await Purchases.getCustomerInfo();
+                                          final url =
+                                              customerInfo.managementURL;
+                                          if (url != null) {
+                                            await launchUrl(Uri.parse(url),
+                                                mode: LaunchMode
+                                                    .externalApplication);
+                                          }
+                                        } catch (e) {
+                                          debugPrint('Failed to launch management URL: $e');
+                                        }
+                                      },
+                                      child: Text(
+                                        'Cancel Subscription',
+                                        style: GoogleFonts.nunito(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w700,
+                                          color: darkTextMuted,
+                                          decoration:
+                                              TextDecoration.underline,
+                                          decorationColor: darkTextMuted,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                  const SizedBox(height: 32),
+                                ],
+                              ),
+                            ),
             ),
           ],
         ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildTeacherCoveredView() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                colors: [
+                  accentCoral.withAlpha(40),
+                  accentCoralDark.withAlpha(40),
+                ],
+              ),
+            ),
+            child: const Icon(
+              Icons.school_rounded,
+              size: 40,
+              color: accentCoral,
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'You\'re covered!',
+            style: GoogleFonts.dmSerifDisplay(
+              fontSize: 24,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Your teacher\'s plan includes Pro benefits for all students. You have full access to every Pro feature.',
+            textAlign: TextAlign.center,
+            style: GoogleFonts.nunito(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: darkTextSecondary,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 32),
+          // Pro features list
+          ...[
+            'All 4 instruments',
+            'Activity tracking & stats',
+            'Recordings',
+          ].map(
+            (f) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.check_circle_rounded,
+                    size: 20,
+                    color: accentCoral,
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    f,
+                    style: GoogleFonts.nunito(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

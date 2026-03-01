@@ -1289,6 +1289,7 @@ class ProfilePage extends ConsumerWidget {
                 ref.invalidate(studentMembershipProvider);
                 ref.invalidate(isInGroupProvider);
                 ref.invalidate(currentProfileProvider);
+                ref.invalidate(teacherSubscriptionTierProvider);
               } catch (e) {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
