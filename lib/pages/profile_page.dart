@@ -20,6 +20,7 @@ import 'package:listzly/utils/responsive.dart';
 import 'package:listzly/services/notification_service.dart';
 import 'package:listzly/providers/subscription_provider.dart';
 import 'package:listzly/models/subscription_info.dart';
+import 'package:listzly/models/subscription_tier.dart';
 import 'package:listzly/pages/paywall_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -198,6 +199,9 @@ class ProfilePage extends ConsumerWidget {
                         (route) => false,
                       );
                       NotificationService.instance.cancelReminder();
+                      ref
+                          .read(ownSubscriptionTierProvider.notifier)
+                          .setTier(SubscriptionTier.free);
                       ref.read(authServiceProvider).signOut();
                     },
                     style: ElevatedButton.styleFrom(

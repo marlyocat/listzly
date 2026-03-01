@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:listzly/config/supabase_config.dart';
 
@@ -50,6 +52,11 @@ class AuthService {
   }
 
   Future<void> signOut() async {
+    try {
+      await Purchases.logOut();
+    } catch (e) {
+      debugPrint('Purchases.logOut failed (user may be anonymous): $e');
+    }
     await GoogleSignIn.instance.signOut();
     await _client.auth.signOut();
   }
