@@ -116,16 +116,14 @@ abstract class _$OwnSubscriptionTier extends $Notifier<SubscriptionTier> {
   }
 }
 
-/// The effective tier: user's own tier, or Pro if student is in a teacher's group.
-/// A teacher must have a paid plan to create a group, so group membership
-/// implies the student should receive Pro benefits.
+/// The effective tier: user's own tier, or Pro if student is in a paid
+/// teacher's group. Students under a free teacher stay on the free plan.
 
 @ProviderFor(effectiveSubscriptionTier)
 final effectiveSubscriptionTierProvider = EffectiveSubscriptionTierProvider._();
 
-/// The effective tier: user's own tier, or Pro if student is in a teacher's group.
-/// A teacher must have a paid plan to create a group, so group membership
-/// implies the student should receive Pro benefits.
+/// The effective tier: user's own tier, or Pro if student is in a paid
+/// teacher's group. Students under a free teacher stay on the free plan.
 
 final class EffectiveSubscriptionTierProvider
     extends
@@ -135,9 +133,8 @@ final class EffectiveSubscriptionTierProvider
           SubscriptionTier
         >
     with $Provider<SubscriptionTier> {
-  /// The effective tier: user's own tier, or Pro if student is in a teacher's group.
-  /// A teacher must have a paid plan to create a group, so group membership
-  /// implies the student should receive Pro benefits.
+  /// The effective tier: user's own tier, or Pro if student is in a paid
+  /// teacher's group. Students under a free teacher stay on the free plan.
   EffectiveSubscriptionTierProvider._()
     : super(
         from: null,
@@ -172,7 +169,55 @@ final class EffectiveSubscriptionTierProvider
 }
 
 String _$effectiveSubscriptionTierHash() =>
-    r'8c510927e66d808469292f4351551ca0f3a2836d';
+    r'5aca5298d85944a14c0d1b2988419f78b2bddebe';
+
+/// Fetches the teacher's subscription tier from Supabase.
+/// Re-evaluates when the student's group membership changes.
+
+@ProviderFor(teacherSubscriptionTier)
+final teacherSubscriptionTierProvider = TeacherSubscriptionTierProvider._();
+
+/// Fetches the teacher's subscription tier from Supabase.
+/// Re-evaluates when the student's group membership changes.
+
+final class TeacherSubscriptionTierProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<SubscriptionTier>,
+          SubscriptionTier,
+          FutureOr<SubscriptionTier>
+        >
+    with $FutureModifier<SubscriptionTier>, $FutureProvider<SubscriptionTier> {
+  /// Fetches the teacher's subscription tier from Supabase.
+  /// Re-evaluates when the student's group membership changes.
+  TeacherSubscriptionTierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'teacherSubscriptionTierProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$teacherSubscriptionTierHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<SubscriptionTier> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<SubscriptionTier> create(Ref ref) {
+    return teacherSubscriptionTier(ref);
+  }
+}
+
+String _$teacherSubscriptionTierHash() =>
+    r'8f3d03abab77d24478b4f1a27e08c98440c7dc09';
 
 /// Full subscription details (tier, expiration, renewal status, etc.).
 

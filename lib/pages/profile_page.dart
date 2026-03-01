@@ -235,15 +235,14 @@ class ProfilePage extends ConsumerWidget {
   }
 
   // ─── Subscription section ─────────────────────────────────────────
-  /// Whether this student's Pro access comes from their teacher's group.
-  /// Uses group membership directly to avoid a loading race where the
-  /// effective tier hasn't resolved yet.
+  /// Whether this student's Pro access comes from their teacher's paid plan.
   bool _isCoveredByTeacher(WidgetRef ref) {
     final profile = ref.watch(currentProfileProvider).value;
     if (profile == null || !profile.isStudent) return false;
     final membershipAsync = ref.watch(studentMembershipProvider);
-    if (membershipAsync.isLoading) return true;
-    return membershipAsync.value != null;
+    if (membershipAsync.value == null) return false;
+    final teacherTier = ref.watch(teacherSubscriptionTierProvider).value;
+    return teacherTier != null && teacherTier.studentsInheritPro;
   }
 
   Widget _buildSubscriptionSection(BuildContext context, WidgetRef ref) {
@@ -1432,6 +1431,11 @@ class ProfilePage extends ConsumerWidget {
 
   void _showGroupInfoDialog(
       BuildContext context, WidgetRef ref, String groupId) {
+    final teacherTier =
+        ref.read(teacherSubscriptionTierProvider).value;
+    final teacherPlanLabel = (teacherTier != null && teacherTier.studentsInheritPro)
+        ? 'Paid Plan'
+        : 'Free Plan';
     showDialog(
       context: context,
       builder: (ctx) {
@@ -1519,32 +1523,42 @@ class ProfilePage extends ConsumerWidget {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    SizedBox(
+                    const SizedBox(height: 12),
+                    Container(
                       width: double.infinity,
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.pop(ctx);
-                          _showLeaveGroupDialog(context, ref);
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          decoration: BoxDecoration(
-                            color: darkCardBg,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.black, width: 3),
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Leave Group',
-                              style: GoogleFonts.nunito(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w800,
-                                color: accentCoralDark,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: darkSurfaceBg,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.black, width: 2),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.workspace_premium_rounded,
+                              color: darkTextSecondary, size: 20),
+                          const SizedBox(width: 12),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Teacher's Plan",
+                                style: GoogleFonts.nunito(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: darkTextMuted,
+                                ),
                               ),
-                            ),
+                              Text(
+                                teacherPlanLabel,
+                                style: GoogleFonts.nunito(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
+                        ],
                       ),
                     ),
                   ],

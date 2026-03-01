@@ -68,9 +68,8 @@ class OwnSubscriptionTier extends _$OwnSubscriptionTier {
   }
 }
 
-/// The effective tier: user's own tier, or Pro if student is in a teacher's group.
-/// A teacher must have a paid plan to create a group, so group membership
-/// implies the student should receive Pro benefits.
+/// The effective tier: user's own tier, or Pro if student is in a paid
+/// teacher's group. Students under a free teacher stay on the free plan.
 @riverpod
 SubscriptionTier effectiveSubscriptionTier(Ref ref) {
   final ownTier = ref.watch(ownSubscriptionTierProvider);
@@ -78,16 +77,47 @@ SubscriptionTier effectiveSubscriptionTier(Ref ref) {
 
   if (profile == null) return ownTier;
 
-  // If user is a student in a group, they get Pro benefits
+  // If user is a student in a group, check if teacher has a paid plan
   if (profile.isStudent) {
     final membershipAsync = ref.watch(studentMembershipProvider);
     if (membershipAsync.value != null &&
         ownTier.index < SubscriptionTier.pro.index) {
-      return SubscriptionTier.pro;
+      final teacherTier = ref.watch(teacherSubscriptionTierProvider).value;
+      if (teacherTier != null && teacherTier.studentsInheritPro) {
+        return SubscriptionTier.pro;
+      }
     }
   }
 
   return ownTier;
+}
+
+/// Fetches the teacher's subscription tier from Supabase.
+/// Re-evaluates when the student's group membership changes.
+@riverpod
+Future<SubscriptionTier> teacherSubscriptionTier(Ref ref) async {
+  final membership = await ref.watch(studentMembershipProvider.future);
+  if (membership == null) return SubscriptionTier.free;
+
+  final client = ref.watch(supabaseClientProvider);
+
+  final group = await client
+      .from('teacher_groups')
+      .select('teacher_id')
+      .eq('id', membership.groupId)
+      .maybeSingle();
+  if (group == null) return SubscriptionTier.free;
+
+  final teacherId = group['teacher_id'] as String;
+  final profile = await client
+      .from('profiles')
+      .select('subscription_tier')
+      .eq('id', teacherId)
+      .maybeSingle();
+  if (profile == null) return SubscriptionTier.free;
+
+  return SubscriptionTier.fromString(
+      profile['subscription_tier'] as String? ?? 'free');
 }
 
 /// Full subscription details (tier, expiration, renewal status, etc.).
