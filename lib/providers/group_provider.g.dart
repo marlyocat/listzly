@@ -97,9 +97,9 @@ final class StudentMembershipProvider
         $FunctionalProvider<
           AsyncValue<GroupMember?>,
           GroupMember?,
-          FutureOr<GroupMember?>
+          Stream<GroupMember?>
         >
-    with $FutureModifier<GroupMember?>, $FutureProvider<GroupMember?> {
+    with $FutureModifier<GroupMember?>, $StreamProvider<GroupMember?> {
   StudentMembershipProvider._()
     : super(
         from: null,
@@ -116,17 +116,17 @@ final class StudentMembershipProvider
 
   @$internal
   @override
-  $FutureProviderElement<GroupMember?> $createElement(
+  $StreamProviderElement<GroupMember?> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<GroupMember?> create(Ref ref) {
+  Stream<GroupMember?> create(Ref ref) {
     return studentMembership(ref);
   }
 }
 
-String _$studentMembershipHash() => r'8e027c9836e37c411ac28fe3710250b1aba98c81';
+String _$studentMembershipHash() => r'08c094b9c1524fde81ee7822c1d7b0bcac97c701';
 
 @ProviderFor(isInGroup)
 final isInGroupProvider = IsInGroupProvider._();
@@ -159,7 +159,7 @@ final class IsInGroupProvider
   }
 }
 
-String _$isInGroupHash() => r'12f60570e2e06dc26e3db37ccae7b2cace157eda';
+String _$isInGroupHash() => r'9f8a5b24035c59fbaf9289b1066f21031d497c31';
 
 @ProviderFor(teacherStudents)
 final teacherStudentsProvider = TeacherStudentsProvider._();

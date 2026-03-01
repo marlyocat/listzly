@@ -235,11 +235,24 @@ class ProfilePage extends ConsumerWidget {
   }
 
   // ─── Subscription section ─────────────────────────────────────────
+  /// Whether this student's Pro access comes from their teacher's group.
+  /// Uses group membership directly to avoid a loading race where the
+  /// effective tier hasn't resolved yet.
+  bool _isCoveredByTeacher(WidgetRef ref) {
+    final profile = ref.watch(currentProfileProvider).value;
+    if (profile == null || !profile.isStudent) return false;
+    final membershipAsync = ref.watch(studentMembershipProvider);
+    if (membershipAsync.isLoading) return true;
+    return membershipAsync.value != null;
+  }
+
   Widget _buildSubscriptionSection(BuildContext context, WidgetRef ref) {
     final tier = ref.watch(effectiveSubscriptionTierProvider);
 
     final Widget card;
-    if (tier.isFree) {
+    if (_isCoveredByTeacher(ref)) {
+      card = _buildTeacherCoveredCard(context);
+    } else if (tier.isFree) {
       card = _buildFreeSubscriptionCard(context);
     } else {
       final infoAsync = ref.watch(subscriptionInfoProvider);
@@ -364,6 +377,57 @@ class ProfilePage extends ConsumerWidget {
             ),
           ],
         ),
+    );
+  }
+
+  Widget _buildTeacherCoveredCard(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: darkCardBg,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.black, width: 5),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: accentCoral.withAlpha(30),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.black, width: 2),
+            ),
+            child: const Icon(Icons.star_rounded,
+                color: accentCoral, size: 24),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Pro Plan',
+                  style: GoogleFonts.nunito(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Included with your teacher\'s plan',
+                  style: GoogleFonts.nunito(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: darkTextMuted,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -1293,7 +1357,6 @@ class ProfilePage extends ConsumerWidget {
                 ref.invalidate(studentMembershipProvider);
                 ref.invalidate(isInGroupProvider);
                 ref.invalidate(currentProfileProvider);
-                ref.invalidate(teacherSubscriptionTierProvider);
               } catch (e) {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(

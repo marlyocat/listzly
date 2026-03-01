@@ -68,8 +68,9 @@ class OwnSubscriptionTier extends _$OwnSubscriptionTier {
   }
 }
 
-/// The effective tier: user's own tier, or teacher's tier if student is in a
-/// paid teacher's group (only if teacher has teacherPro).
+/// The effective tier: user's own tier, or Pro if student is in a teacher's group.
+/// A teacher must have a paid plan to create a group, so group membership
+/// implies the student should receive Pro benefits.
 @riverpod
 SubscriptionTier effectiveSubscriptionTier(Ref ref) {
   final ownTier = ref.watch(ownSubscriptionTierProvider);
@@ -77,36 +78,16 @@ SubscriptionTier effectiveSubscriptionTier(Ref ref) {
 
   if (profile == null) return ownTier;
 
-  // If user is a student in a group, check teacher's tier
+  // If user is a student in a group, they get Pro benefits
   if (profile.isStudent) {
-    final membership = ref.watch(studentMembershipProvider).value;
-    if (membership != null) {
-      final teacherTier =
-          ref.watch(teacherSubscriptionTierProvider).value;
-      // Only inherit Pro if teacher has teacherPro (studentsInheritPro)
-      if (teacherTier != null &&
-          teacherTier.studentsInheritPro &&
-          ownTier.index < SubscriptionTier.pro.index) {
-        return SubscriptionTier.pro;
-      }
+    final membershipAsync = ref.watch(studentMembershipProvider);
+    if (membershipAsync.value != null &&
+        ownTier.index < SubscriptionTier.pro.index) {
+      return SubscriptionTier.pro;
     }
   }
 
   return ownTier;
-}
-
-/// Fetches the teacher's subscription tier from Supabase profile.
-@riverpod
-Future<SubscriptionTier> teacherSubscriptionTier(
-    Ref ref) async {
-  final user = ref.watch(currentUserProvider);
-  if (user == null) return SubscriptionTier.free;
-
-  final profileService = ref.watch(profileServiceProvider);
-  final teacherProfile = await profileService.getTeacherProfile(user.id);
-  if (teacherProfile == null) return SubscriptionTier.free;
-
-  return SubscriptionTier.fromString(teacherProfile.subscriptionTier);
 }
 
 /// Full subscription details (tier, expiration, renewal status, etc.).

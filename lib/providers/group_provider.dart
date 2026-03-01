@@ -20,17 +20,40 @@ Future<TeacherGroup?> teacherGroup(Ref ref) async {
 }
 
 @riverpod
-Future<GroupMember?> studentMembership(Ref ref) async {
+Stream<GroupMember?> studentMembership(Ref ref) async* {
   final user = ref.watch(currentUserProvider);
-  if (user == null) throw Exception('Not authenticated');
-  return ref.watch(groupServiceProvider).getStudentMembership(user.id);
+  if (user == null) {
+    yield null;
+    return;
+  }
+
+  final client = ref.watch(supabaseClientProvider);
+
+  // Emit initial value immediately to avoid disposal-during-loading errors.
+  // The Supabase .stream() needs time to establish a WebSocket connection;
+  // if the provider is disposed before that, Riverpod throws.
+  final initial = await client
+      .from('group_members')
+      .select()
+      .eq('student_id', user.id)
+      .maybeSingle();
+  yield initial != null ? GroupMember.fromJson(initial) : null;
+
+  // Then switch to real-time stream for subsequent changes
+  yield* client
+      .from('group_members')
+      .stream(primaryKey: ['id'])
+      .eq('student_id', user.id)
+      .map((rows) {
+        if (rows.isEmpty) return null;
+        return GroupMember.fromJson(rows.first);
+      });
 }
 
 @riverpod
 Future<bool> isInGroup(Ref ref) async {
-  final user = ref.watch(currentUserProvider);
-  if (user == null) return false;
-  return ref.watch(groupServiceProvider).isStudentInGroup(user.id);
+  final membership = await ref.watch(studentMembershipProvider.future);
+  return membership != null;
 }
 
 @riverpod

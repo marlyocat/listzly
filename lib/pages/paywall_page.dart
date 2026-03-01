@@ -5,6 +5,7 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:listzly/models/subscription_tier.dart';
 import 'package:listzly/providers/subscription_provider.dart';
 import 'package:listzly/providers/profile_provider.dart';
+import 'package:listzly/providers/group_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:listzly/theme/colors.dart';
 import 'package:listzly/utils/responsive.dart';
@@ -153,12 +154,15 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
   }
 
   /// Whether this student is covered by their teacher's paid plan.
+  /// Uses group membership directly to avoid a loading race where the
+  /// effective tier hasn't resolved yet and the student sees Restore.
   bool _isCoveredByTeacher(WidgetRef ref) {
     final profile = ref.watch(currentProfileProvider).value;
     if (profile == null || !profile.isStudent) return false;
-    final ownTier = ref.watch(ownSubscriptionTierProvider);
-    final effectiveTier = ref.watch(effectiveSubscriptionTierProvider);
-    return effectiveTier.isPro && ownTier.isFree;
+    final membershipAsync = ref.watch(studentMembershipProvider);
+    // While loading, assume covered (safe default — prevents accidental restore)
+    if (membershipAsync.isLoading) return true;
+    return membershipAsync.value != null;
   }
 
   @override
