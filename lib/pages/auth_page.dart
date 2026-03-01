@@ -5,7 +5,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
 import 'package:listzly/pages/auth_gate.dart';
-import 'package:listzly/pages/role_selection_page.dart';
 import 'package:listzly/providers/auth_provider.dart';
 import 'package:listzly/theme/colors.dart';
 import 'package:listzly/utils/responsive.dart';
@@ -58,12 +57,19 @@ class _AuthPageState extends ConsumerState<AuthPage> {
       }
 
       if (mounted) {
-        Navigator.of(context).pushAndRemoveUntil(
-          _turnPageRoute(
-            _isLogin ? const AuthGate() : const RoleSelectionPage(),
-          ),
-          (route) => false,
-        );
+        if (_isLogin) {
+          Navigator.of(context).pushAndRemoveUntil(
+            _turnPageRoute(const AuthGate()),
+            (route) => false,
+          );
+        } else {
+          // Sign-up: prompt user to confirm email, then switch to login view
+          setState(() => _isLogin = true);
+          _emailController.clear();
+          _passwordController.clear();
+          _displayNameController.clear();
+          _showConfirmEmailDialog();
+        }
       }
     } on AuthException catch (e) {
       _showError(e.message);
@@ -121,6 +127,44 @@ class _AuthPageState extends ConsumerState<AuthPage> {
           child: child,
         );
       },
+    );
+  }
+
+  void _showConfirmEmailDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1E0A4A),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(
+          'Check Your Email',
+          style: GoogleFonts.dmSerifDisplay(
+            color: Colors.white,
+            fontSize: 22,
+          ),
+        ),
+        content: Text(
+          'We\'ve sent a confirmation link to your email address. Please verify your email, then sign in.',
+          style: GoogleFonts.nunito(
+            color: darkTextSecondary,
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(
+              'OK',
+              style: GoogleFonts.nunito(
+                color: accentCoral,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
