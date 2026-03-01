@@ -190,7 +190,7 @@ class ProfilePage extends ConsumerWidget {
                               animation: animation,
                               overleafColor: primaryDark,
                               animationTransitionPoint: 0.5,
-                              direction: TurnDirection.leftToRight,
+                              direction: TurnDirection.rightToLeft,
                               child: child,
                             );
                           },
@@ -322,7 +322,21 @@ class ProfilePage extends ConsumerWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const PaywallPage()),
+                  PageRouteBuilder(
+                    transitionDuration: const Duration(milliseconds: 600),
+                    reverseTransitionDuration:
+                        const Duration(milliseconds: 600),
+                    pageBuilder: (_, animation, __) => const PaywallPage(),
+                    transitionsBuilder: (_, animation, __, child) {
+                      return TurnPageTransition(
+                        animation: animation,
+                        overleafColor: primaryDark,
+                        animationTransitionPoint: 0.5,
+                        direction: TurnDirection.rightToLeft,
+                        child: child,
+                      );
+                    },
+                  ),
                 );
               },
               child: Container(
@@ -521,7 +535,21 @@ class ProfilePage extends ConsumerWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const PaywallPage()),
+                  PageRouteBuilder(
+                    transitionDuration: const Duration(milliseconds: 600),
+                    reverseTransitionDuration:
+                        const Duration(milliseconds: 600),
+                    pageBuilder: (_, animation, __) => const PaywallPage(),
+                    transitionsBuilder: (_, animation, __, child) {
+                      return TurnPageTransition(
+                        animation: animation,
+                        overleafColor: primaryDark,
+                        animationTransitionPoint: 0.5,
+                        direction: TurnDirection.rightToLeft,
+                        child: child,
+                      );
+                    },
+                  ),
                 );
               },
               child: Container(

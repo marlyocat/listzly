@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:listzly/providers/profile_provider.dart';
 import 'package:listzly/providers/subscription_provider.dart';
 import 'package:listzly/theme/colors.dart';
+import 'package:turn_page_transition/turn_page_transition.dart';
 import 'package:listzly/pages/paywall_page.dart';
 
 /// Shows a bottom sheet prompting the user to upgrade to Pro.
@@ -119,7 +120,21 @@ class _UpgradePromptSheet extends ConsumerWidget {
               Navigator.pop(context);
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const PaywallPage()),
+                PageRouteBuilder(
+                  transitionDuration: const Duration(milliseconds: 600),
+                  reverseTransitionDuration:
+                      const Duration(milliseconds: 600),
+                  pageBuilder: (_, animation, __) => const PaywallPage(),
+                  transitionsBuilder: (_, animation, __, child) {
+                    return TurnPageTransition(
+                      animation: animation,
+                      overleafColor: primaryDark,
+                      animationTransitionPoint: 0.5,
+                      direction: TurnDirection.rightToLeft,
+                      child: child,
+                    );
+                  },
+                ),
               );
             },
             child: Container(
