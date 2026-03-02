@@ -802,6 +802,8 @@ class ProfilePage extends ConsumerWidget {
       final studentsAsync = ref.watch(teacherStudentsProvider);
       final studentCount = studentsAsync.value?.length ?? 0;
       final inviteCode = groupAsync.value?.inviteCode;
+      final tier = ref.watch(ownSubscriptionTierProvider);
+      final maxStudents = tier.maxStudents;
 
       if (inviteCode != null) {
         items.add(_SettingsRow(
@@ -831,7 +833,7 @@ class ProfilePage extends ConsumerWidget {
       items.add(_SettingsRow(
         icon: Icons.group_rounded,
         label: 'Students',
-        trailing: _TrailingText('$studentCount/20'),
+        trailing: _TrailingText('$studentCount/$maxStudents'),
         onTap: () => _showStudentListSheet(context, ref),
       ));
 
@@ -1719,6 +1721,8 @@ class ProfilePage extends ConsumerWidget {
     final students = studentsAsync.value ?? [];
     final groupAsync = ref.read(teacherGroupProvider);
     final groupId = groupAsync.value?.id;
+    final tier = ref.read(ownSubscriptionTierProvider);
+    final maxStudents = tier.maxStudents;
 
     showDialog(
       context: context,
@@ -1749,7 +1753,7 @@ class ProfilePage extends ConsumerWidget {
                     ),
                   const SizedBox(height: 4),
                   Text(
-                    '${students.length}/20 students',
+                    '${students.length}/$maxStudents students',
                     style: GoogleFonts.nunito(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
