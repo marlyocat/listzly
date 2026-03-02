@@ -560,6 +560,15 @@ class StudentsPage extends ConsumerWidget {
     );
   }
 
+  String _timeAgo(DateTime dateTime) {
+    final diff = DateTime.now().difference(dateTime);
+    if (diff.inSeconds < 60) return 'Just now';
+    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+    if (diff.inHours < 24) return '${diff.inHours}h ago';
+    if (diff.inDays < 7) return '${diff.inDays}d ago';
+    return '${(diff.inDays / 7).floor()}w ago';
+  }
+
   Widget _buildNotificationBell(BuildContext context, WidgetRef ref) {
     final notificationsAsync = ref.watch(unreadGroupNotificationsProvider);
     final count = notificationsAsync.value?.length ?? 0;
@@ -697,15 +706,30 @@ class StudentsPage extends ConsumerWidget {
                               ),
                               const SizedBox(width: 10),
                               Expanded(
-                                child: Text(
-                                  n.message,
-                                  style: GoogleFonts.nunito(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: n.isRead
-                                        ? darkTextMuted
-                                        : Colors.white,
-                                  ),
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      n.message,
+                                      style: GoogleFonts.nunito(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: n.isRead
+                                            ? darkTextMuted
+                                            : Colors.white,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      _timeAgo(n.createdAt),
+                                      style: GoogleFonts.nunito(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        color: darkTextMuted.withAlpha(150),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
@@ -716,26 +740,6 @@ class StudentsPage extends ConsumerWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        if (hasUnread)
-                          GestureDetector(
-                            onTap: () async {
-                              await ref
-                                  .read(groupServiceProvider)
-                                  .markNotificationsRead(group.id);
-                              ref.invalidate(
-                                  unreadGroupNotificationsProvider);
-                              if (ctx.mounted) Navigator.pop(ctx);
-                            },
-                            child: Text(
-                              'Mark all as Read',
-                              style: GoogleFonts.nunito(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
-                                color: darkTextMuted,
-                              ),
-                            ),
-                          ),
-                        if (hasUnread) const SizedBox(width: 20),
                         GestureDetector(
                           onTap: () async {
                             await ref
@@ -746,7 +750,7 @@ class StudentsPage extends ConsumerWidget {
                             if (ctx.mounted) Navigator.pop(ctx);
                           },
                           child: Text(
-                            'Clear All',
+                            'Clear All Notifications',
                             style: GoogleFonts.nunito(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
@@ -763,7 +767,12 @@ class StudentsPage extends ConsumerWidget {
           );
         },
       ),
-    );
+    ).then((_) async {
+      if (hasUnread) {
+        await ref.read(groupServiceProvider).markNotificationsRead(group.id);
+        ref.invalidate(unreadGroupNotificationsProvider);
+      }
+    });
   }
 
   void _showQrCode(BuildContext context, String inviteCode) {
