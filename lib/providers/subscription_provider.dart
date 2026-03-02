@@ -62,6 +62,11 @@ class OwnSubscriptionTier extends _$OwnSubscriptionTier {
       final user = ref.read(currentUserProvider);
       if (user == null) return;
       final profileService = ref.read(profileServiceProvider);
+      // Only sync upgrades automatically. Downgrades to free should be
+      // handled server-side (e.g. RevenueCat webhook) to prevent the
+      // client from accidentally overwriting a valid subscription when
+      // RevenueCat returns stale data (sandbox expiry, user switch, etc.).
+      if (tier.isFree) return;
       await profileService.updateSubscriptionTier(user.id, tier);
     } catch (e) {
       debugPrint('Failed to sync subscription tier to Supabase: $e');
