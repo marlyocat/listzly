@@ -318,6 +318,15 @@ class GroupService {
         .eq('group_id', groupId);
   }
 
+  /// Insert a notification into a group's notification feed.
+  Future<void> notifyGroup(String groupId, String message) async {
+    await _client.from('group_notifications').insert({
+      'group_id': groupId,
+      'message': message,
+      'is_read': false,
+    });
+  }
+
   /// Get the teacher's profile for a group (used by students to see their teacher's name).
   Future<String?> getTeacherName(String groupId) async {
     try {

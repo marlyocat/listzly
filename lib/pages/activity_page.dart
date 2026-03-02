@@ -7,6 +7,7 @@ import 'package:listzly/models/practice_recording.dart';
 import 'package:listzly/providers/session_provider.dart';
 import 'package:listzly/providers/recording_provider.dart';
 import 'package:listzly/providers/profile_provider.dart';
+import 'package:listzly/providers/group_provider.dart';
 import 'package:listzly/models/user_role.dart';
 import 'package:listzly/components/recording_list_tile.dart';
 import 'package:listzly/components/recording_player.dart';
@@ -1571,6 +1572,25 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
             newShared,
           );
       ref.invalidate(userRecordingsProvider);
+
+      // Notify the teacher's group when a recording is shared/unshared
+      try {
+        final membership = await ref.read(studentMembershipProvider.future);
+        if (membership != null) {
+          final displayName =
+              ref.read(currentProfileProvider).value?.displayName ??
+                  'A student';
+          final message = newShared
+              ? '$displayName shared a recording.'
+              : '$displayName unshared a recording.';
+          await ref.read(groupServiceProvider).notifyGroup(
+                membership.groupId,
+                message,
+              );
+        }
+      } catch (e) {
+        debugPrint('Failed to send share notification: $e');
+      }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
