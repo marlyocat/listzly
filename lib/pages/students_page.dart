@@ -389,6 +389,8 @@ class StudentsPage extends ConsumerWidget {
                                   fontWeight: FontWeight.w600)),
                           backgroundColor: accentCoralDark,
                           duration: const Duration(seconds: 2),
+                          showCloseIcon: true,
+                          closeIconColor: Colors.white,
                         ),
                       );
                     },

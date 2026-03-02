@@ -90,6 +90,8 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
             ),
             backgroundColor: accentCoralDark,
             behavior: SnackBarBehavior.floating,
+            showCloseIcon: true,
+            closeIconColor: Colors.white,
           ),
         );
       }
@@ -105,6 +107,8 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
             ),
             backgroundColor: accentCoralDark,
             behavior: SnackBarBehavior.floating,
+            showCloseIcon: true,
+            closeIconColor: Colors.white,
           ),
         );
       }
@@ -131,6 +135,8 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
             ),
             backgroundColor: accentCoralDark,
             behavior: SnackBarBehavior.floating,
+            showCloseIcon: true,
+            closeIconColor: Colors.white,
           ),
         );
         if (!newTier.isFree) Navigator.pop(context);
@@ -145,6 +151,8 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
             ),
             backgroundColor: accentCoralDark,
             behavior: SnackBarBehavior.floating,
+            showCloseIcon: true,
+            closeIconColor: Colors.white,
           ),
         );
       }

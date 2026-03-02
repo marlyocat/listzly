@@ -174,6 +174,8 @@ class _AuthPageState extends ConsumerState<AuthPage> {
       SnackBar(
         content: Text(message),
         backgroundColor: accentCoralDark,
+        showCloseIcon: true,
+        closeIconColor: Colors.white,
       ),
     );
   }

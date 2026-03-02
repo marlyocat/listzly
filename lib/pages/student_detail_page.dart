@@ -1254,6 +1254,8 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
             ),
             backgroundColor: const Color(0xFF1E0E3D),
             behavior: SnackBarBehavior.floating,
+            showCloseIcon: true,
+            closeIconColor: Colors.white,
           ),
         );
       }

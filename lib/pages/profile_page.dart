@@ -818,6 +818,8 @@ class ProfilePage extends ConsumerWidget {
                     style: GoogleFonts.nunito(fontWeight: FontWeight.w600)),
                 backgroundColor: accentCoralDark,
                 duration: const Duration(seconds: 2),
+                showCloseIcon: true,
+                closeIconColor: Colors.white,
               ),
             );
           },
@@ -1092,6 +1094,8 @@ class ProfilePage extends ConsumerWidget {
           SnackBar(
             content: Text('Failed to change role: $e'),
             backgroundColor: accentCoralDark,
+            showCloseIcon: true,
+            closeIconColor: Colors.white,
           ),
         );
       }
@@ -1373,6 +1377,8 @@ class ProfilePage extends ConsumerWidget {
                     SnackBar(
                       content: Text('Failed to leave group: $e'),
                       backgroundColor: accentCoralDark,
+                      showCloseIcon: true,
+                      closeIconColor: Colors.white,
                     ),
                   );
                 }

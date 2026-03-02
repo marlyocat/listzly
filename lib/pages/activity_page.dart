@@ -1424,6 +1424,8 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
             ),
             backgroundColor: const Color(0xFF1E0E3D),
             behavior: SnackBarBehavior.floating,
+            showCloseIcon: true,
+            closeIconColor: Colors.white,
           ),
         );
       }
@@ -1465,6 +1467,8 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
             ),
             backgroundColor: accentCoralDark,
             behavior: SnackBarBehavior.floating,
+            showCloseIcon: true,
+            closeIconColor: Colors.white,
           ),
         );
       }
@@ -1481,6 +1485,8 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
             ),
             backgroundColor: accentCoralDark,
             behavior: SnackBarBehavior.floating,
+            showCloseIcon: true,
+            closeIconColor: Colors.white,
           ),
         );
       }
@@ -1602,6 +1608,8 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
             ),
             backgroundColor: accentCoralDark,
             behavior: SnackBarBehavior.floating,
+            showCloseIcon: true,
+            closeIconColor: Colors.white,
           ),
         );
       }
@@ -1615,6 +1623,8 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
             ),
             backgroundColor: accentCoralDark,
             behavior: SnackBarBehavior.floating,
+            showCloseIcon: true,
+            closeIconColor: Colors.white,
           ),
         );
       }
@@ -1673,6 +1683,8 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
               ),
               backgroundColor: const Color(0xFF1E0E3D),
               behavior: SnackBarBehavior.floating,
+              showCloseIcon: true,
+              closeIconColor: Colors.white,
             ),
           );
         }

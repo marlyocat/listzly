@@ -299,6 +299,8 @@ class _PracticePageState extends ConsumerState<PracticePage>
               ),
               backgroundColor: accentCoralDark,
               behavior: SnackBarBehavior.floating,
+              showCloseIcon: true,
+              closeIconColor: Colors.white,
             ),
           );
         }
@@ -321,6 +323,8 @@ class _PracticePageState extends ConsumerState<PracticePage>
             ),
             backgroundColor: const Color(0xFF1E0E3D),
             behavior: SnackBarBehavior.floating,
+            showCloseIcon: true,
+            closeIconColor: Colors.white,
           ),
         );
       }
@@ -361,6 +365,8 @@ class _PracticePageState extends ConsumerState<PracticePage>
             ),
             backgroundColor: const Color(0xFF1E0E3D),
             behavior: SnackBarBehavior.floating,
+            showCloseIcon: true,
+            closeIconColor: Colors.white,
           ),
         );
       }
@@ -398,6 +404,8 @@ class _PracticePageState extends ConsumerState<PracticePage>
           ),
           backgroundColor: const Color(0xFF1E0E3D),
           behavior: SnackBarBehavior.floating,
+          showCloseIcon: true,
+          closeIconColor: Colors.white,
         ),
       );
     }
@@ -417,6 +425,8 @@ class _PracticePageState extends ConsumerState<PracticePage>
           ),
           backgroundColor: accentCoralDark,
           behavior: SnackBarBehavior.floating,
+          showCloseIcon: true,
+          closeIconColor: Colors.white,
         ),
       );
     }
@@ -445,6 +455,8 @@ class _PracticePageState extends ConsumerState<PracticePage>
             ),
             backgroundColor: accentCoralDark,
             behavior: SnackBarBehavior.floating,
+            showCloseIcon: true,
+            closeIconColor: Colors.white,
           ),
         );
       }
@@ -459,6 +471,8 @@ class _PracticePageState extends ConsumerState<PracticePage>
             ),
             backgroundColor: accentCoralDark,
             behavior: SnackBarBehavior.floating,
+            showCloseIcon: true,
+            closeIconColor: Colors.white,
           ),
         );
       }
