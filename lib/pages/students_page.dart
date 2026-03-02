@@ -359,7 +359,7 @@ class StudentsPage extends ConsumerWidget {
                       textAlign: TextAlign.center,
                       style: GoogleFonts.dmSerifDisplay(
                         fontSize: 24,
-                        color: accentCoral,
+                        color: Colors.white,
                         letterSpacing: 4,
                       ),
                     ),
