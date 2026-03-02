@@ -1250,6 +1250,12 @@ class ProfilePage extends ConsumerWidget {
                   final user = ref.read(currentUserProvider);
                   if (user == null) return;
 
+                  if (group.teacherId == user.id) {
+                    setState(() => errorText =
+                        'You cannot join your own group.');
+                    return;
+                  }
+
                   final previousRole = ref
                       .read(currentProfileProvider)
                       .value
