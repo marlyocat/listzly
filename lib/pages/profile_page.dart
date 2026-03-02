@@ -940,21 +940,6 @@ class ProfilePage extends ConsumerWidget {
                     color: Colors.white,
                   ),
                 ),
-                if (hasStudents) ...[
-                  const SizedBox(height: 8),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Text(
-                      'Warning: Changing your role will disband your group and remove all students.',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.nunito(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: accentCoralDark,
-                      ),
-                    ),
-                  ),
-                ],
                 const SizedBox(height: 16),
                 ...roles.map((r) {
                   final (role, name, desc) = r;
@@ -964,9 +949,38 @@ class ProfilePage extends ConsumerWidget {
                       Navigator.pop(ctx);
                       if (role == profile.role) return;
                       if (hasStudents) {
-                        final confirmed =
-                            await _showDisbandConfirmDialog(context);
-                        if (confirmed != true) return;
+                        if (!context.mounted) return;
+                        await showDialog(
+                          context: context,
+                          builder: (dCtx) => AlertDialog(
+                            backgroundColor: const Color(0xFF1E0E3D),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16)),
+                            title: Text(
+                              'Cannot Change Role',
+                              style: GoogleFonts.dmSerifDisplay(
+                                  fontSize: 20, color: Colors.white),
+                            ),
+                            content: Text(
+                              'Remove all students from your group before changing roles.',
+                              style: GoogleFonts.nunito(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                color: darkTextSecondary,
+                              ),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(dCtx),
+                                child: Text('OK',
+                                    style: GoogleFonts.nunito(
+                                        fontWeight: FontWeight.w700,
+                                        color: accentCoral)),
+                              ),
+                            ],
+                          ),
+                        );
+                        return;
                       }
                       if (!context.mounted) return;
                       // If switching to student, require invite code first
@@ -974,7 +988,14 @@ class ProfilePage extends ConsumerWidget {
                         final joined = await _showInviteCodeDialog(
                             context, ref,
                             hasStudents: hasStudents);
-                        if (joined != true) return;
+                        if (joined != true) {
+                          // Join failed or was cancelled — role may have
+                          // been temporarily changed, so refresh profile.
+                          ref.invalidate(currentProfileProvider);
+                          ref.invalidate(teacherGroupProvider);
+                          ref.invalidate(teacherStudentsProvider);
+                          return;
+                        }
                         return;
                       }
                       await _changeRole(context, ref, role,
@@ -1074,42 +1095,6 @@ class ProfilePage extends ConsumerWidget {
       }
       rethrow;
     }
-  }
-
-  Future<bool?> _showDisbandConfirmDialog(BuildContext context) {
-    return showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF1E0E3D),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          'Disband Group?',
-          style: GoogleFonts.dmSerifDisplay(fontSize: 20, color: Colors.white),
-        ),
-        content: Text(
-          'Changing your role will permanently disband your group and remove all students. This action cannot be undone.',
-          style: GoogleFonts.nunito(
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-            color: darkTextSecondary,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text('Cancel',
-                style: GoogleFonts.nunito(
-                    fontWeight: FontWeight.w700, color: darkTextMuted)),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text('Disband & Change Role',
-                style: GoogleFonts.nunito(
-                    fontWeight: FontWeight.w700, color: Colors.red)),
-          ),
-        ],
-      ),
-    );
   }
 
   Future<bool?> _showInviteCodeDialog(BuildContext context, WidgetRef ref,
@@ -1264,28 +1249,52 @@ class ProfilePage extends ConsumerWidget {
                       .value
                       ?.role;
 
-                  // Change role to student first (needed for RLS)
-                  if (!ctx.mounted) return;
-                  await _changeRole(ctx, ref, UserRole.student,
-                      hasStudents: hasStudents);
+                  // Capture services before async gaps so we can
+                  // revert the role even if the dialog is unmounted.
+                  final profileService = ref.read(profileServiceProvider);
+
+                  // Step 1: Temporarily set role to student in the DB
+                  // (needed for RLS). Do NOT invalidate providers so
+                  // the UI keeps showing the current role.
+                  await profileService.updateProfile(
+                      user.id, role: UserRole.student);
 
                   try {
-                    // Then join the group
+                    // Step 2: Join the group
                     await groupService.joinGroup(user.id, group.id,
                         teacherId: group.teacherId);
+
+                    // Step 3: Join succeeded — now safe to delete
+                    // the teacher group and refresh the UI.
+                    if (hasStudents) {
+                      try {
+                        final teacherGroup =
+                            await groupService.getTeacherGroup(user.id);
+                        if (teacherGroup != null) {
+                          await groupService.deleteGroup(teacherGroup.id);
+                        }
+                      } catch (e) {
+                        debugPrint('Failed to delete teacher group: $e');
+                      }
+                    }
+
+                    ref.invalidate(currentProfileProvider);
                     ref.invalidate(studentMembershipProvider);
+                    ref.invalidate(teacherGroupProvider);
+                    ref.invalidate(teacherStudentsProvider);
                     if (ctx.mounted) Navigator.pop(ctx, true);
                   } catch (e) {
                     debugPrint('joinGroup error: $e');
-                    // Join failed — revert role
-                    if (previousRole != null && ctx.mounted) {
+                    // Join failed — revert role silently in DB.
+                    // UI never changed so no invalidation needed.
+                    if (previousRole != null) {
                       try {
-                        await _changeRole(ctx, ref, previousRole);
-                      } catch (e) {
-                        debugPrint('Failed to revert role: $e');
-                      }
+                        await profileService.updateProfile(
+                            user.id, role: previousRole);
+                      } catch (_) {}
                     }
                     final msg = e.toString().toLowerCase();
+                    if (!ctx.mounted) return;
                     setState(() {
                       if (msg.contains('already in a group')) {
                         errorText =

@@ -59,6 +59,9 @@ class GroupService {
   }
 
   Future<void> deleteGroup(String groupId) async {
+    // Delete dependent records first to avoid foreign key violations.
+    await _client.from('group_notifications').delete().eq('group_id', groupId);
+    await _client.from('group_members').delete().eq('group_id', groupId);
     await _client.from('teacher_groups').delete().eq('id', groupId);
   }
 
