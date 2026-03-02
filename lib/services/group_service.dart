@@ -133,9 +133,8 @@ class GroupService {
       }
     }
 
-    await _client.from('group_members').delete().eq('student_id', studentId);
-
-    // Notify the teacher
+    // Notify the teacher BEFORE deleting the membership, so the
+    // insert passes any RLS checks that require group membership.
     if (membership != null) {
       final name = studentName ?? 'A student';
       try {
@@ -148,6 +147,8 @@ class GroupService {
         debugPrint('Failed to insert leave notification: $e');
       }
     }
+
+    await _client.from('group_members').delete().eq('student_id', studentId);
   }
 
   Future<GroupMember?> getStudentMembership(String studentId) async {
