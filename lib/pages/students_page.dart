@@ -647,7 +647,7 @@ class StudentsPage extends ConsumerWidget {
                   Row(
                     children: [
                       const Icon(Icons.notifications_rounded,
-                          color: accentCoral, size: 20),
+                          color: Colors.white, size: 20),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
