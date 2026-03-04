@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -68,7 +70,34 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
     if (productId == 'teacher_lite_monthly') {
       return SubscriptionTier.teacherLite;
     }
+
+    // Same fallback as SubscriptionService: check all active subscriptions
+    // in case the entitlement still points to an old personal-pro product.
+    final subs = customerInfo.activeSubscriptions;
+    if (subs.contains('teacher_premium_monthly')) {
+      return SubscriptionTier.teacherPremium;
+    }
+    if (subs.contains('teacher_pro_monthly')) {
+      return SubscriptionTier.teacherPro;
+    }
+    if (subs.contains('teacher_lite_monthly')) {
+      return SubscriptionTier.teacherLite;
+    }
+
     return SubscriptionTier.pro;
+  }
+
+  /// Returns the product identifier of the user's current active subscription,
+  /// or null if there is none. Used on Android to trigger an upgrade/downgrade
+  /// instead of a separate new subscription.
+  Future<String?> _currentActiveProductId() async {
+    try {
+      final info = await Purchases.getCustomerInfo();
+      final entitlement = info.entitlements.active['pro'];
+      return entitlement?.productIdentifier;
+    } catch (_) {
+      return null;
+    }
   }
 
   Future<void> _purchase(Package package) async {
@@ -76,7 +105,26 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
     setState(() => _purchasing = true);
 
     try {
-      final result = await Purchases.purchase(PurchaseParams.package(package));
+      // On Android, if the user already has an active subscription, pass it as
+      // the old product so Google Play treats this as an upgrade/downgrade
+      // rather than creating a second subscription.
+      GoogleProductChangeInfo? changeInfo;
+      if (Platform.isAndroid) {
+        final oldProductId = await _currentActiveProductId();
+        if (oldProductId != null &&
+            oldProductId != package.storeProduct.identifier) {
+          changeInfo = GoogleProductChangeInfo(
+            oldProductId,
+            prorationMode:
+                GoogleProrationMode.immediateWithTimeProration,
+          );
+        }
+      }
+
+      final result = await Purchases.purchase(PurchaseParams.package(
+        package,
+        googleProductChangeInfo: changeInfo,
+      ));
       final newTier = _tierFromPurchase(result.customerInfo);
 
       if (mounted) {

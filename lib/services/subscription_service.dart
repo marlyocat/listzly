@@ -60,6 +60,7 @@ class SubscriptionService {
     final proEntitlement = info.entitlements.active[entitlementPro];
     if (proEntitlement == null) return SubscriptionTier.free;
 
+    // Check the entitlement's product first.
     final productId = proEntitlement.productIdentifier;
     if (productId == productTeacherPremiumMonthly) {
       return SubscriptionTier.teacherPremium;
@@ -70,6 +71,22 @@ class SubscriptionService {
     if (productId == productTeacherLiteMonthly) {
       return SubscriptionTier.teacherLite;
     }
+
+    // When a cancelled personal-pro subscription is still active alongside a
+    // newly purchased teacher plan, the entitlement's productIdentifier may
+    // still point to the personal-pro product. Check all active subscriptions
+    // so the higher teacher tier takes precedence.
+    final subs = info.activeSubscriptions;
+    if (subs.contains(productTeacherPremiumMonthly)) {
+      return SubscriptionTier.teacherPremium;
+    }
+    if (subs.contains(productTeacherProMonthly)) {
+      return SubscriptionTier.teacherPro;
+    }
+    if (subs.contains(productTeacherLiteMonthly)) {
+      return SubscriptionTier.teacherLite;
+    }
+
     return SubscriptionTier.pro;
   }
 }
