@@ -491,7 +491,10 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Title row
-          Row(
+          Wrap(
+            spacing: 8,
+            runSpacing: 6,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Text(
                 title,
@@ -500,8 +503,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                   color: Colors.white,
                 ),
               ),
-              if (isPopular) ...[
-                const SizedBox(width: 8),
+              if (isPopular)
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -518,9 +520,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                     ),
                   ),
                 ),
-              ],
-              if (isCurrentPlan) ...[
-                const SizedBox(width: 8),
+              if (isCurrentPlan)
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -538,7 +538,6 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                     ),
                   ),
                 ),
-              ],
             ],
           ),
           const SizedBox(height: 8),
