@@ -3,12 +3,7 @@ import 'package:flutter/material.dart';
 class Responsive {
   Responsive._();
 
-  static const double tabletBreakpoint = 600.0;
   static const double maxContentWidth = 500.0;
-
-  static bool isTablet(BuildContext context) {
-    return MediaQuery.sizeOf(context).shortestSide >= tabletBreakpoint;
-  }
 }
 
 /// Constrains child to [maxWidth] and centers it. No-op on phones.

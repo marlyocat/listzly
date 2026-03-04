@@ -54,5 +54,4 @@ class Profile {
 
   bool get isTeacher => role == UserRole.teacher;
   bool get isStudent => role == UserRole.student;
-  bool get isSelfLearner => role == UserRole.selfLearner;
 }

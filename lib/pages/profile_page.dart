@@ -2739,7 +2739,7 @@ class ProfilePage extends ConsumerWidget {
                                           child: Stack(
                                             children: [
                                               Container(
-                                                  color: darkProgressBg),
+                                                  color: darkCardBg),
                                               FractionallySizedBox(
                                                 widthFactor: fraction
                                                     .clamp(0.0, 1.0),

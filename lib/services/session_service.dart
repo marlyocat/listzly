@@ -50,33 +50,6 @@ class SessionService {
         .toList();
   }
 
-  /// Get session counts by day for bar chart (returns day -> session count).
-  Future<Map<DateTime, int>> getSessionCountsByDay(
-    String userId,
-    DateTime weekStart,
-  ) async {
-    final weekEnd = weekStart.add(const Duration(days: 7));
-    final sessions = await getSessionsForRange(userId, weekStart, weekEnd);
-
-    final counts = <DateTime, int>{};
-    for (var i = 0; i < 7; i++) {
-      final day = DateTime(
-        weekStart.year,
-        weekStart.month,
-        weekStart.day + i,
-      );
-      counts[day] = 0;
-    }
-
-    for (final session in sessions) {
-      final completed = session.completedAt ?? session.startedAt;
-      final day = DateTime(completed.year, completed.month, completed.day);
-      counts[day] = (counts[day] ?? 0) + 1;
-    }
-
-    return counts;
-  }
-
   /// Get total practice minutes by day for bar chart (returns day -> minutes).
   Future<Map<DateTime, int>> getPracticeMinutesByDay(
     String userId,

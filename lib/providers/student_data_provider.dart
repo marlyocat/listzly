@@ -29,18 +29,6 @@ Future<List<PracticeSession>> studentSessions(
 }
 
 @riverpod
-Future<Map<DateTime, int>> studentWeeklyBarData(
-  Ref ref, {
-  required String studentId,
-  required DateTime weekStart,
-}) async {
-  return ref.watch(sessionServiceProvider).getPracticeMinutesByDay(
-        studentId,
-        weekStart,
-      );
-}
-
-@riverpod
 Future<({Duration totalTime, int sessionCount})> studentSummaryStats(
   Ref ref, {
   required String studentId,
@@ -54,10 +42,3 @@ Future<({Duration totalTime, int sessionCount})> studentSummaryStats(
       );
 }
 
-@riverpod
-Future<List<Map<String, dynamic>>> studentInstrumentStats(
-  Ref ref, {
-  required String studentId,
-}) async {
-  return ref.watch(sessionServiceProvider).getInstrumentStats(studentId);
-}

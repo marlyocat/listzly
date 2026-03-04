@@ -160,15 +160,6 @@ class GroupService {
     return result != null ? GroupMember.fromJson(result) : null;
   }
 
-  Future<bool> isStudentInGroup(String studentId) async {
-    final result = await _client
-        .from('group_members')
-        .select('id')
-        .eq('student_id', studentId)
-        .maybeSingle();
-    return result != null;
-  }
-
   // ─── Teacher Dashboard ───────────────────────────────────────
 
   Future<List<StudentSummary>> getStudentsWithStats(String teacherId) async {
@@ -270,27 +261,7 @@ class GroupService {
     }
   }
 
-  Future<int> getMemberCount(String groupId) async {
-    final result = await _client
-        .from('group_members')
-        .select('id')
-        .eq('group_id', groupId);
-    return (result as List).length;
-  }
-
   // ─── Group Notifications ────────────────────────────────────
-
-  Future<List<GroupNotification>> getUnreadNotifications(String groupId) async {
-    final result = await _client
-        .from('group_notifications')
-        .select()
-        .eq('group_id', groupId)
-        .eq('is_read', false)
-        .order('created_at', ascending: false);
-    return (result as List)
-        .map((e) => GroupNotification.fromJson(e as Map<String, dynamic>))
-        .toList();
-  }
 
   Future<List<GroupNotification>> getAllNotifications(String groupId) async {
     final result = await _client

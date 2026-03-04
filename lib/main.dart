@@ -5,8 +5,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:listzly/config/supabase_config.dart';
 import 'package:listzly/providers/auth_provider.dart';
 import 'package:listzly/pages/intro_page.dart';
-import 'package:listzly/pages/home_page.dart';
-import 'package:listzly/pages/auth_page.dart';
 import 'package:listzly/pages/auth_gate.dart';
 import 'package:listzly/services/notification_service.dart';
 import 'package:listzly/config/revenuecat_config.dart';
@@ -98,11 +96,6 @@ class MyApp extends ConsumerWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         home: user != null ? const AuthGate() : const IntroPage(),
-        routes: {
-          '/intropage': (context) => const IntroPage(),
-          '/homepage': (context) => const HomePage(),
-          '/auth': (context) => const AuthPage(),
-        },
       ),
     );
   }

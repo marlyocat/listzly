@@ -102,7 +102,6 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
         (d) => d.key == qp.questKey,
         orElse: () => QuestDefinition(
           key: qp.questKey,
-          type: qp.questType,
           title: qp.questKey,
           description: '',
           target: qp.target,
@@ -620,7 +619,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                               height: 8,
                               child: Stack(
                                 children: [
-                                  Container(color: darkProgressBg),
+                                  Container(color: darkCardBg),
                                   FractionallySizedBox(
                                     widthFactor:
                                         animatedProgress.clamp(0.0, 1.0),

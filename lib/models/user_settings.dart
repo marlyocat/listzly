@@ -33,24 +33,4 @@ class UserSettings {
   factory UserSettings.fromJson(Map<String, dynamic> json) =>
       _$UserSettingsFromJson(json);
   Map<String, dynamic> toJson() => _$UserSettingsToJson(this);
-
-  UserSettings copyWith({
-    String? theme,
-    String? language,
-    String? firstDayOfWeek,
-    int? dailyGoalMinutes,
-    String? reminderTime,
-    bool? soundEffects,
-    bool? showProgressBar,
-  }) =>
-      UserSettings(
-        userId: userId,
-        theme: theme ?? this.theme,
-        language: language ?? this.language,
-        firstDayOfWeek: firstDayOfWeek ?? this.firstDayOfWeek,
-        dailyGoalMinutes: dailyGoalMinutes ?? this.dailyGoalMinutes,
-        reminderTime: reminderTime ?? this.reminderTime,
-        soundEffects: soundEffects ?? this.soundEffects,
-        showProgressBar: showProgressBar ?? this.showProgressBar,
-      );
 }

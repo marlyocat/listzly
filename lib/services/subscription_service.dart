@@ -6,17 +6,6 @@ import 'package:listzly/models/subscription_info.dart';
 import 'package:listzly/models/subscription_tier.dart';
 
 class SubscriptionService {
-  bool _initialized = false;
-
-  Future<void> init({required String userId}) async {
-    if (_initialized) return;
-
-    await Purchases.configure(
-      PurchasesConfiguration(revenueCatApiKey)..appUserID = userId,
-    );
-    _initialized = true;
-  }
-
   /// Current subscription tier based on active entitlements.
   Future<SubscriptionTier> getCurrentTier() async {
     try {
@@ -26,23 +15,6 @@ class SubscriptionService {
       debugPrint('SubscriptionService.getCurrentTier error: $e');
       return SubscriptionTier.free;
     }
-  }
-
-  /// Fetch available offerings for the paywall.
-  Future<Offerings> getOfferings() async {
-    return Purchases.getOfferings();
-  }
-
-  /// Purchase a package.
-  Future<SubscriptionTier> purchase(Package package) async {
-    final result = await Purchases.purchase(PurchaseParams.package(package));
-    return _tierFromEntitlements(result.customerInfo);
-  }
-
-  /// Restore previous purchases.
-  Future<SubscriptionTier> restorePurchases() async {
-    final customerInfo = await Purchases.restorePurchases();
-    return _tierFromEntitlements(customerInfo);
   }
 
   /// Full subscription details including expiration and renewal status.
@@ -63,7 +35,6 @@ class SubscriptionService {
         expirationDate: expirationDate,
         willRenew: entitlement.willRenew,
         isInTrial: entitlement.periodType == PeriodType.trial,
-        managementURL: customerInfo.managementURL,
       );
     } catch (e) {
       debugPrint('SubscriptionService.getSubscriptionInfo error: $e');

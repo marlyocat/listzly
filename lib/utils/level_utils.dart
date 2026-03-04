@@ -37,11 +37,4 @@ class LevelUtils {
     if (range <= 0) return 1.0;
     return ((totalXp - currentLevelXp) / range).clamp(0.0, 1.0);
   }
-
-  /// XP remaining to reach the next level.
-  static int xpToNextLevel(int totalXp) {
-    final currentLevel = levelFromXp(totalXp);
-    if (currentLevel >= maxLevel) return 0;
-    return xpForLevel(currentLevel + 1) - totalXp;
-  }
 }

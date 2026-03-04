@@ -82,37 +82,3 @@ final class CurrentProfileProvider
 }
 
 String _$currentProfileHash() => r'69e59767bcc8ba24bbf3f35fbf982ef0cfe0d76a';
-
-@ProviderFor(currentUserRole)
-final currentUserRoleProvider = CurrentUserRoleProvider._();
-
-final class CurrentUserRoleProvider
-    extends
-        $FunctionalProvider<AsyncValue<UserRole>, UserRole, FutureOr<UserRole>>
-    with $FutureModifier<UserRole>, $FutureProvider<UserRole> {
-  CurrentUserRoleProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'currentUserRoleProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$currentUserRoleHash();
-
-  @$internal
-  @override
-  $FutureProviderElement<UserRole> $createElement($ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<UserRole> create(Ref ref) {
-    return currentUserRole(ref);
-  }
-}
-
-String _$currentUserRoleHash() => r'8c7493e8185bad699297bb76263cee6d069d2a3e';

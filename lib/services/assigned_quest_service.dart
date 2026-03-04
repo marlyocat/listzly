@@ -117,11 +117,6 @@ class AssignedQuestService {
         .eq('id', questId);
   }
 
-  /// Delete a quest entirely.
-  Future<void> deleteQuest(String questId) async {
-    await _client.from('assigned_quests').delete().eq('id', questId);
-  }
-
   // ─── Student Methods ──────────────────────────────────────
 
   /// Get active assigned quests for a specific student.

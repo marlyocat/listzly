@@ -5,7 +5,6 @@ import 'package:listzly/models/practice_session.dart';
 /// Quest definitions — same for all users. DB only stores progress.
 class QuestDefinition {
   final String key;
-  final String type;
   final String title;
   final String description;
   final int target;
@@ -13,7 +12,6 @@ class QuestDefinition {
 
   const QuestDefinition({
     required this.key,
-    required this.type,
     required this.title,
     required this.description,
     required this.target,
@@ -24,7 +22,6 @@ class QuestDefinition {
 const dailyQuestDefinitions = [
   QuestDefinition(
     key: 'daily_xp_30',
-    type: 'daily',
     title: 'Play an instrument',
     description: 'Practice any instrument',
     target: 1,
@@ -32,7 +29,6 @@ const dailyQuestDefinitions = [
   ),
   QuestDefinition(
     key: 'daily_practice_20m',
-    type: 'daily',
     title: 'Practice for 20 minutes',
     description: 'Reach your daily practice goal',
     target: 20,
@@ -40,7 +36,6 @@ const dailyQuestDefinitions = [
   ),
   QuestDefinition(
     key: 'daily_sessions_2',
-    type: 'daily',
     title: 'Complete 1 session',
     description: 'Finish a full practice session',
     target: 1,
