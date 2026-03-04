@@ -9,6 +9,7 @@ import 'package:listzly/providers/auth_provider.dart';
 import 'package:listzly/providers/profile_provider.dart';
 import 'package:listzly/providers/group_provider.dart';
 import 'package:listzly/providers/settings_provider.dart';
+import 'package:listzly/providers/subscription_provider.dart';
 import 'package:listzly/pages/home_page.dart';
 import 'package:listzly/theme/colors.dart';
 import 'package:listzly/utils/responsive.dart';
@@ -140,6 +141,22 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
       final groupService = ref.read(groupServiceProvider);
       final settingsService = ref.read(settingsServiceProvider);
 
+      // Block role change if user has an active (non-cancelled) subscription
+      if (_selectedRole != UserRole.selfLearner) {
+        final subInfo = await ref.read(subscriptionInfoProvider.future);
+        if (subInfo.tier.isPro && subInfo.willRenew) {
+          setState(() {
+            _errorMessage =
+                'Cancel your Pro subscription before changing roles';
+            _isLoading = false;
+          });
+          _pageController.animateToPage(_rolePageIndex,
+              duration: const Duration(milliseconds: 350),
+              curve: Curves.easeInOut);
+          return;
+        }
+      }
+
       // Handle role-specific logic
       if (_selectedRole == UserRole.student) {
         final code = _inviteCodeController.text.trim();
@@ -150,6 +167,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           });
           return;
         }
+
         final group = await groupService.findGroupByInviteCode(code);
         if (group == null) {
           setState(() {
@@ -200,6 +218,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
 
       ref.invalidate(currentProfileProvider);
       ref.invalidate(userSettingsProvider);
+      ref.invalidate(studentMembershipProvider);
 
       if (mounted) {
         Navigator.of(context).pushAndRemoveUntil(

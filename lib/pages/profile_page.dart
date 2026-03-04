@@ -498,13 +498,17 @@ class ProfilePage extends ConsumerWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        tier.isTeacherPlan
-                            ? 'Full teacher access'
-                            : 'You have full access',
+                        isCancelled
+                            ? 'Cancelled'
+                            : tier.isTeacherPlan
+                                ? 'Full teacher access'
+                                : 'You have full access',
                         style: GoogleFonts.nunito(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: darkTextMuted,
+                          color: isCancelled
+                              ? const Color(0xFFFBBF24)
+                              : darkTextMuted,
                         ),
                       ),
                     ],
@@ -952,6 +956,46 @@ class ProfilePage extends ConsumerWidget {
                     onTap: () async {
                       Navigator.pop(ctx);
                       if (role == profile.role) return;
+
+                      // Block role change if user has an active (non-cancelled)
+                      // personal subscription. They must cancel first.
+                      final subInfo =
+                          await ref.read(subscriptionInfoProvider.future);
+                      if (subInfo.tier.isPro && subInfo.willRenew) {
+                        if (!context.mounted) return;
+                        await showDialog(
+                          context: context,
+                          builder: (dCtx) => AlertDialog(
+                            backgroundColor: const Color(0xFF1E0E3D),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16)),
+                            title: Text(
+                              'Active Subscription',
+                              style: GoogleFonts.dmSerifDisplay(
+                                  fontSize: 20, color: Colors.white),
+                            ),
+                            content: Text(
+                              'Cancel your Pro subscription before changing roles. You\'ll keep Pro access until it expires.',
+                              style: GoogleFonts.nunito(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                color: darkTextSecondary,
+                              ),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(dCtx),
+                                child: Text('OK',
+                                    style: GoogleFonts.nunito(
+                                        fontWeight: FontWeight.w700,
+                                        color: accentCoral)),
+                              ),
+                            ],
+                          ),
+                        );
+                        return;
+                      }
+
                       if (hasStudents) {
                         if (!context.mounted) return;
                         await showDialog(
@@ -1701,6 +1745,16 @@ class ProfilePage extends ConsumerWidget {
                 }
                 final user = ref.read(currentUserProvider);
                 if (user == null) return;
+
+                // Block joining if user has an active (non-cancelled) subscription
+                final subInfo =
+                    await ref.read(subscriptionInfoProvider.future);
+                if (subInfo.tier.isPro && subInfo.willRenew) {
+                  setDialogState(() => errorText =
+                      'Cancel your Pro subscription before joining a teacher\'s group');
+                  return;
+                }
+
                 final groupService = ref.read(groupServiceProvider);
                 final group = await groupService.findGroupByInviteCode(code);
                 if (!ctx.mounted) return;

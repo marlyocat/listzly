@@ -30,6 +30,11 @@ class SubscriptionService {
         expirationDate = DateTime.tryParse(entitlement.expirationDate!);
       }
 
+      debugPrint(
+          'SubscriptionInfo: tier=$tier, willRenew=${entitlement.willRenew}, '
+          'unsubscribeDetectedAt=${entitlement.unsubscribeDetectedAt}, '
+          'expiration=${entitlement.expirationDate}');
+
       return SubscriptionInfo(
         tier: tier,
         expirationDate: expirationDate,

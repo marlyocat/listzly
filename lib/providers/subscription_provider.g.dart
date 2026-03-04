@@ -8,6 +8,67 @@ part of 'subscription_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// Increments every time the app resumes from background.
+/// Providers that watch this will automatically re-fetch on resume.
+
+@ProviderFor(AppResumeCount)
+final appResumeCountProvider = AppResumeCountProvider._();
+
+/// Increments every time the app resumes from background.
+/// Providers that watch this will automatically re-fetch on resume.
+final class AppResumeCountProvider
+    extends $NotifierProvider<AppResumeCount, int> {
+  /// Increments every time the app resumes from background.
+  /// Providers that watch this will automatically re-fetch on resume.
+  AppResumeCountProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'appResumeCountProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$appResumeCountHash();
+
+  @$internal
+  @override
+  AppResumeCount create() => AppResumeCount();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(int value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<int>(value),
+    );
+  }
+}
+
+String _$appResumeCountHash() => r'c92a55fd3e25941fb961bd5c4a7c4d1a66bfe646';
+
+/// Increments every time the app resumes from background.
+/// Providers that watch this will automatically re-fetch on resume.
+
+abstract class _$AppResumeCount extends $Notifier<int> {
+  int build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<int, int>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<int, int>,
+              int,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
 
 @ProviderFor(subscriptionService)
 final subscriptionServiceProvider = SubscriptionServiceProvider._();
@@ -94,7 +155,7 @@ final class OwnSubscriptionTierProvider
 }
 
 String _$ownSubscriptionTierHash() =>
-    r'168a892014aeb84c42e6fde36688a96263395666';
+    r'1bab23c522be3ee40c11df7ae968665a9290ffba';
 
 /// The user's own subscription tier from RevenueCat.
 
@@ -171,13 +232,15 @@ final class EffectiveSubscriptionTierProvider
 String _$effectiveSubscriptionTierHash() =>
     r'5aca5298d85944a14c0d1b2988419f78b2bddebe';
 
-/// Fetches the teacher's subscription tier from Supabase.
+/// Fetches the teacher's subscription tier from Supabase via an RPC function
+/// that bypasses RLS (students can't read teacher profiles directly).
 /// Re-evaluates when the student's group membership changes.
 
 @ProviderFor(teacherSubscriptionTier)
 final teacherSubscriptionTierProvider = TeacherSubscriptionTierProvider._();
 
-/// Fetches the teacher's subscription tier from Supabase.
+/// Fetches the teacher's subscription tier from Supabase via an RPC function
+/// that bypasses RLS (students can't read teacher profiles directly).
 /// Re-evaluates when the student's group membership changes.
 
 final class TeacherSubscriptionTierProvider
@@ -188,7 +251,8 @@ final class TeacherSubscriptionTierProvider
           FutureOr<SubscriptionTier>
         >
     with $FutureModifier<SubscriptionTier>, $FutureProvider<SubscriptionTier> {
-  /// Fetches the teacher's subscription tier from Supabase.
+  /// Fetches the teacher's subscription tier from Supabase via an RPC function
+  /// that bypasses RLS (students can't read teacher profiles directly).
   /// Re-evaluates when the student's group membership changes.
   TeacherSubscriptionTierProvider._()
     : super(
@@ -217,7 +281,7 @@ final class TeacherSubscriptionTierProvider
 }
 
 String _$teacherSubscriptionTierHash() =>
-    r'8f3d03abab77d24478b4f1a27e08c98440c7dc09';
+    r'1408e66370e582308c00c71544a8d1d6baa9c37f';
 
 /// Full subscription details (tier, expiration, renewal status, etc.).
 

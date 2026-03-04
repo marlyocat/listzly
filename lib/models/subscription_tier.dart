@@ -50,7 +50,7 @@ enum SubscriptionTier {
   bool get canViewStudentRecordings => isTeacherPlan;
 
   /// Whether students in this teacher's group should inherit Pro.
-  bool get studentsInheritPro => isTeacherPlan;
+  bool get studentsInheritPro => isPro;
 
   String toDbString() {
     switch (this) {

@@ -81,6 +81,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
 
       if (mounted) {
         ref.read(ownSubscriptionTierProvider.notifier).setTier(newTier);
+        ref.invalidate(subscriptionInfoProvider);
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -161,26 +162,26 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
     }
   }
 
-  /// Whether this student is covered by a paid teacher's plan.
-  /// Hides Restore only for these students to prevent RevenueCat subscription
-  /// transfer. Students under free teachers can still purchase and restore.
-  bool _isCoveredByPaidTeacher(WidgetRef ref) {
+  /// Whether this student is in a teacher's group.
+  /// Students in a group cannot purchase their own subscription — they must
+  /// leave the group first.
+  bool _isStudentInGroup(WidgetRef ref) {
     final profile = ref.watch(currentProfileProvider).value;
     if (profile == null || !profile.isStudent) return false;
     final membershipAsync = ref.watch(studentMembershipProvider);
-    // While loading, assume covered (safe default — prevents accidental restore)
+    // While loading, assume in group (safe default — prevents accidental purchase)
     if (membershipAsync.isLoading) return true;
-    if (membershipAsync.value == null) return false;
-    final teacherTier = ref.watch(teacherSubscriptionTierProvider).value;
-    return teacherTier != null && teacherTier.studentsInheritPro;
+    return membershipAsync.value != null;
   }
 
   @override
   Widget build(BuildContext context) {
     final currentTier = ref.watch(effectiveSubscriptionTierProvider);
+    final subInfo = ref.watch(subscriptionInfoProvider).value;
+    final isCancelled = subInfo?.isCancelled ?? false;
     final profile = ref.watch(currentProfileProvider).value;
     final isTeacher = profile?.isTeacher ?? false;
-    final coveredByPaidTeacher = _isCoveredByPaidTeacher(ref);
+    final studentInGroup = _isStudentInGroup(ref);
 
     return Scaffold(
       backgroundColor: const Color(0xFF150833),
@@ -198,7 +199,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                     icon: const Icon(Icons.close, color: Colors.white),
                   ),
                   const Spacer(),
-                  if (!coveredByPaidTeacher)
+                  if (!studentInGroup)
                     GestureDetector(
                       onTap: _purchasing ? null : _restore,
                       child: Text(
@@ -260,7 +261,43 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                 ),
                               ),
                             )
-                          : SingleChildScrollView(
+                          : studentInGroup
+                              ? Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(32),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Icon(
+                                          Icons.groups_rounded,
+                                          size: 48,
+                                          color: darkTextMuted,
+                                        ),
+                                        const SizedBox(height: 16),
+                                        Text(
+                                          'You\'re part of a teacher\'s group',
+                                          textAlign: TextAlign.center,
+                                          style: GoogleFonts.nunito(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          'Leave your teacher\'s group first to purchase your own subscription.',
+                                          textAlign: TextAlign.center,
+                                          style: GoogleFonts.nunito(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                            color: darkTextSecondary,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              : SingleChildScrollView(
                               padding: const EdgeInsets.symmetric(horizontal: 20),
                               child: Column(
                                 children: [
@@ -291,7 +328,8 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                         'Recordings',
                                       ],
                                       isCurrentPlan:
-                                          currentTier == SubscriptionTier.pro,
+                                          currentTier == SubscriptionTier.pro &&
+                                              !isCancelled,
                                       isPopular: true,
                                       accentColor: accentCoral,
                                       trialInfo: _getTrialInfo('personal_pro_yearly'),
@@ -315,7 +353,8 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                         'Students get Pro free',
                                       ],
                                       isCurrentPlan: currentTier ==
-                                          SubscriptionTier.teacherLite,
+                                              SubscriptionTier.teacherLite &&
+                                          !isCancelled,
                                       accentColor: accentCoral,
                                       trialInfo: _getTrialInfo(
                                           'teacher_lite_monthly'),
@@ -338,7 +377,8 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                         'Students get Pro free',
                                       ],
                                       isCurrentPlan: currentTier ==
-                                          SubscriptionTier.teacherPro,
+                                              SubscriptionTier.teacherPro &&
+                                          !isCancelled,
                                       isPopular: true,
                                       accentColor: accentCoral,
                                       trialInfo: _getTrialInfo(
@@ -362,7 +402,8 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                         'Students get Pro free',
                                       ],
                                       isCurrentPlan: currentTier ==
-                                          SubscriptionTier.teacherPremium,
+                                              SubscriptionTier.teacherPremium &&
+                                          !isCancelled,
                                       accentColor: accentCoral,
                                       trialInfo: _getTrialInfo(
                                           'teacher_premium_monthly'),
@@ -374,6 +415,8 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                     const SizedBox(height: 16),
                                     GestureDetector(
                                       onTap: () async {
+                                        final messenger =
+                                            ScaffoldMessenger.of(context);
                                         try {
                                           final customerInfo =
                                               await Purchases.getCustomerInfo();
@@ -383,6 +426,23 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                             await launchUrl(Uri.parse(url),
                                                 mode: LaunchMode
                                                     .externalApplication);
+                                            if (mounted) {
+                                              messenger.showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    'If you recently cancelled, it may take a few minutes for changes to reflect.',
+                                                    style: GoogleFonts.nunito(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                  duration: const Duration(
+                                                      seconds: 6),
+                                                  behavior:
+                                                      SnackBarBehavior.floating,
+                                                ),
+                                              );
+                                            }
                                           }
                                         } catch (e) {
                                           debugPrint('Failed to launch management URL: $e');
@@ -546,11 +606,13 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(
-                price,
-                style: GoogleFonts.dmSerifDisplay(
-                  fontSize: 28,
-                  color: accentColor,
+              Flexible(
+                child: Text(
+                  price,
+                  style: GoogleFonts.dmSerifDisplay(
+                    fontSize: 28,
+                    color: accentColor,
+                  ),
                 ),
               ),
               Padding(
@@ -599,12 +661,14 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                     color: accentColor,
                   ),
                   const SizedBox(width: 8),
-                  Text(
-                    f,
-                    style: GoogleFonts.nunito(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
+                  Flexible(
+                    child: Text(
+                      f,
+                      style: GoogleFonts.nunito(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ],

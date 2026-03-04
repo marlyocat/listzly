@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:listzly/models/subscription_info.dart';
@@ -9,6 +9,33 @@ import 'package:listzly/providers/group_provider.dart';
 import 'package:listzly/providers/profile_provider.dart';
 
 part 'subscription_provider.g.dart';
+
+/// Increments every time the app resumes from background.
+/// Providers that watch this will automatically re-fetch on resume.
+@Riverpod(keepAlive: true)
+class AppResumeCount extends _$AppResumeCount {
+  _AppResumeObserver? _observer;
+
+  @override
+  int build() {
+    _observer = _AppResumeObserver(() => state = state + 1);
+    WidgetsBinding.instance.addObserver(_observer!);
+    ref.onDispose(() {
+      WidgetsBinding.instance.removeObserver(_observer!);
+    });
+    return 0;
+  }
+}
+
+class _AppResumeObserver extends WidgetsBindingObserver {
+  final VoidCallback onResume;
+  _AppResumeObserver(this.onResume);
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) onResume();
+  }
+}
 
 @Riverpod(keepAlive: true)
 SubscriptionService subscriptionService(Ref ref) {
@@ -97,7 +124,8 @@ SubscriptionTier effectiveSubscriptionTier(Ref ref) {
   return ownTier;
 }
 
-/// Fetches the teacher's subscription tier from Supabase.
+/// Fetches the teacher's subscription tier from Supabase via an RPC function
+/// that bypasses RLS (students can't read teacher profiles directly).
 /// Re-evaluates when the student's group membership changes.
 @riverpod
 Future<SubscriptionTier> teacherSubscriptionTier(Ref ref) async {
@@ -106,23 +134,12 @@ Future<SubscriptionTier> teacherSubscriptionTier(Ref ref) async {
 
   final client = ref.watch(supabaseClientProvider);
 
-  final group = await client
-      .from('teacher_groups')
-      .select('teacher_id')
-      .eq('id', membership.groupId)
-      .maybeSingle();
-  if (group == null) return SubscriptionTier.free;
+  final result = await client.rpc('get_teacher_subscription_tier', params: {
+    'p_group_id': membership.groupId,
+  });
 
-  final teacherId = group['teacher_id'] as String;
-  final profile = await client
-      .from('profiles')
-      .select('subscription_tier')
-      .eq('id', teacherId)
-      .maybeSingle();
-  if (profile == null) return SubscriptionTier.free;
-
-  return SubscriptionTier.fromString(
-      profile['subscription_tier'] as String? ?? 'free');
+  if (result == null) return SubscriptionTier.free;
+  return SubscriptionTier.fromString(result as String? ?? 'free');
 }
 
 /// Full subscription details (tier, expiration, renewal status, etc.).
@@ -130,6 +147,8 @@ Future<SubscriptionTier> teacherSubscriptionTier(Ref ref) async {
 Future<SubscriptionInfo> subscriptionInfo(Ref ref) async {
   // Re-fetch when the user's own tier changes (e.g. after purchase).
   ref.watch(ownSubscriptionTierProvider);
+  // Re-fetch when app resumes (e.g. after returning from store management).
+  ref.watch(appResumeCountProvider);
   final service = ref.watch(subscriptionServiceProvider);
   return service.getSubscriptionInfo();
 }
