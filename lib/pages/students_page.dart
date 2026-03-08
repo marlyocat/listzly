@@ -637,7 +637,11 @@ class StudentsPage extends ConsumerWidget {
               borderRadius: BorderRadius.circular(20),
               side: const BorderSide(color: Colors.black, width: 5),
             ),
-            child: Padding(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(ctx).size.height * 0.6,
+              ),
+              child: Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
               child: Column(
@@ -690,53 +694,59 @@ class StudentsPage extends ConsumerWidget {
                       ),
                     )
                   else
-                    ...notifications.map((n) => Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                margin: const EdgeInsets.only(top: 6),
-                                width: 6,
-                                height: 6,
-                                decoration: BoxDecoration(
-                                  color: n.isRead
-                                      ? darkTextMuted.withAlpha(80)
-                                      : accentCoral,
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                    Flexible(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: notifications.map((n) => Padding(
+                                padding: const EdgeInsets.only(bottom: 10),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      n.message,
-                                      style: GoogleFonts.nunito(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
+                                    Container(
+                                      margin: const EdgeInsets.only(top: 6),
+                                      width: 6,
+                                      height: 6,
+                                      decoration: BoxDecoration(
                                         color: n.isRead
-                                            ? darkTextMuted
-                                            : Colors.white,
+                                            ? darkTextMuted.withAlpha(80)
+                                            : accentCoral,
+                                        shape: BoxShape.circle,
                                       ),
                                     ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      _timeAgo(n.createdAt),
-                                      style: GoogleFonts.nunito(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
-                                        color: darkTextMuted.withAlpha(150),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            n.message,
+                                            style: GoogleFonts.nunito(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
+                                              color: n.isRead
+                                                  ? darkTextMuted
+                                                  : Colors.white,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 2),
+                                          Text(
+                                            _timeAgo(n.createdAt),
+                                            style: GoogleFonts.nunito(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600,
+                                              color: darkTextMuted.withAlpha(150),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ],
                                 ),
-                              ),
-                            ],
-                          ),
-                        )),
+                              )).toList(),
+                        ),
+                      ),
+                    ),
                   if (notifications.isNotEmpty) ...[
                     const SizedBox(height: 8),
                     Row(
@@ -766,6 +776,7 @@ class StudentsPage extends ConsumerWidget {
                 ],
               ),
             ),
+          ),
           );
         },
       ),
