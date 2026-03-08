@@ -199,9 +199,6 @@ class ProfilePage extends ConsumerWidget {
                         (route) => false,
                       );
                       NotificationService.instance.cancelReminder();
-                      ref
-                          .read(ownSubscriptionTierProvider.notifier)
-                          .setTier(SubscriptionTier.free);
                       ref.read(authServiceProvider).signOut();
                     },
                     style: ElevatedButton.styleFrom(

@@ -155,7 +155,7 @@ final class OwnSubscriptionTierProvider
 }
 
 String _$ownSubscriptionTierHash() =>
-    r'1bab23c522be3ee40c11df7ae968665a9290ffba';
+    r'0c30213332b206c65be06e012ce4378006a0d86e';
 
 /// The user's own subscription tier from RevenueCat.
 
@@ -281,7 +281,7 @@ final class TeacherSubscriptionTierProvider
 }
 
 String _$teacherSubscriptionTierHash() =>
-    r'1408e66370e582308c00c71544a8d1d6baa9c37f';
+    r'8b9672cce38cbd09edea74ea764818e88fd7c40c';
 
 /// Full subscription details (tier, expiration, renewal status, etc.).
 
@@ -325,7 +325,7 @@ final class SubscriptionInfoProvider
   }
 }
 
-String _$subscriptionInfoHash() => r'c17e05f78c0efebc7d772a7e1a924f2dbd4d22b1';
+String _$subscriptionInfoHash() => r'baf1b0486ab241cbb056b8f693b5d2d2e3426a5b';
 
 /// Whether the user is eligible for a free trial (has never had 'pro').
 

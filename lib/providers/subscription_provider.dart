@@ -45,17 +45,22 @@ SubscriptionService subscriptionService(Ref ref) {
 /// The user's own subscription tier from RevenueCat.
 @Riverpod(keepAlive: true)
 class OwnSubscriptionTier extends _$OwnSubscriptionTier {
+  bool _loggedIn = false;
+
   @override
   SubscriptionTier build() {
+    _loggedIn = false;
     final service = ref.watch(subscriptionServiceProvider);
     // Re-run when auth state changes (login/logout) so RevenueCat
     // is re-associated with the correct user.
     final user = ref.watch(currentUserProvider);
 
-    // Listen for changes from RevenueCat
+    // Listen for changes from RevenueCat.
+    // Only sync AFTER logIn has completed — before that, RevenueCat
+    // may report anonymous/stale data that would overwrite the real tier.
     final sub = service.onTierChanged.listen((tier) {
       state = tier;
-      _syncToSupabase(tier);
+      if (_loggedIn) _syncToSupabase(tier);
     });
     ref.onDispose(() => sub.cancel());
 
@@ -72,8 +77,12 @@ class OwnSubscriptionTier extends _$OwnSubscriptionTier {
       await Purchases.logIn(userId);
     } catch (e) {
       debugPrint('RevenueCat logIn failed: $e');
+      // Don't proceed — getCustomerInfo would return anonymous/stale data
+      // and _syncToSupabase would overwrite the real tier with 'free'.
+      return;
     }
 
+    _loggedIn = true;
     final tier = await service.getCurrentTier();
     state = tier;
     _syncToSupabase(tier);
@@ -95,7 +104,7 @@ class OwnSubscriptionTier extends _$OwnSubscriptionTier {
       // initial default free state returned by build().
       await profileService.updateSubscriptionTier(user.id, tier);
     } catch (e) {
-      debugPrint('Failed to sync subscription tier to Supabase: $e');
+      debugPrint('Failed to sync subscription tier: $e');
     }
   }
 }
@@ -114,7 +123,8 @@ SubscriptionTier effectiveSubscriptionTier(Ref ref) {
     final membershipAsync = ref.watch(studentMembershipProvider);
     if (membershipAsync.value != null &&
         ownTier.index < SubscriptionTier.pro.index) {
-      final teacherTier = ref.watch(teacherSubscriptionTierProvider).value;
+      final teacherTierAsync = ref.watch(teacherSubscriptionTierProvider);
+      final teacherTier = teacherTierAsync.value;
       if (teacherTier != null && teacherTier.studentsInheritPro) {
         return SubscriptionTier.pro;
       }
@@ -129,6 +139,9 @@ SubscriptionTier effectiveSubscriptionTier(Ref ref) {
 /// Re-evaluates when the student's group membership changes.
 @riverpod
 Future<SubscriptionTier> teacherSubscriptionTier(Ref ref) async {
+  // Re-fetch when the app resumes so students pick up a teacher's new plan.
+  ref.watch(appResumeCountProvider);
+
   final membership = await ref.watch(studentMembershipProvider.future);
   if (membership == null) return SubscriptionTier.free;
 
