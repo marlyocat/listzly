@@ -110,7 +110,7 @@ class OwnSubscriptionTier extends _$OwnSubscriptionTier {
 }
 
 /// The effective tier: user's own tier, or Pro if student is in a paid
-/// teacher's group. Students under a free teacher stay on the free plan.
+/// teacher's group.
 @riverpod
 SubscriptionTier effectiveSubscriptionTier(Ref ref) {
   final ownTier = ref.watch(ownSubscriptionTierProvider);
@@ -118,14 +118,12 @@ SubscriptionTier effectiveSubscriptionTier(Ref ref) {
 
   if (profile == null) return ownTier;
 
-  // If user is a student in a group, check if teacher has a paid plan
-  if (profile.isStudent) {
+  // Students under a paid teacher get Pro access
+  if (profile.isStudent && ownTier.index < SubscriptionTier.pro.index) {
     final membershipAsync = ref.watch(studentMembershipProvider);
-    if (membershipAsync.value != null &&
-        ownTier.index < SubscriptionTier.pro.index) {
-      final teacherTierAsync = ref.watch(teacherSubscriptionTierProvider);
-      final teacherTier = teacherTierAsync.value;
-      if (teacherTier != null && teacherTier.studentsInheritPro) {
+    if (membershipAsync.value != null) {
+      final teacherTier = ref.watch(teacherSubscriptionTierProvider).value;
+      if (teacherTier != null && teacherTier.isPro) {
         return SubscriptionTier.pro;
       }
     }
