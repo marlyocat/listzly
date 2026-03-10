@@ -103,8 +103,9 @@ class _PracticePageState extends ConsumerState<PracticePage>
   late Animation<double> _buttonOpacityAnimation;
 
   // Recording state
+  static const _maxRecordingsPerDay = 5;
   bool _isRecording = false;
-  bool _hasRecordedToday = false;
+  int _recordingsTodayCount = 0;
   final AudioRecorder _recorder = AudioRecorder();
   String? _recordingPath;
   DateTime? _recordingStartTime;
@@ -218,11 +219,11 @@ class _PracticePageState extends ConsumerState<PracticePage>
           .read(recordingServiceProvider)
           .getUserRecordings(user.id);
       final now = DateTime.now();
-      final hasToday = recordings.any((r) =>
+      final todayCount = recordings.where((r) =>
           r.createdAt.year == now.year &&
           r.createdAt.month == now.month &&
-          r.createdAt.day == now.day);
-      if (mounted) setState(() => _hasRecordedToday = hasToday);
+          r.createdAt.day == now.day).length;
+      if (mounted) setState(() => _recordingsTodayCount = todayCount);
     } catch (e) {
       debugPrint('Failed to check today recordings: $e');
     }
@@ -289,12 +290,12 @@ class _PracticePageState extends ConsumerState<PracticePage>
     if (_isRecording) {
       await _stopRecording();
     } else {
-      if (_hasRecordedToday) {
+      if (_recordingsTodayCount >= _maxRecordingsPerDay) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                'You can only record once per day',
+                'You can only record $_maxRecordingsPerDay times per day',
                 style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
               ),
               backgroundColor: accentCoralDark,
@@ -446,7 +447,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
           );
       ref.invalidate(userRecordingsProvider);
       if (mounted) {
-        setState(() => _hasRecordedToday = true);
+        setState(() => _recordingsTodayCount++);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -936,7 +937,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
           mainAxisSize: MainAxisSize.min,
           children: [
             Opacity(
-              opacity: _hasRecordedToday && !_isRecording ? 0.4 : 1.0,
+              opacity: _recordingsTodayCount >= _maxRecordingsPerDay && !_isRecording ? 0.4 : 1.0,
               child: GestureDetector(
                 onTap: _toggleRecording,
                 child: Container(
@@ -992,7 +993,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
               Padding(
                 padding: const EdgeInsets.only(top: 6),
                 child: Text(
-                  _hasRecordedToday ? 'Recorded today' : 'Record',
+                  _recordingsTodayCount >= _maxRecordingsPerDay ? 'Limit reached' : 'Record',
                   style: GoogleFonts.nunito(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
