@@ -15,12 +15,14 @@ class AuthService {
     required String email,
     required String password,
     String? displayName,
-  }) {
-    return _client.auth.signUp(
+  }) async {
+    final response = await _client.auth.signUp(
       email: email,
       password: password,
       data: displayName != null ? {'display_name': displayName} : null,
     );
+
+    return response;
   }
 
   Future<AuthResponse> signIn({
@@ -30,6 +32,13 @@ class AuthService {
     return _client.auth.signInWithPassword(
       email: email,
       password: password,
+    );
+  }
+
+  Future<void> resetPassword(String email) {
+    return _client.auth.resetPasswordForEmail(
+      email,
+      redirectTo: 'https://listzly.caplock.website/auth/callback',
     );
   }
 

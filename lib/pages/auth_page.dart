@@ -19,6 +19,7 @@ class AuthPage extends ConsumerStatefulWidget {
 class _AuthPageState extends ConsumerState<AuthPage> {
   bool _isLogin = true;
   bool _isLoading = false;
+  bool _obscurePassword = true;
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _displayNameController = TextEditingController();
@@ -49,11 +50,22 @@ class _AuthPageState extends ConsumerState<AuthPage> {
         await authService.signIn(email: email, password: password);
       } else {
         final displayName = _displayNameController.text.trim();
-        await authService.signUp(
+        final response = await authService.signUp(
           email: email,
           password: password,
           displayName: displayName.isNotEmpty ? displayName : null,
         );
+
+        // Detect repeated sign-up (existing unconfirmed account)
+        final user = response.user;
+        if (user != null &&
+            (user.identities == null || user.identities!.isEmpty)) {
+          if (mounted) {
+            setState(() => _isLogin = true);
+            _showError('An account with this email already exists. Please sign in instead.');
+          }
+          return;
+        }
       }
 
       if (mounted) {
@@ -157,6 +169,89 @@ class _AuthPageState extends ConsumerState<AuthPage> {
             onPressed: () => Navigator.of(context).pop(),
             child: Text(
               'OK',
+              style: GoogleFonts.nunito(
+                color: accentCoral,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showForgotPasswordDialog() async {
+    final resetEmailController = TextEditingController(
+      text: _emailController.text.trim(),
+    );
+
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1E0A4A),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(
+          'Reset Password',
+          style: GoogleFonts.dmSerifDisplay(
+            color: Colors.white,
+            fontSize: 22,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Enter your email and we\'ll send you a link to reset your password.',
+              style: GoogleFonts.nunito(
+                color: darkTextSecondary,
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: resetEmailController,
+              keyboardType: TextInputType.emailAddress,
+              style: GoogleFonts.nunito(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+              decoration: _inputDecoration('Email', Icons.email_outlined),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(
+              'Cancel',
+              style: GoogleFonts.nunito(
+                color: darkTextMuted,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              final email = resetEmailController.text.trim();
+              if (email.isEmpty) return;
+              Navigator.of(context).pop();
+              try {
+                final authService = ref.read(authServiceProvider);
+                await authService.resetPassword(email);
+                if (mounted) {
+                  _showError('Password reset link sent! Check your email.');
+                }
+              } on AuthException catch (e) {
+                if (mounted) _showError(e.message);
+              } catch (_) {
+                if (mounted) {
+                  _showError('Something went wrong. Please try again.');
+                }
+              }
+            },
+            child: Text(
+              'Send',
               style: GoogleFonts.nunito(
                 color: accentCoral,
                 fontWeight: FontWeight.w800,
@@ -288,16 +383,42 @@ class _AuthPageState extends ConsumerState<AuthPage> {
               // Password field
               TextField(
                 controller: _passwordController,
-                obscureText: true,
+                obscureText: _obscurePassword,
                 style: GoogleFonts.nunito(
                   color: Colors.white,
                   fontWeight: FontWeight.w600,
                 ),
-                decoration:
-                    _inputDecoration('Password', Icons.lock_outline),
+                decoration: _inputDecoration('Password', Icons.lock_outline).copyWith(
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                      color: darkTextMuted,
+                      size: 20,
+                    ),
+                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                  ),
+                ),
               ),
 
-              const SizedBox(height: 32),
+              if (_isLogin) ...[
+                const SizedBox(height: 8),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: GestureDetector(
+                    onTap: _showForgotPasswordDialog,
+                    child: Text(
+                      'Forgot Password?',
+                      style: GoogleFonts.nunito(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: accentCoral,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+
+              const SizedBox(height: 24),
 
               // Submit button
               SizedBox(
