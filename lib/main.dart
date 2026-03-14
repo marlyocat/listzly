@@ -6,9 +6,12 @@ import 'package:listzly/config/supabase_config.dart';
 import 'package:listzly/providers/auth_provider.dart';
 import 'package:listzly/pages/intro_page.dart';
 import 'package:listzly/pages/auth_gate.dart';
+import 'package:listzly/pages/reset_password_page.dart';
 import 'package:listzly/services/notification_service.dart';
 import 'package:listzly/config/revenuecat_config.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
+
+final navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -77,14 +80,32 @@ Future<void> main() async {
     }
   }
 
+  // Listen for password recovery deep link before app starts
+  Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+    debugPrint('Auth event: ${data.event}');
+    if (data.event == AuthChangeEvent.passwordRecovery) {
+      // Small delay to ensure navigator is mounted
+      Future.delayed(const Duration(milliseconds: 500), () {
+        navigatorKey.currentState?.push(
+          MaterialPageRoute(builder: (_) => const ResetPasswordPage()),
+        );
+      });
+    }
+  });
+
   runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends ConsumerWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends ConsumerState<MyApp> {
+  @override
+  Widget build(BuildContext context) {
     final user = ref.watch(currentUserProvider);
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -94,6 +115,7 @@ class MyApp extends ConsumerWidget {
         statusBarBrightness: Brightness.dark,
       ),
       child: MaterialApp(
+        navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
         home: user != null ? const AuthGate() : const IntroPage(),
       ),

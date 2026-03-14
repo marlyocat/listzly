@@ -240,7 +240,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                 final authService = ref.read(authServiceProvider);
                 await authService.resetPassword(email);
                 if (mounted) {
-                  _showError('Password reset link sent! Check your email.');
+                  _showResetEmailSentDialog();
                 }
               } on AuthException catch (e) {
                 if (mounted) _showError(e.message);
@@ -252,6 +252,44 @@ class _AuthPageState extends ConsumerState<AuthPage> {
             },
             child: Text(
               'Send',
+              style: GoogleFonts.nunito(
+                color: accentCoral,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showResetEmailSentDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1E0A4A),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(
+          'Check Your Email',
+          style: GoogleFonts.dmSerifDisplay(
+            color: Colors.white,
+            fontSize: 22,
+          ),
+        ),
+        content: Text(
+          'We\'ve sent a password reset link to your email. Please check your inbox (and spam folder).',
+          style: GoogleFonts.nunito(
+            color: darkTextSecondary,
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(
+              'OK',
               style: GoogleFonts.nunito(
                 color: accentCoral,
                 fontWeight: FontWeight.w800,

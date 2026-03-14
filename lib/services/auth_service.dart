@@ -38,7 +38,7 @@ class AuthService {
   Future<void> resetPassword(String email) {
     return _client.auth.resetPasswordForEmail(
       email,
-      redirectTo: 'https://listzly.caplock.website/auth/callback',
+      redirectTo: 'com.caplock.listzly://login-callback',
     );
   }
 
