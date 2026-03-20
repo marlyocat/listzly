@@ -37,12 +37,13 @@ class SessionService {
     DateTime start,
     DateTime end,
   ) async {
+    final endInclusive = DateTime(end.year, end.month, end.day, 23, 59, 59);
     final result = await _client
         .from('practice_sessions')
         .select()
         .eq('user_id', userId)
         .gte('completed_at', start.toIso8601String())
-        .lte('completed_at', end.toIso8601String())
+        .lte('completed_at', endInclusive.toIso8601String())
         .order('completed_at', ascending: false);
 
     return (result as List)
