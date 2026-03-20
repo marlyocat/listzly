@@ -73,10 +73,10 @@ class ProfilePage extends ConsumerWidget {
               ),
             ),
 
-            // Subscription section
-            SliverContentConstraint(
-              child: _buildSubscriptionSection(context, ref),
-            ),
+            // Subscription section (temporarily hidden — free Pro access active)
+            // SliverContentConstraint(
+            //   child: _buildSubscriptionSection(context, ref),
+            // ),
 
             // Role & Group section
             SliverContentConstraint(
@@ -241,6 +241,7 @@ class ProfilePage extends ConsumerWidget {
     return teacherTier != null && teacherTier.studentsInheritPro;
   }
 
+  // ignore: unused_element
   Widget _buildSubscriptionSection(BuildContext context, WidgetRef ref) {
     final tier = ref.watch(effectiveSubscriptionTierProvider);
 

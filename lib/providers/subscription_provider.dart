@@ -109,10 +109,16 @@ class OwnSubscriptionTier extends _$OwnSubscriptionTier {
   }
 }
 
+/// Temporary: grant all users Pro access for App Hive testing.
+/// Set to false when testing is complete.
+const _freeAccessForTesting = true;
+
 /// The effective tier: user's own tier, or Pro if student is in a paid
 /// teacher's group.
 @riverpod
 SubscriptionTier effectiveSubscriptionTier(Ref ref) {
+  if (_freeAccessForTesting) return SubscriptionTier.pro;
+
   final ownTier = ref.watch(ownSubscriptionTierProvider);
   final profile = ref.watch(currentProfileProvider).value;
 
