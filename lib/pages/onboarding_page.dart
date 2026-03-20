@@ -43,7 +43,8 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
       imagePath: 'lib/images/licensed/onboarding-practice-sticker.svg',
       title: 'Start Practicing',
       description:
-          'Pick an instrument, set a timer, and begin a focused practice session. Piano is available on the free plan.',
+          // TODO: restore when pro is re-enabled: 'Pick an instrument, set a timer, and begin a focused practice session. Piano is available on the free plan.',
+          'Pick an instrument, set a timer, and begin a focused practice session.',
     ),
     _TourCard(
       imagePath: 'lib/images/licensed/onboarding-target-sticker.svg',
@@ -65,9 +66,11 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
     ),
     _TourCard(
       imagePath: 'lib/images/licensed/onboarding-gift-sticker.svg',
-      title: 'Unlock More with Pro',
+      // TODO: restore when pro is re-enabled: title: 'Unlock More with Pro',
+      // TODO: restore when pro is re-enabled: description: 'Go Pro to unlock all instruments, record and share your practice sessions, view activity history, and more. Start with everything you need for free.',
+      title: 'All Features Included',
       description:
-          'Go Pro to unlock all instruments, record and share your practice sessions, view activity history, and more. Start with everything you need for free.',
+          'Enjoy all instruments, record and share your practice sessions, view activity history, and more.',
     ),
   ];
 
