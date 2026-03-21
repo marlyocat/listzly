@@ -37,7 +37,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
   late final AnimationController _barAnimController;
   late final Animation<double> _barAnim;
 
-  static const _dayLabels = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+  static const _dayLabels = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
   static const _monthNames = [
     'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
@@ -79,8 +79,8 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
     final now = DateTime.now();
     switch (_selectedTab) {
       case 0:
-        final weekday = now.weekday % 7;
-        _rangeStart = DateTime(now.year, now.month, now.day - weekday);
+        final weekday = now.weekday; // Mon=1 .. Sun=7
+        _rangeStart = DateTime(now.year, now.month, now.day - (weekday - 1));
         _rangeEnd = _rangeStart.add(const Duration(days: 6));
         break;
       case 1:
@@ -656,7 +656,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
         }
         return (values: values, labels: labels, sublabels: null, highlightIndex: yearHighlight);
 
-      default: // Week – one bar per day (SUN–SAT)
+      default: // Week – one bar per day (MON–SUN)
         final values = List<double>.filled(7, 0.0);
         final rangeStartDate = DateTime(_rangeStart.year, _rangeStart.month, _rangeStart.day);
         for (final session in sessions) {

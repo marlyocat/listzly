@@ -33,7 +33,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
   late final AnimationController _barAnimController;
   late final Animation<double> _barAnim;
 
-  static const _dayLabels = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+  static const _dayLabels = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
 
   // Instrument icon mapping
   static const _instrumentIcons = {
@@ -773,7 +773,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
         }
         return (values: values, labels: labels, sublabels: null, highlightIndex: yearHighlight);
 
-      default: // Week – one bar per day (SUN–SAT)
+      default: // Week – one bar per day (MON–SUN)
         final values = List<double>.filled(7, 0.0);
         final rangeStartDate = DateTime(_rangeStart.year, _rangeStart.month, _rangeStart.day);
         for (final session in sessions) {
