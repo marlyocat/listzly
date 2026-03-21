@@ -80,9 +80,9 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
   void _computeDateRange() {
     final now = DateTime.now();
     switch (_selectedTab) {
-      case 0: // Week (Sunday – Saturday containing today)
-        final weekday = now.weekday % 7; // Sun=0 .. Sat=6
-        _rangeStart = DateTime(now.year, now.month, now.day - weekday);
+      case 0: // Week (Monday – Sunday containing today)
+        final weekday = now.weekday; // Mon=1 .. Sun=7
+        _rangeStart = DateTime(now.year, now.month, now.day - (weekday - 1));
         _rangeEnd = _rangeStart.add(const Duration(days: 6));
         break;
       case 1: // Month
@@ -208,8 +208,8 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
     setState(() {
       switch (_selectedTab) {
         case 0: // Week: jump to the week containing the picked date
-          final weekday = picked.weekday % 7; // Sun=0 .. Sat=6
-          _rangeStart = DateTime(picked.year, picked.month, picked.day - weekday);
+          final weekday = picked.weekday; // Mon=1 .. Sun=7
+          _rangeStart = DateTime(picked.year, picked.month, picked.day - (weekday - 1));
           _rangeEnd = _rangeStart.add(const Duration(days: 6));
           break;
         case 1: // Month: jump to the month of the picked date
