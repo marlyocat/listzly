@@ -47,7 +47,8 @@ enum SubscriptionTier {
 
   // Teacher-specific Pro features (only with teacher plans)
   bool get canAssignQuests => isTeacherPlan;
-  bool get canViewStudentRecordings => isTeacherPlan;
+  // TODO: restore to isTeacherPlan when pro is re-enabled
+  bool get canViewStudentRecordings => true;
 
   /// Whether students in this teacher's group should inherit Pro.
   bool get studentsInheritPro => isPro;
