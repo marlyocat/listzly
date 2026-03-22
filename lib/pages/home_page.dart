@@ -333,7 +333,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
               child: GestureDetector(
                 onTap: _startShowcase,
                 child: SvgPicture.asset(
-                  'lib/images/licensed/bird_tooltip.svg',
+                  'lib/images/licensed/seal_tooltip.svg',
                   width: 30,
                   height: 30,
                 ),

@@ -214,7 +214,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                     GestureDetector(
                       onTap: _startShowcase,
                       child: SvgPicture.asset(
-                        'lib/images/licensed/bird_tooltip.svg',
+                        'lib/images/licensed/seal_tooltip.svg',
                         width: 30,
                         height: 30,
                       ),
