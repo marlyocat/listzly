@@ -20,6 +20,7 @@ import 'package:listzly/providers/profile_provider.dart';
 import 'package:listzly/providers/subscription_provider.dart';
 import 'package:listzly/components/upgrade_prompt.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -43,7 +44,9 @@ class _HomePageState extends ConsumerState<HomePage> {
         ref.watch(currentProfileProvider).value?.isTeacher ?? false;
 
     final pages = <Widget>[
-      const _HomeTab(),
+      ShowCaseWidget(
+        builder: (context) => const _HomeTab(),
+      ),
       const QuestsPage(),
       const ActivityPage(),
       if (isTeacher) const StudentsPage(),
@@ -131,6 +134,21 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
   late AnimationController _rippleController;
 
   late List<int> _quoteIndices;
+
+  // Showcase keys
+  final _streakKey = GlobalKey();
+  final _instrumentKey = GlobalKey();
+  final _durationKey = GlobalKey();
+  final _playKey = GlobalKey();
+
+  void _startShowcase() {
+    ShowcaseView.get().startShowCase([
+      _streakKey,
+      _instrumentKey,
+      _durationKey,
+      _playKey,
+    ]);
+  }
 
   @override
   void initState() {
@@ -300,6 +318,19 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                 ),
               ),
             ),
+            // Bird tooltip
+            Positioned(
+              top: MediaQuery.of(context).padding.top + 8,
+              right: 12,
+              child: GestureDetector(
+                onTap: _startShowcase,
+                child: SvgPicture.asset(
+                  'lib/images/licensed/bird_tooltip.svg',
+                  width: 32,
+                  height: 32,
+                ),
+              ),
+            ),
             SafeArea(
           child: ContentConstraint(
           child: Column(
@@ -307,45 +338,54 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
               const SizedBox(height: 12),
 
               // Streak badge
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.white.withAlpha(15),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: accentCoral.withAlpha(60),
-                    width: 1,
-                  ),
+              Showcase(
+                key: _streakKey,
+                description: 'Track your daily practice streak here',
+                tooltipBackgroundColor: const Color(0xFF1E0A4A),
+                descTextStyle: GoogleFonts.nunito(
+                  fontSize: 14,
+                  color: Colors.white,
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SvgPicture.asset('lib/images/licensed/streak.svg',
-                        width: 18, height: 18),
-                    const SizedBox(width: 6),
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          '$streakDays day streak',
-                          style: GoogleFonts.nunito(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
-                        ),
-                        if (streakBroken)
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withAlpha(15),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: accentCoral.withAlpha(60),
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SvgPicture.asset('lib/images/licensed/streak.svg',
+                          width: 18, height: 18),
+                      const SizedBox(width: 6),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
                           Text(
-                            'Streak Broken',
+                            '$streakDays day streak',
                             style: GoogleFonts.nunito(
-                              fontSize: 11,
+                              fontSize: 13,
                               fontWeight: FontWeight.w700,
-                              color: accentCoral,
+                              color: Colors.white,
                             ),
                           ),
-                      ],
-                    ),
-                  ],
+                          if (streakBroken)
+                            Text(
+                              'Streak Broken',
+                              style: GoogleFonts.nunito(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                color: accentCoral,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
 
@@ -353,7 +393,15 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
 
               // Swipeable instrument carousel
               Expanded(
-                child: PageView.builder(
+                child: Showcase(
+                  key: _instrumentKey,
+                  description: 'Swipe left or right to choose your instrument',
+                  tooltipBackgroundColor: const Color(0xFF1E0A4A),
+                  descTextStyle: GoogleFonts.nunito(
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
+                  child: PageView.builder(
                   controller: _pageController,
                   itemCount: _instruments.length,
                   onPageChanged: (index) => setState(() => _currentPage = index),
@@ -448,9 +496,17 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                                 ),
                               ),
                               // +/- buttons and vertical duration slider
-                              SizedBox(
-                                width: 48,
-                                height: 190,
+                              Showcase(
+                                key: _durationKey,
+                                description: 'Set how long you want to practice',
+                                tooltipBackgroundColor: const Color(0xFF1E0A4A),
+                                descTextStyle: GoogleFonts.nunito(
+                                  fontSize: 14,
+                                  color: Colors.white,
+                                ),
+                                child: SizedBox(
+                                  width: 48,
+                                  height: 190,
                                 child: Column(
                                   children: [
                                     // Duration label
@@ -546,6 +602,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                                     ),
                                   ],
                                 ),
+                                ),
                               ),
                             ],
                           ),
@@ -553,6 +610,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                         ],
                     );
                   },
+                ),
                 ),
               ),
 
@@ -578,9 +636,17 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
               ),
 
               // Play button with ripples
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: AnimatedBuilder(
+              Showcase(
+                key: _playKey,
+                description: 'Tap to start your practice session!',
+                tooltipBackgroundColor: const Color(0xFF1E0A4A),
+                descTextStyle: GoogleFonts.nunito(
+                  fontSize: 14,
+                  color: Colors.white,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: AnimatedBuilder(
                   animation: Listenable.merge([_pulseAnimation, _rippleController]),
                   builder: (context, child) {
                     return GestureDetector(
@@ -642,6 +708,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                       ),
                     );
                   },
+                ),
                 ),
               ),
             ],
