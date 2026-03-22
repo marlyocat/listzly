@@ -400,7 +400,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              const SizedBox(width: 48),
+                              const SizedBox(width: 40),
                               Expanded(
                                 child: Column(
                                   children: [
@@ -447,28 +447,54 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                                   ],
                                 ),
                               ),
-                              // Vertical duration slider
+                              // +/- buttons and vertical duration slider
                               SizedBox(
                                 width: 48,
-                                height: 160,
+                                height: 190,
                                 child: Column(
                                   children: [
+                                    // Duration label
                                     Text(
                                       '${(_selectedDuration ?? 15).toInt()}',
                                       style: GoogleFonts.dmSerifDisplay(
-                                        fontSize: 16,
+                                        fontSize: 20,
                                         color: accentCoral,
                                       ),
                                     ),
                                     Text(
-                                      'min',
+                                      'mins',
                                       style: GoogleFonts.nunito(
                                         fontSize: 10,
                                         fontWeight: FontWeight.w600,
                                         color: darkTextMuted,
                                       ),
                                     ),
-                                    const SizedBox(height: 4),
+                                    const SizedBox(height: 2),
+                                    // + button
+                                    GestureDetector(
+                                      onTap: () {
+                                        final current = (_selectedDuration ?? 15);
+                                        if (current < 120) {
+                                          setState(() => _selectedDuration = current + 5);
+                                        }
+                                      },
+                                      child: Container(
+                                        width: 26,
+                                        height: 26,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: Colors.white.withAlpha(80),
+                                          ),
+                                        ),
+                                        child: const Icon(
+                                          Icons.add_rounded,
+                                          color: Colors.white,
+                                          size: 15,
+                                        ),
+                                      ),
+                                    ),
+                                    // Slider
                                     Expanded(
                                       child: RotatedBox(
                                         quarterTurns: 3,
@@ -480,7 +506,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                                             thumbColor: accentCoral,
                                             thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 7),
                                             overlayColor: accentCoral.withAlpha(40),
-                                            overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
+                                            overlayShape: const RoundSliderOverlayShape(overlayRadius: 8),
                                           ),
                                           child: Slider(
                                             value: _selectedDuration ?? 15,
@@ -491,6 +517,30 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                                               setState(() => _selectedDuration = value);
                                             },
                                           ),
+                                        ),
+                                      ),
+                                    ),
+                                    // - button
+                                    GestureDetector(
+                                      onTap: () {
+                                        final current = (_selectedDuration ?? 15);
+                                        if (current > 5) {
+                                          setState(() => _selectedDuration = current - 5);
+                                        }
+                                      },
+                                      child: Container(
+                                        width: 26,
+                                        height: 26,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: Colors.white.withAlpha(80),
+                                          ),
+                                        ),
+                                        child: const Icon(
+                                          Icons.remove_rounded,
+                                          color: Colors.white,
+                                          size: 15,
                                         ),
                                       ),
                                     ),
