@@ -230,12 +230,31 @@ class _FlipBoxTileState extends State<_FlipBoxTile> {
   Widget get _unselectedSide => Container(
         height: widget.height,
         color: navBarBg,
-        child: Center(
-          child: widget.item.unselectedImage != null
-              ? SvgPicture.asset(widget.item.unselectedImage!,
-                  width: widget.iconSize, height: widget.iconSize)
-              : Icon(widget.item.icon, size: widget.iconSize,
-                  color: Colors.white.withAlpha(140)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Invisible spacer matching the coral indicator height
+            const SizedBox(height: 2.5),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (widget.item.unselectedImage != null)
+                    SvgPicture.asset(widget.item.unselectedImage!,
+                        width: widget.iconSize, height: widget.iconSize)
+                  else
+                    Icon(widget.item.icon, size: widget.iconSize,
+                        color: Colors.white.withAlpha(140)),
+                  const SizedBox(height: 3),
+                  Text(widget.item.name,
+                      textAlign: TextAlign.center,
+                      style: widget.textStyle.copyWith(
+                        color: Colors.white.withAlpha(140),
+                      )),
+                ],
+              ),
+            ),
+          ],
         ),
       );
 
