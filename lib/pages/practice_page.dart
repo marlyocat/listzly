@@ -445,8 +445,8 @@ class _PracticePageState extends ConsumerState<PracticePage>
             durationSeconds: durationSeconds,
             localFilePath: localPath,
           );
-      ref.invalidate(userRecordingsProvider);
       if (mounted) {
+        ref.invalidate(userRecordingsProvider);
         setState(() => _recordingsTodayCount++);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

@@ -57,6 +57,7 @@ dependencies:
   purchases_flutter: ^9.12.3
   flutter_svg: ^2.0.17
   lottie: ^3.3.2
+  http: ^1.6.0
 
 dev_dependencies:
   flutter_test:
