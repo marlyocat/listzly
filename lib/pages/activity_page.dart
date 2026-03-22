@@ -420,8 +420,8 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                           onTap: _startShowcase,
                           child: SvgPicture.asset(
                             'lib/images/licensed/bird_tooltip.svg',
-                            width: 32,
-                            height: 32,
+                            width: 30,
+                            height: 30,
                           ),
                         ),
                       ],
@@ -436,6 +436,14 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                     description: 'Switch between weekly, monthly, and yearly views',
                     tooltipBackgroundColor: const Color(0xFF1E0A4A),
                     descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                    tooltipActions: [
+                      TooltipActionButton(
+                        type: TooltipDefaultActionType.skip,
+                        name: 'Skip tour',
+                        backgroundColor: Colors.red,
+                        textStyle: GoogleFonts.nunito(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white),
+                      ),
+                    ],
                     child: _buildSegmentedTabs(),
                   ),
                 ),

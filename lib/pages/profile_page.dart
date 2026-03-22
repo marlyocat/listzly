@@ -24,12 +24,33 @@ import 'package:listzly/pages/paywall_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:showcaseview/showcaseview.dart';
 
-class ProfilePage extends ConsumerWidget {
+class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends ConsumerState<ProfilePage> {
+  // Showcase keys
+  final _profileKey = GlobalKey();
+  final _roleKey = GlobalKey();
+  final _practiceKey = GlobalKey();
+  final _instrumentsKey = GlobalKey();
+
+  void _startShowcase() {
+    ShowcaseView.get().startShowCase([
+      _profileKey,
+      _roleKey,
+      _practiceKey,
+      _instrumentsKey,
+    ]);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final profileAsync = ref.watch(currentProfileProvider);
     final settingsAsync = ref.watch(userSettingsProvider);
     final instrumentsAsync = ref.watch(instrumentStatsProvider);
@@ -39,37 +60,66 @@ class ProfilePage extends ConsumerWidget {
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            // Title
+            // Title + bird tooltip
             SliverContentConstraint(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
-                child: ShaderMask(
-                  shaderCallback: (bounds) => const LinearGradient(
-                    colors: [Colors.white, primaryLight],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ).createShader(bounds),
-                  child: Text(
-                    'Profile',
-                    style: GoogleFonts.dmSerifDisplay(
-                      fontSize: 36,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.white,
+                child: Row(
+                  children: [
+                    const SizedBox(width: 32),
+                    const Spacer(),
+                    ShaderMask(
+                      shaderCallback: (bounds) => const LinearGradient(
+                        colors: [Colors.white, primaryLight],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ).createShader(bounds),
+                      child: Text(
+                        'Profile',
+                        style: GoogleFonts.dmSerifDisplay(
+                          fontSize: 36,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
-                  ),
+                    const Spacer(),
+                    GestureDetector(
+                      onTap: _startShowcase,
+                      child: SvgPicture.asset(
+                        'lib/images/licensed/bird_tooltip.svg',
+                        width: 30,
+                        height: 30,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
 
             // Profile card
             SliverContentConstraint(
-              child: profileAsync.when(
-                data: (profile) {
-                  final email = ref.watch(currentUserProvider)?.email;
-                  return _buildProfileCard(profile, email);
-                },
-                loading: () => _buildProfileCardLoading(),
-                error: (err, _) => _buildErrorCard('Failed to load profile'),
+              child: Showcase(
+                key: _profileKey,
+                description: 'View your profile info and display name',
+                tooltipBackgroundColor: const Color(0xFF1E0A4A),
+                descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                tooltipActions: [
+                  TooltipActionButton(
+                    type: TooltipDefaultActionType.skip,
+                    name: 'Skip tour',
+                    backgroundColor: Colors.red,
+                    textStyle: GoogleFonts.nunito(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white),
+                  ),
+                ],
+                child: profileAsync.when(
+                  data: (profile) {
+                    final email = ref.watch(currentUserProvider)?.email;
+                    return _buildProfileCard(profile, email);
+                  },
+                  loading: () => _buildProfileCardLoading(),
+                  error: (err, _) => _buildErrorCard('Failed to load profile'),
+                ),
               ),
             ),
 
@@ -80,11 +130,17 @@ class ProfilePage extends ConsumerWidget {
 
             // Role & Group section
             SliverContentConstraint(
-              child: profileAsync.when(
-                data: (profile) =>
-                    _buildRoleGroupSection(context, ref, profile),
-                loading: () => const SizedBox.shrink(),
-                error: (_, _) => const SizedBox.shrink(),
+              child: Showcase(
+                key: _roleKey,
+                description: 'Switch between student and teacher roles or join a group',
+                tooltipBackgroundColor: const Color(0xFF1E0A4A),
+                descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                child: profileAsync.when(
+                  data: (profile) =>
+                      _buildRoleGroupSection(context, ref, profile),
+                  loading: () => const SizedBox.shrink(),
+                  error: (_, _) => const SizedBox.shrink(),
+                ),
               ),
             ),
 
@@ -100,21 +156,33 @@ class ProfilePage extends ConsumerWidget {
 
             // Practice section
             SliverContentConstraint(
-              child: settingsAsync.when(
-                data: (settings) => _buildPracticeSection(context, ref, settings),
-                loading: () => _buildSectionLoading('Practice'),
-                error: (err, _) =>
-                    _buildErrorCard('Failed to load practice settings'),
+              child: Showcase(
+                key: _practiceKey,
+                description: 'Set your daily practice goal and reminder preferences',
+                tooltipBackgroundColor: const Color(0xFF1E0A4A),
+                descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                child: settingsAsync.when(
+                  data: (settings) => _buildPracticeSection(context, ref, settings),
+                  loading: () => _buildSectionLoading('Practice'),
+                  error: (err, _) =>
+                      _buildErrorCard('Failed to load practice settings'),
+                ),
               ),
             ),
 
             // Instruments section
             SliverContentConstraint(
-              child: instrumentsAsync.when(
-                data: (instruments) => _buildInstrumentsSection(instruments),
-                loading: () => _buildSectionLoading('My Instruments'),
-                error: (err, _) =>
-                    _buildErrorCard('Failed to load instruments'),
+              child: Showcase(
+                key: _instrumentsKey,
+                description: 'See your total practice time for each instrument',
+                tooltipBackgroundColor: const Color(0xFF1E0A4A),
+                descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                child: instrumentsAsync.when(
+                  data: (instruments) => _buildInstrumentsSection(instruments),
+                  loading: () => _buildSectionLoading('My Instruments'),
+                  error: (err, _) =>
+                      _buildErrorCard('Failed to load instruments'),
+                ),
               ),
             ),
 

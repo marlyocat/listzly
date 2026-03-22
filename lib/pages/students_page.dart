@@ -16,12 +16,33 @@ import 'package:listzly/utils/responsive.dart';
 import 'package:listzly/providers/subscription_provider.dart';
 import 'package:listzly/components/upgrade_prompt.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
+import 'package:showcaseview/showcaseview.dart';
 
-class StudentsPage extends ConsumerWidget {
+class StudentsPage extends ConsumerStatefulWidget {
   const StudentsPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<StudentsPage> createState() => _StudentsPageState();
+}
+
+class _StudentsPageState extends ConsumerState<StudentsPage> {
+  // Showcase keys
+  final _bellKey = GlobalKey();
+  final _inviteKey = GlobalKey();
+  final _questsKey = GlobalKey();
+  final _studentsKey = GlobalKey();
+
+  void _startShowcase() {
+    ShowcaseView.get().startShowCase([
+      _bellKey,
+      _inviteKey,
+      _questsKey,
+      _studentsKey,
+    ]);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final groupAsync = ref.watch(teacherGroupProvider);
     final studentsAsync = ref.watch(teacherStudentsProvider);
 
@@ -39,30 +60,52 @@ class StudentsPage extends ConsumerWidget {
           },
           child: CustomScrollView(
           slivers: [
-            // Title + notification bell
+            // Title + notification bell + bird tooltip
             SliverContentConstraint(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
                 child: Row(
                   children: [
-                    Expanded(
-                      child: ShaderMask(
-                        shaderCallback: (bounds) => const LinearGradient(
-                          colors: [Colors.white, primaryLight],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ).createShader(bounds),
-                        child: Text(
-                          'Students',
-                          style: GoogleFonts.dmSerifDisplay(
-                            fontSize: 36,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.white,
-                          ),
+                    Showcase(
+                      key: _bellKey,
+                      description: 'Get notified when a student joins or leaves your group',
+                      tooltipBackgroundColor: const Color(0xFF1E0A4A),
+                      descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                      tooltipActions: [
+                        TooltipActionButton(
+                          type: TooltipDefaultActionType.skip,
+                          name: 'Skip tour',
+                          backgroundColor: Colors.red,
+                          textStyle: GoogleFonts.nunito(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white),
+                        ),
+                      ],
+                      child: _buildNotificationBell(context, ref),
+                    ),
+                    const Spacer(),
+                    ShaderMask(
+                      shaderCallback: (bounds) => const LinearGradient(
+                        colors: [Colors.white, primaryLight],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ).createShader(bounds),
+                      child: Text(
+                        'Students',
+                        style: GoogleFonts.dmSerifDisplay(
+                          fontSize: 36,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.white,
                         ),
                       ),
                     ),
-                    _buildNotificationBell(context, ref),
+                    const Spacer(),
+                    GestureDetector(
+                      onTap: _startShowcase,
+                      child: SvgPicture.asset(
+                        'lib/images/licensed/bird_tooltip.svg',
+                        width: 30,
+                        height: 30,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -70,61 +113,79 @@ class StudentsPage extends ConsumerWidget {
 
             // Invite code card
             SliverContentConstraint(
-              child: groupAsync.when(
-                data: (group) {
-                  if (group == null) return const SizedBox.shrink();
-                  final studentCount =
-                      studentsAsync.value?.length ?? 0;
-                  return _buildInviteCodeCard(context, ref, group.inviteCode,
-                      group.id, studentCount);
-                },
-                loading: () => const Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Center(
-                    child: CircularProgressIndicator(
-                        color: accentCoral, strokeWidth: 2.5),
+              child: Showcase(
+                key: _inviteKey,
+                description: 'Share this invite code with your students to join your group',
+                tooltipBackgroundColor: const Color(0xFF1E0A4A),
+                descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                child: groupAsync.when(
+                  data: (group) {
+                    if (group == null) return const SizedBox.shrink();
+                    final studentCount =
+                        studentsAsync.value?.length ?? 0;
+                    return _buildInviteCodeCard(context, ref, group.inviteCode,
+                        group.id, studentCount);
+                  },
+                  loading: () => const Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Center(
+                      child: CircularProgressIndicator(
+                          color: accentCoral, strokeWidth: 2.5),
+                    ),
                   ),
+                  error: (_, _) => const SizedBox.shrink(),
                 ),
-                error: (_, _) => const SizedBox.shrink(),
               ),
             ),
 
             // Assign quest button + active quests
             SliverContentConstraint(
-              child: groupAsync.when(
-                data: (group) {
-                  if (group == null) return const SizedBox.shrink();
-                  return _buildAssignedQuestsSection(context, ref, group.id);
-                },
-                loading: () => const SizedBox.shrink(),
-                error: (_, _) => const SizedBox.shrink(),
+              child: Showcase(
+                key: _questsKey,
+                description: 'Assign quests to your students and track their progress',
+                tooltipBackgroundColor: const Color(0xFF1E0A4A),
+                descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                child: groupAsync.when(
+                  data: (group) {
+                    if (group == null) return const SizedBox.shrink();
+                    return _buildAssignedQuestsSection(context, ref, group.id);
+                  },
+                  loading: () => const SizedBox.shrink(),
+                  error: (_, _) => const SizedBox.shrink(),
+                ),
               ),
             ),
 
             // Student list
             SliverContentConstraint(
-              child: studentsAsync.when(
-                data: (students) {
-                  if (students.isEmpty) {
-                    return _buildEmptyState();
-                  }
-                  return _buildStudentList(context, ref, students);
-                },
-                loading: () => const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 32),
-                  child: Center(
-                    child: CircularProgressIndicator(
-                        color: accentCoral, strokeWidth: 2.5),
+              child: Showcase(
+                key: _studentsKey,
+                description: 'Tap on a student to view their practice details and recordings',
+                tooltipBackgroundColor: const Color(0xFF1E0A4A),
+                descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                child: studentsAsync.when(
+                  data: (students) {
+                    if (students.isEmpty) {
+                      return _buildEmptyState();
+                    }
+                    return _buildStudentList(context, ref, students);
+                  },
+                  loading: () => const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 32),
+                    child: Center(
+                      child: CircularProgressIndicator(
+                          color: accentCoral, strokeWidth: 2.5),
+                    ),
                   ),
-                ),
-                error: (_, _) => Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Text(
-                    'Could not load students.',
-                    style: GoogleFonts.nunito(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: darkTextMuted,
+                  error: (_, _) => Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Text(
+                      'Could not load students.',
+                      style: GoogleFonts.nunito(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: darkTextMuted,
+                      ),
                     ),
                   ),
                 ),

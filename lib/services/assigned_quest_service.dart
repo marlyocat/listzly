@@ -246,15 +246,7 @@ class AssignedQuestService {
     final justCompleted = newProgress >= quest.target && !wasAlreadyCompleted;
     if (!justCompleted) return;
 
-    // 1. Auto-deactivate one-time quests.
-    if (!quest.isRecurring) {
-      await _client
-          .from('assigned_quests')
-          .update({'is_active': false})
-          .eq('id', quest.id);
-    }
-
-    // 2. Notify teacher.
+    // Notify teacher.
     try {
       final profile = await _client
           .from('profiles')

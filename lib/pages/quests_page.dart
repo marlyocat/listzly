@@ -131,10 +131,14 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
           : def.title;
       final rewardXp = isPracticeQuest ? dailyGoalMinutes : def.rewardXp;
 
+      final description = isPracticeQuest
+          ? 'Based on your daily goal in Profile settings'
+          : def.description;
+
       return _Quest(
         icon: _questIconMap[qp.questKey] ?? Icons.star_rounded,
         title: title,
-        description: def.description,
+        description: description,
         currentProgress: qp.progress,
         targetProgress: qp.target,
         rewardAmount: rewardXp,
@@ -211,8 +215,8 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                       onTap: _startShowcase,
                       child: SvgPicture.asset(
                         'lib/images/licensed/bird_tooltip.svg',
-                        width: 32,
-                        height: 32,
+                        width: 30,
+                        height: 30,
                       ),
                     ),
                   ],
@@ -227,6 +231,14 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                 description: 'See which days you completed your daily quests this week',
                 tooltipBackgroundColor: const Color(0xFF1E0A4A),
                 descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                tooltipActions: [
+                  TooltipActionButton(
+                    type: TooltipDefaultActionType.skip,
+                    name: 'Skip tour',
+                    backgroundColor: Colors.red,
+                    textStyle: GoogleFonts.nunito(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white),
+                  ),
+                ],
                 child: weekCompletionAsync.when(
                   data: (weekDays) => _buildWeeklyOverview(weekDays),
                   loading: () => _buildLoadingPlaceholder(height: 90),
@@ -419,6 +431,10 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
   Widget _buildStatsChips(UserStats stats) {
     final level = LevelUtils.levelFromXp(stats.totalXp);
     final levelProgress = LevelUtils.progressToNextLevel(stats.totalXp);
+    final currentLevelXp = LevelUtils.xpForLevel(level);
+    final nextLevelXp = LevelUtils.xpForLevel(level + 1);
+    final xpIntoLevel = stats.totalXp - currentLevelXp;
+    final xpNeeded = nextLevelXp - currentLevelXp;
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
       child: IntrinsicHeight(
@@ -434,7 +450,8 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
             const SizedBox(width: 10),
             _buildChip('$level', 'Level', Colors.white,
                 imagePath: 'lib/images/licensed/level.svg',
-                progress: levelProgress),
+                progress: levelProgress,
+                progressLabel: '$xpIntoLevel / $xpNeeded XP'),
             const SizedBox(width: 10),
             _buildChip('${stats.totalXp}', 'Total XP', Colors.white,
                 imagePath: 'lib/images/licensed/xp.svg'),
@@ -445,7 +462,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
   }
 
   Widget _buildChip(String value, String label, Color color,
-      {String? imagePath, double? progress}) {
+      {String? imagePath, double? progress, String? progressLabel}) {
     return Expanded(
       child: Material(
         elevation: 12,
@@ -502,6 +519,17 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                   valueColor: const AlwaysStoppedAnimation<Color>(Colors.green),
                 ),
               ),
+              if (progressLabel != null) ...[
+                const SizedBox(height: 4),
+                Text(
+                  progressLabel,
+                  style: GoogleFonts.nunito(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w600,
+                    color: darkTextMuted,
+                  ),
+                ),
+              ],
             ],
           ],
         ),

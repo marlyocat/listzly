@@ -4,8 +4,8 @@ class LevelUtils {
   LevelUtils._();
 
   static const int maxLevel = 999;
-  static const double _c = 50.0;
-  static const double _e = 1.305;
+  static const double _c = 30.0;
+  static const double _e = 1.2;
 
   /// Total XP required to reach [level].
   static int xpForLevel(int level) {

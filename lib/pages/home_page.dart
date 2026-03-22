@@ -55,8 +55,14 @@ class _HomePageState extends ConsumerState<HomePage> {
         enableAutoScroll: true,
         builder: (context) => const ActivityPage(),
       ),
-      if (isTeacher) const StudentsPage(),
-      const ProfilePage(),
+      if (isTeacher) ShowCaseWidget(
+        enableAutoScroll: true,
+        builder: (context) => const StudentsPage(),
+      ),
+      ShowCaseWidget(
+        enableAutoScroll: true,
+        builder: (context) => const ProfilePage(),
+      ),
     ];
 
     final navItems = <FlipBoxNavItem>[
@@ -143,15 +149,11 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
 
   // Showcase keys
   final _streakKey = GlobalKey();
-  final _instrumentKey = GlobalKey();
-  final _durationKey = GlobalKey();
   final _playKey = GlobalKey();
 
   void _startShowcase() {
     ShowcaseView.get().startShowCase([
       _streakKey,
-      _instrumentKey,
-      _durationKey,
       _playKey,
     ]);
   }
@@ -332,8 +334,8 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                 onTap: _startShowcase,
                 child: SvgPicture.asset(
                   'lib/images/licensed/bird_tooltip.svg',
-                  width: 32,
-                  height: 32,
+                  width: 30,
+                  height: 30,
                 ),
               ),
             ),
@@ -352,6 +354,18 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                   fontSize: 14,
                   color: Colors.white,
                 ),
+                tooltipActions: [
+                  TooltipActionButton(
+                    type: TooltipDefaultActionType.skip,
+                    name: 'Skip tour',
+                    backgroundColor: Colors.red,
+                    textStyle: GoogleFonts.nunito(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                   decoration: BoxDecoration(
@@ -399,15 +413,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
 
               // Swipeable instrument carousel
               Expanded(
-                child: Showcase(
-                  key: _instrumentKey,
-                  description: 'Swipe left or right to choose your instrument',
-                  tooltipBackgroundColor: const Color(0xFF1E0A4A),
-                  descTextStyle: GoogleFonts.nunito(
-                    fontSize: 14,
-                    color: Colors.white,
-                  ),
-                  child: PageView.builder(
+                child: PageView.builder(
                   controller: _pageController,
                   itemCount: _instruments.length,
                   onPageChanged: (index) => setState(() => _currentPage = index),
@@ -502,15 +508,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                                 ),
                               ),
                               // +/- buttons and vertical duration slider
-                              Showcase(
-                                key: _durationKey,
-                                description: 'Set how long you want to practice',
-                                tooltipBackgroundColor: const Color(0xFF1E0A4A),
-                                descTextStyle: GoogleFonts.nunito(
-                                  fontSize: 14,
-                                  color: Colors.white,
-                                ),
-                                child: SizedBox(
+                              SizedBox(
                                   width: 48,
                                   height: 190,
                                 child: Column(
@@ -608,7 +606,6 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                                     ),
                                   ],
                                 ),
-                                ),
                               ),
                             ],
                           ),
@@ -616,7 +613,6 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                         ],
                     );
                   },
-                ),
                 ),
               ),
 
