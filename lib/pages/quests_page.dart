@@ -17,6 +17,7 @@ import 'package:listzly/services/quest_service.dart';
 import 'package:listzly/theme/colors.dart';
 import 'package:listzly/utils/level_utils.dart';
 import 'package:listzly/utils/responsive.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 /// Maps quest keys to their display icons.
 const _questIconMap = <String, IconData>{
@@ -47,6 +48,19 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
   late AnimationController _progressAnimController;
   late Timer _countdownTimer;
   late Duration _timeRemaining;
+
+  // Showcase keys
+  final _weeklyKey = GlobalKey();
+  final _statsKey = GlobalKey();
+  final _questsKey = GlobalKey();
+
+  void _startShowcase() {
+    ShowcaseView.get().startShowCase([
+      _weeklyKey,
+      _statsKey,
+      _questsKey,
+    ]);
+  }
 
   // Week day labels starting from Monday (matches backend week start).
   final List<String> _dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
@@ -169,49 +183,81 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
       body: SafeArea(
           child: CustomScrollView(
           slivers: [
-            // Title
+            // Title + bird tooltip
             SliverContentConstraint(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
-                child: ShaderMask(
-                  shaderCallback: (bounds) => const LinearGradient(
-                    colors: [Colors.white, primaryLight],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ).createShader(bounds),
-                  child: Text(
-                    'Quests',
-                    style: GoogleFonts.dmSerifDisplay(
-                      fontSize: 36,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.white,
+                child: Row(
+                  children: [
+                    const SizedBox(width: 32),
+                    const Spacer(),
+                    ShaderMask(
+                      shaderCallback: (bounds) => const LinearGradient(
+                        colors: [Colors.white, primaryLight],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ).createShader(bounds),
+                      child: Text(
+                        'Quests',
+                        style: GoogleFonts.dmSerifDisplay(
+                          fontSize: 36,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
-                  ),
+                    const Spacer(),
+                    GestureDetector(
+                      onTap: _startShowcase,
+                      child: SvgPicture.asset(
+                        'lib/images/licensed/bird_tooltip.svg',
+                        width: 32,
+                        height: 32,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
 
             // Weekly overview card
             SliverContentConstraint(
-              child: weekCompletionAsync.when(
-                data: (weekDays) => _buildWeeklyOverview(weekDays),
-                loading: () => _buildLoadingPlaceholder(height: 90),
-                error: (e, _) => _buildErrorPlaceholder(e),
+              child: Showcase(
+                key: _weeklyKey,
+                description: 'See which days you completed your daily quests this week',
+                tooltipBackgroundColor: const Color(0xFF1E0A4A),
+                descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                child: weekCompletionAsync.when(
+                  data: (weekDays) => _buildWeeklyOverview(weekDays),
+                  loading: () => _buildLoadingPlaceholder(height: 90),
+                  error: (e, _) => _buildErrorPlaceholder(e),
+                ),
               ),
             ),
 
             // Stats chips
             SliverContentConstraint(
-              child: userStatsAsync.when(
-                data: (stats) => _buildStatsChips(stats),
-                loading: () => _buildLoadingPlaceholder(height: 60),
-                error: (e, _) => _buildErrorPlaceholder(e),
+              child: Showcase(
+                key: _statsKey,
+                description: 'Your streak, level, and total XP at a glance',
+                tooltipBackgroundColor: const Color(0xFF1E0A4A),
+                descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                child: userStatsAsync.when(
+                  data: (stats) => _buildStatsChips(stats),
+                  loading: () => _buildLoadingPlaceholder(height: 60),
+                  error: (e, _) => _buildErrorPlaceholder(e),
+                ),
               ),
             ),
 
             // Daily quests section
             SliverContentConstraint(
-              child: dailyQuestsAsync.when(
+              child: Showcase(
+                key: _questsKey,
+                description: 'Complete daily quests to earn XP and level up',
+                tooltipBackgroundColor: const Color(0xFF1E0A4A),
+                descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                child: dailyQuestsAsync.when(
                 data: (quests) {
                   final goalMinutes = settingsAsync.value?.dailyGoalMinutes;
                   return _buildQuestSection(
@@ -226,6 +272,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                 },
                 loading: () => _buildLoadingPlaceholder(height: 200),
                 error: (e, _) => _buildErrorPlaceholder(e),
+              ),
               ),
             ),
 

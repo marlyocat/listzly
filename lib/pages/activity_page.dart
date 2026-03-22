@@ -17,6 +17,8 @@ import 'package:listzly/providers/subscription_provider.dart';
 import 'package:listzly/components/upgrade_prompt.dart';
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 class ActivityPage extends ConsumerStatefulWidget {
   const ActivityPage({super.key});
@@ -28,6 +30,27 @@ class ActivityPage extends ConsumerStatefulWidget {
 class _ActivityPageState extends ConsumerState<ActivityPage>
     with TickerProviderStateMixin {
   int _selectedTab = 0;
+
+  // Showcase keys
+  final _tabsKey = GlobalKey();
+  final _dateKey = GlobalKey();
+  final _arrowsKey = GlobalKey();
+  final _statsKey = GlobalKey();
+  final _chartKey = GlobalKey();
+  final _sessionsKey = GlobalKey();
+  final _recordingsKey = GlobalKey();
+
+  void _startShowcase() {
+    ShowcaseView.get().startShowCase([
+      _tabsKey,
+      _dateKey,
+      _arrowsKey,
+      _statsKey,
+      _chartKey,
+      _sessionsKey,
+      _recordingsKey,
+    ]);
+  }
 
   // Bar chart animation
   late final AnimationController _barAnimController;
@@ -365,55 +388,110 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
     );
 
     return Scaffold(
-      backgroundColor: const Color(0xFF150833),
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-              // Title with gradient text
-              SliverContentConstraint(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
-                  child: ShaderMask(
-                    shaderCallback: (bounds) => const LinearGradient(
-                      colors: [Colors.white, primaryLight],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ).createShader(bounds),
-                    child: Text(
-                      'Activity',
-                      style: GoogleFonts.dmSerifDisplay(
-                        fontSize: 36,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.white,
-                      ),
+          backgroundColor: const Color(0xFF150833),
+          body: SafeArea(
+            child: CustomScrollView(
+              slivers: [
+                // Title with gradient text + bird tooltip
+                SliverContentConstraint(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
+                    child: Row(
+                      children: [
+                        const SizedBox(width: 32),
+                        const Spacer(),
+                        ShaderMask(
+                          shaderCallback: (bounds) => const LinearGradient(
+                            colors: [Colors.white, primaryLight],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ).createShader(bounds),
+                          child: Text(
+                            'Activity',
+                            style: GoogleFonts.dmSerifDisplay(
+                              fontSize: 36,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        const Spacer(),
+                        GestureDetector(
+                          onTap: _startShowcase,
+                          child: SvgPicture.asset(
+                            'lib/images/licensed/bird_tooltip.svg',
+                            width: 32,
+                            height: 32,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              ),
 
-              // Week / Month / Year tabs
-              SliverContentConstraint(child: _buildSegmentedTabs()),
+                // Week / Month / Year tabs
+                SliverContentConstraint(
+                  child: Showcase(
+                    key: _tabsKey,
+                    description: 'Switch between weekly, monthly, and yearly views',
+                    tooltipBackgroundColor: const Color(0xFF1E0A4A),
+                    descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                    child: _buildSegmentedTabs(),
+                  ),
+                ),
 
-              // Date range + session count
-              SliverContentConstraint(child: _buildDateStats(statsAsync)),
+                // Date range + session count
+                SliverContentConstraint(child: _buildDateStats(statsAsync)),
 
-              // Summary stats row
-              SliverContentConstraint(child: _buildSummaryStats(statsAsync)),
+                // Summary stats row
+                SliverContentConstraint(
+                  child: Showcase(
+                    key: _statsKey,
+                    description: 'Your practice time, sessions, and daily average',
+                    tooltipBackgroundColor: const Color(0xFF1E0A4A),
+                    descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                    child: _buildSummaryStats(statsAsync),
+                  ),
+                ),
 
-              // Bar chart
-              SliverContentConstraint(child: _buildBarChart(sessionsAsync)),
+                // Bar chart
+                SliverContentConstraint(
+                  child: Showcase(
+                    key: _chartKey,
+                    description: 'Visualize your practice time day by day',
+                    tooltipBackgroundColor: const Color(0xFF1E0A4A),
+                    descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                    child: _buildBarChart(sessionsAsync),
+                  ),
+                ),
 
-              // Recent sessions list
-              SliverContentConstraint(child: _buildSessionList(sessionsAsync)),
+                // Recent sessions list
+                SliverContentConstraint(
+                  child: Showcase(
+                    key: _sessionsKey,
+                    description: 'View your recent practice sessions and how long each session lasted',
+                    tooltipBackgroundColor: const Color(0xFF1E0A4A),
+                    descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                    child: _buildSessionList(sessionsAsync),
+                  ),
+                ),
 
-              // My Recordings
-              SliverContentConstraint(child: _buildRecordingsList()),
+                // My Recordings
+                SliverContentConstraint(
+                  child: Showcase(
+                    key: _recordingsKey,
+                    description: 'Listen to, download, or share your practice recordings with your teacher',
+                    tooltipBackgroundColor: const Color(0xFF1E0A4A),
+                    descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                    child: _buildRecordingsList(),
+                  ),
+                ),
 
-              // Bottom spacing for nav bar
-              const SliverContentConstraint(child: SizedBox(height: 100)),
-            ],
+                // Bottom spacing for nav bar
+                const SliverContentConstraint(child: SizedBox(height: 100)),
+              ],
+            ),
           ),
-        ),
     );
   }
 
@@ -511,26 +589,32 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                GestureDetector(
-                  onTap: () => _showDatePicker(context),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        _formatDateRange(),
-                        style: GoogleFonts.nunito(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
+                Showcase(
+                  key: _dateKey,
+                  description: 'Tap the calendar icon to jump to a specific date',
+                  tooltipBackgroundColor: const Color(0xFF1E0A4A),
+                  descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                  child: GestureDetector(
+                    onTap: () => _showDatePicker(context),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          _formatDateRange(),
+                          style: GoogleFonts.nunito(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 6),
-                      Icon(
-                        Icons.calendar_today_rounded,
-                        color: darkTextMuted,
-                        size: 16,
-                      ),
-                    ],
+                        const SizedBox(width: 6),
+                        Icon(
+                          Icons.calendar_today_rounded,
+                          color: darkTextMuted,
+                          size: 16,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -565,12 +649,18 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
             ),
           ),
           // Navigation arrows for date range
-          Row(
-            children: [
-              _buildCircleIconButton(Icons.chevron_left, onTap: _shiftRangeBack),
-              const SizedBox(width: 8),
-              _buildCircleIconButton(Icons.chevron_right, onTap: _shiftRangeForward),
-            ],
+          Showcase(
+            key: _arrowsKey,
+            description: 'Navigate to the previous or next week, month, or year',
+            tooltipBackgroundColor: const Color(0xFF1E0A4A),
+            descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+            child: Row(
+              children: [
+                _buildCircleIconButton(Icons.chevron_left, onTap: _shiftRangeBack),
+                const SizedBox(width: 8),
+                _buildCircleIconButton(Icons.chevron_right, onTap: _shiftRangeForward),
+              ],
+            ),
           ),
         ],
       ),

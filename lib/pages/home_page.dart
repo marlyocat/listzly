@@ -47,8 +47,14 @@ class _HomePageState extends ConsumerState<HomePage> {
       ShowCaseWidget(
         builder: (context) => const _HomeTab(),
       ),
-      const QuestsPage(),
-      const ActivityPage(),
+      ShowCaseWidget(
+        enableAutoScroll: true,
+        builder: (context) => const QuestsPage(),
+      ),
+      ShowCaseWidget(
+        enableAutoScroll: true,
+        builder: (context) => const ActivityPage(),
+      ),
       if (isTeacher) const StudentsPage(),
       const ProfilePage(),
     ];
