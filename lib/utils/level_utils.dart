@@ -9,9 +9,9 @@ class LevelUtils {
 
   /// Total XP required to reach [level].
   static int xpForLevel(int level) {
-    if (level <= 0) return 0;
+    if (level <= 1) return 0;
     if (level > maxLevel) return xpForLevel(maxLevel);
-    return (_c * pow(level, _e)).floor();
+    return (_c * pow(level - 1, _e)).floor();
   }
 
   /// Current level given [totalXp].
