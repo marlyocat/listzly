@@ -192,26 +192,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               child: _buildSupportSection(),
             ),
 
-            // Background Music section
-            SliverContentConstraint(
-              child: _buildSettingsSection(
-                title: 'Background Music',
-                items: [
-                  _SettingsRow(
-                    icon: Icons.library_music_rounded,
-                    label: 'Choose Background Music',
-                    trailing: const _TrailingText(''),
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const BackgroundMusicPage(),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
             // Log Out button
             SliverContentConstraint(
               child: Padding(
@@ -2221,6 +2201,17 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 : 'Off',
           ),
           onTap: () => _showReminderPicker(context, ref, settings),
+        ),
+        _SettingsRow(
+          icon: Icons.library_music_rounded,
+          label: 'Background Music',
+          trailing: const _TrailingText(''),
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const BackgroundMusicPage(),
+            ),
+          ),
         ),
       ],
     );
