@@ -19,6 +19,8 @@ import 'package:listzly/providers/settings_provider.dart';
 import 'package:listzly/providers/profile_provider.dart';
 import 'package:listzly/providers/subscription_provider.dart';
 import 'package:listzly/components/upgrade_prompt.dart';
+import 'package:listzly/components/now_playing_banner.dart';
+import 'package:listzly/providers/music_provider.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
 import 'package:showcaseview/showcaseview.dart';
 
@@ -111,10 +113,16 @@ class _HomePageState extends ConsumerState<HomePage> {
       backgroundColor: const Color(0xFF150833),
       body: IndexedStack(index: safeIndex, children: pages),
       bottomNavigationBar: SafeArea(
-        child: FlipBoxNavBar(
-          currentIndex: safeIndex,
-          onTap: _onItemTapped,
-          items: navItems,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (safeIndex == 0) const NowPlayingBanner(),
+            FlipBoxNavBar(
+              currentIndex: safeIndex,
+              onTap: _onItemTapped,
+              items: navItems,
+            ),
+          ],
         ),
       ),
     );
@@ -638,7 +646,16 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
               ),
 
               // Play button with ripples
-              Showcase(
+              ValueListenableBuilder<int>(
+              valueListenable: musicStateNotifier,
+              builder: (context, _, __) {
+              final hasMusicPlaying = ref.read(musicPlayerProvider).hasSong;
+              final btnSize = hasMusicPlaying ? 64.0 : 80.0;
+              final iconSize = hasMusicPlaying ? 38.0 : 48.0;
+              final areaSize = hasMusicPlaying ? 110.0 : 140.0;
+              final rippleBase = hasMusicPlaying ? 60.0 : 80.0;
+              final rippleRange = hasMusicPlaying ? 50.0 : 60.0;
+              return Showcase(
                 key: _playKey,
                 description: 'Tap to start your practice session!',
                 tooltipBackgroundColor: const Color(0xFF1E0A4A),
@@ -654,8 +671,8 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                     return GestureDetector(
                       onTap: _onGoTap,
                       child: SizedBox(
-                        width: 140,
-                        height: 140,
+                        width: areaSize,
+                        height: areaSize,
                         child: Stack(
                           alignment: Alignment.center,
                           children: [
@@ -663,7 +680,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                             for (int i = 0; i < 3; i++)
                               Builder(builder: (context) {
                                 final phase = (_rippleController.value + i / 3) % 1.0;
-                                final size = 80 + phase * 60;
+                                final size = rippleBase + phase * rippleRange;
                                 final opacity = (1.0 - phase) * 0.4;
                                 return Container(
                                   width: size,
@@ -679,8 +696,8 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                               }),
                             // Main button
                             Container(
-                              width: 80,
-                              height: 80,
+                              width: btnSize,
+                              height: btnSize,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 gradient: const LinearGradient(
@@ -699,9 +716,9 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                                   ),
                                 ],
                               ),
-                              child: const Icon(
+                              child: Icon(
                                 Icons.play_arrow_rounded,
-                                size: 48,
+                                size: iconSize,
                                 color: Colors.white,
                               ),
                             ),
@@ -712,7 +729,8 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                   },
                 ),
                 ),
-              ),
+              );
+              }),
             ],
           ),
         ),

@@ -155,7 +155,7 @@ final class OwnSubscriptionTierProvider
 }
 
 String _$ownSubscriptionTierHash() =>
-    r'0c30213332b206c65be06e012ce4378006a0d86e';
+    r'645642bdd82d93df0059ae4f16cbd066085a8aa7';
 
 /// The user's own subscription tier from RevenueCat.
 
@@ -178,13 +178,13 @@ abstract class _$OwnSubscriptionTier extends $Notifier<SubscriptionTier> {
 }
 
 /// The effective tier: user's own tier, or Pro if student is in a paid
-/// teacher's group. Students under a free teacher stay on the free plan.
+/// teacher's group.
 
 @ProviderFor(effectiveSubscriptionTier)
 final effectiveSubscriptionTierProvider = EffectiveSubscriptionTierProvider._();
 
 /// The effective tier: user's own tier, or Pro if student is in a paid
-/// teacher's group. Students under a free teacher stay on the free plan.
+/// teacher's group.
 
 final class EffectiveSubscriptionTierProvider
     extends
@@ -195,7 +195,7 @@ final class EffectiveSubscriptionTierProvider
         >
     with $Provider<SubscriptionTier> {
   /// The effective tier: user's own tier, or Pro if student is in a paid
-  /// teacher's group. Students under a free teacher stay on the free plan.
+  /// teacher's group.
   EffectiveSubscriptionTierProvider._()
     : super(
         from: null,
@@ -230,7 +230,7 @@ final class EffectiveSubscriptionTierProvider
 }
 
 String _$effectiveSubscriptionTierHash() =>
-    r'5aca5298d85944a14c0d1b2988419f78b2bddebe';
+    r'17955b40f7d9c5dd2b7a1d2714368d5dac2e1021';
 
 /// Fetches the teacher's subscription tier from Supabase via an RPC function
 /// that bypasses RLS (students can't read teacher profiles directly).
