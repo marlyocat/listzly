@@ -7,11 +7,19 @@ import 'package:listzly/providers/music_provider.dart';
 import 'package:listzly/theme/colors.dart';
 import 'package:listzly/utils/responsive.dart';
 
-class BackgroundMusicPage extends ConsumerWidget {
+class BackgroundMusicPage extends ConsumerStatefulWidget {
   const BackgroundMusicPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<BackgroundMusicPage> createState() =>
+      _BackgroundMusicPageState();
+}
+
+class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
+  bool _playerExpanded = true;
+
+  @override
+  Widget build(BuildContext context) {
     final songsAsync = ref.watch(songListProvider);
     final musicState = ref.watch(musicPlayerProvider);
     final currentSong = musicState.currentSong;
@@ -88,19 +96,61 @@ class BackgroundMusicPage extends ConsumerWidget {
               ),
             ),
 
-            // Now playing card (if a song is active)
+            // Now playing (expanded = full player, collapsed = mini banner)
             if (currentSong != null)
               SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: _NowPlayingCard(musicState: musicState),
+                child: GestureDetector(
+                  onTap: _playerExpanded
+                      ? null
+                      : () => setState(() => _playerExpanded = true),
+                  child: AnimatedCrossFade(
+                    firstChild: Column(
+                      children: [
+                        _NowPlayingCard(musicState: musicState),
+                        // Collapse button
+                        GestureDetector(
+                          onTap: () =>
+                              setState(() => _playerExpanded = false),
+                          behavior: HitTestBehavior.opaque,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 6),
+                            child: Icon(
+                              Icons.keyboard_arrow_up_rounded,
+                              color: darkTextMuted,
+                              size: 22,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    secondChild: _MiniBanner(musicState: musicState),
+                    crossFadeState: _playerExpanded
+                        ? CrossFadeState.showFirst
+                        : CrossFadeState.showSecond,
+                    duration: const Duration(milliseconds: 300),
+                  ),
                 ),
               ),
 
-            // Song list
-            SliverContentConstraint(
+            // Song list header
+            SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+                child: Text(
+                  'Library',
+                  style: GoogleFonts.nunito(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: darkTextMuted,
+                  ),
+                ),
+              ),
+            ),
+
+            // Song list
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.zero,
                 child: songsAsync.when(
                   loading: () => const Center(
                     child: Padding(
@@ -139,43 +189,36 @@ class BackgroundMusicPage extends ConsumerWidget {
                       );
                     }
 
-                    return Container(
-                      decoration: BoxDecoration(
-                        color: darkCardBg,
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: Colors.black, width: 5),
-                      ),
-                      child: Column(
-                        children: songs.asMap().entries.map((entry) {
-                          final i = entry.key;
-                          final song = entry.value;
-                          final isActive = currentSong?.id == song.id;
-
-                          return Column(
-                            children: [
-                              if (i > 0)
-                                const Divider(
-                                  height: 1,
-                                  indent: 52,
-                                  endIndent: 16,
-                                  color: darkDivider,
-                                ),
-                              _SongRow(
-                                song: song,
-                                isActive: isActive,
-                                isPlaying: isActive && musicState.isPlaying,
-                                onTap: () {
-                                  if (isActive) {
-                                    musicState.togglePlayPause();
-                                  } else {
-                                    musicState.playSongFromList(song, songs);
-                                  }
-                                },
+                    return Column(
+                      children: songs.asMap().entries.map((entry) {
+                        final i = entry.key;
+                        final song = entry.value;
+                        final isActive = currentSong?.id == song.id;
+                        return Column(
+                          children: [
+                            if (i > 0)
+                              Divider(
+                                height: 1,
+                                thickness: 0.5,
+                                color: Colors.white.withAlpha(15),
+                                indent: 56,
                               ),
-                            ],
-                          );
-                        }).toList(),
-                      ),
+                            _SongTile(
+                              index: entry.key + 1,
+                              song: song,
+                              isActive: isActive,
+                              isPlaying: isActive && musicState.isPlaying,
+                              onTap: () {
+                                if (isActive) {
+                                  musicState.togglePlayPause();
+                                } else {
+                                  musicState.playSongFromList(song, songs);
+                                }
+                              },
+                            ),
+                          ],
+                        );
+                      }).toList(),
                     );
                   },
                 ),
@@ -185,6 +228,105 @@ class BackgroundMusicPage extends ConsumerWidget {
             const SliverContentConstraint(child: SizedBox(height: 40)),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Collapsed mini banner — tap to expand.
+class _MiniBanner extends StatelessWidget {
+  final MusicPlayerState musicState;
+  const _MiniBanner({required this.musicState});
+
+  @override
+  Widget build(BuildContext context) {
+    final song = musicState.currentSong;
+    if (song == null) return const SizedBox.shrink();
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFF2D1066), Color(0xFF1E0A4A)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  song.title,
+                  style: GoogleFonts.nunito(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  song.artist,
+                  style: GoogleFonts.nunito(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: darkTextMuted,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          GestureDetector(
+            onTap: () => musicState.skipPrevious(),
+            behavior: HitTestBehavior.opaque,
+            child: const Padding(
+              padding: EdgeInsets.all(4),
+              child: Icon(Icons.skip_previous_rounded,
+                  color: Colors.white, size: 22),
+            ),
+          ),
+          const SizedBox(width: 4),
+          StreamBuilder<PlayerState>(
+            stream: musicState.player.playerStateStream,
+            builder: (context, snapshot) {
+              final playing = snapshot.data?.playing ?? false;
+              return GestureDetector(
+                onTap: () => musicState.togglePlayPause(),
+                behavior: HitTestBehavior.opaque,
+                child: Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: Icon(
+                    playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                    color: Colors.white,
+                    size: 28,
+                  ),
+                ),
+              );
+            },
+          ),
+          const SizedBox(width: 4),
+          GestureDetector(
+            onTap: () => musicState.skipNext(),
+            behavior: HitTestBehavior.opaque,
+            child: const Padding(
+              padding: EdgeInsets.all(4),
+              child:
+                  Icon(Icons.skip_next_rounded, color: Colors.white, size: 22),
+            ),
+          ),
+          const SizedBox(width: 8),
+          const Icon(
+            Icons.keyboard_arrow_down_rounded,
+            color: darkTextMuted,
+            size: 22,
+          ),
+        ],
       ),
     );
   }
@@ -222,10 +364,6 @@ class _NowPlayingCardState extends State<_NowPlayingCard> {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
-        border: Border(
-          top: BorderSide(color: primaryColor.withAlpha(60), width: 1),
-          bottom: BorderSide(color: primaryColor.withAlpha(60), width: 1),
-        ),
       ),
       child: Column(
         children: [
@@ -257,28 +395,22 @@ class _NowPlayingCardState extends State<_NowPlayingCard> {
           const SizedBox(height: 20),
 
           // Song title
-          Text(
-            song.title,
+          _MarqueeText(
+            text: song.title,
             style: GoogleFonts.nunito(
               fontSize: 18,
               fontWeight: FontWeight.w800,
               color: Colors.white,
             ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 2),
-          Text(
-            song.artist,
+          _MarqueeText(
+            text: song.artist,
             style: GoogleFonts.nunito(
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: darkTextMuted,
             ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
 
@@ -419,13 +551,15 @@ class _NowPlayingCardState extends State<_NowPlayingCard> {
   }
 }
 
-class _SongRow extends StatelessWidget {
+class _SongTile extends StatelessWidget {
+  final int index;
   final Song song;
   final bool isActive;
   final bool isPlaying;
   final VoidCallback onTap;
 
-  const _SongRow({
+  const _SongTile({
+    required this.index,
     required this.song,
     required this.isActive,
     required this.isPlaying,
@@ -443,59 +577,63 @@ class _SongRow extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+        decoration: BoxDecoration(
+          gradient: isActive
+              ? LinearGradient(
+                  colors: [
+                    accentCoral.withAlpha(25),
+                    accentCoralDark.withAlpha(10),
+                  ],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                )
+              : null,
+        ),
         child: Row(
           children: [
-            // Icon
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: isActive
-                    ? accentCoral.withAlpha(30)
-                    : Colors.white.withAlpha(10),
-              ),
-              child: Icon(
-                isPlaying
-                    ? Icons.equalizer_rounded
-                    : Icons.music_note_rounded,
-                color: isActive ? accentCoral : Colors.white70,
-                size: 18,
+            // Track number
+            SizedBox(
+              width: 24,
+              child: Text(
+                '$index',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.nunito(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: isActive ? accentCoral : darkTextMuted,
+                ),
               ),
             ),
-            const SizedBox(width: 14),
-
+            const SizedBox(width: 12),
             // Song info
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    song.title,
+              child: ClipRect(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _MarqueeText(
+                      text: song.title,
                     style: GoogleFonts.nunito(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                       color: isActive ? accentCoral : Colors.white,
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 1),
-                  Text(
-                    song.artist,
+                  _MarqueeText(
+                    text: song.artist,
                     style: GoogleFonts.nunito(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: darkTextMuted,
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
-                ],
+                  ],
+                ),
               ),
             ),
+            const SizedBox(width: 12),
 
             // Duration
             Text(
@@ -503,10 +641,95 @@ class _SongRow extends StatelessWidget {
               style: GoogleFonts.nunito(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: darkTextMuted,
+                color: isActive ? accentCoral.withAlpha(180) : darkTextMuted,
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _MarqueeText extends StatefulWidget {
+  final String text;
+  final TextStyle style;
+
+  const _MarqueeText({required this.text, required this.style});
+
+  @override
+  State<_MarqueeText> createState() => _MarqueeTextState();
+}
+
+class _MarqueeTextState extends State<_MarqueeText> {
+  late final ScrollController _scrollController;
+  bool _overflows = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkOverflow());
+  }
+
+  @override
+  void didUpdateWidget(_MarqueeText oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.text != widget.text) {
+      _scrollController.jumpTo(0);
+      WidgetsBinding.instance.addPostFrameCallback((_) => _checkOverflow());
+    }
+  }
+
+  void _checkOverflow() {
+    if (!mounted) return;
+    final overflows = _scrollController.position.maxScrollExtent > 0;
+    if (overflows != _overflows) {
+      setState(() => _overflows = overflows);
+      if (overflows) _startScrolling();
+    }
+  }
+
+  Future<void> _startScrolling() async {
+    while (mounted && _overflows) {
+      await Future.delayed(const Duration(seconds: 2));
+      if (!mounted || !_overflows) break;
+      final max = _scrollController.position.maxScrollExtent;
+      final durationMs = (max * 30).toInt().clamp(2000, 10000);
+      await _scrollController.animateTo(
+        max,
+        duration: Duration(milliseconds: durationMs),
+        curve: Curves.linear,
+      );
+      await Future.delayed(const Duration(seconds: 2));
+      if (!mounted || !_overflows) break;
+      await _scrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 800),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: widget.style.fontSize! * 1.4,
+      child: SingleChildScrollView(
+        controller: _scrollController,
+        scrollDirection: Axis.horizontal,
+        physics: const NeverScrollableScrollPhysics(),
+        child: Text(
+          widget.text,
+          style: widget.style,
+          maxLines: 1,
+          softWrap: false,
         ),
       ),
     );
