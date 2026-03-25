@@ -234,6 +234,9 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
       return;
     }
 
+    // Stop background music when starting practice
+    ref.read(musicPlayerProvider).stop();
+
     final instrument = _instruments[_currentPage];
     Navigator.push(
       context,
