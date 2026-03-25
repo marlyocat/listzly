@@ -182,38 +182,6 @@ class BackgroundMusicPage extends ConsumerWidget {
               ),
             ),
 
-            // Stop button
-            if (currentSong != null)
-              SliverContentConstraint(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 46,
-                    child: ElevatedButton.icon(
-                      onPressed: () => musicState.stop(),
-                      icon: const Icon(Icons.stop_rounded, size: 20),
-                      label: Text(
-                        'Stop Music',
-                        style: GoogleFonts.nunito(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: darkCardBg,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          side: const BorderSide(color: Colors.black, width: 5),
-                        ),
-                        elevation: 0,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-
             const SliverContentConstraint(child: SizedBox(height: 40)),
           ],
         ),
