@@ -39,52 +39,28 @@ class NowPlayingBanner extends ConsumerWidget {
             children: [
               Row(
             children: [
-              // Album art / music icon
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  gradient: const LinearGradient(
-                    colors: [primaryColor, primaryLight],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                child: const Icon(
-                  Icons.music_note_rounded,
-                  color: Colors.white,
-                  size: 22,
-                ),
-              ),
-              const SizedBox(width: 12),
-
               // Song info
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      song.title,
+                    _MarqueeText(
+                      text: song.title,
                       style: GoogleFonts.nunito(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                         color: Colors.white,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 1),
-                    Text(
-                      song.artist,
+                    _MarqueeText(
+                      text: song.artist,
                       style: GoogleFonts.nunito(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: darkTextMuted,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
@@ -152,6 +128,93 @@ class NowPlayingBanner extends ConsumerWidget {
           ),
         );
       },
+    );
+  }
+}
+
+/// Scrolls text horizontally in a loop if it overflows, otherwise static.
+class _MarqueeText extends StatefulWidget {
+  final String text;
+  final TextStyle style;
+
+  const _MarqueeText({required this.text, required this.style});
+
+  @override
+  State<_MarqueeText> createState() => _MarqueeTextState();
+}
+
+class _MarqueeTextState extends State<_MarqueeText>
+    with SingleTickerProviderStateMixin {
+  late final ScrollController _scrollController;
+  bool _overflows = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkOverflow());
+  }
+
+  @override
+  void didUpdateWidget(_MarqueeText oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.text != widget.text) {
+      _scrollController.jumpTo(0);
+      WidgetsBinding.instance.addPostFrameCallback((_) => _checkOverflow());
+    }
+  }
+
+  void _checkOverflow() {
+    if (!mounted) return;
+    final overflows = _scrollController.position.maxScrollExtent > 0;
+    if (overflows != _overflows) {
+      setState(() => _overflows = overflows);
+      if (overflows) _startScrolling();
+    }
+  }
+
+  Future<void> _startScrolling() async {
+    while (mounted && _overflows) {
+      await Future.delayed(const Duration(seconds: 2));
+      if (!mounted || !_overflows) break;
+      final max = _scrollController.position.maxScrollExtent;
+      final durationMs = (max * 30).toInt().clamp(2000, 10000);
+      await _scrollController.animateTo(
+        max,
+        duration: Duration(milliseconds: durationMs),
+        curve: Curves.linear,
+      );
+      await Future.delayed(const Duration(seconds: 2));
+      if (!mounted || !_overflows) break;
+      await _scrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 800),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: widget.style.fontSize! * 1.4,
+      child: SingleChildScrollView(
+        controller: _scrollController,
+        scrollDirection: Axis.horizontal,
+        physics: const NeverScrollableScrollPhysics(),
+        child: Text(
+          widget.text,
+          style: widget.style,
+          maxLines: 1,
+          softWrap: false,
+        ),
+      ),
     );
   }
 }
