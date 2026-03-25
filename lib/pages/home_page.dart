@@ -234,8 +234,8 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
       return;
     }
 
-    // Stop background music when starting practice
-    ref.read(musicPlayerProvider).stop();
+    // Pause background music when starting practice
+    ref.read(musicPlayerProvider).pauseForPractice();
 
     final instrument = _instruments[_currentPage];
     Navigator.push(
@@ -263,7 +263,10 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
           );
         },
       ),
-    );
+    ).then((_) {
+      // Resume background music after practice ends
+      ref.read(musicPlayerProvider).resumeAfterPractice();
+    });
   }
 
   @override

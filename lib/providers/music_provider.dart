@@ -109,6 +109,26 @@ class MusicPlayerState {
     await playSong(prev);
   }
 
+  bool _pausedForPractice = false;
+
+  bool get isPausedForPractice => _pausedForPractice;
+
+  /// Pause playback but keep position so it can resume after practice.
+  void pauseForPractice() {
+    if (!hasSong) return;
+    _pausedForPractice = true;
+    _player.pause();
+    _notify();
+  }
+
+  /// Resume playback if it was paused for practice.
+  void resumeAfterPractice() {
+    if (!_pausedForPractice || !hasSong) return;
+    _pausedForPractice = false;
+    _player.play();
+    _notify();
+  }
+
   Future<void> stop() async {
     await _player.stop();
     _currentIndex = -1;
