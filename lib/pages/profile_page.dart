@@ -2208,8 +2208,24 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           trailing: const _TrailingText(''),
           onTap: () => Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (_) => const BackgroundMusicPage(),
+            PageRouteBuilder(
+              transitionDuration: const Duration(milliseconds: 600),
+              reverseTransitionDuration: const Duration(milliseconds: 300),
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  const BackgroundMusicPage(),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                if (animation.status == AnimationStatus.reverse) {
+                  return FadeTransition(opacity: animation, child: child);
+                }
+                return TurnPageTransition(
+                  animation: animation,
+                  overleafColor: primaryDark,
+                  animationTransitionPoint: 0.5,
+                  direction: TurnDirection.rightToLeft,
+                  child: child,
+                );
+              },
             ),
           ),
         ),
