@@ -20,7 +20,7 @@ class NowPlayingBanner extends ConsumerWidget {
         if (song == null) return const SizedBox.shrink();
 
         return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          padding: const EdgeInsets.fromLTRB(14, 10, 14, 6),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
               colors: [Color(0xFF2D1066), Color(0xFF1E0A4A)],
@@ -34,7 +34,10 @@ class NowPlayingBanner extends ConsumerWidget {
               ),
             ),
           ),
-          child: Row(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
             children: [
               // Album art / music icon
               Container(
@@ -141,8 +144,96 @@ class NowPlayingBanner extends ConsumerWidget {
                 size: 20,
                 onTap: () => musicState.stop(),
               ),
+              ],
+              ),
+              const SizedBox(height: 6),
+              _SeekBar(player: musicState.player),
             ],
           ),
+        );
+      },
+    );
+  }
+}
+
+class _SeekBar extends StatefulWidget {
+  final AudioPlayer player;
+  const _SeekBar({required this.player});
+
+  @override
+  State<_SeekBar> createState() => _SeekBarState();
+}
+
+class _SeekBarState extends State<_SeekBar> {
+  double? _dragValue;
+
+  String _format(Duration d) {
+    final m = d.inMinutes;
+    final s = d.inSeconds % 60;
+    return '$m:${s.toString().padLeft(2, '0')}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<Duration>(
+      stream: widget.player.positionStream,
+      builder: (context, snapshot) {
+        final position = snapshot.data ?? Duration.zero;
+        final duration = widget.player.duration ?? Duration.zero;
+        final maxMs = duration.inMilliseconds.toDouble();
+        final posMs = _dragValue ?? position.inMilliseconds.toDouble();
+
+        return Row(
+          children: [
+            Text(
+              _format(Duration(milliseconds: posMs.toInt())),
+              style: GoogleFonts.nunito(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: darkTextMuted,
+              ),
+            ),
+            Expanded(
+              child: SliderTheme(
+                data: SliderThemeData(
+                  trackHeight: 3,
+                  activeTrackColor: accentCoral,
+                  inactiveTrackColor: Colors.white.withAlpha(30),
+                  thumbColor: accentCoral,
+                  thumbShape: const RoundSliderThumbShape(
+                    enabledThumbRadius: 5,
+                  ),
+                  overlayColor: accentCoral.withAlpha(40),
+                  overlayShape: const RoundSliderOverlayShape(
+                    overlayRadius: 10,
+                  ),
+                ),
+                child: Slider(
+                  min: 0,
+                  max: maxMs > 0 ? maxMs : 1,
+                  value: posMs.clamp(0, maxMs > 0 ? maxMs : 1),
+                  onChangeStart: (_) {
+                    setState(() => _dragValue = posMs);
+                  },
+                  onChanged: (v) {
+                    setState(() => _dragValue = v);
+                  },
+                  onChangeEnd: (v) {
+                    widget.player.seek(Duration(milliseconds: v.toInt()));
+                    setState(() => _dragValue = null);
+                  },
+                ),
+              ),
+            ),
+            Text(
+              _format(duration),
+              style: GoogleFonts.nunito(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: darkTextMuted,
+              ),
+            ),
+          ],
         );
       },
     );
