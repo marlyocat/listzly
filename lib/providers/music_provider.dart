@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -135,18 +133,6 @@ class MusicPlayerState {
     _notify();
   }
 
-  void shuffle() {
-    if (_queue.isEmpty) return;
-    final current = currentSong;
-    final rng = Random();
-    _queue.shuffle(rng);
-    if (current != null) {
-      _queue.remove(current);
-      _queue.insert(0, current);
-      _currentIndex = 0;
-    }
-    _notify();
-  }
 
   void dispose() {
     _player.dispose();

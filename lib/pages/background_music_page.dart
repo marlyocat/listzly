@@ -17,6 +17,8 @@ class BackgroundMusicPage extends ConsumerStatefulWidget {
 
 class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
   bool _playerExpanded = true;
+  bool _allExpanded = true;
+  int _visibleSongCount = 5;
 
   @override
   Widget build(BuildContext context) {
@@ -64,22 +66,6 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
                         ),
                       ),
                     ),
-                    if (musicState.hasSong)
-                      GestureDetector(
-                        onTap: () => musicState.shuffle(),
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.white.withAlpha(15),
-                          ),
-                          child: const Icon(
-                            Icons.shuffle_rounded,
-                            color: Colors.white70,
-                            size: 20,
-                          ),
-                        ),
-                      ),
                   ],
                 ),
               ),
@@ -136,6 +122,38 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
                 ),
               ),
 
+            // Expand all / Collapse all toggle
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                child: GestureDetector(
+                  onTap: () => setState(() => _allExpanded = !_allExpanded),
+                  behavior: HitTestBehavior.opaque,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        _allExpanded ? 'Collapse all' : 'Expand all',
+                        style: GoogleFonts.nunito(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: darkTextMuted,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Icon(
+                        _allExpanded
+                            ? Icons.unfold_less_rounded
+                            : Icons.unfold_more_rounded,
+                        color: darkTextMuted,
+                        size: 16,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
             // Song list
             SliverToBoxAdapter(
               child: songsAsync.when(
@@ -176,22 +194,71 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
                     );
                   }
 
+                  // Group all songs by artist, sorted alphabetically
+                  final allGrouped = <String, List<Song>>{};
+                  for (final song in songs) {
+                    allGrouped.putIfAbsent(song.artist, () => []).add(song);
+                  }
+                  final sortedKeys = allGrouped.keys.toList()..sort();
+
+                  // Flatten into sorted order, then limit
+                  final sortedSongs = <Song>[];
+                  for (final key in sortedKeys) {
+                    sortedSongs.addAll(allGrouped[key]!);
+                  }
+                  final visible = sortedSongs.take(_visibleSongCount).toList();
+                  final hasMore = sortedSongs.length > _visibleSongCount;
+
+                  // Re-group the visible songs
+                  final grouped = <String, List<Song>>{};
+                  for (final song in visible) {
+                    grouped.putIfAbsent(song.artist, () => []).add(song);
+                  }
+
                   return Column(
-                    children: songs.map((song) {
-                      final isActive = currentSong?.id == song.id;
-                      return _SongTile(
-                        song: song,
-                        isActive: isActive,
-                        isPlaying: isActive && musicState.isPlaying,
-                        onTap: () {
-                          if (isActive) {
-                            musicState.togglePlayPause();
-                          } else {
-                            musicState.playSongFromList(song, songs);
-                          }
-                        },
-                      );
-                    }).toList(),
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ...sortedKeys
+                          .where((k) => grouped.containsKey(k))
+                          .map((k) => MapEntry(k, grouped[k]!))
+                          .map((group) {
+                        return _ComposerGroup(
+                          composer: group.key,
+                          songs: group.value,
+                          allSongs: songs,
+                          currentSong: currentSong,
+                          isPlaying: musicState.isPlaying,
+                          musicState: musicState,
+                          forceExpanded: _allExpanded,
+                        );
+                      }),
+                      if (hasMore)
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                          child: GestureDetector(
+                            onTap: () => setState(() =>
+                                _visibleSongCount += 5),
+                            child: Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: Colors.white.withAlpha(8),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'Load more (${sortedSongs.length - _visibleSongCount} more)',
+                                  style: GoogleFonts.nunito(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: darkTextMuted,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
                   );
                 },
               ),
@@ -539,6 +606,109 @@ class _NowPlayingCardState extends ConsumerState<_NowPlayingCard> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _ComposerGroup extends StatefulWidget {
+  final String composer;
+  final List<Song> songs;
+  final List<Song> allSongs;
+  final Song? currentSong;
+  final bool isPlaying;
+  final MusicPlayerState musicState;
+  final bool forceExpanded;
+
+  const _ComposerGroup({
+    required this.composer,
+    required this.songs,
+    required this.allSongs,
+    required this.currentSong,
+    required this.isPlaying,
+    required this.musicState,
+    required this.forceExpanded,
+  });
+
+  @override
+  State<_ComposerGroup> createState() => _ComposerGroupState();
+}
+
+class _ComposerGroupState extends State<_ComposerGroup> {
+  bool _localExpanded = false;
+
+  @override
+  void didUpdateWidget(_ComposerGroup oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.forceExpanded != oldWidget.forceExpanded) {
+      _localExpanded = widget.forceExpanded;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final expanded = _localExpanded || widget.forceExpanded;
+    final hasActiveSong =
+        widget.songs.any((s) => s.id == widget.currentSong?.id);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Composer header — tap to expand/collapse
+        GestureDetector(
+          onTap: () => setState(() => _localExpanded = !_localExpanded),
+          behavior: HitTestBehavior.opaque,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    widget.composer,
+                    style: GoogleFonts.dmSerifDisplay(
+                      fontSize: 15,
+                      color: hasActiveSong ? accentCoral : darkTextMuted,
+                    ),
+                  ),
+                ),
+                AnimatedRotation(
+                  turns: expanded ? 0.5 : 0,
+                  duration: const Duration(milliseconds: 200),
+                  child: Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    color: hasActiveSong ? accentCoral : darkTextMuted,
+                    size: 20,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        // Songs
+        AnimatedCrossFade(
+          firstChild: Column(
+            children: widget.songs.map((song) {
+              final isActive = widget.currentSong?.id == song.id;
+              return _SongTile(
+                song: song,
+                isActive: isActive,
+                isPlaying: isActive && widget.isPlaying,
+                onTap: () {
+                  if (isActive) {
+                    widget.musicState.togglePlayPause();
+                  } else {
+                    widget.musicState.playSongFromList(song, widget.allSongs);
+                  }
+                },
+              );
+            }).toList(),
+          ),
+          secondChild: const SizedBox.shrink(),
+          crossFadeState:
+              expanded ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+          duration: const Duration(milliseconds: 250),
+        ),
+      ],
     );
   }
 }
