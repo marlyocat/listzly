@@ -153,6 +153,20 @@ class MusicPlayerState {
   }
 }
 
+/// Cache of signed cover URLs so we don't re-fetch them.
+final Map<String, String> _coverUrlCache = {};
+
+/// Get a signed URL for a cover image, with caching.
+@riverpod
+Future<String?> coverUrl(Ref ref, String? coverPath) async {
+  if (coverPath == null || coverPath.isEmpty) return null;
+  if (_coverUrlCache.containsKey(coverPath)) return _coverUrlCache[coverPath];
+  final service = ref.watch(musicServiceProvider);
+  final url = await service.getCoverUrl(coverPath);
+  if (url != null) _coverUrlCache[coverPath] = url;
+  return url;
+}
+
 /// Single global instance so all widgets share the same player.
 MusicPlayerState? _globalMusicPlayer;
 

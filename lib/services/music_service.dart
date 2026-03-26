@@ -51,6 +51,16 @@ class MusicService {
         .toList();
   }
 
+  /// Get a signed URL for a cover image (1 hour expiry).
+  Future<String?> getCoverUrl(String? coverPath) async {
+    if (coverPath == null || coverPath.isEmpty) return null;
+    final result = await _callR2Function(
+      action: 'download',
+      filePath: coverPath,
+    );
+    return result['signedUrl'] as String;
+  }
+
   /// Get a signed URL for streaming a song (1 hour expiry).
   Future<String> getSignedUrl(String filePath) async {
     final result = await _callR2Function(

@@ -136,96 +136,64 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
                 ),
               ),
 
-            // Song list header
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-                child: Text(
-                  'Library',
-                  style: GoogleFonts.nunito(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: darkTextMuted,
-                  ),
-                ),
-              ),
-            ),
-
             // Song list
             SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.zero,
-                child: songsAsync.when(
-                  loading: () => const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(40),
-                      child: CircularProgressIndicator(color: accentCoral),
-                    ),
+              child: songsAsync.when(
+                loading: () => const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(40),
+                    child: CircularProgressIndicator(color: accentCoral),
                   ),
-                  error: (e, _) => Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(32),
-                      child: Text(
-                        'Could not load songs.\nPlease try again later.',
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.nunito(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: darkTextMuted,
-                        ),
+                ),
+                error: (e, _) => Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(32),
+                    child: Text(
+                      'Could not load songs.\nPlease try again later.',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.nunito(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: darkTextMuted,
                       ),
                     ),
                   ),
-                  data: (songs) {
-                    if (songs.isEmpty) {
-                      return Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(40),
-                          child: Text(
-                            'No songs available yet.',
-                            style: GoogleFonts.nunito(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: darkTextMuted,
-                            ),
+                ),
+                data: (songs) {
+                  if (songs.isEmpty) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(40),
+                        child: Text(
+                          'No songs available yet.',
+                          style: GoogleFonts.nunito(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: darkTextMuted,
                           ),
                         ),
-                      );
-                    }
-
-                    return Column(
-                      children: songs.asMap().entries.map((entry) {
-                        final i = entry.key;
-                        final song = entry.value;
-                        final isActive = currentSong?.id == song.id;
-                        return Column(
-                          children: [
-                            if (i > 0)
-                              Divider(
-                                height: 1,
-                                thickness: 0.5,
-                                color: Colors.white.withAlpha(15),
-                                indent: 56,
-                              ),
-                            _SongTile(
-                              index: entry.key + 1,
-                              song: song,
-                              isActive: isActive,
-                              isPlaying: isActive && musicState.isPlaying,
-                              onTap: () {
-                                if (isActive) {
-                                  musicState.togglePlayPause();
-                                } else {
-                                  musicState.playSongFromList(song, songs);
-                                }
-                              },
-                            ),
-                          ],
-                        );
-                      }).toList(),
+                      ),
                     );
-                  },
-                ),
+                  }
+
+                  return Column(
+                    children: songs.map((song) {
+                      final isActive = currentSong?.id == song.id;
+                      return _SongTile(
+                        song: song,
+                        isActive: isActive,
+                        isPlaying: isActive && musicState.isPlaying,
+                        onTap: () {
+                          if (isActive) {
+                            musicState.togglePlayPause();
+                          } else {
+                            musicState.playSongFromList(song, songs);
+                          }
+                        },
+                      );
+                    }).toList(),
+                  );
+                },
               ),
             ),
 
@@ -339,16 +307,16 @@ class _MiniBanner extends StatelessWidget {
 }
 
 /// Spotify-style now playing player.
-class _NowPlayingCard extends StatefulWidget {
+class _NowPlayingCard extends ConsumerStatefulWidget {
   final MusicPlayerState musicState;
 
   const _NowPlayingCard({required this.musicState});
 
   @override
-  State<_NowPlayingCard> createState() => _NowPlayingCardState();
+  ConsumerState<_NowPlayingCard> createState() => _NowPlayingCardState();
 }
 
-class _NowPlayingCardState extends State<_NowPlayingCard> {
+class _NowPlayingCardState extends ConsumerState<_NowPlayingCard> {
   double? _dragValue;
 
   String _format(Duration d) {
@@ -374,30 +342,48 @@ class _NowPlayingCardState extends State<_NowPlayingCard> {
       child: Column(
         children: [
           // Album art
-          Container(
-            width: 180,
-            height: 180,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              gradient: const LinearGradient(
-                colors: [Color(0xFF3D1A8E), Color(0xFF1E0A4A)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withAlpha(100),
-                  blurRadius: 24,
-                  offset: const Offset(0, 8),
+          Builder(builder: (context) {
+            final coverAsync = ref.watch(coverUrlProvider(song.coverUrl));
+            return Container(
+              width: 180,
+              height: 180,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF3D1A8E), Color(0xFF1E0A4A)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-              ],
-            ),
-            child: const Icon(
-              Icons.music_note_rounded,
-              color: Colors.white38,
-              size: 64,
-            ),
-          ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withAlpha(100),
+                    blurRadius: 24,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: coverAsync.when(
+                data: (url) => url != null
+                    ? Image.network(url, fit: BoxFit.cover, width: 180, height: 180)
+                    : const Icon(
+                        Icons.music_note_rounded,
+                        color: Colors.white38,
+                        size: 64,
+                      ),
+                loading: () => const Icon(
+                  Icons.music_note_rounded,
+                  color: Colors.white38,
+                  size: 64,
+                ),
+                error: (_, __) => const Icon(
+                  Icons.music_note_rounded,
+                  color: Colors.white38,
+                  size: 64,
+                ),
+              ),
+            );
+          }),
           const SizedBox(height: 20),
 
           // Song title
@@ -557,63 +543,65 @@ class _NowPlayingCardState extends State<_NowPlayingCard> {
   }
 }
 
-class _SongTile extends StatelessWidget {
-  final int index;
+class _SongTile extends ConsumerWidget {
   final Song song;
   final bool isActive;
   final bool isPlaying;
   final VoidCallback onTap;
 
   const _SongTile({
-    required this.index,
     required this.song,
     required this.isActive,
     required this.isPlaying,
     required this.onTap,
   });
 
-  String _formatDuration(int totalSeconds) {
-    final minutes = totalSeconds ~/ 60;
-    final seconds = totalSeconds % 60;
-    return '$minutes:${seconds.toString().padLeft(2, '0')}';
-  }
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final coverAsync = ref.watch(coverUrlProvider(song.coverUrl));
+
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-        decoration: BoxDecoration(
-          gradient: isActive
-              ? LinearGradient(
-                  colors: [
-                    accentCoral.withAlpha(25),
-                    accentCoralDark.withAlpha(10),
-                  ],
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                )
-              : null,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        color: isActive ? accentCoral.withAlpha(15) : Colors.transparent,
         child: Row(
           children: [
-            // Track number
-            SizedBox(
-              width: 24,
-              child: Text(
-                '$index',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.nunito(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: isActive ? accentCoral : darkTextMuted,
+            // Album art
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(6),
+                gradient: LinearGradient(
+                  colors: isActive
+                      ? [accentCoral.withAlpha(40), accentCoralDark.withAlpha(25)]
+                      : [const Color(0xFF3D1A8E), const Color(0xFF1E0A4A)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: coverAsync.when(
+                data: (url) => url != null
+                    ? Image.network(url, fit: BoxFit.cover, width: 48, height: 48)
+                    : Icon(
+                        isPlaying ? Icons.equalizer_rounded : Icons.music_note_rounded,
+                        color: isActive ? accentCoral : Colors.white30,
+                        size: 22,
+                      ),
+                loading: () => const SizedBox.shrink(),
+                error: (_, __) => Icon(
+                  Icons.music_note_rounded,
+                  color: isActive ? accentCoral : Colors.white30,
+                  size: 22,
                 ),
               ),
             ),
             const SizedBox(width: 12),
-            // Song info
+
+            // Title + artist
             Expanded(
               child: ClipRect(
                 child: Column(
@@ -621,33 +609,22 @@ class _SongTile extends StatelessWidget {
                   children: [
                     _MarqueeText(
                       text: song.title,
-                    style: GoogleFonts.nunito(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: isActive ? accentCoral : Colors.white,
+                      style: GoogleFonts.nunito(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: isActive ? accentCoral : Colors.white,
+                      ),
                     ),
-                  ),
-                  _MarqueeText(
-                    text: song.artist,
-                    style: GoogleFonts.nunito(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: darkTextMuted,
+                    _MarqueeText(
+                      text: song.artist,
+                      style: GoogleFonts.nunito(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: darkTextMuted,
+                      ),
                     ),
-                  ),
                   ],
                 ),
-              ),
-            ),
-            const SizedBox(width: 12),
-
-            // Duration
-            Text(
-              _formatDuration(song.durationSeconds),
-              style: GoogleFonts.nunito(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: isActive ? accentCoral.withAlpha(180) : darkTextMuted,
               ),
             ),
           ],

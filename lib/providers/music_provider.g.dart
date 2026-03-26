@@ -88,6 +88,84 @@ final class SongListProvider
 
 String _$songListHash() => r'ceb7bb969f697930b8a4eb5c8507b6840ee9a7d4';
 
+/// Get a signed URL for a cover image, with caching.
+
+@ProviderFor(coverUrl)
+final coverUrlProvider = CoverUrlFamily._();
+
+/// Get a signed URL for a cover image, with caching.
+
+final class CoverUrlProvider
+    extends $FunctionalProvider<AsyncValue<String?>, String?, FutureOr<String?>>
+    with $FutureModifier<String?>, $FutureProvider<String?> {
+  /// Get a signed URL for a cover image, with caching.
+  CoverUrlProvider._({
+    required CoverUrlFamily super.from,
+    required String? super.argument,
+  }) : super(
+         retry: null,
+         name: r'coverUrlProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$coverUrlHash();
+
+  @override
+  String toString() {
+    return r'coverUrlProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<String?> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<String?> create(Ref ref) {
+    final argument = this.argument as String?;
+    return coverUrl(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is CoverUrlProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$coverUrlHash() => r'04a0aa093a98e214bda5201ddf416b14e94d2535';
+
+/// Get a signed URL for a cover image, with caching.
+
+final class CoverUrlFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<String?>, String?> {
+  CoverUrlFamily._()
+    : super(
+        retry: null,
+        name: r'coverUrlProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Get a signed URL for a cover image, with caching.
+
+  CoverUrlProvider call(String? coverPath) =>
+      CoverUrlProvider._(argument: coverPath, from: this);
+
+  @override
+  String toString() => r'coverUrlProvider';
+}
+
 @ProviderFor(musicPlayer)
 final musicPlayerProvider = MusicPlayerProvider._();
 
