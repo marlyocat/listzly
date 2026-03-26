@@ -22,9 +22,13 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
   Widget build(BuildContext context) {
     final songsAsync = ref.watch(songListProvider);
     final musicState = ref.watch(musicPlayerProvider);
-    final currentSong = musicState.currentSong;
 
-    return Scaffold(
+    return ValueListenableBuilder<int>(
+      valueListenable: musicStateNotifier,
+      builder: (context, _, __) {
+        final currentSong = musicState.currentSong;
+
+        return Scaffold(
       backgroundColor: const Color(0xFF150833),
       body: SafeArea(
         child: CustomScrollView(
@@ -230,6 +234,8 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
         ),
       ),
     );
+        },
+      );
   }
 }
 
