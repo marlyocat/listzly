@@ -182,29 +182,26 @@ class MusicPlayerState {
   MusicLoopMode _loopMode = MusicLoopMode.off;
 
   MusicPlayerState(this._service) {
+    // Track previous state to detect the transition *into* completed.
+    ProcessingState lastState = ProcessingState.idle;
     _player.playerStateStream.listen((state) {
-      if (state.processingState == ProcessingState.completed &&
-          !_handlingCompletion) {
+      final current = state.processingState;
+      if (current == ProcessingState.completed &&
+          lastState != ProcessingState.completed) {
         _onSongCompleted();
       }
+      lastState = current;
     });
   }
 
-  bool _handlingCompletion = false;
-
   Future<void> _onSongCompleted() async {
-    _handlingCompletion = true;
-    try {
-      // MusicLoopMode.one is handled natively by just_audio's LoopMode.one,
-      // so completed only fires for off.
-      if (_currentIndex < _queue.length - 1) {
-        await skipNext();
-      } else {
-        await _player.stop();
-        _notify();
-      }
-    } finally {
-      _handlingCompletion = false;
+    // MusicLoopMode.one is handled natively by just_audio's LoopMode.one,
+    // so completed only fires for off.
+    if (_currentIndex < _queue.length - 1) {
+      await skipNext();
+    } else {
+      await _player.stop();
+      _notify();
     }
   }
 
