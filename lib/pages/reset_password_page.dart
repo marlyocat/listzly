@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:listzly/theme/colors.dart';
+import 'package:listzly/utils/responsive.dart';
 
 class ResetPasswordPage extends ConsumerStatefulWidget {
   const ResetPasswordPage({super.key});
@@ -149,7 +150,8 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 28),
-          child: Column(
+          child: ContentConstraint(
+            child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 48),
@@ -272,6 +274,7 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
 
               const SizedBox(height: 40),
             ],
+          ),
           ),
         ),
       ),
