@@ -137,10 +137,9 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
               'Welcome to Listzly ${newTier.displayName}!',
               style: GoogleFonts.nunito(fontWeight: FontWeight.w700),
             ),
-            backgroundColor: accentCoralDark,
             behavior: SnackBarBehavior.floating,
             showCloseIcon: true,
-            closeIconColor: Colors.white,
+            duration: const Duration(seconds: 3),
           ),
         );
       }
@@ -154,10 +153,9 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
               'Purchase failed. Please try again.',
               style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
             ),
-            backgroundColor: accentCoralDark,
             behavior: SnackBarBehavior.floating,
             showCloseIcon: true,
-            closeIconColor: Colors.white,
+            duration: const Duration(seconds: 3),
           ),
         );
       }
@@ -182,10 +180,9 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                   : 'Restored ${newTier.displayName} plan!',
               style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
             ),
-            backgroundColor: accentCoralDark,
             behavior: SnackBarBehavior.floating,
             showCloseIcon: true,
-            closeIconColor: Colors.white,
+            duration: const Duration(seconds: 3),
           ),
         );
         if (!newTier.isFree) Navigator.pop(context);
@@ -198,10 +195,9 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
               'Could not restore purchases.',
               style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
             ),
-            backgroundColor: accentCoralDark,
             behavior: SnackBarBehavior.floating,
             showCloseIcon: true,
-            closeIconColor: Colors.white,
+            duration: const Duration(seconds: 3),
           ),
         );
       }

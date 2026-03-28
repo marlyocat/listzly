@@ -103,9 +103,8 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: accentCoralDark,
         showCloseIcon: true,
-        closeIconColor: Colors.white,
+        duration: const Duration(seconds: 3),
       ),
     );
   }

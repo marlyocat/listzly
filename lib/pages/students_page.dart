@@ -448,10 +448,8 @@ class _StudentsPageState extends ConsumerState<StudentsPage> {
                           content: Text('Invite code copied!',
                               style: GoogleFonts.nunito(
                                   fontWeight: FontWeight.w600)),
-                          backgroundColor: accentCoralDark,
-                          duration: const Duration(seconds: 2),
                           showCloseIcon: true,
-                          closeIconColor: Colors.white,
+                          duration: const Duration(seconds: 3),
                         ),
                       );
                     },

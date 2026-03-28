@@ -1520,10 +1520,9 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
               'Could not play recording',
               style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
             ),
-            backgroundColor: const Color(0xFF1E0E3D),
             behavior: SnackBarBehavior.floating,
             showCloseIcon: true,
-            closeIconColor: Colors.white,
+            duration: const Duration(seconds: 3),
           ),
         );
       }
@@ -1563,10 +1562,9 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
               'Recording downloaded successfully',
               style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
             ),
-            backgroundColor: accentCoralDark,
             behavior: SnackBarBehavior.floating,
             showCloseIcon: true,
-            closeIconColor: Colors.white,
+            duration: const Duration(seconds: 3),
           ),
         );
       }
@@ -1581,10 +1579,9 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
             ),
-            backgroundColor: accentCoralDark,
             behavior: SnackBarBehavior.floating,
             showCloseIcon: true,
-            closeIconColor: Colors.white,
+            duration: const Duration(seconds: 3),
           ),
         );
       }
@@ -1704,10 +1701,9 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                   : 'Recording unshared',
               style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
             ),
-            backgroundColor: accentCoralDark,
             behavior: SnackBarBehavior.floating,
             showCloseIcon: true,
-            closeIconColor: Colors.white,
+            duration: const Duration(seconds: 3),
           ),
         );
       }
@@ -1719,10 +1715,9 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
               'Could not update sharing',
               style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
             ),
-            backgroundColor: accentCoralDark,
             behavior: SnackBarBehavior.floating,
             showCloseIcon: true,
-            closeIconColor: Colors.white,
+            duration: const Duration(seconds: 3),
           ),
         );
       }
@@ -1779,10 +1774,9 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                 'Could not delete recording',
                 style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
               ),
-              backgroundColor: const Color(0xFF1E0E3D),
               behavior: SnackBarBehavior.floating,
               showCloseIcon: true,
-              closeIconColor: Colors.white,
+              duration: const Duration(seconds: 3),
             ),
           );
         }

@@ -298,10 +298,9 @@ class _PracticePageState extends ConsumerState<PracticePage>
                 'You can only record $_maxRecordingsPerDay times per day',
                 style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
               ),
-              backgroundColor: accentCoralDark,
               behavior: SnackBarBehavior.floating,
               showCloseIcon: true,
-              closeIconColor: Colors.white,
+              duration: const Duration(seconds: 3),
             ),
           );
         }
@@ -322,10 +321,9 @@ class _PracticePageState extends ConsumerState<PracticePage>
               'Microphone permission is required to record',
               style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
             ),
-            backgroundColor: const Color(0xFF1E0E3D),
             behavior: SnackBarBehavior.floating,
             showCloseIcon: true,
-            closeIconColor: Colors.white,
+            duration: const Duration(seconds: 3),
           ),
         );
       }
@@ -364,10 +362,9 @@ class _PracticePageState extends ConsumerState<PracticePage>
               'Could not start recording',
               style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
             ),
-            backgroundColor: const Color(0xFF1E0E3D),
             behavior: SnackBarBehavior.floating,
             showCloseIcon: true,
-            closeIconColor: Colors.white,
+            duration: const Duration(seconds: 3),
           ),
         );
       }
@@ -403,10 +400,9 @@ class _PracticePageState extends ConsumerState<PracticePage>
             'Recording reached 5-minute limit',
             style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
           ),
-          backgroundColor: const Color(0xFF1E0E3D),
           behavior: SnackBarBehavior.floating,
           showCloseIcon: true,
-          closeIconColor: Colors.white,
+          duration: const Duration(seconds: 3),
         ),
       );
     }
@@ -424,10 +420,9 @@ class _PracticePageState extends ConsumerState<PracticePage>
             'Recording discarded',
             style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
           ),
-          backgroundColor: accentCoralDark,
           behavior: SnackBarBehavior.floating,
           showCloseIcon: true,
-          closeIconColor: Colors.white,
+          duration: const Duration(seconds: 3),
         ),
       );
     }
@@ -454,10 +449,9 @@ class _PracticePageState extends ConsumerState<PracticePage>
               'Recording saved',
               style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
             ),
-            backgroundColor: accentCoralDark,
             behavior: SnackBarBehavior.floating,
             showCloseIcon: true,
-            closeIconColor: Colors.white,
+            duration: const Duration(seconds: 3),
           ),
         );
       }
@@ -470,10 +464,9 @@ class _PracticePageState extends ConsumerState<PracticePage>
               'Could not save recording',
               style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
             ),
-            backgroundColor: accentCoralDark,
             behavior: SnackBarBehavior.floating,
             showCloseIcon: true,
-            closeIconColor: Colors.white,
+            duration: const Duration(seconds: 3),
           ),
         );
       }

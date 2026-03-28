@@ -91,9 +91,8 @@ class _AssignQuestDialogState extends ConsumerState<AssignQuestDialog> {
             message,
             style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
           ),
-          backgroundColor: accentCoralDark,
           showCloseIcon: true,
-          closeIconColor: Colors.white,
+          duration: const Duration(seconds: 3),
         ),
       );
   }

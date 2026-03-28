@@ -1252,10 +1252,9 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
               'Could not play recording',
               style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
             ),
-            backgroundColor: const Color(0xFF1E0E3D),
             behavior: SnackBarBehavior.floating,
             showCloseIcon: true,
-            closeIconColor: Colors.white,
+            duration: const Duration(seconds: 3),
           ),
         );
       }

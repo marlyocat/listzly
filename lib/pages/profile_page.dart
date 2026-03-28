@@ -886,10 +886,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               SnackBar(
                 content: Text('Invite code copied!',
                     style: GoogleFonts.nunito(fontWeight: FontWeight.w600)),
-                backgroundColor: accentCoralDark,
-                duration: const Duration(seconds: 2),
+                duration: const Duration(seconds: 3),
                 showCloseIcon: true,
-                closeIconColor: Colors.white,
               ),
             );
           },
@@ -1203,9 +1201,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to change role: $e'),
-            backgroundColor: accentCoralDark,
+            duration: const Duration(seconds: 3),
             showCloseIcon: true,
-            closeIconColor: Colors.white,
           ),
         );
       }
@@ -1492,9 +1489,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('Failed to leave group: $e'),
-                      backgroundColor: accentCoralDark,
+                      duration: const Duration(seconds: 3),
                       showCloseIcon: true,
-                      closeIconColor: Colors.white,
                     ),
                   );
                 }
