@@ -225,7 +225,7 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
                         return _ComposerGroup(
                           composer: group.key,
                           songs: group.value,
-                          allSongs: songs,
+                          allSongs: sortedSongs,
                           currentSong: currentSong,
                           isPlaying: musicState.isPlaying,
                           musicState: musicState,
