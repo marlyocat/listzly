@@ -13,7 +13,7 @@ import 'package:listzly/providers/auth_provider.dart';
 
 part 'music_provider.g.dart';
 
-enum MusicLoopMode { off, one }
+enum MusicLoopMode { off, all, one }
 
 @riverpod
 MusicService musicService(Ref ref) =>
@@ -177,6 +177,7 @@ class MusicPlayerState {
 
   List<Song> _queue = [];
   int _currentIndex = -1;
+  Song? _activeSong;
   bool _isLoading = false;
   String? _error;
   MusicLoopMode _loopMode = MusicLoopMode.off;
@@ -196,8 +197,10 @@ class MusicPlayerState {
 
   Future<void> _onSongCompleted() async {
     // MusicLoopMode.one is handled natively by just_audio's LoopMode.one,
-    // so completed only fires for off.
-    if (_currentIndex < _queue.length - 1) {
+    // so completed only fires for off and all.
+    if (_loopMode == MusicLoopMode.all) {
+      await skipNext();
+    } else if (_currentIndex < _queue.length - 1) {
       await skipNext();
     } else {
       await _player.stop();
@@ -213,25 +216,18 @@ class MusicPlayerState {
   Song? get currentSong =>
       _currentIndex >= 0 && _currentIndex < _queue.length
           ? _queue[_currentIndex]
-          : null;
+          : _activeSong;
   List<Song> get queue => _queue;
 
   /// Update the queue without interrupting playback.
-  /// If the current song isn't in the new list, insert it so playback continues.
   void updateQueue(List<Song> songs) {
     final current = currentSong;
-    if (current == null) {
-      _queue = songs;
-      return;
-    }
-    final idx = songs.indexWhere((s) => s.id == current.id);
-    if (idx != -1) {
-      _queue = songs;
+    _queue = songs;
+    if (current != null) {
+      final idx = songs.indexWhere((s) => s.id == current.id);
+      // If current song is in the list, point to it.
+      // If not, set to -1 — playback continues but next skip starts from 0.
       _currentIndex = idx;
-    } else {
-      // Keep the current song in the queue so it can finish playing
-      _queue = [current, ...songs];
-      _currentIndex = 0;
     }
   }
   bool get isLoading => _isLoading;
@@ -241,9 +237,11 @@ class MusicPlayerState {
   MusicLoopMode get loopMode => _loopMode;
 
   void cycleMusicLoopMode() {
-    _loopMode = _loopMode == MusicLoopMode.off
-        ? MusicLoopMode.one
-        : MusicLoopMode.off;
+    _loopMode = switch (_loopMode) {
+      MusicLoopMode.off => MusicLoopMode.all,
+      MusicLoopMode.all => MusicLoopMode.one,
+      MusicLoopMode.one => MusicLoopMode.off,
+    };
     _player.setLoopMode(
       _loopMode == MusicLoopMode.one ? LoopMode.one : LoopMode.off,
     );
@@ -254,6 +252,7 @@ class MusicPlayerState {
     if (index < 0 || index >= _queue.length) return;
 
     _currentIndex = index;
+    _activeSong = _queue[index];
     _isLoading = true;
     _error = null;
     _notify();
@@ -333,6 +332,7 @@ class MusicPlayerState {
   Future<void> stop() async {
     await _player.stop();
     _currentIndex = -1;
+    _activeSong = null;
     _notify();
   }
 

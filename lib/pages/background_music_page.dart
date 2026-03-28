@@ -1117,20 +1117,45 @@ class _LoopButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final looping = musicState.loopMode == MusicLoopMode.one;
+    final mode = musicState.loopMode;
+    final isActive = mode != MusicLoopMode.off;
+
+    final tooltip = switch (mode) {
+      MusicLoopMode.off => 'Loop Off',
+      MusicLoopMode.all => 'Loop All Pieces',
+      MusicLoopMode.one => 'Loop Current Piece',
+    };
 
     return Tooltip(
-      message: looping ? 'Loop Current Piece' : 'Loop Off',
+      message: tooltip,
       preferBelow: false,
       child: GestureDetector(
         onTap: () => musicState.cycleMusicLoopMode(),
         behavior: HitTestBehavior.opaque,
         child: Padding(
           padding: const EdgeInsets.all(4),
-          child: Icon(
-            Icons.loop_rounded,
-            color: looping ? accentCoral : Colors.white38,
-            size: 24,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Icon(
+                Icons.loop_rounded,
+                color: isActive ? accentCoral : Colors.white38,
+                size: 24,
+              ),
+              if (mode == MusicLoopMode.one)
+                Positioned(
+                  right: -4,
+                  bottom: -2,
+                  child: Text(
+                    '1',
+                    style: GoogleFonts.nunito(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      color: accentCoral,
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
       ),
