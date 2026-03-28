@@ -159,7 +159,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             SliverContentConstraint(
               child: Showcase(
                 key: _practiceKey,
-                description: 'Set your daily practice goal and reminder preferences',
+                description: 'Set your daily practice goal, reminder preferences, and background music',
                 tooltipBackgroundColor: const Color(0xFF1E0A4A),
                 descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
                 child: settingsAsync.when(
