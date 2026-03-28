@@ -35,11 +35,13 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
     if (!musicState.hasSong) return;
     final songs = ref.read(songListProvider).value;
     if (songs == null) return;
+    final localSongs = ref.read(localSongsProvider).value ?? [];
+    final allSongs = [...songs, ...localSongs];
     final favorites = ref.read(favoriteSongIdsProvider).value ?? <String>{};
 
     final filtered = _showFavoritesOnly
-        ? songs.where((s) => favorites.contains(s.id)).toList()
-        : songs;
+        ? allSongs.where((s) => favorites.contains(s.id)).toList()
+        : allSongs;
 
     musicState.updateQueue(_sortByArtist(filtered));
   }
@@ -49,6 +51,7 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
     final songsAsync = ref.watch(songListProvider);
     final musicState = ref.watch(musicPlayerProvider);
     final favoritesAsync = ref.watch(favoriteSongIdsProvider);
+    final localSongsAsync = ref.watch(localSongsProvider);
 
     return ValueListenableBuilder<int>(
       valueListenable: musicStateNotifier,
@@ -185,6 +188,29 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
                         ],
                       ),
                     ),
+                    const SizedBox(width: 16),
+                    GestureDetector(
+                      onTap: () => pickAndSaveLocalSong(),
+                      behavior: HitTestBehavior.opaque,
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.add_rounded,
+                            color: darkTextMuted,
+                            size: 16,
+                          ),
+                          const SizedBox(width: 2),
+                          Text(
+                            'Upload',
+                            style: GoogleFonts.nunito(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: darkTextMuted,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                     const Spacer(),
                     GestureDetector(
                       onTap: () =>
@@ -241,8 +267,10 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
                 ),
                 data: (songs) {
                   final favorites = favoritesAsync.value ?? <String>{};
+                  final localSongs = localSongsAsync.value ?? [];
+                  final allSongs = [...songs, ...localSongs];
 
-                  if (songs.isEmpty) {
+                  if (allSongs.isEmpty) {
                     return Center(
                       child: Padding(
                         padding: const EdgeInsets.all(40),
@@ -260,8 +288,8 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
 
                   // Filter by favorites if active
                   final filtered = _showFavoritesOnly
-                      ? songs.where((s) => favorites.contains(s.id)).toList()
-                      : songs;
+                      ? allSongs.where((s) => favorites.contains(s.id)).toList()
+                      : allSongs;
 
                   if (_showFavoritesOnly && filtered.isEmpty) {
                     return Center(
@@ -733,7 +761,7 @@ class _ComposerGroup extends StatefulWidget {
 }
 
 class _ComposerGroupState extends State<_ComposerGroup> {
-  bool _localExpanded = false;
+  late bool _localExpanded = widget.forceExpanded;
 
   @override
   void didUpdateWidget(_ComposerGroup oldWidget) {
@@ -745,7 +773,7 @@ class _ComposerGroupState extends State<_ComposerGroup> {
 
   @override
   Widget build(BuildContext context) {
-    final expanded = _localExpanded || widget.forceExpanded;
+    final expanded = _localExpanded;
     final hasActiveSong =
         widget.songs.any((s) => s.id == widget.currentSong?.id);
 
@@ -831,12 +859,60 @@ class _SongTile extends ConsumerWidget {
     required this.onToggleFavorite,
   });
 
+  void _showDeleteDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1E0E3D),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Remove Upload',
+          style: GoogleFonts.dmSerifDisplay(fontSize: 20, color: Colors.white),
+        ),
+        content: Text(
+          'Remove "${song.title}" from your uploads?',
+          style: GoogleFonts.nunito(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: darkTextMuted,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(
+              'Cancel',
+              style: GoogleFonts.nunito(
+                fontWeight: FontWeight.w700,
+                color: darkTextMuted,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              removeLocalSong(song.id);
+            },
+            child: Text(
+              'Remove',
+              style: GoogleFonts.nunito(
+                fontWeight: FontWeight.w700,
+                color: Colors.red,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final coverAsync = ref.watch(coverUrlProvider(song.coverUrl));
 
     return GestureDetector(
       onTap: onTap,
+      onLongPress: song.isLocal ? () => _showDeleteDialog(context) : null,
       behavior: HitTestBehavior.opaque,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -862,7 +938,7 @@ class _SongTile extends ConsumerWidget {
                 data: (url) => url != null
                     ? Image.network(url, fit: BoxFit.cover, width: 48, height: 48)
                     : Icon(
-                        isPlaying ? Icons.equalizer_rounded : Icons.music_note_rounded,
+                        isPlaying && !song.isLocal ? Icons.equalizer_rounded : Icons.music_note_rounded,
                         color: isActive ? accentCoral : Colors.white30,
                         size: 22,
                       ),
@@ -918,6 +994,21 @@ class _SongTile extends ConsumerWidget {
                 ),
               ),
             ),
+
+            // Delete button for local uploads
+            if (song.isLocal)
+              GestureDetector(
+                onTap: () => _showDeleteDialog(context),
+                behavior: HitTestBehavior.opaque,
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Icon(
+                    Icons.close_rounded,
+                    color: darkTextMuted,
+                    size: 20,
+                  ),
+                ),
+              ),
           ],
         ),
       ),

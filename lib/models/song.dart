@@ -15,6 +15,8 @@ class Song {
   final String? coverUrl;
   @JsonKey(name: 'created_at')
   final DateTime createdAt;
+  @JsonKey(name: 'is_local', defaultValue: false)
+  final bool isLocal;
 
   const Song({
     required this.id,
@@ -24,6 +26,7 @@ class Song {
     required this.durationSeconds,
     this.coverUrl,
     required this.createdAt,
+    this.isLocal = false,
   });
 
   factory Song.fromJson(Map<String, dynamic> json) => _$SongFromJson(json);

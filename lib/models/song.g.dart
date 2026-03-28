@@ -14,6 +14,7 @@ Song _$SongFromJson(Map<String, dynamic> json) => Song(
   durationSeconds: (json['duration_seconds'] as num).toInt(),
   coverUrl: json['cover_url'] as String?,
   createdAt: DateTime.parse(json['created_at'] as String),
+  isLocal: json['is_local'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$SongToJson(Song instance) => <String, dynamic>{
@@ -24,4 +25,5 @@ Map<String, dynamic> _$SongToJson(Song instance) => <String, dynamic>{
   'duration_seconds': instance.durationSeconds,
   'cover_url': instance.coverUrl,
   'created_at': instance.createdAt.toIso8601String(),
+  'is_local': instance.isLocal,
 };

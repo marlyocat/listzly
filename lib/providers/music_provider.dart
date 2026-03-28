@@ -1,5 +1,10 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:listzly/models/song.dart';
@@ -47,6 +52,112 @@ Future<void> toggleFavoriteSong(String songId) async {
   }
   await prefs.setStringList('favorite_songs', favorites.toList());
   favoritesNotifier.value++;
+}
+
+// ---------------------------------------------------------------------------
+// Local uploads
+// ---------------------------------------------------------------------------
+
+const _localSongsKey = 'local_songs';
+
+final localSongsNotifier = ValueNotifier<int>(0);
+
+@riverpod
+int localSongsNotifierValue(Ref ref) {
+  void listener() => ref.invalidateSelf();
+  localSongsNotifier.addListener(listener);
+  ref.onDispose(() => localSongsNotifier.removeListener(listener));
+  return localSongsNotifier.value;
+}
+
+@riverpod
+Future<List<Song>> localSongs(Ref ref) async {
+  ref.watch(localSongsNotifierValueProvider);
+  final prefs = await SharedPreferences.getInstance();
+  final raw = prefs.getStringList(_localSongsKey) ?? [];
+  return raw
+      .map((e) => Song.fromJson(jsonDecode(e) as Map<String, dynamic>))
+      .toList();
+}
+
+Future<Directory> _localMusicDir() async {
+  final appDir = await getApplicationDocumentsDirectory();
+  final dir = Directory('${appDir.path}/local_music');
+  if (!await dir.exists()) await dir.create(recursive: true);
+  return dir;
+}
+
+/// Pick an audio file from the device and save it locally. Returns null if
+/// the user cancelled or the limit has been reached.
+Future<Song?> pickAndSaveLocalSong() async {
+  final prefs = await SharedPreferences.getInstance();
+  final existing = prefs.getStringList(_localSongsKey) ?? [];
+
+  final result = await FilePicker.platform.pickFiles(
+    type: FileType.custom,
+    allowedExtensions: ['mp3', 'wav', 'aac', 'm4a', 'ogg', 'flac', 'wma'],
+    allowMultiple: false,
+  );
+  if (result == null || result.files.isEmpty) return null;
+
+  final picked = result.files.first;
+  if (picked.path == null) return null;
+
+  // Copy to app directory so the file persists
+  final dir = await _localMusicDir();
+  final fileName =
+      '${DateTime.now().millisecondsSinceEpoch}_${picked.name}';
+  final dest = File('${dir.path}/$fileName');
+  await File(picked.path!).copy(dest.path);
+
+  // Try to get duration
+  int durationSeconds = 0;
+  try {
+    final tempPlayer = AudioPlayer();
+    final duration = await tempPlayer.setFilePath(dest.path);
+    durationSeconds = duration?.inSeconds ?? 0;
+    await tempPlayer.dispose();
+  } catch (_) {}
+
+  // Extract title from filename (strip extension)
+  final title = picked.name.replaceAll(RegExp(r'\.[^.]+$'), '');
+
+  final song = Song(
+    id: 'local_$fileName',
+    title: title,
+    artist: 'My Uploads',
+    filePath: dest.path,
+    durationSeconds: durationSeconds,
+    createdAt: DateTime.now(),
+    isLocal: true,
+  );
+
+  existing.add(jsonEncode(song.toJson()));
+  await prefs.setStringList(_localSongsKey, existing);
+  localSongsNotifier.value++;
+  return song;
+}
+
+Future<void> removeLocalSong(String songId) async {
+  final prefs = await SharedPreferences.getInstance();
+  final existing = prefs.getStringList(_localSongsKey) ?? [];
+  final songs = existing
+      .map((e) => Song.fromJson(jsonDecode(e) as Map<String, dynamic>))
+      .toList();
+
+  final idx = songs.indexWhere((s) => s.id == songId);
+  if (idx == -1) return;
+
+  // Delete the file
+  final file = File(songs[idx].filePath);
+  if (await file.exists()) await file.delete();
+
+  songs.removeAt(idx);
+  await prefs.setStringList(
+    _localSongsKey,
+    songs.map((s) => jsonEncode(s.toJson())).toList(),
+  );
+  localSongsNotifier.value++;
 }
 
 /// Global notifier that widgets can listen to for music state changes.
@@ -144,8 +255,13 @@ class MusicPlayerState {
     _notify();
 
     try {
-      final url = await _service.getSignedUrl(_queue[index].filePath);
-      await _player.setUrl(url);
+      final song = _queue[index];
+      if (song.isLocal) {
+        await _player.setFilePath(song.filePath);
+      } else {
+        final url = await _service.getSignedUrl(song.filePath);
+        await _player.setUrl(url);
+      }
       _isLoading = false;
       _notify();
       await _player.play();

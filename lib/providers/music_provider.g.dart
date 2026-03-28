@@ -169,6 +169,86 @@ final class FavoriteSongIdsProvider
 
 String _$favoriteSongIdsHash() => r'df829911b16348ee2d6f08349b6974628d8d128c';
 
+@ProviderFor(localSongsNotifierValue)
+final localSongsNotifierValueProvider = LocalSongsNotifierValueProvider._();
+
+final class LocalSongsNotifierValueProvider
+    extends $FunctionalProvider<int, int, int>
+    with $Provider<int> {
+  LocalSongsNotifierValueProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'localSongsNotifierValueProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$localSongsNotifierValueHash();
+
+  @$internal
+  @override
+  $ProviderElement<int> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  int create(Ref ref) {
+    return localSongsNotifierValue(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(int value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<int>(value),
+    );
+  }
+}
+
+String _$localSongsNotifierValueHash() =>
+    r'f9f2e8f4628e94fe6d39ef91e3452857ba2ffed6';
+
+@ProviderFor(localSongs)
+final localSongsProvider = LocalSongsProvider._();
+
+final class LocalSongsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Song>>,
+          List<Song>,
+          FutureOr<List<Song>>
+        >
+    with $FutureModifier<List<Song>>, $FutureProvider<List<Song>> {
+  LocalSongsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'localSongsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$localSongsHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<Song>> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<Song>> create(Ref ref) {
+    return localSongs(ref);
+  }
+}
+
+String _$localSongsHash() => r'4c031dca07757afed2183e8a56655bcaf5bac690';
+
 /// Get a signed URL for a cover image, with caching.
 
 @ProviderFor(coverUrl)
