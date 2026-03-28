@@ -167,7 +167,7 @@ final class FavoriteSongIdsProvider
   }
 }
 
-String _$favoriteSongIdsHash() => r'df829911b16348ee2d6f08349b6974628d8d128c';
+String _$favoriteSongIdsHash() => r'e72eebf8394bf629e2158f1c09c3040128a269a4';
 
 @ProviderFor(localSongsNotifierValue)
 final localSongsNotifierValueProvider = LocalSongsNotifierValueProvider._();
@@ -247,7 +247,7 @@ final class LocalSongsProvider
   }
 }
 
-String _$localSongsHash() => r'4c031dca07757afed2183e8a56655bcaf5bac690';
+String _$localSongsHash() => r'733df0f248e15b4534678107a4820422e152b048';
 
 /// Get a signed URL for a cover image, with caching.
 

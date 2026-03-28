@@ -24,6 +24,8 @@ Future<List<Song>> songList(Ref ref) async {
   return ref.watch(musicServiceProvider).getSongs();
 }
 
+String _userKey(String base, String? userId) => '${base}_${userId ?? 'anon'}';
+
 /// Global notifier so widgets can react to favorite changes.
 final favoritesNotifier = ValueNotifier<int>(0);
 
@@ -38,19 +40,21 @@ int favoritesNotifierValue(Ref ref) {
 @riverpod
 Future<Set<String>> favoriteSongIds(Ref ref) async {
   ref.watch(favoritesNotifierValueProvider);
+  final userId = ref.watch(currentUserProvider)?.id;
   final prefs = await SharedPreferences.getInstance();
-  return prefs.getStringList('favorite_songs')?.toSet() ?? {};
+  return prefs.getStringList(_userKey('favorite_songs', userId))?.toSet() ?? {};
 }
 
-Future<void> toggleFavoriteSong(String songId) async {
+Future<void> toggleFavoriteSong(String songId, String? userId) async {
   final prefs = await SharedPreferences.getInstance();
-  final favorites = prefs.getStringList('favorite_songs')?.toSet() ?? {};
+  final key = _userKey('favorite_songs', userId);
+  final favorites = prefs.getStringList(key)?.toSet() ?? {};
   if (favorites.contains(songId)) {
     favorites.remove(songId);
   } else {
     favorites.add(songId);
   }
-  await prefs.setStringList('favorite_songs', favorites.toList());
+  await prefs.setStringList(key, favorites.toList());
   favoritesNotifier.value++;
 }
 
@@ -73,8 +77,9 @@ int localSongsNotifierValue(Ref ref) {
 @riverpod
 Future<List<Song>> localSongs(Ref ref) async {
   ref.watch(localSongsNotifierValueProvider);
+  final userId = ref.watch(currentUserProvider)?.id;
   final prefs = await SharedPreferences.getInstance();
-  final raw = prefs.getStringList(_localSongsKey) ?? [];
+  final raw = prefs.getStringList(_userKey(_localSongsKey, userId)) ?? [];
   return raw
       .map((e) => Song.fromJson(jsonDecode(e) as Map<String, dynamic>))
       .toList();
@@ -89,9 +94,10 @@ Future<Directory> _localMusicDir() async {
 
 /// Pick an audio file from the device and save it locally. Returns null if
 /// the user cancelled or the limit has been reached.
-Future<Song?> pickAndSaveLocalSong() async {
+Future<Song?> pickAndSaveLocalSong(String? userId) async {
   final prefs = await SharedPreferences.getInstance();
-  final existing = prefs.getStringList(_localSongsKey) ?? [];
+  final key = _userKey(_localSongsKey, userId);
+  final existing = prefs.getStringList(key) ?? [];
 
   final result = await FilePicker.platform.pickFiles(
     type: FileType.custom,
@@ -133,14 +139,15 @@ Future<Song?> pickAndSaveLocalSong() async {
   );
 
   existing.add(jsonEncode(song.toJson()));
-  await prefs.setStringList(_localSongsKey, existing);
+  await prefs.setStringList(key, existing);
   localSongsNotifier.value++;
   return song;
 }
 
-Future<void> removeLocalSong(String songId) async {
+Future<void> removeLocalSong(String songId, String? userId) async {
   final prefs = await SharedPreferences.getInstance();
-  final existing = prefs.getStringList(_localSongsKey) ?? [];
+  final key = _userKey(_localSongsKey, userId);
+  final existing = prefs.getStringList(key) ?? [];
   final songs = existing
       .map((e) => Song.fromJson(jsonDecode(e) as Map<String, dynamic>))
       .toList();
@@ -154,7 +161,7 @@ Future<void> removeLocalSong(String songId) async {
 
   songs.removeAt(idx);
   await prefs.setStringList(
-    _localSongsKey,
+    key,
     songs.map((s) => jsonEncode(s.toJson())).toList(),
   );
   localSongsNotifier.value++;

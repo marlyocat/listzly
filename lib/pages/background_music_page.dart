@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:listzly/models/song.dart';
+import 'package:listzly/providers/auth_provider.dart';
 import 'package:listzly/providers/music_provider.dart';
 import 'package:listzly/theme/colors.dart';
 import 'package:listzly/utils/responsive.dart';
@@ -48,6 +49,7 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
 
   @override
   Widget build(BuildContext context) {
+    final userId = ref.watch(currentUserProvider)?.id;
     final songsAsync = ref.watch(songListProvider);
     final musicState = ref.watch(musicPlayerProvider);
     final favoritesAsync = ref.watch(favoriteSongIdsProvider);
@@ -190,7 +192,7 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
                     ),
                     const SizedBox(width: 16),
                     GestureDetector(
-                      onTap: () => pickAndSaveLocalSong(),
+                      onTap: () => pickAndSaveLocalSong(userId),
                       behavior: HitTestBehavior.opaque,
                       child: Row(
                         children: [
@@ -334,6 +336,7 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
                           musicState: musicState,
                           forceExpanded: _allExpanded,
                           favorites: favorites,
+                          userId: userId,
                         );
                       }),
                       if (hasMore)
@@ -744,6 +747,7 @@ class _ComposerGroup extends StatefulWidget {
   final MusicPlayerState musicState;
   final bool forceExpanded;
   final Set<String> favorites;
+  final String? userId;
 
   const _ComposerGroup({
     required this.composer,
@@ -754,6 +758,7 @@ class _ComposerGroup extends StatefulWidget {
     required this.musicState,
     required this.forceExpanded,
     required this.favorites,
+    this.userId,
   });
 
   @override
@@ -828,7 +833,10 @@ class _ComposerGroupState extends State<_ComposerGroup> {
                     widget.musicState.playSongFromList(song, widget.allSongs);
                   }
                 },
-                onToggleFavorite: () => toggleFavoriteSong(song.id),
+                onToggleFavorite: () => toggleFavoriteSong(song.id, widget.userId),
+                onDelete: song.isLocal
+                    ? () => removeLocalSong(song.id, widget.userId)
+                    : null,
               );
             }).toList(),
           ),
@@ -849,6 +857,7 @@ class _SongTile extends ConsumerWidget {
   final bool isFavorite;
   final VoidCallback onTap;
   final VoidCallback onToggleFavorite;
+  final VoidCallback? onDelete;
 
   const _SongTile({
     required this.song,
@@ -857,6 +866,7 @@ class _SongTile extends ConsumerWidget {
     required this.isFavorite,
     required this.onTap,
     required this.onToggleFavorite,
+    this.onDelete,
   });
 
   void _showDeleteDialog(BuildContext context) {
@@ -891,7 +901,7 @@ class _SongTile extends ConsumerWidget {
           TextButton(
             onPressed: () {
               Navigator.pop(ctx);
-              removeLocalSong(song.id);
+              onDelete?.call();
             },
             child: Text(
               'Remove',
