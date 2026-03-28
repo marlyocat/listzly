@@ -26,6 +26,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:showcaseview/showcaseview.dart';
 import 'package:listzly/pages/background_music_page.dart';
+import 'package:listzly/providers/music_provider.dart';
 
 class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({super.key});
@@ -267,6 +268,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                         (route) => false,
                       );
                       NotificationService.instance.cancelReminder();
+                      ref.read(musicPlayerProvider).stop();
                       ref.read(authServiceProvider).signOut();
                     },
                     style: ElevatedButton.styleFrom(
