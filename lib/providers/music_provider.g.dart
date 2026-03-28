@@ -88,6 +88,87 @@ final class SongListProvider
 
 String _$songListHash() => r'ceb7bb969f697930b8a4eb5c8507b6840ee9a7d4';
 
+@ProviderFor(favoritesNotifierValue)
+final favoritesNotifierValueProvider = FavoritesNotifierValueProvider._();
+
+final class FavoritesNotifierValueProvider
+    extends $FunctionalProvider<int, int, int>
+    with $Provider<int> {
+  FavoritesNotifierValueProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'favoritesNotifierValueProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$favoritesNotifierValueHash();
+
+  @$internal
+  @override
+  $ProviderElement<int> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  int create(Ref ref) {
+    return favoritesNotifierValue(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(int value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<int>(value),
+    );
+  }
+}
+
+String _$favoritesNotifierValueHash() =>
+    r'8262e7b6bb06dae608c153bd13c7ac857b4a6363';
+
+@ProviderFor(favoriteSongIds)
+final favoriteSongIdsProvider = FavoriteSongIdsProvider._();
+
+final class FavoriteSongIdsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<Set<String>>,
+          Set<String>,
+          FutureOr<Set<String>>
+        >
+    with $FutureModifier<Set<String>>, $FutureProvider<Set<String>> {
+  FavoriteSongIdsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'favoriteSongIdsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$favoriteSongIdsHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<Set<String>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<Set<String>> create(Ref ref) {
+    return favoriteSongIds(ref);
+  }
+}
+
+String _$favoriteSongIdsHash() => r'df829911b16348ee2d6f08349b6974628d8d128c';
+
 /// Get a signed URL for a cover image, with caching.
 
 @ProviderFor(coverUrl)

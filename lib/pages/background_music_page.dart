@@ -18,12 +18,37 @@ class BackgroundMusicPage extends ConsumerStatefulWidget {
 class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
   bool _playerExpanded = true;
   bool _allExpanded = true;
+  bool _showFavoritesOnly = false;
   int _visibleSongCount = 5;
+
+  /// Sort songs by artist alphabetically, then by order within each artist.
+  List<Song> _sortByArtist(List<Song> songs) {
+    final grouped = <String, List<Song>>{};
+    for (final song in songs) {
+      grouped.putIfAbsent(song.artist, () => []).add(song);
+    }
+    final sortedKeys = grouped.keys.toList()..sort();
+    return [for (final key in sortedKeys) ...grouped[key]!];
+  }
+
+  void _updateQueueForFilter(MusicPlayerState musicState) {
+    if (!musicState.hasSong) return;
+    final songs = ref.read(songListProvider).value;
+    if (songs == null) return;
+    final favorites = ref.read(favoriteSongIdsProvider).value ?? <String>{};
+
+    final filtered = _showFavoritesOnly
+        ? songs.where((s) => favorites.contains(s.id)).toList()
+        : songs;
+
+    musicState.updateQueue(_sortByArtist(filtered));
+  }
 
   @override
   Widget build(BuildContext context) {
     final songsAsync = ref.watch(songListProvider);
     final musicState = ref.watch(musicPlayerProvider);
+    final favoritesAsync = ref.watch(favoriteSongIdsProvider);
 
     return ValueListenableBuilder<int>(
       valueListenable: musicStateNotifier,
@@ -76,7 +101,7 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
                 child: Text(
-                  'Pick a song to play in the background while you practice.',
+                  'Pick a piece to play in the background while you practice.',
                   style: GoogleFonts.nunito(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -122,34 +147,71 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
                 ),
               ),
 
-            // Expand all / Collapse all toggle
+            // Favorites filter + Expand/Collapse toggle
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                child: GestureDetector(
-                  onTap: () => setState(() => _allExpanded = !_allExpanded),
-                  behavior: HitTestBehavior.opaque,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text(
-                        _allExpanded ? 'Collapse all' : 'Expand all',
-                        style: GoogleFonts.nunito(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: darkTextMuted,
-                        ),
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        setState(() =>
+                            _showFavoritesOnly = !_showFavoritesOnly);
+                        _updateQueueForFilter(musicState);
+                      },
+                      behavior: HitTestBehavior.opaque,
+                      child: Row(
+                        children: [
+                          Icon(
+                            _showFavoritesOnly
+                                ? Icons.favorite_rounded
+                                : Icons.favorite_border_rounded,
+                            color: _showFavoritesOnly
+                                ? accentCoral
+                                : darkTextMuted,
+                            size: 16,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Favorites',
+                            style: GoogleFonts.nunito(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: _showFavoritesOnly
+                                  ? accentCoral
+                                  : darkTextMuted,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 4),
-                      Icon(
-                        _allExpanded
-                            ? Icons.unfold_less_rounded
-                            : Icons.unfold_more_rounded,
-                        color: darkTextMuted,
-                        size: 16,
+                    ),
+                    const Spacer(),
+                    GestureDetector(
+                      onTap: () =>
+                          setState(() => _allExpanded = !_allExpanded),
+                      behavior: HitTestBehavior.opaque,
+                      child: Row(
+                        children: [
+                          Text(
+                            _allExpanded ? 'Collapse all' : 'Expand all',
+                            style: GoogleFonts.nunito(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: darkTextMuted,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Icon(
+                            _allExpanded
+                                ? Icons.unfold_less_rounded
+                                : Icons.unfold_more_rounded,
+                            color: darkTextMuted,
+                            size: 16,
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -178,6 +240,8 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
                   ),
                 ),
                 data: (songs) {
+                  final favorites = favoritesAsync.value ?? <String>{};
+
                   if (songs.isEmpty) {
                     return Center(
                       child: Padding(
@@ -194,32 +258,43 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
                     );
                   }
 
-                  // Group all songs by artist, sorted alphabetically
-                  final allGrouped = <String, List<Song>>{};
-                  for (final song in songs) {
-                    allGrouped.putIfAbsent(song.artist, () => []).add(song);
-                  }
-                  final sortedKeys = allGrouped.keys.toList()..sort();
+                  // Filter by favorites if active
+                  final filtered = _showFavoritesOnly
+                      ? songs.where((s) => favorites.contains(s.id)).toList()
+                      : songs;
 
-                  // Flatten into sorted order, then limit
-                  final sortedSongs = <Song>[];
-                  for (final key in sortedKeys) {
-                    sortedSongs.addAll(allGrouped[key]!);
+                  if (_showFavoritesOnly && filtered.isEmpty) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(40),
+                        child: Text(
+                          'No favorites yet.\nTap the heart on a piece to add it.',
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.nunito(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: darkTextMuted,
+                          ),
+                        ),
+                      ),
+                    );
                   }
+
+                  final sortedSongs = _sortByArtist(filtered);
                   final visible = sortedSongs.take(_visibleSongCount).toList();
                   final hasMore = sortedSongs.length > _visibleSongCount;
 
-                  // Re-group the visible songs
+                  // Group visible songs by artist for display
                   final grouped = <String, List<Song>>{};
                   for (final song in visible) {
                     grouped.putIfAbsent(song.artist, () => []).add(song);
                   }
+                  final sortedKeys = grouped.keys.toList()..sort();
 
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       ...sortedKeys
-                          .where((k) => grouped.containsKey(k))
                           .map((k) => MapEntry(k, grouped[k]!))
                           .map((group) {
                         return _ComposerGroup(
@@ -230,6 +305,7 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
                           isPlaying: musicState.isPlaying,
                           musicState: musicState,
                           forceExpanded: _allExpanded,
+                          favorites: favorites,
                         );
                       }),
                       if (hasMore)
@@ -237,7 +313,7 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
                           padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                           child: GestureDetector(
                             onTap: () => setState(() =>
-                                _visibleSongCount += 5),
+                                _visibleSongCount += 10),
                             child: Container(
                               width: double.infinity,
                               padding: const EdgeInsets.symmetric(vertical: 12),
@@ -408,6 +484,22 @@ class _NowPlayingCardState extends ConsumerState<_NowPlayingCard> {
       ),
       child: Column(
         children: [
+          // Close button
+          Align(
+            alignment: Alignment.centerRight,
+            child: GestureDetector(
+              onTap: () => musicState.stop(),
+              behavior: HitTestBehavior.opaque,
+              child: const Padding(
+                padding: EdgeInsets.only(bottom: 4),
+                child: Icon(
+                  Icons.close_rounded,
+                  color: darkTextMuted,
+                  size: 22,
+                ),
+              ),
+            ),
+          ),
           // Album art
           Builder(builder: (context) {
             final coverAsync = ref.watch(coverUrlProvider(song.coverUrl));
@@ -549,6 +641,8 @@ class _NowPlayingCardState extends ConsumerState<_NowPlayingCard> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              _LoopButton(musicState: musicState),
+              const SizedBox(width: 8),
               _ControlButton(
                 icon: Icons.skip_previous_rounded,
                 size: 32,
@@ -602,6 +696,9 @@ class _NowPlayingCardState extends ConsumerState<_NowPlayingCard> {
                 size: 32,
                 onTap: () => musicState.skipNext(),
               ),
+              const SizedBox(width: 8),
+              // Spacer to balance the loop button on the left
+              const SizedBox(width: 32),
             ],
           ),
         ],
@@ -618,6 +715,7 @@ class _ComposerGroup extends StatefulWidget {
   final bool isPlaying;
   final MusicPlayerState musicState;
   final bool forceExpanded;
+  final Set<String> favorites;
 
   const _ComposerGroup({
     required this.composer,
@@ -627,6 +725,7 @@ class _ComposerGroup extends StatefulWidget {
     required this.isPlaying,
     required this.musicState,
     required this.forceExpanded,
+    required this.favorites,
   });
 
   @override
@@ -693,6 +792,7 @@ class _ComposerGroupState extends State<_ComposerGroup> {
                 song: song,
                 isActive: isActive,
                 isPlaying: isActive && widget.isPlaying,
+                isFavorite: widget.favorites.contains(song.id),
                 onTap: () {
                   if (isActive) {
                     widget.musicState.togglePlayPause();
@@ -700,6 +800,7 @@ class _ComposerGroupState extends State<_ComposerGroup> {
                     widget.musicState.playSongFromList(song, widget.allSongs);
                   }
                 },
+                onToggleFavorite: () => toggleFavoriteSong(song.id),
               );
             }).toList(),
           ),
@@ -717,13 +818,17 @@ class _SongTile extends ConsumerWidget {
   final Song song;
   final bool isActive;
   final bool isPlaying;
+  final bool isFavorite;
   final VoidCallback onTap;
+  final VoidCallback onToggleFavorite;
 
   const _SongTile({
     required this.song,
     required this.isActive,
     required this.isPlaying,
+    required this.isFavorite,
     required this.onTap,
+    required this.onToggleFavorite,
   });
 
   @override
@@ -794,6 +899,22 @@ class _SongTile extends ConsumerWidget {
                       ),
                     ),
                   ],
+                ),
+              ),
+            ),
+
+            // Favorite button
+            GestureDetector(
+              onTap: onToggleFavorite,
+              behavior: HitTestBehavior.opaque,
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Icon(
+                  isFavorite
+                      ? Icons.favorite_rounded
+                      : Icons.favorite_border_rounded,
+                  color: isFavorite ? accentCoral : Colors.white24,
+                  size: 20,
                 ),
               ),
             ),
@@ -883,6 +1004,33 @@ class _MarqueeTextState extends State<_MarqueeText> {
           style: widget.style,
           maxLines: 1,
           softWrap: false,
+        ),
+      ),
+    );
+  }
+}
+
+class _LoopButton extends StatelessWidget {
+  final MusicPlayerState musicState;
+  const _LoopButton({required this.musicState});
+
+  @override
+  Widget build(BuildContext context) {
+    final looping = musicState.loopMode == MusicLoopMode.one;
+
+    return Tooltip(
+      message: looping ? 'Loop Current Piece' : 'Loop Off',
+      preferBelow: false,
+      child: GestureDetector(
+        onTap: () => musicState.cycleMusicLoopMode(),
+        behavior: HitTestBehavior.opaque,
+        child: Padding(
+          padding: const EdgeInsets.all(4),
+          child: Icon(
+            Icons.loop_rounded,
+            color: looping ? accentCoral : Colors.white38,
+            size: 24,
+          ),
         ),
       ),
     );

@@ -1,11 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:listzly/models/song.dart';
 import 'package:listzly/services/music_service.dart';
 import 'package:listzly/providers/auth_provider.dart';
 
 part 'music_provider.g.dart';
+
+enum MusicLoopMode { off, one }
 
 @riverpod
 MusicService musicService(Ref ref) =>
@@ -14,6 +17,36 @@ MusicService musicService(Ref ref) =>
 @riverpod
 Future<List<Song>> songList(Ref ref) async {
   return ref.watch(musicServiceProvider).getSongs();
+}
+
+/// Global notifier so widgets can react to favorite changes.
+final favoritesNotifier = ValueNotifier<int>(0);
+
+@riverpod
+int favoritesNotifierValue(Ref ref) {
+  void listener() => ref.invalidateSelf();
+  favoritesNotifier.addListener(listener);
+  ref.onDispose(() => favoritesNotifier.removeListener(listener));
+  return favoritesNotifier.value;
+}
+
+@riverpod
+Future<Set<String>> favoriteSongIds(Ref ref) async {
+  ref.watch(favoritesNotifierValueProvider);
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getStringList('favorite_songs')?.toSet() ?? {};
+}
+
+Future<void> toggleFavoriteSong(String songId) async {
+  final prefs = await SharedPreferences.getInstance();
+  final favorites = prefs.getStringList('favorite_songs')?.toSet() ?? {};
+  if (favorites.contains(songId)) {
+    favorites.remove(songId);
+  } else {
+    favorites.add(songId);
+  }
+  await prefs.setStringList('favorite_songs', favorites.toList());
+  favoritesNotifier.value++;
 }
 
 /// Global notifier that widgets can listen to for music state changes.
@@ -28,13 +61,33 @@ class MusicPlayerState {
   int _currentIndex = -1;
   bool _isLoading = false;
   String? _error;
+  MusicLoopMode _loopMode = MusicLoopMode.off;
 
   MusicPlayerState(this._service) {
     _player.playerStateStream.listen((state) {
-      if (state.processingState == ProcessingState.completed) {
-        skipNext();
+      if (state.processingState == ProcessingState.completed &&
+          !_handlingCompletion) {
+        _onSongCompleted();
       }
     });
+  }
+
+  bool _handlingCompletion = false;
+
+  Future<void> _onSongCompleted() async {
+    _handlingCompletion = true;
+    try {
+      // MusicLoopMode.one is handled natively by just_audio's LoopMode.one,
+      // so completed only fires for off.
+      if (_currentIndex < _queue.length - 1) {
+        await skipNext();
+      } else {
+        await _player.stop();
+        _notify();
+      }
+    } finally {
+      _handlingCompletion = false;
+    }
   }
 
   void _notify() {
@@ -47,10 +100,40 @@ class MusicPlayerState {
           ? _queue[_currentIndex]
           : null;
   List<Song> get queue => _queue;
+
+  /// Update the queue without interrupting playback.
+  /// If the current song isn't in the new list, insert it so playback continues.
+  void updateQueue(List<Song> songs) {
+    final current = currentSong;
+    if (current == null) {
+      _queue = songs;
+      return;
+    }
+    final idx = songs.indexWhere((s) => s.id == current.id);
+    if (idx != -1) {
+      _queue = songs;
+      _currentIndex = idx;
+    } else {
+      // Keep the current song in the queue so it can finish playing
+      _queue = [current, ...songs];
+      _currentIndex = 0;
+    }
+  }
   bool get isLoading => _isLoading;
   String? get error => _error;
   bool get isPlaying => _player.playing;
   bool get hasSong => currentSong != null;
+  MusicLoopMode get loopMode => _loopMode;
+
+  void cycleMusicLoopMode() {
+    _loopMode = _loopMode == MusicLoopMode.off
+        ? MusicLoopMode.one
+        : MusicLoopMode.off;
+    _player.setLoopMode(
+      _loopMode == MusicLoopMode.one ? LoopMode.one : LoopMode.off,
+    );
+    _notify();
+  }
 
   Future<void> playSong(int index) async {
     if (index < 0 || index >= _queue.length) return;
@@ -132,7 +215,6 @@ class MusicPlayerState {
     _currentIndex = -1;
     _notify();
   }
-
 
   void dispose() {
     _player.dispose();
