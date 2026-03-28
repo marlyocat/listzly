@@ -118,7 +118,7 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
 
             // Now playing (expanded = full player, collapsed = mini banner)
             if (currentSong != null)
-              SliverToBoxAdapter(
+              SliverContentConstraint(
                 child: GestureDetector(
                   onTap: _playerExpanded
                       ? null
@@ -153,7 +153,7 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
               ),
 
             // Favorites filter + Expand/Collapse toggle
-            SliverToBoxAdapter(
+            SliverContentConstraint(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                 child: Row(
@@ -245,7 +245,7 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
             ),
 
             // Song list
-            SliverToBoxAdapter(
+            SliverContentConstraint(
               child: songsAsync.when(
                 loading: () => const Center(
                   child: Padding(
@@ -669,17 +669,23 @@ class _NowPlayingCardState extends ConsumerState<_NowPlayingCard> {
           const SizedBox(height: 8),
 
           // Controls
-          Row(
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _LoopButton(musicState: musicState),
-              const SizedBox(width: 8),
               _ControlButton(
                 icon: Icons.skip_previous_rounded,
-                size: 32,
+                size: 28,
                 onTap: () => musicState.skipPrevious(),
               ),
-              const SizedBox(width: 16),
+              _ControlButton(
+                icon: Icons.replay_10_rounded,
+                size: 22,
+                onTap: () => musicState.seekRelative(-10),
+              ),
+              const SizedBox(width: 8),
               StreamBuilder<PlayerState>(
                 stream: musicState.player.playerStateStream,
                 builder: (context, snapshot) {
@@ -721,16 +727,21 @@ class _NowPlayingCardState extends ConsumerState<_NowPlayingCard> {
                   );
                 },
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 8),
+              _ControlButton(
+                icon: Icons.forward_10_rounded,
+                size: 22,
+                onTap: () => musicState.seekRelative(10),
+              ),
               _ControlButton(
                 icon: Icons.skip_next_rounded,
-                size: 32,
+                size: 28,
                 onTap: () => musicState.skipNext(),
               ),
-              const SizedBox(width: 8),
               // Spacer to balance the loop button on the left
               const SizedBox(width: 32),
             ],
+          ),
           ),
         ],
       ),

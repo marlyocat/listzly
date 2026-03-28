@@ -299,6 +299,14 @@ class MusicPlayerState {
     await playSong(next);
   }
 
+  void seekRelative(int seconds) {
+    final pos = _player.position + Duration(seconds: seconds);
+    final duration = _player.duration ?? Duration.zero;
+    _player.seek(Duration(
+      milliseconds: pos.inMilliseconds.clamp(0, duration.inMilliseconds),
+    ));
+  }
+
   Future<void> skipPrevious() async {
     if (_queue.isEmpty) return;
     if ((_player.position.inSeconds) > 3) {
