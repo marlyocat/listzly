@@ -25,6 +25,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:showcaseview/showcaseview.dart';
+import 'package:listzly/components/skeleton_loader.dart';
 import 'package:listzly/pages/background_music_page.dart';
 import 'package:listzly/providers/music_provider.dart';
 
@@ -852,12 +853,23 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: Colors.black, width: 5),
         ),
-        child: const Center(
-          child: SizedBox(
-            height: 60,
-            child: Center(
-              child: CircularProgressIndicator(color: primaryLight),
-            ),
+        child: const SkeletonShimmer(
+          child: Row(
+            children: [
+              SkeletonBox(width: 48, height: 48, borderRadius: 24),
+              SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SkeletonBox(height: 16, width: 140, borderRadius: 4),
+                    SizedBox(height: 8),
+                    SkeletonBox(height: 12, width: 100, borderRadius: 4),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -2959,14 +2971,19 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             ),
           ),
           Container(
-            height: 80,
+            padding: const EdgeInsets.symmetric(vertical: 8),
             decoration: BoxDecoration(
               color: darkCardBg,
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: Colors.black, width: 5),
             ),
-            child: const Center(
-              child: CircularProgressIndicator(color: primaryLight),
+            child: const SkeletonShimmer(
+              child: Column(
+                children: [
+                  SkeletonListTile(),
+                  SkeletonListTile(),
+                ],
+              ),
             ),
           ),
         ],

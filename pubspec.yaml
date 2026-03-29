@@ -61,6 +61,7 @@ dependencies:
   showcaseview: ^5.0.1
   shared_preferences: ^2.5.5
   file_picker: ^10.3.10
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_test:

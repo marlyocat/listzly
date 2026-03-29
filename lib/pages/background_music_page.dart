@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:listzly/models/song.dart';
+import 'package:listzly/components/skeleton_loader.dart';
 import 'package:listzly/providers/auth_provider.dart';
 import 'package:listzly/providers/music_provider.dart';
 import 'package:listzly/theme/colors.dart';
@@ -160,6 +162,7 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
                   children: [
                     GestureDetector(
                       onTap: () {
+                        HapticFeedback.selectionClick();
                         setState(() =>
                             _showFavoritesOnly = !_showFavoritesOnly);
                         _updateQueueForFilter(musicState);
@@ -247,10 +250,14 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
             // Song list
             SliverContentConstraint(
               child: songsAsync.when(
-                loading: () => const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(40),
-                    child: CircularProgressIndicator(color: accentCoral),
+                loading: () => const SkeletonShimmer(
+                  child: Column(
+                    children: [
+                      SizedBox(height: 16),
+                      SkeletonListTile(),
+                      SkeletonListTile(),
+                      SkeletonListTile(),
+                    ],
                   ),
                 ),
                 error: (e, _) => Center(
@@ -704,7 +711,10 @@ class _NowPlayingCardState extends ConsumerState<_NowPlayingCard> {
                     );
                   }
                   return GestureDetector(
-                    onTap: () => musicState.togglePlayPause(),
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      musicState.togglePlayPause();
+                    },
                     child: Container(
                       width: 56,
                       height: 56,
@@ -1002,16 +1012,29 @@ class _SongTile extends ConsumerWidget {
 
             // Favorite button
             GestureDetector(
-              onTap: onToggleFavorite,
+              onTap: () {
+                HapticFeedback.lightImpact();
+                onToggleFavorite();
+              },
               behavior: HitTestBehavior.opaque,
               child: Padding(
                 padding: const EdgeInsets.all(8),
-                child: Icon(
-                  isFavorite
-                      ? Icons.favorite_rounded
-                      : Icons.favorite_border_rounded,
-                  color: isFavorite ? accentCoral : Colors.white24,
-                  size: 20,
+                child: TweenAnimationBuilder<double>(
+                  key: ValueKey(isFavorite),
+                  tween: Tween(begin: 1.3, end: 1.0),
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.elasticOut,
+                  builder: (context, scale, child) => Transform.scale(
+                    scale: scale,
+                    child: child,
+                  ),
+                  child: Icon(
+                    isFavorite
+                        ? Icons.favorite_rounded
+                        : Icons.favorite_border_rounded,
+                    color: isFavorite ? accentCoral : Colors.white24,
+                    size: 20,
+                  ),
                 ),
               ),
             ),
@@ -1141,7 +1164,10 @@ class _LoopButton extends StatelessWidget {
       message: tooltip,
       preferBelow: false,
       child: GestureDetector(
-        onTap: () => musicState.cycleMusicLoopMode(),
+        onTap: () {
+          HapticFeedback.selectionClick();
+          musicState.cycleMusicLoopMode();
+        },
         behavior: HitTestBehavior.opaque,
         child: Padding(
           padding: const EdgeInsets.all(4),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:listzly/components/skeleton_loader.dart';
 import 'package:listzly/models/assigned_quest.dart';
 import 'package:listzly/models/quest.dart';
 import 'package:listzly/models/user_role.dart';
@@ -328,10 +329,19 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
   Widget _buildLoadingPlaceholder({required double height}) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-      child: SizedBox(
-        height: height,
-        child: const Center(
-          child: CircularProgressIndicator(color: primaryLight),
+      child: SkeletonShimmer(
+        child: SizedBox(
+          height: height,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(
+              (height / 40).floor().clamp(1, 5),
+              (_) => const Padding(
+                padding: EdgeInsets.symmetric(vertical: 4),
+                child: SkeletonBox(height: 20),
+              ),
+            ),
+          ),
         ),
       ),
     );

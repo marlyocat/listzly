@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:listzly/theme/colors.dart';
 
@@ -15,7 +16,10 @@ class MyButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        HapticFeedback.lightImpact();
+        onTap?.call();
+      },
       child: Container(
         decoration: BoxDecoration(
           gradient: const LinearGradient(
