@@ -51,7 +51,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage> {
       body: SafeArea(
         child: RefreshIndicator(
           color: accentCoral,
-          backgroundColor: darkCardBg,
+          backgroundColor: primaryDarkest,
           onRefresh: () async {
             ref.invalidate(teacherStudentsProvider);
             ref.invalidate(teacherGroupProvider);

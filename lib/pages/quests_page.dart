@@ -186,7 +186,18 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
     return Scaffold(
       backgroundColor: const Color(0xFF150833),
       body: SafeArea(
-          child: CustomScrollView(
+          child: RefreshIndicator(
+            color: accentCoral,
+            backgroundColor: primaryDarkest,
+            onRefresh: () async {
+              ref.invalidate(dailyQuestsProvider);
+              ref.invalidate(weekCompletionStatusProvider);
+              ref.invalidate(userStatsProvider);
+              ref.invalidate(userSettingsProvider);
+              ref.invalidate(currentProfileProvider);
+              await ref.read(dailyQuestsProvider.future);
+            },
+            child: CustomScrollView(
           slivers: [
             // Title + bird tooltip
             SliverContentConstraint(
@@ -299,6 +310,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
             const SliverContentConstraint(child: SizedBox(height: 100)),
           ],
         ),
+      ),
       ),
     );
   }

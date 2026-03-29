@@ -390,7 +390,16 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
     return Scaffold(
           backgroundColor: const Color(0xFF150833),
           body: SafeArea(
-            child: CustomScrollView(
+            child: RefreshIndicator(
+              color: accentCoral,
+              backgroundColor: primaryDarkest,
+              onRefresh: () async {
+                ref.invalidate(sessionListProvider);
+                ref.invalidate(summaryStatsProvider);
+                ref.invalidate(userRecordingsProvider);
+                await ref.read(sessionListProvider(start: _rangeStart, end: _rangeEnd).future);
+              },
+              child: CustomScrollView(
               slivers: [
                 // Title with gradient text + bird tooltip
                 SliverContentConstraint(
@@ -499,6 +508,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                 const SliverContentConstraint(child: SizedBox(height: 100)),
               ],
             ),
+          ),
           ),
     );
   }
@@ -711,7 +721,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
               icon: Icons.music_note_rounded,
               value: '${stats.sessionCount}',
               label: 'Sessions',
-              color: primaryLight,
+              color: primaryColor,
             ),
           ],
         ),
@@ -728,7 +738,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
               icon: Icons.music_note_rounded,
               value: '\u2014',
               label: 'Sessions',
-              color: primaryLight,
+              color: primaryColor,
             ),
           ],
         ),
@@ -745,7 +755,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
               icon: Icons.music_note_rounded,
               value: '\u2014',
               label: 'Sessions',
-              color: primaryLight,
+              color: primaryColor,
             ),
           ],
         ),
