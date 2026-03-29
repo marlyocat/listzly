@@ -180,8 +180,8 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
     final weekCompletionAsync = ref.watch(weekCompletionStatusProvider);
     final userStatsAsync = ref.watch(userStatsProvider);
     final settingsAsync = ref.watch(userSettingsProvider);
-    final role =
-        ref.watch(currentProfileProvider).value?.role;
+    final profile = ref.watch(currentProfileProvider).value;
+    final role = profile?.role;
 
     return Scaffold(
       backgroundColor: const Color(0xFF150833),
@@ -252,7 +252,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                   ),
                 ],
                 child: weekCompletionAsync.when(
-                  data: (weekDays) => _buildWeeklyOverview(weekDays),
+                  data: (weekDays) => _buildWeeklyOverview(weekDays, profile?.createdAt),
                   loading: () => _buildLoadingPlaceholder(height: 90),
                   error: (e, _) => _buildErrorPlaceholder(e),
                 ),
@@ -376,8 +376,13 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
   }
 
   // ─── Weekly calendar overview ─────────────────────────────────────
-  Widget _buildWeeklyOverview(List<bool> weekDays) {
+  Widget _buildWeeklyOverview(List<bool> weekDays, DateTime? accountCreatedAt) {
     final todayIndex = _todayIndex;
+    final now = DateTime.now();
+    final weekStart = DateTime(now.year, now.month, now.day - (now.weekday - 1));
+    final accountDay = accountCreatedAt != null
+        ? DateTime(accountCreatedAt.year, accountCreatedAt.month, accountCreatedAt.day)
+        : null;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
@@ -396,9 +401,11 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
           child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: List.generate(7, (i) {
+            final day = weekStart.add(Duration(days: i));
             final isToday = i == todayIndex;
             final completed = i < weekDays.length && weekDays[i];
-            final isPast = i < todayIndex;
+            final isAfterJoin = accountDay == null || !day.isBefore(accountDay);
+            final isPast = i < todayIndex && isAfterJoin;
 
             return Column(
               children: [
