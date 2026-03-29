@@ -72,8 +72,33 @@ class StatsService {
       // Non-critical: if quest XP lookup fails, just use session XP
     }
 
+    // Daily quest reward XP
+    int dailyQuestXp = 0;
+    try {
+      final completedDaily = await _client
+          .from('quest_progress')
+          .select('quest_key')
+          .eq('user_id', userId)
+          .eq('quest_type', 'daily')
+          .eq('completed', true);
+
+      // Map daily quest keys to their reward XP
+      const dailyRewards = {
+        'daily_xp_30': 10,
+        'daily_practice_20m': 15,
+        'daily_sessions_2': 20,
+      };
+
+      for (final cp in completedDaily as List) {
+        final key = (cp as Map<String, dynamic>)['quest_key'] as String;
+        dailyQuestXp += dailyRewards[key] ?? 0;
+      }
+    } catch (_) {
+      // Non-critical
+    }
+
     // Total XP (capped at 999,999)
-    final totalXp = (sessionXp + questBonusXp).clamp(0, 999999);
+    final totalXp = (sessionXp + questBonusXp + dailyQuestXp).clamp(0, 999999);
 
     // Calculate streak with 3-day grace period:
     // The streak counts actual practice days but only resets after

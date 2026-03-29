@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lottie/lottie.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,6 +15,7 @@ import 'package:listzly/providers/auth_provider.dart';
 import 'package:listzly/providers/session_provider.dart';
 import 'package:listzly/providers/assigned_quest_provider.dart';
 import 'package:listzly/providers/quest_provider.dart';
+import 'package:listzly/services/quest_service.dart';
 import 'package:listzly/providers/stats_provider.dart';
 import 'package:listzly/providers/instrument_provider.dart';
 import 'package:listzly/providers/settings_provider.dart';
@@ -87,6 +89,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
   bool _sessionCompleted = false;
   late int _quoteIndex;
   late int _rocketQuoteIndex;
+  List<({String title, int xp})> _completedQuests = [];
 
   static const _rocketQuotes = [
     "You're skyrocketing!",
@@ -134,10 +137,10 @@ class _PracticePageState extends ConsumerState<PracticePage>
     _sessionStartTime = DateTime.now();
     final rng = Random();
     _rocketQuoteIndex = rng.nextInt(_rocketQuotes.length);
+    _celebrationIndex = rng.nextInt(_celebrations.length);
     _quoteIndex = rng.nextInt(
       (_quotes[widget.instrument] ?? _quotes['Piano']!).length,
     );
-
     _pulseController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
@@ -273,6 +276,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
     setState(() {
       _isPaused = !_isPaused;
       if (_isPaused) {
+        _shockedIndex = Random().nextInt(_shockedAssets.length);
         _timer?.cancel();
         _pulseController.repeat(reverse: true);
         _rippleController.repeat();
@@ -537,6 +541,21 @@ class _PracticePageState extends ConsumerState<PracticePage>
     );
 
     try {
+      // Snapshot quest state before session save
+      final dailyBefore = await questService.getDailyQuests(
+        user.id,
+        dailyGoalMinutes: ref.read(userSettingsProvider).value?.dailyGoalMinutes ?? 20,
+      );
+      final assignedBefore = await assignedQuestService.getAssignedQuestProgress(user.id);
+      final dailyCompletedBefore = dailyBefore
+          .where((q) => q.completed)
+          .map((q) => q.questKey)
+          .toSet();
+      final assignedCompletedBefore = assignedBefore
+          .where((q) => q.completed)
+          .map((q) => q.questKey)
+          .toSet();
+
       final savedSession = await sessionService.saveSession(session);
 
       // Update quest progress
@@ -547,8 +566,41 @@ class _PracticePageState extends ConsumerState<PracticePage>
       try {
         await assignedQuestService
             .updateAssignedQuestProgressAfterSession(user.id, savedSession);
-      } catch (_) {
-        // Non-critical: assigned quest update failure shouldn't block session save
+      } catch (_) {}
+
+      // Find newly completed quests
+      final newlyCompleted = <({String title, int xp})>[];
+
+      final dailyAfter = await questService.getDailyQuests(
+        user.id,
+        dailyGoalMinutes: ref.read(userSettingsProvider).value?.dailyGoalMinutes ?? 20,
+      );
+      for (final q in dailyAfter) {
+        if (q.completed && !dailyCompletedBefore.contains(q.questKey)) {
+          final def = dailyQuestDefinitions.firstWhere(
+            (d) => d.key == q.questKey,
+            orElse: () => dailyQuestDefinitions.first,
+          );
+          newlyCompleted.add((title: def.title, xp: def.rewardXp));
+        }
+      }
+
+      try {
+        final assignedAfter = await assignedQuestService.getAssignedQuestProgress(user.id);
+        final assignedDefs = await assignedQuestService.getAssignedQuestsForStudent(user.id);
+        for (final q in assignedAfter) {
+          if (q.completed && !assignedCompletedBefore.contains(q.questKey)) {
+            final def = assignedDefs.firstWhere(
+              (d) => d.questKey == q.questKey,
+              orElse: () => assignedDefs.first,
+            );
+            newlyCompleted.add((title: def.title, xp: def.rewardXp));
+          }
+        }
+      } catch (_) {}
+
+      if (mounted) {
+        setState(() => _completedQuests = newlyCompleted);
       }
 
       // Recalculate stats (streak, XP)
@@ -760,6 +812,30 @@ class _PracticePageState extends ConsumerState<PracticePage>
                     ),
 
                     const Spacer(flex: 2),
+
+                    // Shocked image when paused
+                    if (_isPaused)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SvgPicture.asset(
+                              _shockedAssets[_shockedIndex].image,
+                              width: 50,
+                              height: 50,
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              _shockedAssets[_shockedIndex].text,
+                              style: GoogleFonts.dmSerifDisplay(
+                                fontSize: 18,
+                                color: accentCoral,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
 
                     // Pause / Play button with ripples when paused
                     AnimatedBuilder(
@@ -1028,6 +1104,22 @@ class _PracticePageState extends ConsumerState<PracticePage>
 
   bool _rocketDone = false;
   bool _starOneDone = false;
+  int _shockedIndex = 0;
+  late int _celebrationIndex;
+
+  static const _celebrations = [
+    (first: 'lib/images/celebration/star.json', second: 'lib/images/celebration/star-2.json', text: 'A star in the making!'),
+    (first: 'lib/images/celebration/moon.json', second: 'lib/images/celebration/moon-2.json', text: 'One giant leap for talent!'),
+    (first: 'lib/images/celebration/observatory.json', second: 'lib/images/celebration/ufo.json', text: 'Detected: out of this world talent!'),
+  ];
+
+  static const _shockedAssets = [
+    (image: 'lib/images/celebration/cow-move.svg', text: "Moo-ve it, don't stop now!"),
+    (image: 'lib/images/celebration/ghost-shocked.svg', text: 'Boo! You scared me by stopping!'),
+    (image: 'lib/images/celebration/penguin-cheer.svg', text: 'Brrr-illiant session, keep it up!'),
+    (image: 'lib/images/celebration/rabbit-hop.svg', text: 'Hop to it, keep going!'),
+    (image: 'lib/images/celebration/raccon-yawn.svg', text: 'Sneaky break? I saw that!'),
+  ];
 
 
 
@@ -1072,7 +1164,8 @@ class _PracticePageState extends ConsumerState<PracticePage>
     }
 
     // Phase 2: Star animation + Session Complete
-    final xpEarned = widget.durationMinutes + 5; // 1 XP/min + 5 bonus
+    final actualSeconds = (widget.durationMinutes * 60) - _remainingSeconds;
+    final xpEarned = (actualSeconds / 60).ceil();
     final streakAsync = ref.watch(userStatsProvider);
     final currentStreak = streakAsync.value?.currentStreak ?? 0;
 
@@ -1083,6 +1176,24 @@ class _PracticePageState extends ConsumerState<PracticePage>
       builder: (context, child) {
         return Column(
           children: [
+            // "You're a star!" text — appears with star-2
+            if (_starOneDone)
+              Padding(
+                padding: const EdgeInsets.only(top: 40),
+                child: ShaderMask(
+                  shaderCallback: (bounds) => const LinearGradient(
+                    colors: [accentCoralLight, Color(0xFFF4A68E)],
+                  ).createShader(bounds),
+                  child: Text(
+                    _celebrations[_celebrationIndex].text,
+                    style: GoogleFonts.dmSerifDisplay(
+                      fontSize: 22,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+
             const Spacer(flex: 3),
 
             // Star animation
@@ -1093,22 +1204,27 @@ class _PracticePageState extends ConsumerState<PracticePage>
                 child: SizedBox(
                   width: 200,
                   height: 200,
-                  child: _starOneDone
-                      ? Lottie.asset(
-                          'lib/images/celebration/star-2.json',
-                          fit: BoxFit.contain,
-                          repeat: true,
-                        )
-                      : Lottie.asset(
-                          'lib/images/celebration/star.json',
-                          fit: BoxFit.contain,
-                          repeat: false,
-                          onLoaded: (composition) {
-                            Future.delayed(composition.duration, () {
-                              if (mounted) setState(() => _starOneDone = true);
-                            });
-                          },
-                        ),
+                  child: AnimatedCrossFade(
+                    firstChild: Lottie.asset(
+                      _celebrations[_celebrationIndex].first,
+                      fit: BoxFit.contain,
+                      repeat: false,
+                      onLoaded: (composition) {
+                        Future.delayed(composition.duration, () {
+                          if (mounted) setState(() => _starOneDone = true);
+                        });
+                      },
+                    ),
+                    secondChild: Lottie.asset(
+                      _celebrations[_celebrationIndex].second,
+                      fit: BoxFit.contain,
+                      repeat: true,
+                    ),
+                    crossFadeState: _starOneDone
+                        ? CrossFadeState.showSecond
+                        : CrossFadeState.showFirst,
+                    duration: const Duration(milliseconds: 800),
+                  ),
                 ),
               ),
             ),
@@ -1172,26 +1288,76 @@ class _PracticePageState extends ConsumerState<PracticePage>
                         color: darkTextMuted,
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    // XP earned
+                    const SizedBox(height: 12),
+
+                    // Session XP
                     Text(
-                      '+$xpEarned XP',
-                      style: GoogleFonts.dmSerifDisplay(
-                        fontSize: 22,
-                        color: accentCoral,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    // Streak text
-                    Text(
-                      currentStreak <= 1
-                          ? 'Streak started!'
-                          : 'Keep the streak going! $currentStreak days',
+                      'Session: +$xpEarned XP',
                       style: GoogleFonts.nunito(
-                        fontSize: 13,
+                        fontSize: 14,
                         fontWeight: FontWeight.w700,
                         color: darkTextMuted,
                       ),
+                    ),
+
+                    // Completed quests
+                    ..._completedQuests.map((q) => Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.check_circle_rounded,
+                              color: Colors.green, size: 16),
+                          const SizedBox(width: 6),
+                          Text(
+                            '${q.title}: +${q.xp} XP',
+                            style: GoogleFonts.nunito(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: darkTextMuted,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )),
+
+                    const SizedBox(height: 12),
+
+                    // Total XP
+                    Text(
+                      '+${xpEarned + _completedQuests.fold(0, (sum, q) => sum + q.xp)} XP',
+                      style: GoogleFonts.dmSerifDisplay(
+                        fontSize: 24,
+                        color: accentCoral,
+                      ),
+                    ),
+
+                    const SizedBox(height: 8),
+                    // Streak text
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: Lottie.asset(
+                            'lib/images/celebration/fire.json',
+                            fit: BoxFit.contain,
+                            repeat: true,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          currentStreak <= 1
+                              ? 'Streak started!'
+                              : 'Keep the streak going! $currentStreak days',
+                          style: GoogleFonts.nunito(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: darkTextMuted,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

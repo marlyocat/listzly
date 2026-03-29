@@ -6,11 +6,9 @@ class SessionService {
   SessionService(this._client);
 
   /// Save a completed practice session.
-  /// XP formula: 1 XP per minute + 5 bonus if target met.
+  /// XP formula: 1 XP per minute.
   Future<PracticeSession> saveSession(PracticeSession session) async {
-    final minutes = (session.durationSeconds / 60).ceil();
-    final metTarget = session.durationSeconds >= session.targetSeconds;
-    final xp = minutes + (metTarget ? 5 : 0);
+    final xp = (session.durationSeconds / 60).ceil();
 
     final data = {
       'user_id': session.userId,
