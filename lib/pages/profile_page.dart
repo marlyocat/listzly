@@ -21,6 +21,7 @@ import 'package:listzly/services/notification_service.dart';
 import 'package:listzly/providers/subscription_provider.dart';
 import 'package:listzly/models/subscription_info.dart';
 import 'package:listzly/pages/paywall_page.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -43,7 +44,66 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   final _practiceKey = GlobalKey();
   final _instrumentsKey = GlobalKey();
 
+  void _showCancelSubscriptionFirstDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1E0E3D),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Active Subscription',
+          style: GoogleFonts.dmSerifDisplay(fontSize: 20, color: Colors.white),
+        ),
+        content: Text(
+          'Please cancel your subscription in your app store settings before deleting your account to avoid being charged.',
+          style: GoogleFonts.nunito(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: darkTextMuted,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(
+              'Cancel',
+              style: GoogleFonts.nunito(
+                fontWeight: FontWeight.w700,
+                color: darkTextMuted,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              try {
+                final customerInfo = await Purchases.getCustomerInfo();
+                final url = customerInfo.managementURL;
+                if (url != null) {
+                  await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+                }
+              } catch (_) {}
+            },
+            child: Text(
+              'Manage Subscription',
+              style: GoogleFonts.nunito(
+                fontWeight: FontWeight.w700,
+                color: accentCoral,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showDeleteAccountDialog(BuildContext context, WidgetRef ref) {
+    final tier = ref.read(ownSubscriptionTierProvider);
+    if (!tier.isFree) {
+      _showCancelSubscriptionFirstDialog(context);
+      return;
+    }
+
     final controller = TextEditingController();
     showDialog(
       context: context,
