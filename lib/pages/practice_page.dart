@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:lottie/lottie.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -86,13 +86,24 @@ class _PracticePageState extends ConsumerState<PracticePage>
   bool _isPaused = false;
   bool _sessionCompleted = false;
   late int _quoteIndex;
+  late int _rocketQuoteIndex;
+
+  static const _rocketQuotes = [
+    "You're skyrocketing!",
+    'Blast off! What a session!',
+    'Reaching new heights!',
+    'To the moon and beyond!',
+    'Your skills are taking flight!',
+    'Launching into greatness!',
+    'Nothing can stop you now!',
+    'Flying higher every day!',
+  ];
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
   late AnimationController _rippleController;
   late AnimationController _tapScaleController;
   late Animation<double> _tapScaleAnimation;
   late AnimationController _celebrationController;
-  late AnimationController _sparkleController;
   late Animation<double> _checkScaleAnimation;
   late Animation<double> _checkOpacityAnimation;
   late Animation<double> _textSlideAnimation;
@@ -121,7 +132,9 @@ class _PracticePageState extends ConsumerState<PracticePage>
     super.initState();
     _remainingSeconds = widget.durationMinutes * 60;
     _sessionStartTime = DateTime.now();
-    _quoteIndex = Random().nextInt(
+    final rng = Random();
+    _rocketQuoteIndex = rng.nextInt(_rocketQuotes.length);
+    _quoteIndex = rng.nextInt(
       (_quotes[widget.instrument] ?? _quotes['Piano']!).length,
     );
 
@@ -147,10 +160,6 @@ class _PracticePageState extends ConsumerState<PracticePage>
     _celebrationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
-    );
-    _sparkleController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 2000),
     );
     _checkScaleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
@@ -499,8 +508,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
       _pendingRecordingPath = null;
       _pendingRecordingDuration = 0;
     }
-    _celebrationController.forward();
-    _sparkleController.repeat();
+    // Celebration controller starts after rocket animation finishes
     _saveSession();
   }
 
@@ -640,7 +648,6 @@ class _PracticePageState extends ConsumerState<PracticePage>
     _rippleController.dispose();
     _tapScaleController.dispose();
     _celebrationController.dispose();
-    _sparkleController.dispose();
     _recPulseController.dispose();
     _recorder.dispose();
     super.dispose();
@@ -830,6 +837,25 @@ class _PracticePageState extends ConsumerState<PracticePage>
                     // Mic / Record button
                     _buildMicButton(),
 
+                    const SizedBox(height: 16),
+
+                    // TODO: Remove this temporary button
+                    GestureDetector(
+                      onTap: () {
+                        _timer?.cancel();
+                        setState(() => _sessionCompleted = true);
+                        _saveSession();
+                      },
+                      child: Text(
+                        'End Session (debug)',
+                        style: GoogleFonts.nunito(
+                          fontSize: 12,
+                          color: darkTextMuted,
+                          decoration: TextDecoration.underline,
+                          decorationColor: darkTextMuted,
+                        ),
+                      ),
+                    ),
 
                     const Spacer(flex: 2),
                   ],
@@ -1000,23 +1026,89 @@ class _PracticePageState extends ConsumerState<PracticePage>
     );
   }
 
+  bool _rocketDone = false;
+  bool _starOneDone = false;
+
+
+
   Widget _buildCelebrationView() {
-    return AnimatedBuilder(
+    // Phase 1: Full-screen rocket animation
+    if (!_rocketDone) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Lottie.asset(
+              'lib/images/celebration/rocket.json',
+              fit: BoxFit.contain,
+              repeat: false,
+              onLoaded: (composition) {
+                Future.delayed(composition.duration, () {
+                  if (mounted) {
+                    setState(() => _rocketDone = true);
+                    _celebrationController.forward();
+                  }
+                });
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 60),
+            child: ShaderMask(
+              shaderCallback: (bounds) => const LinearGradient(
+                colors: [accentCoralLight, Color(0xFFF4A68E)],
+              ).createShader(bounds),
+              child: Text(
+                _rocketQuotes[_rocketQuoteIndex],
+                style: GoogleFonts.dmSerifDisplay(
+                  fontSize: 28,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    // Phase 2: Star animation + Session Complete
+    final xpEarned = widget.durationMinutes + 5; // 1 XP/min + 5 bonus
+    final streakAsync = ref.watch(userStatsProvider);
+    final currentStreak = streakAsync.value?.currentStreak ?? 0;
+
+    return Stack(
+      children: [
+        AnimatedBuilder(
       animation: _celebrationController,
       builder: (context, child) {
         return Column(
           children: [
             const Spacer(flex: 3),
 
-            // Musical notes icon
+            // Star animation
             Transform.scale(
               scale: _checkScaleAnimation.value,
               child: Opacity(
                 opacity: _checkOpacityAnimation.value.clamp(0.0, 1.0),
-                child: SvgPicture.asset(
-                  'lib/images/licensed/session-completed.svg',
+                child: SizedBox(
                   width: 200,
                   height: 200,
+                  child: _starOneDone
+                      ? Lottie.asset(
+                          'lib/images/celebration/star-2.json',
+                          fit: BoxFit.contain,
+                          repeat: true,
+                        )
+                      : Lottie.asset(
+                          'lib/images/celebration/star.json',
+                          fit: BoxFit.contain,
+                          repeat: false,
+                          onLoaded: (composition) {
+                            Future.delayed(composition.duration, () {
+                              if (mounted) setState(() => _starOneDone = true);
+                            });
+                          },
+                        ),
                 ),
               ),
             ),
@@ -1080,6 +1172,27 @@ class _PracticePageState extends ConsumerState<PracticePage>
                         color: darkTextMuted,
                       ),
                     ),
+                    const SizedBox(height: 16),
+                    // XP earned
+                    Text(
+                      '+$xpEarned XP',
+                      style: GoogleFonts.dmSerifDisplay(
+                        fontSize: 22,
+                        color: accentCoral,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    // Streak text
+                    Text(
+                      currentStreak <= 1
+                          ? 'Streak started!'
+                          : 'Keep the streak going! $currentStreak days',
+                      style: GoogleFonts.nunito(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: darkTextMuted,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -1131,6 +1244,8 @@ class _PracticePageState extends ConsumerState<PracticePage>
           ],
         );
       },
+    ),
+      ],
     );
   }
 }
