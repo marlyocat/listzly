@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:listzly/config/supabase_config.dart';
 
@@ -68,5 +69,21 @@ class AuthService {
     }
     await GoogleSignIn.instance.signOut();
     await _client.auth.signOut();
+  }
+
+  Future<void> deleteAccount() async {
+    final response = await _client.functions.invoke('delete-account');
+    if (response.status != 200) {
+      throw Exception('Account deletion failed');
+    }
+
+    // Clear all local data
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+
+    // Sign out of third-party services (best-effort, user is already deleted)
+    try { await Purchases.logOut(); } catch (_) {}
+    try { await GoogleSignIn.instance.signOut(); } catch (_) {}
+    try { await _client.auth.signOut(); } catch (_) {}
   }
 }

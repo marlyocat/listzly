@@ -43,6 +43,157 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   final _practiceKey = GlobalKey();
   final _instrumentsKey = GlobalKey();
 
+  void _showDeleteAccountDialog(BuildContext context, WidgetRef ref) {
+    final controller = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          backgroundColor: const Color(0xFF1E0E3D),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: Text(
+            'Delete Account',
+            style: GoogleFonts.dmSerifDisplay(fontSize: 20, color: Colors.white),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'This will permanently delete your account and all associated data. This cannot be undone.',
+                style: GoogleFonts.nunito(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: darkTextMuted,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Type DELETE to confirm:',
+                style: GoogleFonts.nunito(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: controller,
+                onChanged: (_) => setDialogState(() {}),
+                style: GoogleFonts.nunito(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+                decoration: InputDecoration(
+                  hintText: 'DELETE',
+                  hintStyle: GoogleFonts.nunito(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: darkTextMuted.withAlpha(100),
+                  ),
+                  isDense: true,
+                  filled: true,
+                  fillColor: darkCardBg,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Colors.black, width: 3),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Colors.red, width: 3),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(
+                'Cancel',
+                style: GoogleFonts.nunito(
+                  fontWeight: FontWeight.w700,
+                  color: darkTextMuted,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: controller.text.trim() == 'DELETE'
+                  ? () async {
+                      Navigator.pop(ctx);
+                      _performAccountDeletion(context, ref);
+                    }
+                  : null,
+              child: Text(
+                'Delete Forever',
+                style: GoogleFonts.nunito(
+                  fontWeight: FontWeight.w700,
+                  color: controller.text.trim() == 'DELETE'
+                      ? Colors.red
+                      : Colors.red.withAlpha(80),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _performAccountDeletion(BuildContext context, WidgetRef ref) async {
+    // Grab messenger before async gap
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(
+        child: CircularProgressIndicator(color: accentCoral),
+      ),
+    );
+
+    try {
+      ref.read(musicPlayerProvider).stop();
+      NotificationService.instance.cancelReminder();
+      await ref.read(authServiceProvider).deleteAccount();
+
+      navigator.pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const AuthPage()),
+        (route) => false,
+      );
+      messenger
+        ..clearSnackBars()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(
+              'Your account has been deleted.',
+              style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+            ),
+            showCloseIcon: true,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+    } catch (e) {
+      if (!context.mounted) return;
+      Navigator.pop(context); // dismiss loading
+      messenger
+        ..clearSnackBars()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(
+              'Could not delete account. Please try again.',
+              style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+            ),
+            showCloseIcon: true,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+    }
+  }
+
   void _startShowcase() {
     ShowcaseView.get().startShowCase([
       _profileKey,
@@ -287,6 +438,28 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
                         color: Colors.red,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            // Delete account
+            SliverContentConstraint(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                child: Center(
+                  child: GestureDetector(
+                    onTap: () => _showDeleteAccountDialog(context, ref),
+                    child: Text(
+                      'Delete Account',
+                      style: GoogleFonts.nunito(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: darkTextMuted,
+                        decoration: TextDecoration.underline,
+                        decorationColor: darkTextMuted,
                       ),
                     ),
                   ),
