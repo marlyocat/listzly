@@ -527,27 +527,42 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _buildChip(
-              '${stats.currentStreak} ${stats.currentStreak == 1 ? 'Day' : 'Days'}',
               'Streak',
               Colors.white,
               imagePath: 'lib/images/licensed/streak.svg',
+              countUpValue: stats.currentStreak,
+              countUpSuffix: stats.currentStreak == 1 ? ' Day' : ' Days',
+              staggerIndex: 0,
             ),
             const SizedBox(width: 10),
-            _buildChip('$level', 'Level', Colors.white,
+            _buildChip('Level', Colors.white,
                 imagePath: 'lib/images/licensed/level.svg',
+                countUpValue: level,
+                staggerIndex: 1,
                 progress: levelProgress,
                 progressLabel: '$xpIntoLevel / $xpNeeded XP'),
             const SizedBox(width: 10),
-            _buildChip('${stats.totalXp}', 'Total XP', Colors.white,
-                imagePath: 'lib/images/licensed/xp.svg'),
+            _buildChip('Total XP', Colors.white,
+                imagePath: 'lib/images/licensed/xp.svg',
+                countUpValue: stats.totalXp,
+                staggerIndex: 2),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildChip(String value, String label, Color color,
-      {String? imagePath, double? progress, String? progressLabel}) {
+  Widget _buildChip(String label, Color color,
+      {String? imagePath, double? progress, String? progressLabel,
+      int countUpValue = 0, String countUpSuffix = '', int staggerIndex = 0}) {
+    // Stagger: each chip delays by 0.1 of the animation timeline.
+    final start = (0.05 * staggerIndex).clamp(0.0, 0.6);
+    final end = (start + 0.5).clamp(start, 1.0);
+    final staggeredCurve = CurvedAnimation(
+      parent: _progressAnimController,
+      curve: Interval(start, end, curve: Curves.easeOut),
+    );
+
     return Expanded(
       child: Material(
         elevation: 12,
@@ -582,16 +597,22 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
               ],
             ),
             const SizedBox(height: 2),
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(
-                value,
-                style: GoogleFonts.nunito(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w800,
-                  color: color,
-                ),
-              ),
+            AnimatedBuilder(
+              animation: staggeredCurve,
+              builder: (context, child) {
+                final animatedValue = (countUpValue * staggeredCurve.value).round();
+                return FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    '$animatedValue$countUpSuffix',
+                    style: GoogleFonts.nunito(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: color,
+                    ),
+                  ),
+                );
+              },
             ),
             if (progress != null) ...[
               const SizedBox(height: 6),
