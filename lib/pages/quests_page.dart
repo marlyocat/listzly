@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
 import 'package:listzly/components/skeleton_loader.dart';
 import 'package:listzly/models/assigned_quest.dart';
 import 'package:listzly/models/quest.dart';
@@ -52,6 +53,8 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
   late Animation<double> _progressCurve;
   late Animation<double> _checkStampCurve;
   bool _hapticFired = false;
+  bool _showCelebration = false;
+  bool _celebrationShown = false;
   late Timer _countdownTimer;
   late Duration _timeRemaining;
 
@@ -214,6 +217,16 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
           ..reset()
           ..forward();
       }
+      // Trigger celebration when all quests just became complete.
+      if (next.hasValue) {
+        final isDone = next.value!.every((q) => q.progress >= q.target);
+        if (isDone && !_celebrationShown) {
+          _celebrationShown = true;
+          setState(() => _showCelebration = true);
+        } else if (!isDone) {
+          _celebrationShown = false;
+        }
+      }
     });
     ref.listen(userStatsProvider, (prev, next) {
       if (prev?.value != next.value && next.hasValue) {
@@ -240,7 +253,9 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
 
     return Scaffold(
       backgroundColor: const Color(0xFF150833),
-      body: SafeArea(
+      body: Stack(
+        children: [
+          SafeArea(
           child: RefreshIndicator(
             color: accentCoral,
             backgroundColor: primaryDarkest,
@@ -384,6 +399,67 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
           ],
         ),
       ),
+      ),
+          if (_showCelebration)
+            Positioned(
+              top: 0,
+              left: 20,
+              right: 20,
+              child: SafeArea(
+                child: TweenAnimationBuilder<double>(
+                  tween: Tween(begin: -1.0, end: 0.0),
+                  duration: const Duration(milliseconds: 500),
+                  curve: Curves.easeOutBack,
+                  onEnd: () {
+                    Future.delayed(const Duration(seconds: 2), () {
+                      if (mounted) setState(() => _showCelebration = false);
+                    });
+                  },
+                  builder: (context, value, child) {
+                    return Transform.translate(
+                      offset: Offset(0, value * 80),
+                      child: child,
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [primaryColor, accentCoral],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.black, width: 3),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 38,
+                          height: 38,
+                          child: Lottie.asset(
+                            'lib/images/celebration/sun (1).json',
+                            fit: BoxFit.contain,
+                            repeat: false,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'All quests complete!',
+                          style: GoogleFonts.nunito(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
