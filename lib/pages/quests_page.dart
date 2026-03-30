@@ -331,9 +331,27 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                 child: dailyQuestsAsync.when(
                 data: (quests) {
                   final goalMinutes = settingsAsync.value?.dailyGoalMinutes;
+                  final allComplete = quests.every((q) => q.progress >= q.target);
+                  final urgencyIcon = allComplete
+                      ? null
+                      : _timeRemaining.inHours < 1
+                          ? 'lib/images/licensed/alert.svg'
+                          : _timeRemaining.inHours < 3
+                              ? 'lib/images/licensed/warning.svg'
+                              : null;
+                  final urgencyColor = allComplete
+                      ? darkTextSecondary
+                      : _timeRemaining.inHours < 1
+                          ? Colors.redAccent
+                          : _timeRemaining.inHours < 3
+                              ? Colors.amber
+                              : darkTextSecondary;
+                  final countdownText = _formatCountdown(_timeRemaining);
                   return _buildQuestSection(
                     title: 'Daily Quests',
-                    subtitle: _formatCountdown(_timeRemaining),
+                    subtitle: countdownText,
+                    subtitleColor: urgencyColor,
+                    urgentIconPath: urgencyIcon,
                     quests: _mapQuests(
                       quests,
                       dailyQuestDefinitions,
@@ -672,6 +690,8 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
   Widget _buildQuestSection({
     required String title,
     required String subtitle,
+    Color subtitleColor = darkTextSecondary,
+    String? urgentIconPath,
     required List<_Quest> quests,
   }) {
     return Padding(
@@ -703,12 +723,20 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                     ),
                   ),
                   const Spacer(),
+                  if (urgentIconPath != null) ...[
+                    SvgPicture.asset(
+                      urgentIconPath,
+                      width: urgentIconPath.contains('alert') ? 22 : 18,
+                      height: urgentIconPath.contains('alert') ? 22 : 18,
+                    ),
+                    const SizedBox(width: 4),
+                  ],
                   Text(
                     subtitle,
                     style: GoogleFonts.nunito(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: darkTextSecondary,
+                      color: subtitleColor,
                     ),
                   ),
                 ],
