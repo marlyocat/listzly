@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
 import 'package:listzly/models/profile.dart';
 import 'package:listzly/models/user_role.dart';
@@ -10,6 +11,7 @@ import 'package:listzly/models/user_settings.dart';
 import 'package:listzly/pages/auth_page.dart';
 import 'package:listzly/providers/auth_provider.dart';
 import 'package:listzly/providers/profile_provider.dart';
+import 'package:listzly/providers/nav_provider.dart';
 import 'package:listzly/providers/settings_provider.dart';
 import 'package:listzly/providers/instrument_provider.dart';
 import 'package:listzly/models/student_summary.dart';
@@ -37,7 +39,22 @@ class ProfilePage extends ConsumerStatefulWidget {
   ConsumerState<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends ConsumerState<ProfilePage> {
+class _ProfilePageState extends ConsumerState<ProfilePage>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _titleAnimController;
+
+  @override
+  void initState() {
+    super.initState();
+    _titleAnimController = AnimationController(vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _titleAnimController.dispose();
+    super.dispose();
+  }
+
   // Showcase keys
   final _profileKey = GlobalKey();
   final _roleKey = GlobalKey();
@@ -265,6 +282,17 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    // Replay title animation when navigating to this tab.
+    final isTeacher = ref.watch(currentProfileProvider).value?.isTeacher ?? false;
+    final profileTabIndex = isTeacher ? 4 : 3;
+    ref.listen(navIndexProvider, (prev, next) {
+      if (next == profileTabIndex && prev != profileTabIndex) {
+        _titleAnimController
+          ..reset()
+          ..forward();
+      }
+    });
+
     final profileAsync = ref.watch(currentProfileProvider);
     final settingsAsync = ref.watch(userSettingsProvider);
     final instrumentsAsync = ref.watch(instrumentStatsProvider);
@@ -280,8 +308,22 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
                 child: Row(
                   children: [
-                    const SizedBox(width: 32),
                     const Spacer(),
+                    SizedBox(
+                      width: 32,
+                      height: 32,
+                      child: Lottie.asset(
+                        'lib/images/licensed/gear-wrench-animation.json',
+                        fit: BoxFit.contain,
+                        repeat: false,
+                        controller: _titleAnimController,
+                        onLoaded: (composition) {
+                          _titleAnimController.duration = composition.duration;
+                          _titleAnimController.forward();
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 8),
                     ShaderMask(
                       shaderCallback: (bounds) => const LinearGradient(
                         colors: [Colors.white, primaryLight],

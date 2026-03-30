@@ -1388,7 +1388,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
                           width: 24,
                           height: 24,
                           child: Lottie.asset(
-                            'lib/images/licensed/fire.json',
+                            'lib/images/licensed/fire-streak-animation.json',
                             fit: BoxFit.contain,
                             repeat: true,
                           ),

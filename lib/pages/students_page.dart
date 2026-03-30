@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
+import 'package:listzly/providers/nav_provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:listzly/models/assigned_quest.dart';
 import 'package:listzly/models/student_summary.dart';
@@ -25,7 +27,22 @@ class StudentsPage extends ConsumerStatefulWidget {
   ConsumerState<StudentsPage> createState() => _StudentsPageState();
 }
 
-class _StudentsPageState extends ConsumerState<StudentsPage> {
+class _StudentsPageState extends ConsumerState<StudentsPage>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _titleAnimController;
+
+  @override
+  void initState() {
+    super.initState();
+    _titleAnimController = AnimationController(vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _titleAnimController.dispose();
+    super.dispose();
+  }
+
   // Showcase keys
   final _bellKey = GlobalKey();
   final _inviteKey = GlobalKey();
@@ -43,6 +60,15 @@ class _StudentsPageState extends ConsumerState<StudentsPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Replay title animation when navigating to this tab.
+    ref.listen(navIndexProvider, (prev, next) {
+      if (next == 3 && prev != 3) {
+        _titleAnimController
+          ..reset()
+          ..forward();
+      }
+    });
+
     final groupAsync = ref.watch(teacherGroupProvider);
     final studentsAsync = ref.watch(teacherStudentsProvider);
 
@@ -82,6 +108,21 @@ class _StudentsPageState extends ConsumerState<StudentsPage> {
                       child: _buildNotificationBell(context, ref),
                     ),
                     const Spacer(),
+                    SizedBox(
+                      width: 32,
+                      height: 32,
+                      child: Lottie.asset(
+                        'lib/images/licensed/book-animation.json',
+                        fit: BoxFit.contain,
+                        repeat: false,
+                        controller: _titleAnimController,
+                        onLoaded: (composition) {
+                          _titleAnimController.duration = composition.duration;
+                          _titleAnimController.forward();
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 8),
                     ShaderMask(
                       shaderCallback: (bounds) => const LinearGradient(
                         colors: [Colors.white, primaryLight],
@@ -98,6 +139,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage> {
                       ),
                     ),
                     const Spacer(),
+                    const SizedBox(width: 40),
                     GestureDetector(
                       onTap: _startShowcase,
                       child: SvgPicture.asset(

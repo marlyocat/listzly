@@ -275,8 +275,18 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
                 child: Row(
                   children: [
-                    const SizedBox(width: 32),
                     const Spacer(),
+                    SizedBox(
+                      width: 32,
+                      height: 32,
+                      child: Lottie.asset(
+                        'lib/images/licensed/map-animation.json',
+                        fit: BoxFit.contain,
+                        repeat: false,
+                        controller: _progressAnimController,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
                     ShaderMask(
                       shaderCallback: (bounds) => const LinearGradient(
                         colors: [Colors.white, primaryLight],
@@ -439,7 +449,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                           width: 38,
                           height: 38,
                           child: Lottie.asset(
-                            'lib/images/celebration/sun (1).json',
+                            'lib/images/licensed/award-animation.json',
                             fit: BoxFit.contain,
                             repeat: false,
                           ),

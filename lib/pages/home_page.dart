@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
 
 import 'package:listzly/components/flip_box_nav_bar.dart';
 import 'package:listzly/pages/quests_page.dart';
@@ -395,8 +396,14 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      SvgPicture.asset('lib/images/licensed/streak.svg',
-                          width: 18, height: 18),
+                      SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: Lottie.asset(
+                          'lib/images/licensed/fire-streak-animation.json',
+                          fit: BoxFit.contain,
+                        ),
+                      ),
                       const SizedBox(width: 6),
                       Column(
                         mainAxisSize: MainAxisSize.min,

@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
+import 'package:listzly/providers/nav_provider.dart';
 import 'package:listzly/models/practice_session.dart';
 import 'package:listzly/models/practice_recording.dart';
 import 'package:listzly/providers/session_provider.dart';
@@ -30,6 +32,7 @@ class ActivityPage extends ConsumerStatefulWidget {
 class _ActivityPageState extends ConsumerState<ActivityPage>
     with TickerProviderStateMixin {
   int _selectedTab = 0;
+  late final AnimationController _titleAnimController;
 
   // Showcase keys
   final _tabsKey = GlobalKey();
@@ -90,11 +93,14 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
     Future.delayed(const Duration(milliseconds: 300), () {
       if (mounted) _barAnimController.forward();
     });
+
+    _titleAnimController = AnimationController(vsync: this);
   }
 
   @override
   void dispose() {
     _barAnimController.dispose();
+    _titleAnimController.dispose();
     super.dispose();
   }
 
@@ -387,6 +393,15 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
       summaryStatsProvider(start: _rangeStart, end: _rangeEnd),
     );
 
+    // Replay title animation when navigating to this tab.
+    ref.listen(navIndexProvider, (prev, next) {
+      if (next == 2 && prev != 2) {
+        _titleAnimController
+          ..reset()
+          ..forward();
+      }
+    });
+
     return Scaffold(
           backgroundColor: const Color(0xFF150833),
           body: SafeArea(
@@ -407,8 +422,22 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                     padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
                     child: Row(
                       children: [
-                        const SizedBox(width: 32),
                         const Spacer(),
+                        SizedBox(
+                          width: 32,
+                          height: 32,
+                          child: Lottie.asset(
+                            'lib/images/licensed/trophy-animation.json',
+                            fit: BoxFit.contain,
+                            repeat: false,
+                            controller: _titleAnimController,
+                            onLoaded: (composition) {
+                              _titleAnimController.duration = composition.duration;
+                              _titleAnimController.forward();
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 8),
                         ShaderMask(
                           shaderCallback: (bounds) => const LinearGradient(
                             colors: [Colors.white, primaryLight],
