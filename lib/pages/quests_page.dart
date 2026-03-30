@@ -431,6 +431,8 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
         ? DateTime(accountCreatedAt.year, accountCreatedAt.month, accountCreatedAt.day)
         : null;
 
+    final hasAnyCompleted = weekDays.any((d) => d);
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       child: Material(
@@ -445,7 +447,10 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: Colors.black, width: 5),
           ),
-          child: Row(
+          child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+          Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: List.generate(7, (i) {
             final day = weekStart.add(Duration(days: i));
@@ -507,6 +512,19 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
             );
           }),
         ),
+          if (!hasAnyCompleted) ...[
+            const SizedBox(height: 12),
+            Text(
+              'Complete a practice session to check off a day',
+              style: GoogleFonts.nunito(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: darkTextSecondary,
+              ),
+            ),
+          ],
+        ],
+        ),
       ),
       ),
     );
@@ -538,6 +556,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
             _buildChip('Level', Colors.white,
                 imagePath: 'lib/images/licensed/level.svg',
                 countUpValue: level,
+                countUpFrom: 1,
                 staggerIndex: 1,
                 progress: levelProgress,
                 progressLabel: '$xpIntoLevel / $xpNeeded XP'),
@@ -554,7 +573,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
 
   Widget _buildChip(String label, Color color,
       {String? imagePath, double? progress, String? progressLabel,
-      int countUpValue = 0, String countUpSuffix = '', int staggerIndex = 0}) {
+      int countUpValue = 0, int countUpFrom = 0, String countUpSuffix = '', int staggerIndex = 0}) {
     // Stagger: each chip delays by 0.1 of the animation timeline.
     final start = (0.05 * staggerIndex).clamp(0.0, 0.6);
     final end = (start + 0.5).clamp(start, 1.0);
@@ -600,7 +619,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
             AnimatedBuilder(
               animation: staggeredCurve,
               builder: (context, child) {
-                final animatedValue = (countUpValue * staggeredCurve.value).round();
+                final animatedValue = (countUpFrom + (countUpValue - countUpFrom) * staggeredCurve.value).round();
                 return FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(
