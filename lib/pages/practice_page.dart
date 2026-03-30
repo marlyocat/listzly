@@ -16,6 +16,7 @@ import 'package:listzly/providers/session_provider.dart';
 import 'package:listzly/providers/assigned_quest_provider.dart';
 import 'package:listzly/providers/quest_provider.dart';
 import 'package:listzly/services/quest_service.dart';
+import 'package:listzly/utils/level_utils.dart';
 import 'package:listzly/providers/stats_provider.dart';
 import 'package:listzly/providers/instrument_provider.dart';
 import 'package:listzly/providers/settings_provider.dart';
@@ -90,6 +91,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
   late int _quoteIndex;
   late int _rocketQuoteIndex;
   List<({String title, int xp})> _completedQuests = [];
+  int? _newLevel;
 
   static const _rocketQuotes = [
     "You're skyrocketing!",
@@ -541,6 +543,10 @@ class _PracticePageState extends ConsumerState<PracticePage>
     );
 
     try {
+      // Capture level before session
+      final statsBefore = await statsService.getStats(user.id);
+      final levelBefore = LevelUtils.levelFromXp(statsBefore.totalXp);
+
       // Snapshot quest state before session save
       final dailyBefore = await questService.getDailyQuests(
         user.id,
@@ -599,12 +605,16 @@ class _PracticePageState extends ConsumerState<PracticePage>
         }
       } catch (_) {}
 
-      if (mounted) {
-        setState(() => _completedQuests = newlyCompleted);
-      }
-
       // Recalculate stats (streak, XP)
-      await statsService.recalculateStats(user.id);
+      final statsAfter = await statsService.recalculateStats(user.id);
+      final levelAfter = LevelUtils.levelFromXp(statsAfter.totalXp);
+
+      if (mounted) {
+        setState(() {
+          _completedQuests = newlyCompleted;
+          if (levelAfter > levelBefore) _newLevel = levelAfter;
+        });
+      }
 
       // Schedule streak warning notifications (respects user's reminder time)
       try {
@@ -1331,6 +1341,43 @@ class _PracticePageState extends ConsumerState<PracticePage>
                         color: accentCoral,
                       ),
                     ),
+
+                    // Level up
+                    if (_newLevel != null) ...[
+                      const SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: 28,
+                            height: 28,
+                            child: Lottie.asset(
+                              'lib/images/licensed/star-animation-2.json',
+                              fit: BoxFit.contain,
+                              repeat: true,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            'Level $_newLevel!',
+                            style: GoogleFonts.dmSerifDisplay(
+                              fontSize: 20,
+                              color: Colors.amber,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          SizedBox(
+                            width: 28,
+                            height: 28,
+                            child: Lottie.asset(
+                              'lib/images/licensed/star-animation-2.json',
+                              fit: BoxFit.contain,
+                              repeat: true,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
 
                     const SizedBox(height: 8),
                     // Streak text

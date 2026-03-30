@@ -13,6 +13,7 @@ import 'package:listzly/pages/students_page.dart';
 import 'package:listzly/theme/colors.dart';
 import 'package:listzly/utils/responsive.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:listzly/providers/nav_provider.dart';
 import 'package:listzly/providers/stats_provider.dart';
 import 'package:listzly/providers/session_provider.dart';
 import 'package:listzly/providers/settings_provider.dart';
@@ -38,6 +39,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     setState(() {
       _selectedIndex = index;
     });
+    ref.read(navIndexProvider.notifier).set(index);
   }
 
   @override

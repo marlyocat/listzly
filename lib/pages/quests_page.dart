@@ -13,6 +13,7 @@ import 'package:listzly/providers/assigned_quest_provider.dart';
 import 'package:listzly/providers/profile_provider.dart';
 import 'package:listzly/providers/quest_provider.dart';
 import 'package:listzly/providers/settings_provider.dart';
+import 'package:listzly/providers/nav_provider.dart';
 import 'package:listzly/providers/stats_provider.dart';
 import 'package:listzly/services/quest_service.dart';
 import 'package:listzly/theme/colors.dart';
@@ -47,6 +48,8 @@ class QuestsPage extends ConsumerStatefulWidget {
 class _QuestsPageState extends ConsumerState<QuestsPage>
     with TickerProviderStateMixin {
   late AnimationController _progressAnimController;
+  late Animation<double> _progressCurve;
+  late Animation<double> _checkStampCurve;
   late Timer _countdownTimer;
   late Duration _timeRemaining;
 
@@ -74,8 +77,28 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
     super.initState();
     _progressAnimController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1200),
-    )..forward();
+      duration: const Duration(milliseconds: 2000),
+    );
+    _progressCurve = CurvedAnimation(
+      parent: _progressAnimController,
+      curve: Curves.easeInOut,
+    );
+    _checkStampCurve = TweenSequence<double>([
+      TweenSequenceItem(
+        tween: Tween(begin: 0.0, end: 1.4)
+            .chain(CurveTween(curve: Curves.easeOut)),
+        weight: 40,
+      ),
+      TweenSequenceItem(
+        tween: Tween(begin: 1.4, end: 1.0)
+            .chain(CurveTween(curve: Curves.easeInOut)),
+        weight: 60,
+      ),
+    ]).animate(CurvedAnimation(
+      parent: _progressAnimController,
+      curve: const Interval(0.15, 0.55),
+    ));
+    _progressAnimController.forward();
 
     final now = DateTime.now();
     final midnight = DateTime(now.year, now.month, now.day + 1);
@@ -176,6 +199,30 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
 
   @override
   Widget build(BuildContext context) {
+    // Re-animate progress bars whenever quest or stats data changes.
+    ref.listen(dailyQuestsProvider, (prev, next) {
+      if (prev?.value != next.value && next.hasValue) {
+        _progressAnimController
+          ..reset()
+          ..forward();
+      }
+    });
+    ref.listen(userStatsProvider, (prev, next) {
+      if (prev?.value != next.value && next.hasValue) {
+        _progressAnimController
+          ..reset()
+          ..forward();
+      }
+    });
+    // Replay animations when user navigates to this tab.
+    ref.listen(navIndexProvider, (prev, next) {
+      if (next == 1 && prev != 1) {
+        _progressAnimController
+          ..reset()
+          ..forward();
+      }
+    });
+
     final dailyQuestsAsync = ref.watch(dailyQuestsProvider);
     final weekCompletionAsync = ref.watch(weekCompletionStatusProvider);
     final userStatsAsync = ref.watch(userStatsProvider);
@@ -434,10 +481,19 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                     ),
                   ),
                   child: completed
-                      ? const Icon(
-                          Icons.check_rounded,
-                          color: Colors.white,
-                          size: 18,
+                      ? AnimatedBuilder(
+                          animation: _checkStampCurve,
+                          builder: (context, child) {
+                            return Transform.scale(
+                              scale: _checkStampCurve.value,
+                              child: child,
+                            );
+                          },
+                          child: const Icon(
+                            Icons.check_rounded,
+                            color: Colors.white,
+                            size: 18,
+                          ),
                         )
                       : isPast
                           ? const Icon(
@@ -539,14 +595,19 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
             ),
             if (progress != null) ...[
               const SizedBox(height: 6),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: LinearProgressIndicator(
-                  value: progress,
-                  minHeight: 5,
-                  backgroundColor: Colors.white.withValues(alpha: 0.1),
-                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.green),
-                ),
+              AnimatedBuilder(
+                animation: _progressCurve,
+                builder: (context, child) {
+                  return ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: LinearProgressIndicator(
+                      value: (progress * _progressCurve.value).clamp(0.0, 1.0),
+                      minHeight: 5,
+                      backgroundColor: Colors.white.withValues(alpha: 0.1),
+                      valueColor: const AlwaysStoppedAnimation<Color>(Colors.green),
+                    ),
+                  );
+                },
               ),
               if (progressLabel != null) ...[
                 const SizedBox(height: 4),
@@ -639,13 +700,13 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
   }
 
   Widget _buildQuestTile(_Quest quest) {
-    final progress = quest.currentProgress / quest.targetProgress;
+    final progress = (quest.currentProgress / quest.targetProgress).clamp(0.0, 1.0);
     final isComplete = quest.currentProgress >= quest.targetProgress;
 
     return AnimatedBuilder(
-      animation: _progressAnimController,
+      animation: _progressCurve,
       builder: (context, child) {
-        final animatedProgress = progress * _progressAnimController.value;
+        final animatedProgress = progress * _progressCurve.value;
 
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -663,11 +724,20 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: Colors.black, width: 2),
                 ),
-                child: Icon(
-                  isComplete ? Icons.check_rounded : quest.icon,
-                  color: Colors.white,
-                  size: 22,
-                ),
+                child: isComplete
+                    ? Transform.scale(
+                        scale: _checkStampCurve.value,
+                        child: const Icon(
+                          Icons.check_rounded,
+                          color: Colors.white,
+                          size: 22,
+                        ),
+                      )
+                    : Icon(
+                        quest.icon,
+                        color: Colors.white,
+                        size: 22,
+                      ),
               ),
               const SizedBox(width: 14),
               // Quest info
