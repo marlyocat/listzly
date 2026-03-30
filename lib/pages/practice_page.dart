@@ -1108,17 +1108,17 @@ class _PracticePageState extends ConsumerState<PracticePage>
   late int _celebrationIndex;
 
   static const _celebrations = [
-    (first: 'lib/images/celebration/star.json', second: 'lib/images/celebration/star-2.json', text: 'A star in the making!'),
-    (first: 'lib/images/celebration/moon.json', second: 'lib/images/celebration/moon-2.json', text: 'One giant leap for talent!'),
-    (first: 'lib/images/celebration/observatory.json', second: 'lib/images/celebration/ufo.json', text: 'Detected: out of this world talent!'),
+    (first: 'lib/images/licensed/star-animation-1.json', second: 'lib/images/licensed/star-animation-2.json', text: 'A star in the making!'),
+    (first: 'lib/images/licensed/moon-animation-1.json', second: 'lib/images/licensed/moon-animation-2.json', text: 'One giant leap for talent!'),
+    (first: 'lib/images/licensed/observatory-ufo-animation-1.json', second: 'lib/images/licensed/observatory-ufo-animation-2.json', text: 'Detected: out of this world talent!'),
   ];
 
   static const _shockedAssets = [
-    (image: 'lib/images/celebration/cow-move.svg', text: "Moo-ve it, don't stop now!"),
-    (image: 'lib/images/celebration/ghost-shocked.svg', text: 'Boo! You scared me by stopping!'),
-    (image: 'lib/images/celebration/penguin-cheer.svg', text: 'Brrr-illiant session, keep it up!'),
-    (image: 'lib/images/celebration/rabbit-hop.svg', text: 'Hop to it, keep going!'),
-    (image: 'lib/images/celebration/raccon-yawn.svg', text: 'Sneaky break? I saw that!'),
+    (image: 'lib/images/licensed/cow-move.svg', text: "Moo-ve it, don't stop now!"),
+    (image: 'lib/images/licensed/ghost-shocked.svg', text: 'Boo! You scared me by stopping!'),
+    (image: 'lib/images/licensed/penguin-cheer.svg', text: 'Brrr-illiant session, keep it up!'),
+    (image: 'lib/images/licensed/rabbit-hop.svg', text: 'Hop to it, keep going!'),
+    (image: 'lib/images/licensed/raccon-yawn.svg', text: 'Sneaky break? I saw that!'),
   ];
 
 
@@ -1131,7 +1131,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
         children: [
           Expanded(
             child: Lottie.asset(
-              'lib/images/celebration/rocket.json',
+              'lib/images/licensed/rocket-animation.json',
               fit: BoxFit.contain,
               repeat: false,
               onLoaded: (composition) {
@@ -1341,7 +1341,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
                           width: 24,
                           height: 24,
                           child: Lottie.asset(
-                            'lib/images/celebration/fire.json',
+                            'lib/images/licensed/fire.json',
                             fit: BoxFit.contain,
                             repeat: true,
                           ),
