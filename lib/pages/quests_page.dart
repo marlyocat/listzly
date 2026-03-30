@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -50,6 +51,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
   late AnimationController _progressAnimController;
   late Animation<double> _progressCurve;
   late Animation<double> _checkStampCurve;
+  bool _hapticFired = false;
   late Timer _countdownTimer;
   late Duration _timeRemaining;
 
@@ -98,6 +100,12 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
       parent: _progressAnimController,
       curve: const Interval(0.15, 0.55),
     ));
+    _checkStampCurve.addListener(() {
+      if (!_hapticFired && _checkStampCurve.value >= 1.3) {
+        _hapticFired = true;
+        HapticFeedback.lightImpact();
+      }
+    });
     _progressAnimController.forward();
 
     final now = DateTime.now();
