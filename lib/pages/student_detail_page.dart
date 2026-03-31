@@ -36,6 +36,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
     with TickerProviderStateMixin {
   int _selectedTab = 0;
   int? _selectedBarIndex;
+  int _refreshKey = 0;
   late final AnimationController _barAnimController;
   late final Animation<double> _barAnim;
 
@@ -220,7 +221,23 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
     return Scaffold(
       backgroundColor: const Color(0xFF150833),
       body: SafeArea(
-        child: CustomScrollView(
+        child: RefreshIndicator(
+          color: accentCoral,
+          backgroundColor: primaryDarkest,
+          onRefresh: () async {
+            ref.invalidate(studentSessionsProvider);
+            ref.invalidate(studentSummaryStatsProvider);
+            ref.invalidate(studentStatsProvider);
+            ref.invalidate(studentRecordingsProvider);
+            await ref.read(studentSessionsProvider(
+              studentId: widget.studentId, start: _rangeStart, end: _rangeEnd,
+            ).future);
+            _barAnimController
+              ..reset()
+              ..forward();
+            setState(() => _refreshKey++);
+          },
+          child: CustomScrollView(
           slivers: [
             // Header with back button
             SliverContentConstraint(
@@ -238,6 +255,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                       height: 28,
                       child: Lottie.asset(
                         'lib/images/licensed/search.json',
+                        key: ValueKey('search_$_refreshKey'),
                         fit: BoxFit.contain,
                         repeat: false,
                       ),
@@ -325,6 +343,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
 
             const SliverContentConstraint(child: SizedBox(height: 32)),
           ],
+        ),
         ),
       ),
     );
@@ -1124,6 +1143,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                             height: 60,
                             child: Lottie.asset(
                               'lib/images/licensed/recent-sessions-animation.json',
+                              key: ValueKey('sessions_$_refreshKey'),
                               fit: BoxFit.contain,
                               repeat: false,
                             ),
@@ -1367,6 +1387,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                             height: 60,
                             child: Lottie.asset(
                               'lib/images/licensed/no-recordings-animation.json',
+                              key: ValueKey('recordings_$_refreshKey'),
                               fit: BoxFit.contain,
                               repeat: false,
                             ),
