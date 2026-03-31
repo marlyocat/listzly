@@ -399,6 +399,9 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
         _titleAnimController
           ..reset()
           ..forward();
+        _barAnimController
+          ..reset()
+          ..forward();
       }
     });
 
@@ -737,22 +740,32 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       child: statsAsync.when(
-        data: (stats) => Row(
-          children: [
-            _buildStatCard(
-              icon: Icons.access_time_rounded,
-              value: _formatDuration(stats.totalTime),
-              label: 'Total Time',
-              color: accentCoral,
-            ),
-            const SizedBox(width: 10),
-            _buildStatCard(
-              icon: Icons.music_note_rounded,
-              value: '${stats.sessionCount}',
-              label: 'Sessions',
-              color: primaryColor,
-            ),
-          ],
+        data: (stats) => AnimatedBuilder(
+          animation: _barAnim,
+          builder: (context, child) {
+            final t = _barAnim.value;
+            final animatedTime = Duration(
+              seconds: (stats.totalTime.inSeconds * t).round(),
+            );
+            final animatedSessions = (stats.sessionCount * t).round();
+            return Row(
+              children: [
+                _buildStatCard(
+                  icon: Icons.access_time_rounded,
+                  value: _formatDuration(animatedTime),
+                  label: 'Total Time',
+                  color: accentCoral,
+                ),
+                const SizedBox(width: 10),
+                _buildStatCard(
+                  icon: Icons.music_note_rounded,
+                  value: '$animatedSessions',
+                  label: 'Sessions',
+                  color: primaryColor,
+                ),
+              ],
+            );
+          },
         ),
         loading: () => Row(
           children: [
