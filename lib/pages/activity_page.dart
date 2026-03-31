@@ -34,6 +34,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
   int _selectedTab = 0;
   late final AnimationController _titleAnimController;
   late final AnimationController _emptyStateAnimController;
+  late final AnimationController _calendarAnimController;
 
   // Showcase keys
   final _tabsKey = GlobalKey();
@@ -97,6 +98,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
 
     _titleAnimController = AnimationController(vsync: this);
     _emptyStateAnimController = AnimationController(vsync: this);
+    _calendarAnimController = AnimationController(vsync: this);
   }
 
   @override
@@ -104,6 +106,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
     _barAnimController.dispose();
     _titleAnimController.dispose();
     _emptyStateAnimController.dispose();
+    _calendarAnimController.dispose();
     super.dispose();
   }
 
@@ -408,6 +411,9 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
         _emptyStateAnimController
           ..reset()
           ..forward();
+        _calendarAnimController
+          ..reset()
+          ..forward();
       }
     });
 
@@ -422,6 +428,18 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                 ref.invalidate(summaryStatsProvider);
                 ref.invalidate(userRecordingsProvider);
                 await ref.read(sessionListProvider(start: _rangeStart, end: _rangeEnd).future);
+                _barAnimController
+                  ..reset()
+                  ..forward();
+                _titleAnimController
+                  ..reset()
+                  ..forward();
+                _emptyStateAnimController
+                  ..reset()
+                  ..forward();
+                _calendarAnimController
+                  ..reset()
+                  ..forward();
               },
               child: CustomScrollView(
               slivers: [
@@ -664,10 +682,19 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                           ),
                         ),
                         const SizedBox(width: 6),
-                        Icon(
-                          Icons.calendar_today_rounded,
-                          color: darkTextMuted,
-                          size: 16,
+                        SizedBox(
+                          width: 28,
+                          height: 28,
+                          child: Lottie.asset(
+                            'lib/images/licensed/calendar-animation.json',
+                            fit: BoxFit.contain,
+                            repeat: false,
+                            controller: _calendarAnimController,
+                            onLoaded: (composition) {
+                              _calendarAnimController.duration = composition.duration;
+                              _calendarAnimController.forward();
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -675,13 +702,19 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                 ),
                 const SizedBox(height: 2),
                 statsAsync.when(
-                  data: (stats) => Text(
-                    '${stats.sessionCount} Session${stats.sessionCount == 1 ? '' : 's'}',
-                    style: GoogleFonts.nunito(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: accentCoral,
-                    ),
+                  data: (stats) => AnimatedBuilder(
+                    animation: _barAnim,
+                    builder: (context, child) {
+                      final count = (stats.sessionCount * _barAnim.value).round();
+                      return Text(
+                        '$count Session${stats.sessionCount == 1 ? '' : 's'}',
+                        style: GoogleFonts.nunito(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: accentCoral,
+                        ),
+                      );
+                    },
                   ),
                   loading: () => SizedBox(
                     height: 20,
