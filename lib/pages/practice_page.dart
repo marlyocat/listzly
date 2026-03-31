@@ -923,26 +923,6 @@ class _PracticePageState extends ConsumerState<PracticePage>
                     // Mic / Record button
                     _buildMicButton(),
 
-                    const SizedBox(height: 16),
-
-                    // TODO: Remove this temporary button
-                    GestureDetector(
-                      onTap: () {
-                        _timer?.cancel();
-                        setState(() => _sessionCompleted = true);
-                        _saveSession();
-                      },
-                      child: Text(
-                        'End Session (debug)',
-                        style: GoogleFonts.nunito(
-                          fontSize: 12,
-                          color: darkTextMuted,
-                          decoration: TextDecoration.underline,
-                          decorationColor: darkTextMuted,
-                        ),
-                      ),
-                    ),
-
                     const Spacer(flex: 2),
                   ],
                 ),
