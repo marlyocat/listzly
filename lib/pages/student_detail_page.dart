@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
 import 'package:listzly/models/practice_session.dart';
 import 'package:listzly/models/practice_recording.dart';
 import 'package:listzly/providers/student_data_provider.dart';
@@ -209,6 +210,16 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                       icon: const Icon(Icons.arrow_back_rounded,
                           color: Colors.white),
                     ),
+                    SizedBox(
+                      width: 28,
+                      height: 28,
+                      child: Lottie.asset(
+                        'lib/images/licensed/search.json',
+                        fit: BoxFit.contain,
+                        repeat: false,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: ShaderMask(
                         shaderCallback: (bounds) => const LinearGradient(
