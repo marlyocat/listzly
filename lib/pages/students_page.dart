@@ -83,6 +83,9 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
             ref.invalidate(teacherGroupProvider);
             ref.invalidate(teacherAssignedQuestsProvider);
             await ref.read(teacherStudentsProvider.future);
+            _titleAnimController
+              ..reset()
+              ..forward();
           },
           child: CustomScrollView(
           slivers: [
