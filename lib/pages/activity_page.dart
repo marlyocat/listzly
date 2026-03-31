@@ -33,6 +33,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
     with TickerProviderStateMixin {
   int _selectedTab = 0;
   late final AnimationController _titleAnimController;
+  late final AnimationController _emptyStateAnimController;
 
   // Showcase keys
   final _tabsKey = GlobalKey();
@@ -95,12 +96,14 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
     });
 
     _titleAnimController = AnimationController(vsync: this);
+    _emptyStateAnimController = AnimationController(vsync: this);
   }
 
   @override
   void dispose() {
     _barAnimController.dispose();
     _titleAnimController.dispose();
+    _emptyStateAnimController.dispose();
     super.dispose();
   }
 
@@ -400,6 +403,9 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
           ..reset()
           ..forward();
         _barAnimController
+          ..reset()
+          ..forward();
+        _emptyStateAnimController
           ..reset()
           ..forward();
       }
@@ -1243,15 +1249,41 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                   ? Padding(
                       padding: const EdgeInsets.symmetric(
                           vertical: 24, horizontal: 16),
-                      child: Center(
-                        child: Text(
-                          'No recent sessions yet',
-                          style: GoogleFonts.nunito(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: darkTextSecondary,
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            width: 60,
+                            height: 60,
+                            child: Lottie.asset(
+                              'lib/images/licensed/recent-sessions-animation.json',
+                              fit: BoxFit.contain,
+                              repeat: false,
+                              controller: _emptyStateAnimController,
+                              onLoaded: (composition) {
+                                _emptyStateAnimController.duration = composition.duration;
+                                _emptyStateAnimController.forward();
+                              },
+                            ),
                           ),
-                        ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'No sessions this period',
+                            style: GoogleFonts.nunito(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: darkTextSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Start a practice session to see it here',
+                            style: GoogleFonts.nunito(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: darkTextMuted,
+                            ),
+                          ),
+                        ],
                       ),
                     )
                   : Column(
@@ -1494,15 +1526,41 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                   ? Padding(
                       padding: const EdgeInsets.symmetric(
                           vertical: 24, horizontal: 16),
-                      child: Center(
-                        child: Text(
-                          'No recordings yet',
-                          style: GoogleFonts.nunito(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: darkTextSecondary,
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            width: 60,
+                            height: 60,
+                            child: Lottie.asset(
+                              'lib/images/licensed/no-recordings-animation.json',
+                              fit: BoxFit.contain,
+                              repeat: false,
+                              controller: _emptyStateAnimController,
+                              onLoaded: (composition) {
+                                _emptyStateAnimController.duration = composition.duration;
+                                _emptyStateAnimController.forward();
+                              },
+                            ),
                           ),
-                        ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'No recordings yet',
+                            style: GoogleFonts.nunito(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: darkTextSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Record during a practice session to save it here',
+                            style: GoogleFonts.nunito(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: darkTextMuted,
+                            ),
+                          ),
+                        ],
                       ),
                     )
                   : Column(
