@@ -285,14 +285,37 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
   }
 
   static String _formatDuration(Duration d) {
-    final hours = d.inHours;
+    final days = d.inDays;
+    final hours = d.inHours.remainder(24);
     final minutes = d.inMinutes.remainder(60);
     final seconds = d.inSeconds.remainder(60);
-    if (hours > 0 && minutes > 0) return '${hours}h ${minutes}m';
-    if (hours > 0) return '${hours}h';
-    if (minutes > 0 && seconds > 0) return '${minutes}m ${seconds}s';
-    if (minutes > 0) return '${minutes}m';
+    if (days > 0) return hours > 0 ? '${days}d ${hours}h' : '${days}d';
+    if (hours > 0) return minutes > 0 ? '${hours}h ${minutes}m' : '${hours}h';
+    if (minutes > 0) return seconds > 0 ? '${minutes}m ${seconds}s' : '${minutes}m';
     return '${seconds}s';
+  }
+
+  /// Animates a duration count-up using the final format to avoid jitter.
+  static String _animateTimeText(Duration duration, double t) {
+    final finalDays = duration.inDays;
+    final finalHours = duration.inHours.remainder(24);
+    final finalMinutes = duration.inMinutes.remainder(60);
+    final finalSecs = duration.inSeconds.remainder(60);
+    if (finalDays > 0) {
+      final d = (finalDays * t).round();
+      final h = (finalHours * t).round();
+      return h > 0 ? '${d}d ${h}h' : '${d}d';
+    } else if (finalHours > 0) {
+      final h = (finalHours * t).round();
+      final m = (finalMinutes * t).round();
+      return m > 0 ? '${h}h ${m}m' : '${h}h';
+    } else if (finalMinutes > 0) {
+      final m = (finalMinutes * t).round();
+      final s = (finalSecs * t).round();
+      return s > 0 ? '${m}m ${s}s' : '${m}m';
+    } else {
+      return '${(finalSecs * t).round()}s';
+    }
   }
 
   static String _formatSessionDuration(int durationSeconds) {
@@ -408,12 +431,16 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
         _barAnimController
           ..reset()
           ..forward();
-        _emptyStateAnimController
-          ..reset()
-          ..forward();
-        _calendarAnimController
-          ..reset()
-          ..forward();
+        if (_emptyStateAnimController.duration != null) {
+          _emptyStateAnimController
+            ..reset()
+            ..forward();
+        }
+        if (_calendarAnimController.duration != null) {
+          _calendarAnimController
+            ..reset()
+            ..forward();
+        }
       }
     });
 
@@ -434,12 +461,16 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                 _titleAnimController
                   ..reset()
                   ..forward();
-                _emptyStateAnimController
-                  ..reset()
-                  ..forward();
-                _calendarAnimController
-                  ..reset()
-                  ..forward();
+                if (_emptyStateAnimController.duration != null) {
+                  _emptyStateAnimController
+                    ..reset()
+                    ..forward();
+                }
+                if (_calendarAnimController.duration != null) {
+                  _calendarAnimController
+                    ..reset()
+                    ..forward();
+                }
               },
               child: CustomScrollView(
               slivers: [
@@ -779,82 +810,99 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       child: statsAsync.when(
-        data: (stats) => AnimatedBuilder(
+        data: (stats) {
+          // Compute average based on selected period
+          final divisor = _selectedTab == 0 ? 7 : _selectedTab == 1 ? 4 : 12;
+          final avgSeconds = stats.totalTime.inSeconds ~/ divisor;
+          final avgDuration = Duration(seconds: avgSeconds);
+          final avgLabel = _selectedTab == 0
+              ? 'Daily Avg'
+              : _selectedTab == 1
+                  ? 'Weekly Avg'
+                  : 'Monthly Avg';
+
+          return AnimatedBuilder(
           animation: _barAnim,
           builder: (context, child) {
             final t = _barAnim.value;
-            final animatedSessions = (stats.sessionCount * t).round();
-            // Use the final format and animate the numbers within it
-            // to avoid layout jitter from format changes.
+            // Animate total time
             final totalSeconds = stats.totalTime.inSeconds;
             final animSeconds = (totalSeconds * t).round();
-            final finalHours = stats.totalTime.inHours;
-            final finalMinutes = stats.totalTime.inMinutes.remainder(60);
-            final finalSecs = totalSeconds.remainder(60);
-            String timeText;
-            if (finalHours > 0) {
-              final h = (finalHours * t).round();
-              final m = (finalMinutes * t).round();
-              timeText = m > 0 ? '${h}h ${m}m' : '${h}h';
-            } else if (finalMinutes > 0) {
-              final m = (finalMinutes * t).round();
-              final s = (finalSecs * t).round();
-              timeText = s > 0 ? '${m}m ${s}s' : '${m}m';
-            } else {
-              timeText = '${(finalSecs * t).round()}s';
-            }
-            return Row(
+            final timeText = _animateTimeText(stats.totalTime, t);
+            // Animate average
+            final avgText = _animateTimeText(avgDuration, t);
+            return IntrinsicHeight(
+              child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _buildStatCard(
                   icon: Icons.access_time_rounded,
                   value: animSeconds == 0 ? '0s' : timeText,
                   label: 'Total Time',
                   color: accentCoral,
+                  tooltip: _selectedTab == 0
+                      ? 'Total practice time this week'
+                      : _selectedTab == 1
+                          ? 'Total practice time this month'
+                          : 'Total practice time this year',
                 ),
                 const SizedBox(width: 10),
                 _buildStatCard(
-                  icon: Icons.music_note_rounded,
-                  value: '$animatedSessions',
-                  label: 'Sessions',
+                  icon: Icons.trending_up_rounded,
+                  value: avgSeconds == 0 ? '0s' : avgText,
+                  label: avgLabel,
                   color: primaryColor,
+                  tooltip: _selectedTab == 0
+                      ? 'Your average practice time per day this week'
+                      : _selectedTab == 1
+                          ? 'Your average practice time per week this month'
+                          : 'Your average practice time per month this year',
                 ),
               ],
+            ),
             );
           },
+        );
+        },
+        loading: () => IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildStatCard(
+                icon: Icons.access_time_rounded,
+                value: '\u2014',
+                label: 'Total Time',
+                color: accentCoral,
+              ),
+              const SizedBox(width: 10),
+              _buildStatCard(
+                icon: Icons.trending_up_rounded,
+                value: '\u2014',
+                label: _selectedTab == 0 ? 'Daily Avg' : _selectedTab == 1 ? 'Weekly Avg' : 'Monthly Avg',
+                color: primaryColor,
+              ),
+            ],
+          ),
         ),
-        loading: () => Row(
-          children: [
-            _buildStatCard(
-              icon: Icons.access_time_rounded,
-              value: '\u2014',
-              label: 'Total Time',
-              color: accentCoral,
-            ),
-            const SizedBox(width: 10),
-            _buildStatCard(
-              icon: Icons.music_note_rounded,
-              value: '\u2014',
-              label: 'Sessions',
-              color: primaryColor,
-            ),
-          ],
-        ),
-        error: (_, _) => Row(
-          children: [
-            _buildStatCard(
-              icon: Icons.access_time_rounded,
-              value: '\u2014',
-              label: 'Total Time',
-              color: accentCoral,
-            ),
-            const SizedBox(width: 10),
-            _buildStatCard(
-              icon: Icons.music_note_rounded,
-              value: '\u2014',
-              label: 'Sessions',
-              color: primaryColor,
-            ),
-          ],
+        error: (_, _) => IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildStatCard(
+                icon: Icons.access_time_rounded,
+                value: '\u2014',
+                label: 'Total Time',
+                color: accentCoral,
+              ),
+              const SizedBox(width: 10),
+              _buildStatCard(
+                icon: Icons.trending_up_rounded,
+                value: '\u2014',
+                label: _selectedTab == 0 ? 'Daily Avg' : _selectedTab == 1 ? 'Weekly Avg' : 'Monthly Avg',
+                color: primaryColor,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -865,8 +913,57 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
     required String value,
     required String label,
     required Color color,
+    String? tooltip,
   }) {
+    final key = tooltip != null ? GlobalKey() : null;
     return Expanded(
+      key: key,
+      child: GestureDetector(
+      onTap: tooltip != null ? () {
+        final renderBox = key!.currentContext!.findRenderObject() as RenderBox;
+        final offset = renderBox.localToGlobal(Offset.zero);
+        final overlay = Overlay.of(context);
+        late OverlayEntry entry;
+        entry = OverlayEntry(
+          builder: (context) => Stack(
+            children: [
+              GestureDetector(
+                onTap: () => entry.remove(),
+                behavior: HitTestBehavior.translucent,
+                child: const SizedBox.expand(),
+              ),
+              Positioned(
+                left: offset.dx,
+                top: offset.dy - 48,
+                width: renderBox.size.width,
+                child: Material(
+                  color: Colors.transparent,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1E0A4A),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.black, width: 2),
+                    ),
+                    child: Text(
+                      tooltip,
+                      style: GoogleFonts.nunito(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+        overlay.insert(entry);
+        Future.delayed(const Duration(seconds: 3), () {
+          if (entry.mounted) entry.remove();
+        });
+      } : null,
       child: Material(
         elevation: 12,
         shadowColor: Colors.black,
@@ -896,11 +993,16 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    value,
-                    style: GoogleFonts.dmSerifDisplay(
-                      fontSize: 20,
-                      color: Colors.white,
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      value,
+                      maxLines: 1,
+                      style: GoogleFonts.dmSerifDisplay(
+                        fontSize: 20,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                   Text(
@@ -916,6 +1018,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
             ),
           ],
         ),
+      ),
       ),
       ),
     );
