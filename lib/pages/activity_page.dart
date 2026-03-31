@@ -1444,7 +1444,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                       ),
                     )
                   : Column(
-                children: List.generate(sessions.length > 5 ? 5 : sessions.length, (i) {
+                children: List.generate(sessions.length > 3 ? 3 : sessions.length, (i) {
                   final s = sessions[i];
                   final instIcon =
                       _instrumentIcons[s.instrumentName] ?? Icons.music_note;
@@ -1721,7 +1721,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                       ),
                     )
                   : Column(
-                      children: recordings.take(5).map((recording) {
+                      children: recordings.take(3).map((recording) {
                         return RecordingListTile(
                           recording: recording,
                           onPlay: () => _playRecording(recording),
