@@ -35,6 +35,7 @@ class StudentDetailPage extends ConsumerStatefulWidget {
 class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
     with TickerProviderStateMixin {
   int _selectedTab = 0;
+  int? _selectedBarIndex;
   late final AnimationController _barAnimController;
   late final Animation<double> _barAnim;
 
@@ -162,14 +163,36 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
   }
 
   static String _formatDuration(Duration d) {
-    final hours = d.inHours;
+    final days = d.inDays;
+    final hours = d.inHours.remainder(24);
     final minutes = d.inMinutes.remainder(60);
     final seconds = d.inSeconds.remainder(60);
-    if (hours > 0 && minutes > 0) return '${hours}h ${minutes}m';
-    if (hours > 0) return '${hours}h';
-    if (minutes > 0 && seconds > 0) return '${minutes}m ${seconds}s';
-    if (minutes > 0) return '${minutes}m';
+    if (days > 0) return hours > 0 ? '${days}d ${hours}h' : '${days}d';
+    if (hours > 0) return minutes > 0 ? '${hours}h ${minutes}m' : '${hours}h';
+    if (minutes > 0) return seconds > 0 ? '${minutes}m ${seconds}s' : '${minutes}m';
     return '${seconds}s';
+  }
+
+  static String _animateTimeText(Duration duration, double t) {
+    final finalDays = duration.inDays;
+    final finalHours = duration.inHours.remainder(24);
+    final finalMinutes = duration.inMinutes.remainder(60);
+    final finalSecs = duration.inSeconds.remainder(60);
+    if (finalDays > 0) {
+      final d = (finalDays * t).round();
+      final h = (finalHours * t).round();
+      return h > 0 ? '${d}d ${h}h' : '${d}d';
+    } else if (finalHours > 0) {
+      final h = (finalHours * t).round();
+      final m = (finalMinutes * t).round();
+      return m > 0 ? '${h}h ${m}m' : '${h}h';
+    } else if (finalMinutes > 0) {
+      final m = (finalMinutes * t).round();
+      final s = (finalSecs * t).round();
+      return s > 0 ? '${m}m ${s}s' : '${m}m';
+    } else {
+      return '${(finalSecs * t).round()}s';
+    }
   }
 
   static String _formatSessionDuration(int durationSeconds) {
@@ -435,13 +458,19 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                 ),
                 const SizedBox(height: 2),
                 statsAsync.when(
-                  data: (stats) => Text(
-                    '${stats.sessionCount} Session${stats.sessionCount == 1 ? '' : 's'}',
-                    style: GoogleFonts.nunito(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: accentCoral,
-                    ),
+                  data: (stats) => AnimatedBuilder(
+                    animation: _barAnim,
+                    builder: (context, child) {
+                      final count = (stats.sessionCount * _barAnim.value).round();
+                      return Text(
+                        '$count Session${stats.sessionCount == 1 ? '' : 's'}',
+                        style: GoogleFonts.nunito(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: accentCoral,
+                        ),
+                      );
+                    },
                   ),
                   loading: () => SizedBox(
                     height: 20,
@@ -496,55 +525,98 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
   Widget _buildSummaryStats(
     AsyncValue<({Duration totalTime, int sessionCount})> statsAsync,
   ) {
+    final avgLabel = _selectedTab == 0
+        ? 'Daily Avg'
+        : _selectedTab == 1
+            ? 'Weekly Avg'
+            : 'Monthly Avg';
+    final avgTooltip = _selectedTab == 0
+        ? 'Average practice time per day this week'
+        : _selectedTab == 1
+            ? 'Average practice time per week this month'
+            : 'Average practice time per month this year';
+    final totalTooltip = _selectedTab == 0
+        ? 'Total practice time this week'
+        : _selectedTab == 1
+            ? 'Total practice time this month'
+            : 'Total practice time this year';
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       child: statsAsync.when(
-        data: (stats) => Row(
-          children: [
-            _buildStatCard(
-              icon: Icons.access_time_rounded,
-              value: _formatDuration(stats.totalTime),
-              label: 'Total Time',
-              color: accentCoral,
-            ),
-            const SizedBox(width: 10),
-            _buildStatCard(
-              icon: Icons.music_note_rounded,
-              value: '${stats.sessionCount}',
-              label: 'Sessions',
-              color: primaryLight,
-            ),
-          ],
+        data: (stats) {
+          final divisor = _selectedTab == 0 ? 7 : _selectedTab == 1 ? 4 : 12;
+          final avgSeconds = stats.totalTime.inSeconds ~/ divisor;
+          final avgDuration = Duration(seconds: avgSeconds);
+
+          return AnimatedBuilder(
+            animation: _barAnim,
+            builder: (context, child) {
+              final t = _barAnim.value;
+              final totalSeconds = stats.totalTime.inSeconds;
+              final animSeconds = (totalSeconds * t).round();
+              final timeText = _animateTimeText(stats.totalTime, t);
+              final avgText = _animateTimeText(avgDuration, t);
+              return IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildStatCard(
+                      icon: Icons.access_time_rounded,
+                      value: animSeconds == 0 ? '0s' : timeText,
+                      label: 'Total Time',
+                      color: accentCoral,
+                      tooltip: totalTooltip,
+                    ),
+                    const SizedBox(width: 10),
+                    _buildStatCard(
+                      icon: Icons.trending_up_rounded,
+                      value: avgSeconds == 0 ? '0s' : avgText,
+                      label: avgLabel,
+                      color: primaryLight,
+                      tooltip: avgTooltip,
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        },
+        loading: () => IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildStatCard(
+                  icon: Icons.access_time_rounded,
+                  value: '\u2014',
+                  label: 'Total Time',
+                  color: accentCoral),
+              const SizedBox(width: 10),
+              _buildStatCard(
+                  icon: Icons.trending_up_rounded,
+                  value: '\u2014',
+                  label: avgLabel,
+                  color: primaryLight),
+            ],
+          ),
         ),
-        loading: () => Row(
-          children: [
-            _buildStatCard(
-                icon: Icons.access_time_rounded,
-                value: '\u2014',
-                label: 'Total Time',
-                color: accentCoral),
-            const SizedBox(width: 10),
-            _buildStatCard(
-                icon: Icons.music_note_rounded,
-                value: '\u2014',
-                label: 'Sessions',
-                color: primaryLight),
-          ],
-        ),
-        error: (_, _) => Row(
-          children: [
-            _buildStatCard(
-                icon: Icons.access_time_rounded,
-                value: '\u2014',
-                label: 'Total Time',
-                color: accentCoral),
-            const SizedBox(width: 10),
-            _buildStatCard(
-                icon: Icons.music_note_rounded,
-                value: '\u2014',
-                label: 'Sessions',
-                color: primaryLight),
-          ],
+        error: (_, _) => IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildStatCard(
+                  icon: Icons.access_time_rounded,
+                  value: '\u2014',
+                  label: 'Total Time',
+                  color: accentCoral),
+              const SizedBox(width: 10),
+              _buildStatCard(
+                  icon: Icons.trending_up_rounded,
+                  value: '\u2014',
+                  label: avgLabel,
+                  color: primaryLight),
+            ],
+          ),
         ),
       ),
     );
@@ -555,8 +627,57 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
     required String value,
     required String label,
     required Color color,
+    String? tooltip,
   }) {
+    final key = tooltip != null ? GlobalKey() : null;
     return Expanded(
+      key: key,
+      child: GestureDetector(
+      onTap: tooltip != null ? () {
+        final renderBox = key!.currentContext!.findRenderObject() as RenderBox;
+        final offset = renderBox.localToGlobal(Offset.zero);
+        final overlay = Overlay.of(context);
+        late OverlayEntry entry;
+        entry = OverlayEntry(
+          builder: (context) => Stack(
+            children: [
+              GestureDetector(
+                onTap: () => entry.remove(),
+                behavior: HitTestBehavior.translucent,
+                child: const SizedBox.expand(),
+              ),
+              Positioned(
+                left: offset.dx,
+                top: offset.dy - 48,
+                width: renderBox.size.width,
+                child: Material(
+                  color: Colors.transparent,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1E0A4A),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.black, width: 2),
+                    ),
+                    child: Text(
+                      tooltip,
+                      style: GoogleFonts.nunito(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+        overlay.insert(entry);
+        Future.delayed(const Duration(seconds: 3), () {
+          if (entry.mounted) entry.remove();
+        });
+      } : null,
       child: Material(
         elevation: 12,
         shadowColor: Colors.black,
@@ -569,39 +690,50 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
             borderRadius: BorderRadius.circular(14),
             border: Border.all(color: Colors.black, width: 5),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
             children: [
               Container(
-                width: 34,
-                height: 34,
+                width: 38,
+                height: 38,
                 decoration: BoxDecoration(
                   color: darkSurfaceBg,
-                  borderRadius: BorderRadius.circular(9),
+                  borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: Colors.black, width: 2),
                 ),
-                child: Icon(icon, color: Colors.white, size: 19),
+                child: Icon(icon, color: Colors.white, size: 20),
               ),
-              const SizedBox(height: 10),
-              Text(
-                value,
-                style: GoogleFonts.dmSerifDisplay(
-                  fontSize: 22,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                label,
-                style: GoogleFonts.nunito(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: darkTextMuted,
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        value,
+                        maxLines: 1,
+                        style: GoogleFonts.dmSerifDisplay(
+                          fontSize: 20,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      label,
+                      style: GoogleFonts.nunito(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: darkTextMuted,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
         ),
+      ),
       ),
     );
   }
@@ -787,53 +919,79 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                                       final barH = fullBarH * progress;
                                       final isToday = i == highlightIndex;
 
+                                      final isSelected = _selectedBarIndex == i;
                                       return Expanded(
-                                        child: Padding(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: barCount > 7 ? 2 : 5),
-                                          child: Container(
-                                            height: barH > 0 ? barH : 0,
-                                            decoration: BoxDecoration(
-                                              gradient: val > 0
-                                                  ? LinearGradient(
-                                                      begin:
-                                                          Alignment.topCenter,
-                                                      end: Alignment
-                                                          .bottomCenter,
-                                                      colors: isToday
-                                                          ? [
-                                                              accentCoral,
-                                                              accentCoralDark
-                                                            ]
-                                                          : [
-                                                              accentCoral
-                                                                  .withValues(
-                                                                      alpha:
-                                                                          0.8),
-                                                              accentCoral
-                                                                  .withValues(
-                                                                      alpha:
-                                                                          0.5),
-                                                            ],
-                                                    )
-                                                  : null,
-                                              borderRadius:
-                                                  const BorderRadius.vertical(
-                                                top: Radius.circular(6),
-                                              ),
-                                              boxShadow: isToday && val > 0
-                                                  ? [
-                                                      BoxShadow(
-                                                        color: accentCoral
-                                                            .withValues(
-                                                                alpha: 0.35),
-                                                        blurRadius: 10,
-                                                        offset:
-                                                            const Offset(0, 2),
+                                        child: GestureDetector(
+                                          onTap: val > 0 ? () {
+                                            setState(() {
+                                              _selectedBarIndex = _selectedBarIndex == i ? null : i;
+                                            });
+                                          } : null,
+                                          behavior: HitTestBehavior.opaque,
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.end,
+                                            children: [
+                                              Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: barCount > 7 ? 2 : 5),
+                                                child: Stack(
+                                                  clipBehavior: Clip.none,
+                                                  alignment: Alignment.topCenter,
+                                                  children: [
+                                                    AnimatedContainer(
+                                                      duration: const Duration(milliseconds: 200),
+                                                      height: barH > 0 ? barH : 0,
+                                                      decoration: BoxDecoration(
+                                                        gradient: val > 0
+                                                            ? LinearGradient(
+                                                                begin: Alignment.topCenter,
+                                                                end: Alignment.bottomCenter,
+                                                                colors: isToday
+                                                                    ? [accentCoral, accentCoralDark]
+                                                                    : [
+                                                                        accentCoral.withValues(alpha: 0.8),
+                                                                        accentCoral.withValues(alpha: 0.5),
+                                                                      ],
+                                                              )
+                                                            : null,
+                                                        borderRadius: const BorderRadius.vertical(
+                                                          top: Radius.circular(6),
+                                                        ),
+                                                        boxShadow: isToday && val > 0
+                                                            ? [
+                                                                BoxShadow(
+                                                                  color: accentCoral.withValues(alpha: 0.35),
+                                                                  blurRadius: 10,
+                                                                  offset: const Offset(0, 2),
+                                                                ),
+                                                              ]
+                                                            : null,
                                                       ),
-                                                    ]
-                                                  : null,
-                                            ),
+                                                    ),
+                                                    if (isSelected && val > 0)
+                                                      Positioned(
+                                                        top: 0,
+                                                        child: Container(
+                                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                                          decoration: BoxDecoration(
+                                                            color: const Color(0xFF1E0A4A),
+                                                            borderRadius: BorderRadius.circular(6),
+                                                            border: Border.all(color: Colors.black, width: 1.5),
+                                                          ),
+                                                          child: Text(
+                                                            _formatDuration(Duration(minutes: val.round())),
+                                                            style: GoogleFonts.nunito(
+                                                              fontSize: 9,
+                                                              fontWeight: FontWeight.w700,
+                                                              color: Colors.white,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       );
@@ -959,19 +1117,31 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                   ? Padding(
                       padding: const EdgeInsets.symmetric(
                           vertical: 24, horizontal: 16),
-                      child: Center(
-                        child: Text(
-                          'No sessions in this period',
-                          style: GoogleFonts.nunito(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: darkTextSecondary,
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            width: 60,
+                            height: 60,
+                            child: Lottie.asset(
+                              'lib/images/licensed/recent-sessions-animation.json',
+                              fit: BoxFit.contain,
+                              repeat: false,
+                            ),
                           ),
-                        ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'No sessions this period',
+                            style: GoogleFonts.nunito(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: darkTextSecondary,
+                            ),
+                          ),
+                        ],
                       ),
                     )
                   : Column(
-                      children: List.generate(sessions.length > 5 ? 5 : sessions.length, (i) {
+                      children: List.generate(sessions.length > 3 ? 3 : sessions.length, (i) {
                         final s = sessions[i];
                         final instIcon = _instrumentIcons[s.instrumentName] ??
                             Icons.music_note;
@@ -1190,19 +1360,31 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                   ? Padding(
                       padding: const EdgeInsets.symmetric(
                           vertical: 24, horizontal: 16),
-                      child: Center(
-                        child: Text(
-                          'No recordings yet',
-                          style: GoogleFonts.nunito(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: darkTextSecondary,
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            width: 60,
+                            height: 60,
+                            child: Lottie.asset(
+                              'lib/images/licensed/no-recordings-animation.json',
+                              fit: BoxFit.contain,
+                              repeat: false,
+                            ),
                           ),
-                        ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'No recordings yet',
+                            style: GoogleFonts.nunito(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: darkTextSecondary,
+                            ),
+                          ),
+                        ],
                       ),
                     )
                   : Column(
-                      children: recordings.take(5).map((recording) {
+                      children: recordings.take(3).map((recording) {
                         return RecordingListTile(
                           recording: recording,
                           onPlay: () => _playRecording(recording),
