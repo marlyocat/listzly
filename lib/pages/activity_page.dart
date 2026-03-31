@@ -783,15 +783,31 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
           animation: _barAnim,
           builder: (context, child) {
             final t = _barAnim.value;
-            final animatedTime = Duration(
-              seconds: (stats.totalTime.inSeconds * t).round(),
-            );
             final animatedSessions = (stats.sessionCount * t).round();
+            // Use the final format and animate the numbers within it
+            // to avoid layout jitter from format changes.
+            final totalSeconds = stats.totalTime.inSeconds;
+            final animSeconds = (totalSeconds * t).round();
+            final finalHours = stats.totalTime.inHours;
+            final finalMinutes = stats.totalTime.inMinutes.remainder(60);
+            final finalSecs = totalSeconds.remainder(60);
+            String timeText;
+            if (finalHours > 0) {
+              final h = (finalHours * t).round();
+              final m = (finalMinutes * t).round();
+              timeText = m > 0 ? '${h}h ${m}m' : '${h}h';
+            } else if (finalMinutes > 0) {
+              final m = (finalMinutes * t).round();
+              final s = (finalSecs * t).round();
+              timeText = s > 0 ? '${m}m ${s}s' : '${m}m';
+            } else {
+              timeText = '${(finalSecs * t).round()}s';
+            }
             return Row(
               children: [
                 _buildStatCard(
                   icon: Icons.access_time_rounded,
-                  value: _formatDuration(animatedTime),
+                  value: animSeconds == 0 ? '0s' : timeText,
                   label: 'Total Time',
                   color: accentCoral,
                 ),
@@ -863,34 +879,39 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
             borderRadius: BorderRadius.circular(14),
             border: Border.all(color: Colors.black, width: 5),
           ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
             Container(
-              width: 34,
-              height: 34,
+              width: 38,
+              height: 38,
               decoration: BoxDecoration(
                 color: darkSurfaceBg,
-                borderRadius: BorderRadius.circular(9),
+                borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: Colors.black, width: 2),
               ),
-              child: Icon(icon, color: Colors.white, size: 19),
+              child: Icon(icon, color: Colors.white, size: 20),
             ),
-            const SizedBox(height: 10),
-            Text(
-              value,
-              style: GoogleFonts.dmSerifDisplay(
-                fontSize: 22,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              label,
-              style: GoogleFonts.nunito(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: darkTextMuted,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    value,
+                    style: GoogleFonts.dmSerifDisplay(
+                      fontSize: 20,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Text(
+                    label,
+                    style: GoogleFonts.nunito(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: darkTextMuted,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
