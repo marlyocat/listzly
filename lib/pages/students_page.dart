@@ -1223,8 +1223,9 @@ class _ActiveQuestTile extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
               border: Border.all(color: Colors.black, width: 2),
             ),
-            child: const Icon(Icons.assignment_rounded,
-                color: Colors.white, size: 20),
+            child: Padding(
+                padding: const EdgeInsets.all(6),
+                child: SvgPicture.asset('lib/images/licensed/assigned-quest.svg')),
           ),
           const SizedBox(width: 12),
           Expanded(

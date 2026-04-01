@@ -31,6 +31,13 @@ const _questIconMap = <String, IconData>{
   'daily_sessions_2': Icons.piano_rounded,
 };
 
+/// Maps quest keys to SVG icon paths.
+const _questSvgMap = <String, String>{
+  'daily_xp_30': 'lib/images/licensed/music-note.svg',
+  'daily_practice_20m': 'lib/images/licensed/stopwatch.svg',
+  'daily_sessions_2': 'lib/images/licensed/session.svg',
+};
+
 /// Maps icon name strings (from assigned quests) to IconData.
 const _iconNameMap = <String, IconData>{
   'timer_rounded': Icons.timer_rounded,
@@ -39,6 +46,12 @@ const _iconNameMap = <String, IconData>{
   'music_note_rounded': Icons.music_note_rounded,
   'category_rounded': Icons.category_rounded,
   'assignment_rounded': Icons.assignment_rounded,
+};
+
+/// Maps icon name strings to SVG icon paths.
+const _iconSvgMap = <String, String>{
+  'timer_rounded': 'lib/images/licensed/stopwatch.svg',
+  'music_note_rounded': 'lib/images/licensed/music-note.svg',
 };
 
 class QuestsPage extends ConsumerStatefulWidget {
@@ -173,6 +186,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
 
       return _Quest(
         icon: _questIconMap[qp.questKey] ?? Icons.star_rounded,
+        svgPath: _questSvgMap[qp.questKey],
         title: title,
         description: description,
         currentProgress: qp.progress,
@@ -198,6 +212,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
 
       return _Quest(
         icon: _iconNameMap[def?.iconName] ?? Icons.assignment_rounded,
+        svgPath: _iconSvgMap[def?.iconName],
         title: def?.title ?? qp.questKey,
         description: isRecurring
             ? (desc.isNotEmpty ? '$desc (Resets weekly)' : 'Resets weekly')
@@ -892,11 +907,16 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                           size: 22,
                         ),
                       )
-                    : Icon(
-                        quest.icon,
-                        color: Colors.white,
-                        size: 22,
-                      ),
+                    : quest.svgPath != null
+                        ? Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: SvgPicture.asset(quest.svgPath!),
+                          )
+                        : Icon(
+                            quest.icon,
+                            color: Colors.white,
+                            size: 22,
+                          ),
               ),
               const SizedBox(width: 14),
               // Quest info
@@ -995,6 +1015,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
 
 class _Quest {
   final IconData icon;
+  final String? svgPath;
   final String title;
   final String description;
   final int currentProgress;
@@ -1003,6 +1024,7 @@ class _Quest {
 
   const _Quest({
     required this.icon,
+    this.svgPath,
     required this.title,
     required this.description,
     required this.currentProgress,
