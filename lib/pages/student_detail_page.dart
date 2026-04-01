@@ -45,11 +45,11 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
     'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
   ];
-  static const _instrumentIcons = {
-    'Piano': Icons.piano,
-    'Guitar': Icons.music_note,
-    'Violin': Icons.library_music,
-    'Drums': Icons.surround_sound,
+  static const _instrumentImages = {
+    'Piano': 'lib/images/licensed/piano.svg',
+    'Guitar': 'lib/images/licensed/guitar.svg',
+    'Violin': 'lib/images/licensed/violin.svg',
+    'Drums': 'lib/images/licensed/drums.svg',
   };
 
   late DateTime _rangeStart;
@@ -1163,8 +1163,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                   : Column(
                       children: List.generate(sessions.length > 3 ? 3 : sessions.length, (i) {
                         final s = sessions[i];
-                        final instIcon = _instrumentIcons[s.instrumentName] ??
-                            Icons.music_note;
+                        final instImage = _instrumentImages[s.instrumentName];
                         return Column(
                           children: [
                             const Divider(
@@ -1187,8 +1186,9 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                                       border: Border.all(
                                           color: Colors.black, width: 2),
                                     ),
-                                    child: Icon(instIcon,
-                                        color: Colors.white, size: 20),
+                                    child: instImage != null
+                                        ? Padding(padding: const EdgeInsets.all(6), child: SvgPicture.asset(instImage))
+                                        : const Icon(Icons.music_note, color: Colors.white, size: 20),
                                   ),
                                   const SizedBox(width: 12),
                                   Expanded(
@@ -1686,9 +1686,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                         itemCount: sessions.length,
                         itemBuilder: (context, i) {
                           final s = sessions[i];
-                          final instIcon =
-                              _instrumentIcons[s.instrumentName] ??
-                                  Icons.music_note;
+                          final instImage = _instrumentImages[s.instrumentName];
                           return Column(
                             children: [
                               const Divider(
@@ -1713,8 +1711,9 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                                             color: Colors.black,
                                             width: 2),
                                       ),
-                                      child: Icon(instIcon,
-                                          color: Colors.white, size: 20),
+                                      child: instImage != null
+                                          ? Padding(padding: const EdgeInsets.all(6), child: SvgPicture.asset(instImage))
+                                          : const Icon(Icons.music_note, color: Colors.white, size: 20),
                                     ),
                                     const SizedBox(width: 12),
                                     Expanded(

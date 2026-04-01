@@ -30,13 +30,13 @@ import 'package:listzly/utils/responsive.dart';
 
 class PracticePage extends ConsumerStatefulWidget {
   final String instrument;
-  final IconData instrumentIcon;
+  final String? instrumentImagePath;
   final int durationMinutes;
 
   const PracticePage({
     super.key,
     required this.instrument,
-    required this.instrumentIcon,
+    this.instrumentImagePath,
     required this.durationMinutes,
   });
 
@@ -1259,7 +1259,10 @@ class _PracticePageState extends ConsumerState<PracticePage>
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(widget.instrumentIcon, color: darkTextSecondary, size: 20),
+                        if (widget.instrumentImagePath != null)
+                          SvgPicture.asset(widget.instrumentImagePath!, width: 20, height: 20)
+                        else
+                          const Icon(Icons.music_note, color: darkTextSecondary, size: 20),
                         const SizedBox(width: 8),
                         Text(
                           widget.instrument,

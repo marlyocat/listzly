@@ -137,8 +137,9 @@ class _InstrumentData {
   final String name;
   final IconData icon;
   final String? imagePath;
+  final String? iconPath;
   final List<Map<String, String>> quotes;
-  const _InstrumentData({required this.name, required this.icon, this.imagePath, required this.quotes});
+  const _InstrumentData({required this.name, required this.icon, this.imagePath, this.iconPath, required this.quotes});
 }
 
 class _HomeTab extends ConsumerStatefulWidget {
@@ -192,7 +193,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
   }
 
   static const List<_InstrumentData> _instruments = [
-    _InstrumentData(name: 'Piano', icon: Icons.piano, imagePath: 'lib/images/licensed/piano-sticker.svg', quotes: [
+    _InstrumentData(name: 'Piano', icon: Icons.piano, imagePath: 'lib/images/licensed/piano-sticker.svg', iconPath: 'lib/images/licensed/piano.svg', quotes: [
       {'quote': 'Simplicity is the final achievement.', 'author': 'Frederic Chopin'},
       {'quote': 'There is no such thing as a difficult piece. It is either impossible or it is easy.', 'author': 'Sergei Rachmaninoff'},
       {'quote': 'To play a wrong note is insignificant; to play without passion is inexcusable.', 'author': 'Ludwig van Beethoven'},
@@ -200,21 +201,21 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
       {'quote': 'The piano is a beautiful instrument to express the deepest feelings of the soul.', 'author': 'Franz Liszt'},
       {'quote': 'Beware of missing chances; otherwise it may be altogether too late some day.', 'author': 'Franz Liszt'},
     ]),
-    _InstrumentData(name: 'Guitar', icon: Icons.music_note, imagePath: 'lib/images/licensed/guitar-sticker.svg', quotes: [
+    _InstrumentData(name: 'Guitar', icon: Icons.music_note, imagePath: 'lib/images/licensed/guitar-sticker.svg', iconPath: 'lib/images/licensed/guitar.svg', quotes: [
       {'quote': 'The guitar is a small orchestra.', 'author': 'Andres Segovia'},
       {'quote': 'The guitar chose me, and I gave my life to it.', 'author': 'Paco de Lucia'},
       {'quote': 'A guitar is more than just a sound box. It is part of your soul.', 'author': 'Manuel Barrueco'},
       {'quote': 'The guitar has a kind of grit and excitement possessed by nothing else.', 'author': 'Brian May'},
       {'quote': 'My guitar is not a thing. It is an extension of myself. It is who I am.', 'author': 'Willie Nelson'},
     ]),
-    _InstrumentData(name: 'Violin', icon: Icons.music_note_outlined, imagePath: 'lib/images/licensed/violin-sticker.svg', quotes: [
+    _InstrumentData(name: 'Violin', icon: Icons.music_note_outlined, imagePath: 'lib/images/licensed/violin-sticker.svg', iconPath: 'lib/images/licensed/violin.svg', quotes: [
       {'quote': 'The violin can be the most beautiful voice in the world.', 'author': 'Niccolo Paganini'},
       {'quote': 'A violin sings from the depths of the human soul.', 'author': 'Itzhak Perlman'},
       {'quote': 'The violin is the perfect instrument of the heart.', 'author': 'Antonio Vivaldi'},
       {'quote': 'Every difficulty I have ever faced playing the violin has been overcome by practice.', 'author': 'Jascha Heifetz'},
       {'quote': 'Practicing is not about being perfect. It is about getting better every day.', 'author': 'Hilary Hahn'},
     ]),
-    _InstrumentData(name: 'Drums', icon: Icons.surround_sound, imagePath: 'lib/images/licensed/drum-set-sticker.svg', quotes: [
+    _InstrumentData(name: 'Drums', icon: Icons.surround_sound, imagePath: 'lib/images/licensed/drum-set-sticker.svg', iconPath: 'lib/images/licensed/drums.svg', quotes: [
       {'quote': 'The drummer drives. Everyone else rides.', 'author': 'Buddy Rich'},
       {'quote': 'A great drummer is not just keeping time, he is making time.', 'author': 'Elvin Jones'},
       {'quote': 'Drums are the heartbeat of music.', 'author': 'Ringo Starr'},
@@ -250,7 +251,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
         reverseTransitionDuration: const Duration(milliseconds: 300),
         pageBuilder: (context, animation, secondaryAnimation) => PracticePage(
           instrument: instrument.name,
-          instrumentIcon: instrument.icon,
+          instrumentImagePath: instrument.iconPath,
           durationMinutes: (_selectedDuration ?? 15).toInt(),
         ),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {

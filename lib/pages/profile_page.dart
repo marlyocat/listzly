@@ -3052,12 +3052,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
     final totalMinutes = instruments.fold<int>(
         0, (sum, i) => sum + ((i['minutes'] as num?)?.toInt() ?? 0));
 
-    // Map of instrument names to icons and colors for display purposes
-    const instrumentIcons = <String, IconData>{
-      'Piano': Icons.piano_rounded,
-      'Guitar': Icons.music_note_rounded,
-      'Violin': Icons.music_note_outlined,
-      'Drums': Icons.surround_sound_rounded,
+    // Map of instrument names to images and colors for display purposes
+    const instrumentImages = <String, String>{
+      'Piano': 'lib/images/licensed/piano.svg',
+      'Guitar': 'lib/images/licensed/guitar.svg',
+      'Violin': 'lib/images/licensed/violin.svg',
+      'Drums': 'lib/images/licensed/drums.svg',
     };
     const instrumentColors = <String, Color>{
       'Piano': primaryColor,
@@ -3065,7 +3065,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
       'Violin': accentCoral,
       'Drums': Color(0xFF5B9A6B),
     };
-    const defaultIcon = Icons.music_note_rounded;
     const defaultColor = primaryLight;
 
     return Padding(
@@ -3114,7 +3113,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                           (inst['minutes'] as num?)?.toInt() ?? 0;
                       final sessions =
                           (inst['sessions'] as num?)?.toInt() ?? 0;
-                      final icon = instrumentIcons[name] ?? defaultIcon;
+                      final instImage = instrumentImages[name];
                       final color = instrumentColors[name] ?? defaultColor;
                       final fraction =
                           totalMinutes > 0 ? minutes / totalMinutes : 0.0;
@@ -3142,8 +3141,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                     border: Border.all(
                                         color: Colors.black, width: 2),
                                   ),
-                                  child: Icon(icon,
-                                      color: Colors.white, size: 20),
+                                  child: instImage != null
+                                      ? Padding(padding: const EdgeInsets.all(6), child: SvgPicture.asset(instImage))
+                                      : const Icon(Icons.music_note, color: Colors.white, size: 20),
                                 ),
                                 const SizedBox(width: 14),
                                 Expanded(

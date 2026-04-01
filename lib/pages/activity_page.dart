@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
@@ -63,12 +64,11 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
 
   static const _dayLabels = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
 
-  // Instrument icon mapping
-  static const _instrumentIcons = {
-    'Piano': Icons.piano,
-    'Guitar': Icons.music_note,
-    'Violin': Icons.library_music,
-    'Drums': Icons.surround_sound,
+  static const _instrumentImages = {
+    'Piano': 'lib/images/licensed/piano.svg',
+    'Guitar': 'lib/images/licensed/guitar.svg',
+    'Violin': 'lib/images/licensed/violin.svg',
+    'Drums': 'lib/images/licensed/drums.svg',
   };
 
   // ---- Date range state ----
@@ -1442,8 +1442,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                   : Column(
                 children: List.generate(sessions.length > 3 ? 3 : sessions.length, (i) {
                   final s = sessions[i];
-                  final instIcon =
-                      _instrumentIcons[s.instrumentName] ?? Icons.music_note;
+                  final instImage = _instrumentImages[s.instrumentName];
                   return Column(
                     children: [
                       const Divider(
@@ -1466,7 +1465,9 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                                 borderRadius: BorderRadius.circular(10),
                                 border: Border.all(color: Colors.black, width: 2),
                               ),
-                              child: Icon(instIcon, color: Colors.white, size: 20),
+                              child: instImage != null
+                                  ? Padding(padding: const EdgeInsets.all(6), child: SvgPicture.asset(instImage))
+                                  : const Icon(Icons.music_note, color: Colors.white, size: 20),
                             ),
                             const SizedBox(width: 12),
                             // Date + instrument name
@@ -2101,8 +2102,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                         itemCount: sessions.length,
                         itemBuilder: (context, i) {
                           final s = sessions[i];
-                          final instIcon = _instrumentIcons[s.instrumentName] ??
-                              Icons.music_note;
+                          final instImage = _instrumentImages[s.instrumentName];
                           return Column(
                             children: [
                               const Divider(
@@ -2125,8 +2125,9 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                                         border: Border.all(
                                             color: Colors.black, width: 2),
                                       ),
-                                      child: Icon(instIcon,
-                                          color: Colors.white, size: 20),
+                                      child: instImage != null
+                                          ? Padding(padding: const EdgeInsets.all(6), child: SvgPicture.asset(instImage))
+                                          : const Icon(Icons.music_note, color: Colors.white, size: 20),
                                     ),
                                     const SizedBox(width: 12),
                                     Expanded(
