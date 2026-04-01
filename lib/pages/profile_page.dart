@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:listzly/components/animated_seal_tooltip.dart';
 import 'package:lottie/lottie.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
 import 'package:listzly/models/profile.dart';
@@ -340,13 +341,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                       ),
                     ),
                     const Spacer(),
-                    GestureDetector(
+                    AnimatedSealTooltip(
                       onTap: _startShowcase,
-                      child: SvgPicture.asset(
-                        'lib/images/licensed/seal_tooltip.svg',
-                        width: 30,
-                        height: 30,
-                      ),
+                      navIndex: profileTabIndex,
                     ),
                   ],
                 ),

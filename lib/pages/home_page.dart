@@ -21,6 +21,7 @@ import 'package:listzly/providers/settings_provider.dart';
 import 'package:listzly/providers/profile_provider.dart';
 import 'package:listzly/providers/subscription_provider.dart';
 import 'package:listzly/components/upgrade_prompt.dart';
+import 'package:listzly/components/animated_seal_tooltip.dart';
 import 'package:listzly/components/now_playing_banner.dart';
 import 'package:listzly/providers/music_provider.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
@@ -347,13 +348,9 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
             Positioned(
               top: MediaQuery.of(context).padding.top + 8,
               right: 12,
-              child: GestureDetector(
+              child: AnimatedSealTooltip(
                 onTap: _startShowcase,
-                child: SvgPicture.asset(
-                  'lib/images/licensed/seal_tooltip.svg',
-                  width: 30,
-                  height: 30,
-                ),
+                navIndex: 0,
               ),
             ),
             SafeArea(

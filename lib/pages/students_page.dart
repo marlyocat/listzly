@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:listzly/components/animated_seal_tooltip.dart';
 import 'package:lottie/lottie.dart';
 import 'package:listzly/providers/nav_provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -143,13 +144,9 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                     ),
                     const Spacer(),
                     const SizedBox(width: 40),
-                    GestureDetector(
+                    AnimatedSealTooltip(
                       onTap: _startShowcase,
-                      child: SvgPicture.asset(
-                        'lib/images/licensed/seal_tooltip.svg',
-                        width: 30,
-                        height: 30,
-                      ),
+                      navIndex: 3,
                     ),
                   ],
                 ),

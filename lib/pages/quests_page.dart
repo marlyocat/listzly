@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:listzly/components/animated_seal_tooltip.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:listzly/components/skeleton_loader.dart';
@@ -303,13 +304,9 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                       ),
                     ),
                     const Spacer(),
-                    GestureDetector(
+                    AnimatedSealTooltip(
                       onTap: _startShowcase,
-                      child: SvgPicture.asset(
-                        'lib/images/licensed/seal_tooltip.svg',
-                        width: 30,
-                        height: 30,
-                      ),
+                      navIndex: 1,
                     ),
                   ],
                 ),

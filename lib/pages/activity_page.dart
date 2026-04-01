@@ -19,7 +19,7 @@ import 'package:listzly/providers/subscription_provider.dart';
 import 'package:listzly/components/upgrade_prompt.dart';
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:listzly/components/animated_seal_tooltip.dart';
 import 'package:showcaseview/showcaseview.dart';
 
 class ActivityPage extends ConsumerStatefulWidget {
@@ -512,13 +512,9 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                           ),
                         ),
                         const Spacer(),
-                        GestureDetector(
+                        AnimatedSealTooltip(
                           onTap: _startShowcase,
-                          child: SvgPicture.asset(
-                            'lib/images/licensed/seal_tooltip.svg',
-                            width: 30,
-                            height: 30,
-                          ),
+                          navIndex: 2,
                         ),
                       ],
                     ),
