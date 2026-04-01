@@ -833,6 +833,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
               children: [
                 _buildStatCard(
                   icon: Icons.access_time_rounded,
+                  svgPath: 'lib/images/licensed/history.svg',
                   value: animSeconds == 0 ? '0s' : timeText,
                   label: 'Total Time',
                   color: accentCoral,
@@ -845,6 +846,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                 const SizedBox(width: 10),
                 _buildStatCard(
                   icon: Icons.trending_up_rounded,
+                  svgPath: 'lib/images/licensed/statistics.svg',
                   value: avgSeconds == 0 ? '0s' : avgText,
                   label: avgLabel,
                   color: primaryColor,
@@ -866,6 +868,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
             children: [
               _buildStatCard(
                 icon: Icons.access_time_rounded,
+                svgPath: 'lib/images/licensed/history.svg',
                 value: '\u2014',
                 label: 'Total Time',
                 color: accentCoral,
@@ -873,6 +876,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
               const SizedBox(width: 10),
               _buildStatCard(
                 icon: Icons.trending_up_rounded,
+                svgPath: 'lib/images/licensed/statistics.svg',
                 value: '\u2014',
                 label: _selectedTab == 0 ? 'Daily Avg' : _selectedTab == 1 ? 'Weekly Avg' : 'Monthly Avg',
                 color: primaryColor,
@@ -886,6 +890,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
             children: [
               _buildStatCard(
                 icon: Icons.access_time_rounded,
+                svgPath: 'lib/images/licensed/history.svg',
                 value: '\u2014',
                 label: 'Total Time',
                 color: accentCoral,
@@ -893,6 +898,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
               const SizedBox(width: 10),
               _buildStatCard(
                 icon: Icons.trending_up_rounded,
+                svgPath: 'lib/images/licensed/statistics.svg',
                 value: '\u2014',
                 label: _selectedTab == 0 ? 'Daily Avg' : _selectedTab == 1 ? 'Weekly Avg' : 'Monthly Avg',
                 color: primaryColor,
@@ -906,6 +912,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
 
   Widget _buildStatCard({
     required IconData icon,
+    String? svgPath,
     required String value,
     required String label,
     required Color color,
@@ -982,7 +989,9 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: Colors.black, width: 2),
               ),
-              child: Icon(icon, color: Colors.white, size: 20),
+              child: svgPath != null
+                  ? Padding(padding: const EdgeInsets.all(6), child: SvgPicture.asset(svgPath))
+                  : Icon(icon, color: Colors.white, size: 20),
             ),
             const SizedBox(width: 12),
             Expanded(

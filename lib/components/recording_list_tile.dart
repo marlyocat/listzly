@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:listzly/models/practice_recording.dart';
 import 'package:listzly/theme/colors.dart';
@@ -64,8 +65,9 @@ class RecordingListTile extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: Colors.black, width: 2),
                 ),
-                child: const Icon(Icons.mic_rounded,
-                    color: Colors.white, size: 20),
+                child: Padding(
+                    padding: const EdgeInsets.all(6),
+                    child: SvgPicture.asset('lib/images/licensed/microphone.svg')),
               ),
               const SizedBox(width: 12),
               // Info
