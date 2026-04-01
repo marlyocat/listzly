@@ -107,18 +107,22 @@ class RecordingListTile extends StatelessWidget {
                 ),
               ),
               // Play button
-              GestureDetector(
-                onTap: onPlay,
-                child: Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    color: accentCoral.withAlpha(30),
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.black, width: 2),
+              Semantics(
+                label: 'Play recording',
+                button: true,
+                child: GestureDetector(
+                  onTap: onPlay,
+                  child: Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: accentCoral.withAlpha(30),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.black, width: 2),
+                    ),
+                    child: const Icon(Icons.play_arrow_rounded,
+                        color: accentCoral, size: 18),
                   ),
-                  child: const Icon(Icons.play_arrow_rounded,
-                      color: accentCoral, size: 18),
                 ),
               ),
               // More actions menu

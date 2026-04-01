@@ -122,9 +122,13 @@ class _FlipBoxNavBarState extends State<FlipBoxNavBar>
       child: Row(
         children: List.generate(widget.items.length, (index) {
           return Expanded(
-            child: GestureDetector(
-              onTap: () => widget.onTap?.call(index),
-              child: _FlipBoxTile(
+            child: Semantics(
+              label: widget.items[index].name,
+              button: true,
+              selected: index == widget.currentIndex,
+              child: GestureDetector(
+                onTap: () => widget.onTap?.call(index),
+                child: _FlipBoxTile(
                 key: UniqueKey(),
                 item: widget.items[index],
                 controller: _controllers[index],
@@ -137,6 +141,7 @@ class _FlipBoxNavBarState extends State<FlipBoxNavBar>
                       color: Colors.white,
                     ),
               ),
+            ),
             ),
           );
         }),

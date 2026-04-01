@@ -680,7 +680,10 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                   child: AnimatedBuilder(
                   animation: Listenable.merge([_pulseAnimation, _rippleController]),
                   builder: (context, child) {
-                    return GestureDetector(
+                    return Semantics(
+                      label: 'Start practice session',
+                      button: true,
+                      child: GestureDetector(
                       onTap: _onGoTap,
                       child: SizedBox(
                         width: areaSize,
@@ -737,6 +740,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                           ],
                         ),
                       ),
+                    ),
                     );
                   },
                 ),
