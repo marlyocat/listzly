@@ -41,6 +41,16 @@ class _AuthPageState extends ConsumerState<AuthPage> {
       return;
     }
 
+    if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email)) {
+      _showError('Please enter a valid email address');
+      return;
+    }
+
+    if (!_isLogin && password.length < 6) {
+      _showError('Password must be at least 6 characters');
+      return;
+    }
+
     setState(() => _isLoading = true);
 
     try {
