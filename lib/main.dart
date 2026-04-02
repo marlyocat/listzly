@@ -8,6 +8,7 @@ import 'package:listzly/pages/intro_page.dart';
 import 'package:listzly/pages/auth_gate.dart';
 import 'package:listzly/pages/reset_password_page.dart';
 import 'package:listzly/services/notification_service.dart';
+import 'package:listzly/services/offline_session_queue.dart';
 import 'package:listzly/config/revenuecat_config.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
@@ -32,22 +33,30 @@ Future<void> main() async {
       url: supabaseUrl,
       anonKey: supabaseAnonKey,
     ).then((_) async {
-      // RevenueCat depends on Supabase being ready
-      await Purchases.configure(
-        PurchasesConfiguration(revenueCatApiKey),
-      );
+      try {
+        await Purchases.configure(
+          PurchasesConfiguration(revenueCatApiKey),
+        );
+      } catch (e) {
+        debugPrint('RevenueCat configure failed (offline?): $e');
+      }
     }),
   ]);
 
   // Set RevenueCat user ID if logged in
   final currentUser = Supabase.instance.client.auth.currentUser;
   if (currentUser != null) {
-    await Purchases.logIn(currentUser.id);
+    try {
+      await Purchases.logIn(currentUser.id);
+    } catch (e) {
+      debugPrint('RevenueCat logIn failed (offline?): $e');
+    }
   }
 
-  // Defer notification scheduling to after first frame
+  // Defer notification scheduling and offline session flush to after first frame
   WidgetsBinding.instance.addPostFrameCallback((_) {
     _rescheduleNotifications();
+    OfflineSessionQueue.flush();
   });
 
   // Listen for password recovery deep link before app starts

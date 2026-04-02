@@ -25,6 +25,7 @@ import 'package:listzly/providers/subscription_provider.dart';
 import 'package:listzly/components/upgrade_prompt.dart';
 import 'package:listzly/components/recording_player.dart';
 import 'package:listzly/services/notification_service.dart';
+import 'package:listzly/services/offline_session_queue.dart';
 import 'package:listzly/theme/colors.dart';
 import 'package:listzly/utils/responsive.dart';
 
@@ -636,7 +637,8 @@ class _PracticePageState extends ConsumerState<PracticePage>
       container.invalidate(weeklyBarDataProvider);
       container.invalidate(summaryStatsProvider);
     } catch (_) {
-      // Session save failed silently — don't disrupt celebration UI
+      // Network likely unavailable — queue session for retry later
+      await OfflineSessionQueue.enqueue(session);
     }
   }
 
