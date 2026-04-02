@@ -1526,8 +1526,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                     color: darkTextMuted,
                     fontWeight: FontWeight.w600,
                   ),
-                  prefixIcon: const Icon(Icons.vpn_key_rounded,
-                      color: darkTextMuted, size: 20),
+                  prefixIcon: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: SvgPicture.asset('lib/images/licensed/key.svg',
+                          width: 20, height: 20)),
                   filled: true,
                   fillColor: Colors.white.withAlpha(12),
                   border: OutlineInputBorder(
@@ -1562,21 +1564,15 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                     setState(() => errorText = null);
                   }
                 },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.qr_code_scanner_rounded,
-                        color: primaryLight, size: 18),
-                    const SizedBox(width: 6),
-                    Text(
-                      'Scan QR Code',
-                      style: GoogleFonts.nunito(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: primaryLight,
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  'Scan QR Code',
+                  style: GoogleFonts.nunito(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: accentCoral,
+                    decoration: TextDecoration.underline,
+                    decorationColor: accentCoral,
+                  ),
                 ),
               ),
               if (errorText != null) ...[
