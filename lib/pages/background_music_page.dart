@@ -108,7 +108,7 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
                 child: Text(
-                  'Pick a piece to play in the background while you practice.',
+                  'Pick a piece to listen to while you take a break. Music pauses automatically when you start practicing.',
                   style: GoogleFonts.nunito(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
