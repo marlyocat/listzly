@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 
+import 'package:listzly/components/skeleton_loader.dart';
 import 'package:listzly/components/flip_box_nav_bar.dart';
 import 'package:listzly/pages/quests_page.dart';
 import 'package:listzly/pages/activity_page.dart';
@@ -157,6 +158,8 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
   late AnimationController _rippleController;
+  late AnimationController _streakCountUpController;
+  int? _lastStreakTarget;
 
   late List<int> _quoteIndices;
 
@@ -190,6 +193,10 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
       vsync: this,
       duration: const Duration(milliseconds: 3500),
     )..repeat();
+    _streakCountUpController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
   }
 
   static const List<_InstrumentData> _instruments = [
@@ -228,6 +235,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
   void dispose() {
     _pageController.dispose();
     _pulseController.dispose();
+    _streakCountUpController.dispose();
     _rippleController.dispose();
     super.dispose();
   }
@@ -280,6 +288,12 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
     final streakDays = statsAsync.value?.currentStreak ?? 0;
     final longestStreak = statsAsync.value?.longestStreak ?? 0;
     final streakBroken = streakDays == 0 && longestStreak > 0;
+
+    // Trigger count-up when streak data first arrives
+    if (streakDays > 0 && _lastStreakTarget != streakDays) {
+      _lastStreakTarget = streakDays;
+      _streakCountUpController.forward(from: 0);
+    }
 
     // Set slider to remaining daily goal on first load or when goal changes
     final settings = ref.watch(userSettingsProvider).value;
@@ -381,7 +395,15 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                     ),
                   ),
                 ],
-                child: Container(
+                child: statsAsync.isLoading
+                    ? SkeletonShimmer(
+                        child: SkeletonBox(
+                          width: 140,
+                          height: 32,
+                          borderRadius: 20,
+                        ),
+                      )
+                    : Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                   decoration: BoxDecoration(
                     color: Colors.white.withAlpha(15),
@@ -406,13 +428,19 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                       Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
-                            '$streakDays day streak',
-                            style: GoogleFonts.nunito(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                            ),
+                          AnimatedBuilder(
+                            animation: _streakCountUpController,
+                            builder: (context, child) {
+                              final value = (_streakCountUpController.value * streakDays).round();
+                              return Text(
+                                '$value day streak',
+                                style: GoogleFonts.nunito(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                ),
+                              );
+                            },
                           ),
                           if (streakBroken)
                             Text(
@@ -535,8 +563,9 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                                 child: Column(
                                   children: [
                                     // Duration label
+                                    if (_selectedDuration != null) ...[
                                     Text(
-                                      '${(_selectedDuration ?? 15).toInt()}',
+                                      '${_selectedDuration!.toInt()}',
                                       style: GoogleFonts.dmSerifDisplay(
                                         fontSize: 20,
                                         color: accentCoral,
@@ -550,6 +579,8 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                                         color: darkTextMuted,
                                       ),
                                     ),
+                                    ] else
+                                      const SizedBox(height: 34),
                                     const SizedBox(height: 2),
                                     // + button
                                     GestureDetector(
