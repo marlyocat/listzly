@@ -104,7 +104,7 @@ class IntroPage extends StatelessWidget {
                       child: Transform.translate(
                         offset: const Offset(0, 30),
                         child: SvgPicture.asset(
-                          'lib/images/licensed/music-instrument.svg',
+                          'lib/images/licensed/svg/music-instrument.svg',
                           height: 220,
                         ),
                       ),

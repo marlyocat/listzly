@@ -75,37 +75,37 @@ class _HomePageState extends ConsumerState<HomePage> {
     final navItems = <FlipBoxNavItem>[
       FlipBoxNavItem(
         name: 'Home',
-        selectedImage: 'lib/images/licensed/home-selected.svg',
-        unselectedImage: 'lib/images/licensed/home-unselected.svg',
+        selectedImage: 'lib/images/licensed/svg/home-selected.svg',
+        unselectedImage: 'lib/images/licensed/svg/home-unselected.svg',
         selectedBackgroundColor: primaryColor,
         unselectedBackgroundColor: primaryColor.withValues(alpha: 0.6),
       ),
       FlipBoxNavItem(
         name: 'Quests',
-        selectedImage: 'lib/images/licensed/quest-selected.svg',
-        unselectedImage: 'lib/images/licensed/quest-unselected.svg',
+        selectedImage: 'lib/images/licensed/svg/quest-selected.svg',
+        unselectedImage: 'lib/images/licensed/svg/quest-unselected.svg',
         selectedBackgroundColor: primaryColor,
         unselectedBackgroundColor: primaryColor.withValues(alpha: 0.6),
       ),
       FlipBoxNavItem(
         name: 'Activity',
-        selectedImage: 'lib/images/licensed/trophy-selected.svg',
-        unselectedImage: 'lib/images/licensed/trophy-unselected.svg',
+        selectedImage: 'lib/images/licensed/svg/trophy-selected.svg',
+        unselectedImage: 'lib/images/licensed/svg/trophy-unselected.svg',
         selectedBackgroundColor: primaryColor,
         unselectedBackgroundColor: primaryColor.withValues(alpha: 0.6),
       ),
       if (isTeacher)
         FlipBoxNavItem(
           name: 'Students',
-          selectedImage: 'lib/images/licensed/students-selected.svg',
-          unselectedImage: 'lib/images/licensed/students-unselected.svg',
+          selectedImage: 'lib/images/licensed/svg/students-selected.svg',
+          unselectedImage: 'lib/images/licensed/svg/students-unselected.svg',
           selectedBackgroundColor: primaryColor,
           unselectedBackgroundColor: primaryColor.withValues(alpha: 0.6),
         ),
       FlipBoxNavItem(
         name: 'Profile',
-        selectedImage: 'lib/images/licensed/settings-selected.svg',
-        unselectedImage: 'lib/images/licensed/settings-unselected.svg',
+        selectedImage: 'lib/images/licensed/svg/settings-selected.svg',
+        unselectedImage: 'lib/images/licensed/svg/settings-unselected.svg',
         selectedBackgroundColor: primaryColor,
         unselectedBackgroundColor: primaryColor.withValues(alpha: 0.6),
       ),
@@ -200,7 +200,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
   }
 
   static const List<_InstrumentData> _instruments = [
-    _InstrumentData(name: 'Piano', icon: Icons.piano, imagePath: 'lib/images/licensed/piano-sticker.svg', iconPath: 'lib/images/licensed/piano.svg', quotes: [
+    _InstrumentData(name: 'Piano', icon: Icons.piano, imagePath: 'lib/images/licensed/svg/piano-sticker.svg', iconPath: 'lib/images/licensed/svg/piano.svg', quotes: [
       {'quote': 'Simplicity is the final achievement.', 'author': 'Frederic Chopin'},
       {'quote': 'There is no such thing as a difficult piece. It is either impossible or it is easy.', 'author': 'Sergei Rachmaninoff'},
       {'quote': 'To play a wrong note is insignificant; to play without passion is inexcusable.', 'author': 'Ludwig van Beethoven'},
@@ -208,21 +208,21 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
       {'quote': 'The piano is a beautiful instrument to express the deepest feelings of the soul.', 'author': 'Franz Liszt'},
       {'quote': 'Beware of missing chances; otherwise it may be altogether too late some day.', 'author': 'Franz Liszt'},
     ]),
-    _InstrumentData(name: 'Guitar', icon: Icons.music_note, imagePath: 'lib/images/licensed/guitar-sticker.svg', iconPath: 'lib/images/licensed/guitar.svg', quotes: [
+    _InstrumentData(name: 'Guitar', icon: Icons.music_note, imagePath: 'lib/images/licensed/svg/guitar-sticker.svg', iconPath: 'lib/images/licensed/svg/guitar.svg', quotes: [
       {'quote': 'The guitar is a small orchestra.', 'author': 'Andres Segovia'},
       {'quote': 'The guitar chose me, and I gave my life to it.', 'author': 'Paco de Lucia'},
       {'quote': 'A guitar is more than just a sound box. It is part of your soul.', 'author': 'Manuel Barrueco'},
       {'quote': 'The guitar has a kind of grit and excitement possessed by nothing else.', 'author': 'Brian May'},
       {'quote': 'My guitar is not a thing. It is an extension of myself. It is who I am.', 'author': 'Willie Nelson'},
     ]),
-    _InstrumentData(name: 'Violin', icon: Icons.music_note_outlined, imagePath: 'lib/images/licensed/violin-sticker.svg', iconPath: 'lib/images/licensed/violin.svg', quotes: [
+    _InstrumentData(name: 'Violin', icon: Icons.music_note_outlined, imagePath: 'lib/images/licensed/svg/violin-sticker.svg', iconPath: 'lib/images/licensed/svg/violin.svg', quotes: [
       {'quote': 'The violin can be the most beautiful voice in the world.', 'author': 'Niccolo Paganini'},
       {'quote': 'A violin sings from the depths of the human soul.', 'author': 'Itzhak Perlman'},
       {'quote': 'The violin is the perfect instrument of the heart.', 'author': 'Antonio Vivaldi'},
       {'quote': 'Every difficulty I have ever faced playing the violin has been overcome by practice.', 'author': 'Jascha Heifetz'},
       {'quote': 'Practicing is not about being perfect. It is about getting better every day.', 'author': 'Hilary Hahn'},
     ]),
-    _InstrumentData(name: 'Drums', icon: Icons.surround_sound, imagePath: 'lib/images/licensed/drum-set-sticker.svg', iconPath: 'lib/images/licensed/drums.svg', quotes: [
+    _InstrumentData(name: 'Drums', icon: Icons.surround_sound, imagePath: 'lib/images/licensed/svg/drum-set-sticker.svg', iconPath: 'lib/images/licensed/svg/drums.svg', quotes: [
       {'quote': 'The drummer drives. Everyone else rides.', 'author': 'Buddy Rich'},
       {'quote': 'A great drummer is not just keeping time, he is making time.', 'author': 'Elvin Jones'},
       {'quote': 'Drums are the heartbeat of music.', 'author': 'Ringo Starr'},
@@ -420,7 +420,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                         width: 22,
                         height: 22,
                         child: Lottie.asset(
-                          'lib/images/licensed/fire-streak-animation.json',
+                          'lib/images/licensed/json/fire-streak-animation.json',
                           fit: BoxFit.contain,
                         ),
                       ),

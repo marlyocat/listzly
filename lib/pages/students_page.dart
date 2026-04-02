@@ -116,7 +116,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                       width: 32,
                       height: 32,
                       child: Lottie.asset(
-                        'lib/images/licensed/book-animation.json',
+                        'lib/images/licensed/json/book-animation.json',
                         fit: BoxFit.contain,
                         repeat: false,
                         controller: _titleAnimController,
@@ -395,7 +395,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: Colors.black, width: 2),
                   ),
-                  child: SvgPicture.asset('lib/images/licensed/key.svg',
+                  child: SvgPicture.asset('lib/images/licensed/svg/key.svg',
                       width: 20, height: 20),
                 ),
                 const SizedBox(width: 12),
@@ -477,7 +477,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                         border: Border.all(
                             color: Colors.black, width: 2),
                       ),
-                      child: SvgPicture.asset('lib/images/licensed/qr-code.svg',
+                      child: SvgPicture.asset('lib/images/licensed/svg/qr-code.svg',
                           width: 18, height: 18),
                     ),
                   ),
@@ -503,7 +503,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                         border: Border.all(
                             color: Colors.black, width: 2),
                       ),
-                      child: SvgPicture.asset('lib/images/licensed/copy.svg',
+                      child: SvgPicture.asset('lib/images/licensed/svg/copy.svg',
                           width: 18, height: 18),
                     ),
                   ),
@@ -982,17 +982,22 @@ class _StudentTile extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Colors.black, width: 2),
               ),
-              child: Center(
-                child: Text(
-                  student.displayName.isNotEmpty
-                      ? student.displayName[0].toUpperCase()
-                      : '?',
-                  style: GoogleFonts.dmSerifDisplay(
-                    fontSize: 18,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
+              child: student.avatarUrl != null
+                  ? Padding(
+                      padding: const EdgeInsets.all(7),
+                      child: SvgPicture.asset(student.avatarUrl!),
+                    )
+                  : Center(
+                      child: Text(
+                        student.displayName.isNotEmpty
+                            ? student.displayName[0].toUpperCase()
+                            : '?',
+                        style: GoogleFonts.dmSerifDisplay(
+                          fontSize: 18,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
             ),
             const SizedBox(width: 12),
             // Name + stats
@@ -1011,7 +1016,7 @@ class _StudentTile extends StatelessWidget {
                   const SizedBox(height: 2),
                   Row(
                     children: [
-                      SvgPicture.asset('lib/images/licensed/streak.svg',
+                      SvgPicture.asset('lib/images/licensed/svg/streak.svg',
                           width: 14, height: 14),
                       const SizedBox(width: 3),
                       Text(
@@ -1023,7 +1028,7 @@ class _StudentTile extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      SvgPicture.asset('lib/images/licensed/level.svg',
+                      SvgPicture.asset('lib/images/licensed/svg/level.svg',
                           width: 14, height: 14),
                       const SizedBox(width: 3),
                       Text(
@@ -1035,7 +1040,7 @@ class _StudentTile extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      SvgPicture.asset('lib/images/licensed/xp.svg',
+                      SvgPicture.asset('lib/images/licensed/svg/xp.svg',
                           width: 14, height: 14),
                       const SizedBox(width: 3),
                       Text(
@@ -1225,7 +1230,7 @@ class _ActiveQuestTile extends StatelessWidget {
             ),
             child: Padding(
                 padding: const EdgeInsets.all(6),
-                child: SvgPicture.asset('lib/images/licensed/assigned-quest.svg')),
+                child: SvgPicture.asset('lib/images/licensed/svg/assigned-quest.svg')),
           ),
           const SizedBox(width: 12),
           Expanded(

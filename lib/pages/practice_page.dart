@@ -1098,17 +1098,17 @@ class _PracticePageState extends ConsumerState<PracticePage>
   late int _celebrationIndex;
 
   static const _celebrations = [
-    (first: 'lib/images/licensed/star-animation-1.json', second: 'lib/images/licensed/star-animation-2.json', text: 'A star in the making!'),
-    (first: 'lib/images/licensed/moon-animation-1.json', second: 'lib/images/licensed/moon-animation-2.json', text: 'One giant leap for talent!'),
-    (first: 'lib/images/licensed/observatory-ufo-animation-1.json', second: 'lib/images/licensed/observatory-ufo-animation-2.json', text: 'Detected: out of this world talent!'),
+    (first: 'lib/images/licensed/json/star-animation-1.json', second: 'lib/images/licensed/json/star-animation-2.json', text: 'A star in the making!'),
+    (first: 'lib/images/licensed/json/moon-animation-1.json', second: 'lib/images/licensed/json/moon-animation-2.json', text: 'One giant leap for talent!'),
+    (first: 'lib/images/licensed/json/observatory-ufo-animation-1.json', second: 'lib/images/licensed/json/observatory-ufo-animation-2.json', text: 'Detected: out of this world talent!'),
   ];
 
   static const _shockedAssets = [
-    (image: 'lib/images/licensed/cow-move.svg', text: "Moo-ve it, don't stop now!"),
-    (image: 'lib/images/licensed/ghost-shocked.svg', text: 'Boo! You scared me by stopping!'),
-    (image: 'lib/images/licensed/penguin-cheer.svg', text: 'Brrr-illiant session, keep it up!'),
-    (image: 'lib/images/licensed/rabbit-hop.svg', text: 'Hop to it, keep going!'),
-    (image: 'lib/images/licensed/raccon-yawn.svg', text: 'Sneaky break? I saw that!'),
+    (image: 'lib/images/licensed/svg/cow-move.svg', text: "Moo-ve it, don't stop now!"),
+    (image: 'lib/images/licensed/svg/ghost-shocked.svg', text: 'Boo! You scared me by stopping!'),
+    (image: 'lib/images/licensed/svg/penguin-cheer.svg', text: 'Brrr-illiant session, keep it up!'),
+    (image: 'lib/images/licensed/svg/rabbit-hop.svg', text: 'Hop to it, keep going!'),
+    (image: 'lib/images/licensed/svg/raccon-yawn.svg', text: 'Sneaky break? I saw that!'),
   ];
 
 
@@ -1121,7 +1121,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
         children: [
           Expanded(
             child: Lottie.asset(
-              'lib/images/licensed/rocket-animation.json',
+              'lib/images/licensed/json/rocket-animation.json',
               fit: BoxFit.contain,
               repeat: false,
               onLoaded: (composition) {
@@ -1335,7 +1335,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
                             width: 28,
                             height: 28,
                             child: Lottie.asset(
-                              'lib/images/licensed/star-animation-2.json',
+                              'lib/images/licensed/json/star-animation-2.json',
                               fit: BoxFit.contain,
                               repeat: true,
                             ),
@@ -1353,7 +1353,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
                             width: 28,
                             height: 28,
                             child: Lottie.asset(
-                              'lib/images/licensed/star-animation-2.json',
+                              'lib/images/licensed/json/star-animation-2.json',
                               fit: BoxFit.contain,
                               repeat: true,
                             ),
@@ -1371,7 +1371,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
                           width: 24,
                           height: 24,
                           child: Lottie.asset(
-                            'lib/images/licensed/fire-streak-animation.json',
+                            'lib/images/licensed/json/fire-streak-animation.json',
                             fit: BoxFit.contain,
                             repeat: true,
                           ),

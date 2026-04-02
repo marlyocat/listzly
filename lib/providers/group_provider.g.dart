@@ -87,7 +87,7 @@ final class TeacherGroupProvider
   }
 }
 
-String _$teacherGroupHash() => r'550122c6a214988966260490751db4662bc8f43c';
+String _$teacherGroupHash() => r'bb62e5fb2e0e62ab11ff9bfe3632471f273fb49f';
 
 @ProviderFor(studentMembership)
 final studentMembershipProvider = StudentMembershipProvider._();
@@ -200,7 +200,7 @@ final class TeacherStudentsProvider
   }
 }
 
-String _$teacherStudentsHash() => r'8e285c3f66540e51516b94abf1b557a0ac60578f';
+String _$teacherStudentsHash() => r'6995ff13fea1cd02ad84e77b083dc75a4f5a4123';
 
 @ProviderFor(unreadGroupNotifications)
 final unreadGroupNotificationsProvider = UnreadGroupNotificationsProvider._();

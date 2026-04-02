@@ -1,7 +1,9 @@
+import 'dart:math';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:listzly/models/profile.dart';
 import 'package:listzly/models/subscription_tier.dart';
 import 'package:listzly/models/user_role.dart';
+import 'package:listzly/utils/avatar_options.dart';
 
 class ProfileService {
   final SupabaseClient _client;
@@ -16,13 +18,20 @@ class ProfileService {
 
     if (result != null) {
       // Backfill display_name if null (e.g. Google sign-in trigger didn't set it)
-      if (result['display_name'] == null) {
+      final needsName = result['display_name'] == null;
+      final needsAvatar = result['avatar_url'] == null;
+      if (needsName || needsAvatar) {
         final user = _client.auth.currentUser;
-        final name = user?.userMetadata?['full_name'] as String? ??
-            user?.userMetadata?['name'] as String? ??
-            user?.email?.split('@').first ??
-            'User';
-        return updateProfile(userId, displayName: name);
+        final name = needsName
+            ? (user?.userMetadata?['full_name'] as String? ??
+                user?.userMetadata?['name'] as String? ??
+                user?.email?.split('@').first ??
+                'User')
+            : null;
+        final avatar = needsAvatar
+            ? '$avatarDir/${avatarOptions[Random().nextInt(avatarOptions.length)].$1}'
+            : null;
+        return updateProfile(userId, displayName: name, avatarUrl: avatar);
       }
       return Profile.fromJson(result);
     }
@@ -34,11 +43,15 @@ class ProfileService {
         user?.email?.split('@').first ??
         'User';
 
+    final randomAvatar =
+        '$avatarDir/${avatarOptions[Random().nextInt(avatarOptions.length)].$1}';
+
     final created = await _client
         .from('profiles')
         .insert({
           'id': userId,
           'display_name': displayName,
+          'avatar_url': randomAvatar,
         })
         .select()
         .single();

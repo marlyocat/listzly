@@ -65,10 +65,10 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
   static const _dayLabels = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
 
   static const _instrumentImages = {
-    'Piano': 'lib/images/licensed/piano.svg',
-    'Guitar': 'lib/images/licensed/guitar.svg',
-    'Violin': 'lib/images/licensed/violin.svg',
-    'Drums': 'lib/images/licensed/drums.svg',
+    'Piano': 'lib/images/licensed/svg/piano.svg',
+    'Guitar': 'lib/images/licensed/svg/guitar.svg',
+    'Violin': 'lib/images/licensed/svg/violin.svg',
+    'Drums': 'lib/images/licensed/svg/drums.svg',
   };
 
   // ---- Date range state ----
@@ -485,7 +485,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                           width: 32,
                           height: 32,
                           child: Lottie.asset(
-                            'lib/images/licensed/trophy-animation.json',
+                            'lib/images/licensed/json/trophy-animation.json',
                             fit: BoxFit.contain,
                             repeat: false,
                             controller: _titleAnimController,
@@ -713,7 +713,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                           width: 28,
                           height: 28,
                           child: Lottie.asset(
-                            'lib/images/licensed/calendar-animation.json',
+                            'lib/images/licensed/json/calendar-animation.json',
                             fit: BoxFit.contain,
                             repeat: false,
                             controller: _calendarAnimController,
@@ -833,7 +833,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
               children: [
                 _buildStatCard(
                   icon: Icons.access_time_rounded,
-                  svgPath: 'lib/images/licensed/history.svg',
+                  svgPath: 'lib/images/licensed/svg/history.svg',
                   value: animSeconds == 0 ? '0s' : timeText,
                   label: 'Total Time',
                   color: accentCoral,
@@ -846,7 +846,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                 const SizedBox(width: 10),
                 _buildStatCard(
                   icon: Icons.trending_up_rounded,
-                  svgPath: 'lib/images/licensed/statistics.svg',
+                  svgPath: 'lib/images/licensed/svg/statistics.svg',
                   value: avgSeconds == 0 ? '0s' : avgText,
                   label: avgLabel,
                   color: primaryColor,
@@ -868,7 +868,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
             children: [
               _buildStatCard(
                 icon: Icons.access_time_rounded,
-                svgPath: 'lib/images/licensed/history.svg',
+                svgPath: 'lib/images/licensed/svg/history.svg',
                 value: '\u2014',
                 label: 'Total Time',
                 color: accentCoral,
@@ -876,7 +876,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
               const SizedBox(width: 10),
               _buildStatCard(
                 icon: Icons.trending_up_rounded,
-                svgPath: 'lib/images/licensed/statistics.svg',
+                svgPath: 'lib/images/licensed/svg/statistics.svg',
                 value: '\u2014',
                 label: _selectedTab == 0 ? 'Daily Avg' : _selectedTab == 1 ? 'Weekly Avg' : 'Monthly Avg',
                 color: primaryColor,
@@ -890,7 +890,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
             children: [
               _buildStatCard(
                 icon: Icons.access_time_rounded,
-                svgPath: 'lib/images/licensed/history.svg',
+                svgPath: 'lib/images/licensed/svg/history.svg',
                 value: '\u2014',
                 label: 'Total Time',
                 color: accentCoral,
@@ -898,7 +898,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
               const SizedBox(width: 10),
               _buildStatCard(
                 icon: Icons.trending_up_rounded,
-                svgPath: 'lib/images/licensed/statistics.svg',
+                svgPath: 'lib/images/licensed/svg/statistics.svg',
                 value: '\u2014',
                 label: _selectedTab == 0 ? 'Daily Avg' : _selectedTab == 1 ? 'Weekly Avg' : 'Monthly Avg',
                 color: primaryColor,
@@ -1417,7 +1417,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                             width: 60,
                             height: 60,
                             child: Lottie.asset(
-                              'lib/images/licensed/recent-sessions-animation.json',
+                              'lib/images/licensed/json/recent-sessions-animation.json',
                               fit: BoxFit.contain,
                               repeat: false,
                               controller: _emptyStateAnimController,
@@ -1695,7 +1695,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                             width: 60,
                             height: 60,
                             child: Lottie.asset(
-                              'lib/images/licensed/no-recordings-animation.json',
+                              'lib/images/licensed/json/no-recordings-animation.json',
                               fit: BoxFit.contain,
                               repeat: false,
                               controller: _emptyStateAnimController,

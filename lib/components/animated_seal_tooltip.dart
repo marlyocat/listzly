@@ -80,7 +80,7 @@ class _AnimatedSealTooltipState extends ConsumerState<AnimatedSealTooltip>
       child: GestureDetector(
         onTap: widget.onTap,
         child: SvgPicture.asset(
-          'lib/images/licensed/seal_tooltip.svg',
+          'lib/images/licensed/svg/seal_tooltip.svg',
           width: 30,
           height: 30,
         ),

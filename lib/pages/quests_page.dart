@@ -33,9 +33,9 @@ const _questIconMap = <String, IconData>{
 
 /// Maps quest keys to SVG icon paths.
 const _questSvgMap = <String, String>{
-  'daily_xp_30': 'lib/images/licensed/music-note.svg',
-  'daily_practice_20m': 'lib/images/licensed/stopwatch.svg',
-  'daily_sessions_2': 'lib/images/licensed/session.svg',
+  'daily_xp_30': 'lib/images/licensed/svg/music-note.svg',
+  'daily_practice_20m': 'lib/images/licensed/svg/stopwatch.svg',
+  'daily_sessions_2': 'lib/images/licensed/svg/session.svg',
 };
 
 /// Maps icon name strings (from assigned quests) to IconData.
@@ -50,8 +50,8 @@ const _iconNameMap = <String, IconData>{
 
 /// Maps icon name strings to SVG icon paths.
 const _iconSvgMap = <String, String>{
-  'timer_rounded': 'lib/images/licensed/stopwatch.svg',
-  'music_note_rounded': 'lib/images/licensed/music-note.svg',
+  'timer_rounded': 'lib/images/licensed/svg/stopwatch.svg',
+  'music_note_rounded': 'lib/images/licensed/svg/music-note.svg',
 };
 
 class QuestsPage extends ConsumerStatefulWidget {
@@ -212,7 +212,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
 
       return _Quest(
         icon: _iconNameMap[def?.iconName] ?? Icons.assignment_rounded,
-        svgPath: _iconSvgMap[def?.iconName] ?? 'lib/images/licensed/assigned-quest.svg',
+        svgPath: _iconSvgMap[def?.iconName] ?? 'lib/images/licensed/svg/assigned-quest.svg',
         title: def?.title ?? qp.questKey,
         description: isRecurring
             ? (desc.isNotEmpty ? '$desc (Resets weekly)' : 'Resets weekly')
@@ -296,7 +296,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                       width: 32,
                       height: 32,
                       child: Lottie.asset(
-                        'lib/images/licensed/map-animation.json',
+                        'lib/images/licensed/json/map-animation.json',
                         fit: BoxFit.contain,
                         repeat: false,
                         controller: _progressAnimController,
@@ -380,9 +380,9 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                   final urgencyIcon = allComplete
                       ? null
                       : _timeRemaining.inHours < 1
-                          ? 'lib/images/licensed/alert.svg'
+                          ? 'lib/images/licensed/svg/alert.svg'
                           : _timeRemaining.inHours < 3
-                              ? 'lib/images/licensed/warning.svg'
+                              ? 'lib/images/licensed/svg/warning.svg'
                               : null;
                   final urgencyColor = allComplete
                       ? darkTextSecondary
@@ -461,7 +461,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                           width: 38,
                           height: 38,
                           child: Lottie.asset(
-                            'lib/images/licensed/award-animation.json',
+                            'lib/images/licensed/json/award-animation.json',
                             fit: BoxFit.contain,
                             repeat: false,
                           ),
@@ -671,14 +671,14 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
             _buildChip(
               'Streak',
               Colors.white,
-              imagePath: 'lib/images/licensed/streak.svg',
+              imagePath: 'lib/images/licensed/svg/streak.svg',
               countUpValue: stats.currentStreak,
               countUpSuffix: stats.currentStreak == 1 ? ' Day' : ' Days',
               staggerIndex: 0,
             ),
             const SizedBox(width: 10),
             _buildChip('Level', Colors.white,
-                imagePath: 'lib/images/licensed/level.svg',
+                imagePath: 'lib/images/licensed/svg/level.svg',
                 countUpValue: level,
                 countUpFrom: 1,
                 staggerIndex: 1,
@@ -686,7 +686,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                 progressLabel: '$xpIntoLevel / $xpNeeded XP'),
             const SizedBox(width: 10),
             _buildChip('Total XP', Colors.white,
-                imagePath: 'lib/images/licensed/xp.svg',
+                imagePath: 'lib/images/licensed/svg/xp.svg',
                 countUpValue: stats.totalXp,
                 staggerIndex: 2),
           ],

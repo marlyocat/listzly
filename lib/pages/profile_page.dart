@@ -20,6 +20,7 @@ import 'package:listzly/models/student_summary.dart';
 import 'package:listzly/providers/group_provider.dart';
 import 'package:listzly/theme/colors.dart';
 import 'package:listzly/utils/level_utils.dart';
+import 'package:listzly/utils/avatar_options.dart';
 import 'package:listzly/utils/responsive.dart';
 import 'package:listzly/services/notification_service.dart';
 import 'package:listzly/providers/subscription_provider.dart';
@@ -315,7 +316,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                       width: 32,
                       height: 32,
                       child: Lottie.asset(
-                        'lib/images/licensed/gear-wrench-animation.json',
+                        'lib/images/licensed/json/gear-wrench-animation.json',
                         fit: BoxFit.contain,
                         repeat: false,
                         controller: _titleAnimController,
@@ -1005,7 +1006,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
       title: 'Support',
       items: [
         _SettingsRow(
-          svgPath: 'lib/images/licensed/email.svg',
+          svgPath: 'lib/images/licensed/svg/email.svg',
           label: 'Contact Support',
           trailing: const _TrailingText(''),
           onTap: () => launchUrl(
@@ -1015,6 +1016,105 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
           ),
         ),
       ],
+    );
+  }
+
+  // ─── Avatar options ────────────────────────────────────────────────
+  void _showAvatarPickerSheet(Profile profile) {
+    final user = ref.read(currentUserProvider);
+    if (user == null) return;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.55,
+          maxChildSize: 0.85,
+          minChildSize: 0.3,
+          builder: (_, scrollController) => Container(
+            decoration: const BoxDecoration(
+              color: Color(0xFF1E0E3D),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              border: Border(
+                top: BorderSide(color: Colors.black, width: 5),
+                left: BorderSide(color: Colors.black, width: 5),
+                right: BorderSide(color: Colors.black, width: 5),
+              ),
+            ),
+            child: Column(
+              children: [
+                const SizedBox(height: 12),
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: darkTextMuted,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Choose Avatar',
+                  style: GoogleFonts.nunito(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: GridView.builder(
+                    controller: scrollController,
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 5,
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                    ),
+                    itemCount: avatarOptions.length,
+                    itemBuilder: (_, i) {
+                      final (file, label) = avatarOptions[i];
+                      final path = '$avatarDir/$file';
+                      final isSelected = profile.avatarUrl == path;
+                      return GestureDetector(
+                        onTap: () async {
+                          Navigator.pop(ctx);
+                          await ref
+                              .read(profileServiceProvider)
+                              .updateProfile(user.id, avatarUrl: path);
+                          ref.invalidate(currentProfileProvider);
+                        },
+                        child: Tooltip(
+                          message: label,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? primaryColor.withAlpha(80)
+                                  : darkSurfaceBg,
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(
+                                color: isSelected
+                                    ? accentCoral
+                                    : Colors.black,
+                                width: 2,
+                              ),
+                            ),
+                            padding: const EdgeInsets.all(8),
+                            child: SvgPicture.asset(path),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -1032,19 +1132,49 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
         ),
         child: Row(
           children: [
-            // Avatar
-            Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                color: darkSurfaceBg,
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: Colors.black, width: 2),
-              ),
-              child: const Icon(
-                Icons.music_note_rounded,
-                color: Colors.white,
-                size: 30,
+            // Avatar (tappable)
+            GestureDetector(
+              onTap: () => _showAvatarPickerSheet(profile),
+              child: Stack(
+                children: [
+                  Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: darkSurfaceBg,
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(color: Colors.black, width: 2),
+                    ),
+                    child: profile.avatarUrl != null
+                        ? Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: SvgPicture.asset(profile.avatarUrl!),
+                          )
+                        : const Icon(
+                            Icons.music_note_rounded,
+                            color: Colors.white,
+                            size: 30,
+                          ),
+                  ),
+                  Positioned(
+                    right: -2,
+                    bottom: -2,
+                    child: Container(
+                      width: 22,
+                      height: 22,
+                      decoration: BoxDecoration(
+                        color: primaryColor,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.black, width: 1.5),
+                      ),
+                      child: const Icon(
+                        Icons.edit,
+                        color: Colors.white,
+                        size: 12,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(width: 16),
@@ -1164,7 +1294,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
 
       if (inviteCode != null) {
         items.add(_SettingsRow(
-          svgPath: 'lib/images/licensed/key.svg',
+          svgPath: 'lib/images/licensed/svg/key.svg',
           label: 'Invite Code',
           trailing: _TrailingText(inviteCode),
           onTap: () {
@@ -1180,7 +1310,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
           },
         ));
         items.add(_SettingsRow(
-          svgPath: 'lib/images/licensed/qr-code-profile.svg',
+          svgPath: 'lib/images/licensed/svg/qr-code-profile.svg',
           label: 'Show QR Code',
           trailing: const _TrailingText(''),
           onTap: () => _showQrCode(context, inviteCode),
@@ -1188,14 +1318,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
       }
 
       items.add(_SettingsRow(
-        svgPath: 'lib/images/licensed/music-student.svg',
+        svgPath: 'lib/images/licensed/svg/music-student.svg',
         label: 'Students',
         trailing: _TrailingText('$studentCount/$maxStudents'),
         onTap: () => _showStudentListSheet(context, ref),
       ));
 
       items.add(_SettingsRow(
-        svgPath: 'lib/images/licensed/change-role.svg',
+        svgPath: 'lib/images/licensed/svg/change-role.svg',
         label: 'Change Role',
         trailing: const _TrailingText('Teacher'),
         onTap: () => _showRoleChangePicker(context, ref, profile,
@@ -1208,19 +1338,19 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
       if (isInGroup) {
         final membership = membershipAsync.value!;
         items.add(_SettingsRow(
-          svgPath: 'lib/images/licensed/graduation-hat.svg',
+          svgPath: 'lib/images/licensed/svg/graduation-hat.svg',
           label: 'Your Group',
           trailing: const _TrailingText('Joined'),
           onTap: () => _showGroupInfoDialog(context, ref, membership.groupId),
         ));
         items.add(_SettingsRow(
-          svgPath: 'lib/images/licensed/change-role.svg',
+          svgPath: 'lib/images/licensed/svg/change-role.svg',
           label: 'Change Role',
           trailing: const _TrailingText('Student'),
           onTap: () => _showLeaveGroupAndChangeRoleDialog(context, ref, profile),
         ));
         items.add(_SettingsRow(
-          svgPath: 'lib/images/licensed/exit.svg',
+          svgPath: 'lib/images/licensed/svg/exit.svg',
           label: 'Leave Group',
           trailing: const _TrailingText(''),
           labelColor: Colors.red,
@@ -1230,7 +1360,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
     } else {
       // Self-Learner
       items.add(_SettingsRow(
-        svgPath: 'lib/images/licensed/change-role.svg',
+        svgPath: 'lib/images/licensed/svg/change-role.svg',
         label: 'Change Role',
         trailing: _TrailingText(profile.role.displayName),
         onTap: () => _showRoleChangePicker(context, ref, profile),
@@ -1529,7 +1659,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                   ),
                   prefixIcon: Padding(
                       padding: const EdgeInsets.all(12),
-                      child: SvgPicture.asset('lib/images/licensed/key.svg',
+                      child: SvgPicture.asset('lib/images/licensed/svg/key.svg',
                           width: 20, height: 20)),
                   filled: true,
                   fillColor: Colors.white.withAlpha(12),
@@ -1866,7 +1996,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: SvgPicture.asset(
-                          'lib/images/licensed/graduation-hat.svg',
+                          'lib/images/licensed/svg/graduation-hat.svg',
                           width: 28, height: 28),
                     ),
                     const SizedBox(height: 16),
@@ -2120,7 +2250,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            SvgPicture.asset('lib/images/licensed/streak.svg',
+                            SvgPicture.asset('lib/images/licensed/svg/streak.svg',
                                 width: 14, height: 14),
                             const SizedBox(width: 3),
                             Text(
@@ -2136,7 +2266,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            SvgPicture.asset('lib/images/licensed/level.svg',
+                            SvgPicture.asset('lib/images/licensed/svg/level.svg',
                                 width: 14, height: 14),
                             const SizedBox(width: 3),
                             Text(
@@ -2152,7 +2282,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            SvgPicture.asset('lib/images/licensed/xp.svg',
+                            SvgPicture.asset('lib/images/licensed/svg/xp.svg',
                                 width: 14, height: 14),
                             const SizedBox(width: 3),
                             Text(
@@ -2311,13 +2441,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
       title: 'Practice',
       items: [
         _SettingsRow(
-          svgPath: 'lib/images/licensed/daily-goal.svg',
+          svgPath: 'lib/images/licensed/svg/daily-goal.svg',
           label: 'Daily Goal',
           trailing: _TrailingText('${settings.dailyGoalMinutes} min'),
           onTap: () => _showDailyGoalPicker(context, ref, settings),
         ),
         _SettingsRow(
-          svgPath: 'lib/images/licensed/reminder.svg',
+          svgPath: 'lib/images/licensed/svg/reminder.svg',
           label: 'Reminders',
           trailing: _TrailingText(
             settings.reminderTime != null
@@ -2327,7 +2457,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
           onTap: () => _showReminderPicker(context, ref, settings),
         ),
         _SettingsRow(
-          svgPath: 'lib/images/licensed/music-player.svg',
+          svgPath: 'lib/images/licensed/svg/music-player.svg',
           label: 'Music Player',
           trailing: const _TrailingText(''),
           onTap: () => Navigator.push(
@@ -2898,10 +3028,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
 
     // Map of instrument names to images and colors for display purposes
     const instrumentImages = <String, String>{
-      'Piano': 'lib/images/licensed/piano.svg',
-      'Guitar': 'lib/images/licensed/guitar.svg',
-      'Violin': 'lib/images/licensed/violin.svg',
-      'Drums': 'lib/images/licensed/drums.svg',
+      'Piano': 'lib/images/licensed/svg/piano.svg',
+      'Guitar': 'lib/images/licensed/svg/guitar.svg',
+      'Violin': 'lib/images/licensed/svg/violin.svg',
+      'Drums': 'lib/images/licensed/svg/drums.svg',
     };
     const instrumentColors = <String, Color>{
       'Piano': primaryColor,

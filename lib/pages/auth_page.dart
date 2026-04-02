@@ -544,8 +544,8 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                   onTap: _isLoading ? null : _signInWithGoogle,
                   child: SvgPicture.asset(
                     _isLogin
-                        ? 'lib/images/licensed/google-logo-sign-in.svg'
-                        : 'lib/images/licensed/google-logo-sign-up.svg',
+                        ? 'lib/images/licensed/svg/google-logo-sign-in.svg'
+                        : 'lib/images/licensed/svg/google-logo-sign-up.svg',
                     height: 40,
                   ),
                 ),

@@ -40,32 +40,32 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   // Tour cards (pages 0–4), then setup pages (5–7)
   static const _tourCards = [
     _TourCard(
-      imagePath: 'lib/images/licensed/onboarding-practice-sticker.svg',
+      imagePath: 'lib/images/licensed/svg/onboarding-practice-sticker.svg',
       title: 'Start Practicing',
       description:
           // TODO: restore when pro is re-enabled: 'Pick an instrument, set a timer, and begin a focused practice session. Piano is available on the free plan.',
           'Pick an instrument, set a timer, and begin a focused practice session.',
     ),
     _TourCard(
-      imagePath: 'lib/images/licensed/onboarding-target-sticker.svg',
+      imagePath: 'lib/images/licensed/svg/onboarding-target-sticker.svg',
       title: 'Build Your Streak',
       description:
           'Practice every day to build your streak and stay consistent. Don\'t break the chain!',
     ),
     _TourCard(
-      imagePath: 'lib/images/licensed/onboarding-quests-sticker.svg',
+      imagePath: 'lib/images/licensed/svg/onboarding-quests-sticker.svg',
       title: 'Complete Quests',
       description:
           'Take on daily and weekly quests to challenge yourself and earn XP as you improve.',
     ),
     _TourCard(
-      imagePath: 'lib/images/licensed/onboarding-education-sticker.svg',
+      imagePath: 'lib/images/licensed/svg/onboarding-education-sticker.svg',
       title: 'Learn Together',
       description:
           'Join your teacher\'s group with an invite code, or create your own group as a teacher to track student progress.',
     ),
     _TourCard(
-      imagePath: 'lib/images/licensed/onboarding-gift-sticker.svg',
+      imagePath: 'lib/images/licensed/svg/onboarding-gift-sticker.svg',
       // TODO: restore when pro is re-enabled: title: 'Unlock More with Pro',
       // TODO: restore when pro is re-enabled: description: 'Go Pro to unlock all instruments, record and share your practice sessions, view activity history, and more. Start with everything you need for free.',
       title: 'All Features Included',

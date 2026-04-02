@@ -47,10 +47,10 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
   ];
   static const _instrumentImages = {
-    'Piano': 'lib/images/licensed/piano.svg',
-    'Guitar': 'lib/images/licensed/guitar.svg',
-    'Violin': 'lib/images/licensed/violin.svg',
-    'Drums': 'lib/images/licensed/drums.svg',
+    'Piano': 'lib/images/licensed/svg/piano.svg',
+    'Guitar': 'lib/images/licensed/svg/guitar.svg',
+    'Violin': 'lib/images/licensed/svg/violin.svg',
+    'Drums': 'lib/images/licensed/svg/drums.svg',
   };
 
   late DateTime _rangeStart;
@@ -255,7 +255,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                       width: 28,
                       height: 28,
                       child: Lottie.asset(
-                        'lib/images/licensed/search.json',
+                        'lib/images/licensed/json/search.json',
                         key: ValueKey('search_$_refreshKey'),
                         fit: BoxFit.contain,
                         repeat: false,
@@ -298,19 +298,19 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                         Icons.local_fire_department_rounded,
                         '${stats.currentStreak} day streak',
                         accentCoral,
-                        imagePath: 'lib/images/licensed/streak.svg',
+                        imagePath: 'lib/images/licensed/svg/streak.svg',
                       ),
                       _buildChip(
                         Icons.shield_rounded,
                         'Lv. ${LevelUtils.levelFromXp(stats.totalXp)}',
                         primaryColor,
-                        imagePath: 'lib/images/licensed/level.svg',
+                        imagePath: 'lib/images/licensed/svg/level.svg',
                       ),
                       _buildChip(
                         Icons.star_rounded,
                         '${stats.totalXp} XP',
                         primaryLight,
-                        imagePath: 'lib/images/licensed/xp.svg',
+                        imagePath: 'lib/images/licensed/svg/xp.svg',
                       ),
                     ],
                   ),
@@ -582,7 +582,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     _buildStatCard(
-                      svgPath: 'lib/images/licensed/history.svg',
+                      svgPath: 'lib/images/licensed/svg/history.svg',
                       value: animSeconds == 0 ? '0s' : timeText,
                       label: 'Total Time',
                       color: accentCoral,
@@ -590,7 +590,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                     ),
                     const SizedBox(width: 10),
                     _buildStatCard(
-                      svgPath: 'lib/images/licensed/statistics.svg',
+                      svgPath: 'lib/images/licensed/svg/statistics.svg',
                       value: avgSeconds == 0 ? '0s' : avgText,
                       label: avgLabel,
                       color: primaryLight,
@@ -607,13 +607,13 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _buildStatCard(
-                  svgPath: 'lib/images/licensed/history.svg',
+                  svgPath: 'lib/images/licensed/svg/history.svg',
                   value: '\u2014',
                   label: 'Total Time',
                   color: accentCoral),
               const SizedBox(width: 10),
               _buildStatCard(
-                  svgPath: 'lib/images/licensed/statistics.svg',
+                  svgPath: 'lib/images/licensed/svg/statistics.svg',
                   value: '\u2014',
                   label: avgLabel,
                   color: primaryLight),
@@ -625,13 +625,13 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _buildStatCard(
-                  svgPath: 'lib/images/licensed/history.svg',
+                  svgPath: 'lib/images/licensed/svg/history.svg',
                   value: '\u2014',
                   label: 'Total Time',
                   color: accentCoral),
               const SizedBox(width: 10),
               _buildStatCard(
-                  svgPath: 'lib/images/licensed/statistics.svg',
+                  svgPath: 'lib/images/licensed/svg/statistics.svg',
                   value: '\u2014',
                   label: avgLabel,
                   color: primaryLight),
@@ -1149,7 +1149,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                             width: 60,
                             height: 60,
                             child: Lottie.asset(
-                              'lib/images/licensed/recent-sessions-animation.json',
+                              'lib/images/licensed/json/recent-sessions-animation.json',
                               key: ValueKey('sessions_$_refreshKey'),
                               fit: BoxFit.contain,
                               repeat: false,
@@ -1393,7 +1393,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                             width: 60,
                             height: 60,
                             child: Lottie.asset(
-                              'lib/images/licensed/no-recordings-animation.json',
+                              'lib/images/licensed/json/no-recordings-animation.json',
                               key: ValueKey('recordings_$_refreshKey'),
                               fit: BoxFit.contain,
                               repeat: false,

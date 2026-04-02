@@ -67,7 +67,7 @@ class RecordingListTile extends StatelessWidget {
                 ),
                 child: Padding(
                     padding: const EdgeInsets.all(6),
-                    child: SvgPicture.asset('lib/images/licensed/microphone.svg')),
+                    child: SvgPicture.asset('lib/images/licensed/svg/microphone.svg')),
               ),
               const SizedBox(width: 12),
               // Info

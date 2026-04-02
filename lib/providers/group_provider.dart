@@ -15,7 +15,7 @@ GroupService groupService(Ref ref) =>
 @riverpod
 Future<TeacherGroup?> teacherGroup(Ref ref) async {
   final user = ref.watch(currentUserProvider);
-  if (user == null) throw Exception('Not authenticated');
+  if (user == null) return null;
   return ref.watch(groupServiceProvider).getTeacherGroup(user.id);
 }
 
@@ -59,7 +59,7 @@ Future<bool> isInGroup(Ref ref) async {
 @riverpod
 Future<List<StudentSummary>> teacherStudents(Ref ref) async {
   final user = ref.watch(currentUserProvider);
-  if (user == null) throw Exception('Not authenticated');
+  if (user == null) return [];
   return ref.watch(groupServiceProvider).getStudentsWithStats(user.id);
 }
 
