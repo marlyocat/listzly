@@ -38,47 +38,16 @@ Future<void> main() async {
     PurchasesConfiguration(revenueCatApiKey),
   );
 
-  // Reschedule reminder if user is logged in and has one set
+  // Set RevenueCat user ID if logged in
   final currentUser = Supabase.instance.client.auth.currentUser;
   if (currentUser != null) {
-    // Set RevenueCat user ID to match Supabase auth
     await Purchases.logIn(currentUser.id);
-    try {
-      final result = await Supabase.instance.client
-          .from('user_settings')
-          .select('reminder_time')
-          .eq('user_id', currentUser.id)
-          .maybeSingle();
-      final reminderTime = result?['reminder_time'] as String?;
-      if (reminderTime != null && reminderTime.isNotEmpty) {
-        await NotificationService.instance.scheduleDailyReminder(reminderTime);
-
-        // Reschedule streak warnings based on last practice date
-        try {
-          final lastSession = await Supabase.instance.client
-              .from('practice_sessions')
-              .select('completed_at')
-              .eq('user_id', currentUser.id)
-              .order('completed_at', ascending: false)
-              .limit(1)
-              .maybeSingle();
-          if (lastSession != null) {
-            final lastDate = DateTime.parse(lastSession['completed_at'] as String);
-            final daysSince = DateTime.now().difference(lastDate).inDays;
-            // Only schedule if last practice was recent (within grace period)
-            if (daysSince < 3) {
-              await NotificationService.instance.scheduleStreakWarnings(reminderTime);
-            }
-          }
-        } catch (e) {
-          debugPrint('Failed to schedule streak warnings: $e');
-        }
-      }
-    } catch (e) {
-      // Non-critical: if reschedule fails, user can re-set in settings
-      debugPrint('Failed to reschedule notifications: $e');
-    }
   }
+
+  // Defer notification scheduling to after first frame
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    _rescheduleNotifications();
+  });
 
   // Listen for password recovery deep link before app starts
   Supabase.instance.client.auth.onAuthStateChange.listen((data) {
@@ -94,6 +63,47 @@ Future<void> main() async {
   });
 
   runApp(const ProviderScope(child: MyApp()));
+}
+
+Future<void> _rescheduleNotifications() async {
+  final currentUser = Supabase.instance.client.auth.currentUser;
+  if (currentUser == null) return;
+
+  try {
+    final result = await Supabase.instance.client
+        .from('user_settings')
+        .select('reminder_time')
+        .eq('user_id', currentUser.id)
+        .maybeSingle();
+    final reminderTime = result?['reminder_time'] as String?;
+    if (reminderTime != null && reminderTime.isNotEmpty) {
+      await NotificationService.instance.scheduleDailyReminder(reminderTime);
+
+      // Reschedule streak warnings based on last practice date
+      try {
+        final lastSession = await Supabase.instance.client
+            .from('practice_sessions')
+            .select('completed_at')
+            .eq('user_id', currentUser.id)
+            .order('completed_at', ascending: false)
+            .limit(1)
+            .maybeSingle();
+        if (lastSession != null) {
+          final lastDate =
+              DateTime.parse(lastSession['completed_at'] as String);
+          final daysSince = DateTime.now().difference(lastDate).inDays;
+          if (daysSince < 3) {
+            await NotificationService.instance
+                .scheduleStreakWarnings(reminderTime);
+          }
+        }
+      } catch (e) {
+        debugPrint('Failed to schedule streak warnings: $e');
+      }
+    }
+  } catch (e) {
+    debugPrint('Failed to reschedule notifications: $e');
+  }
 }
 
 class MyApp extends ConsumerStatefulWidget {
