@@ -1225,19 +1225,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
           labelColor: Colors.red,
           onTap: () => _showLeaveGroupDialog(context, ref),
         ));
-      } else {
-        items.add(_SettingsRow(
-          icon: Icons.group_add_rounded,
-          label: 'Join a Group',
-          trailing: const _TrailingText('Enter code'),
-          onTap: () => _showJoinGroupDialog(context, ref),
-        ));
-        items.add(_SettingsRow(
-          svgPath: 'lib/images/licensed/change-role.svg',
-          label: 'Change Role',
-          trailing: _TrailingText(profile.role.displayName),
-          onTap: () => _showRoleChangePicker(context, ref, profile),
-        ));
       }
     } else {
       // Self-Learner
@@ -1984,150 +1971,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
           },
         );
       },
-    );
-  }
-
-  void _showJoinGroupDialog(BuildContext context, WidgetRef ref) {
-    final codeController = TextEditingController();
-    String? errorText;
-
-    showDialog(
-      context: context,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setDialogState) => AlertDialog(
-          backgroundColor: const Color(0xFF1E0E3D),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          title: Text(
-            'Join a Group',
-            style:
-                GoogleFonts.dmSerifDisplay(fontSize: 20, color: Colors.white),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Enter your teacher\'s invite code',
-                style: GoogleFonts.nunito(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: darkTextSecondary,
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: codeController,
-                textCapitalization: TextCapitalization.characters,
-                style: GoogleFonts.nunito(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 2,
-                ),
-                decoration: InputDecoration(
-                  hintText: 'INVITE CODE',
-                  hintStyle: GoogleFonts.nunito(
-                    color: darkTextMuted.withAlpha(100),
-                    fontWeight: FontWeight.w600,
-                  ),
-                  errorText: errorText,
-                  filled: true,
-                  fillColor: Colors.white.withAlpha(12),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.white.withAlpha(30)),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.white.withAlpha(30)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide:
-                        const BorderSide(color: accentCoral, width: 1.5),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              GestureDetector(
-                onTap: () async {
-                  final scanned = await Navigator.of(ctx).push<String>(
-                    MaterialPageRoute(builder: (_) => const _QrScannerPage()),
-                  );
-                  if (!ctx.mounted) return;
-                  if (scanned != null && scanned.isNotEmpty) {
-                    codeController.text = scanned;
-                    setDialogState(() => errorText = null);
-                  }
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.qr_code_scanner_rounded,
-                        color: accentCoral, size: 18),
-                    const SizedBox(width: 6),
-                    Text(
-                      'Scan QR Code',
-                      style: GoogleFonts.nunito(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: accentCoral,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: Text('Cancel',
-                  style: GoogleFonts.nunito(
-                      fontWeight: FontWeight.w700, color: darkTextMuted)),
-            ),
-            TextButton(
-              onPressed: () async {
-                final code = codeController.text.trim();
-                if (code.isEmpty) {
-                  setDialogState(() => errorText = 'Please enter a code');
-                  return;
-                }
-                final user = ref.read(currentUserProvider);
-                if (user == null) return;
-
-                // Block joining if user has an active (non-cancelled) subscription
-                final subInfo =
-                    await ref.read(subscriptionInfoProvider.future);
-                if (subInfo.tier.isPro && subInfo.willRenew) {
-                  setDialogState(() => errorText =
-                      'Cancel your Pro subscription before joining a teacher\'s group');
-                  return;
-                }
-
-                final groupService = ref.read(groupServiceProvider);
-                final group = await groupService.findGroupByInviteCode(code);
-                if (!ctx.mounted) return;
-                if (group == null) {
-                  setDialogState(() => errorText = 'Invalid invite code');
-                  return;
-                }
-                try {
-                  await groupService.joinGroup(user.id, group.id,
-                      teacherId: group.teacherId);
-                  ref.invalidate(studentMembershipProvider);
-                  ref.invalidate(isInGroupProvider);
-                  if (ctx.mounted) Navigator.pop(ctx);
-                } catch (e) {
-                  setDialogState(() => errorText = e.toString());
-                }
-              },
-              child: Text('Join',
-                  style: GoogleFonts.nunito(
-                      fontWeight: FontWeight.w700, color: accentCoral)),
-            ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -3023,13 +2866,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                     width: 20,
                                     height: 20,
                                   )
-                                : row.icon != null
-                                    ? Icon(
-                                        row.icon,
-                                        color: Colors.white,
-                                        size: 20,
-                                      )
-                                    : const SizedBox(width: 20),
+                                : const SizedBox(width: 20),
                             const SizedBox(width: 14),
                             Expanded(
                               child: Text(
@@ -3309,7 +3146,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
 
 // ─── Settings row model + trailing widgets ──────────────────────────
 class _SettingsRow {
-  final IconData? icon;
   final String? svgPath;
   final String label;
   final _Trailing trailing;
@@ -3317,7 +3153,6 @@ class _SettingsRow {
   final Color? labelColor;
 
   const _SettingsRow({
-    this.icon,
     this.svgPath,
     required this.label,
     required this.trailing,
