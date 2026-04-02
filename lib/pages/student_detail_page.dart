@@ -581,7 +581,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     _buildStatCard(
-                      icon: Icons.access_time_rounded,
+                      svgPath: 'lib/images/licensed/history.svg',
                       value: animSeconds == 0 ? '0s' : timeText,
                       label: 'Total Time',
                       color: accentCoral,
@@ -589,7 +589,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                     ),
                     const SizedBox(width: 10),
                     _buildStatCard(
-                      icon: Icons.trending_up_rounded,
+                      svgPath: 'lib/images/licensed/statistics.svg',
                       value: avgSeconds == 0 ? '0s' : avgText,
                       label: avgLabel,
                       color: primaryLight,
@@ -606,13 +606,13 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _buildStatCard(
-                  icon: Icons.access_time_rounded,
+                  svgPath: 'lib/images/licensed/history.svg',
                   value: '\u2014',
                   label: 'Total Time',
                   color: accentCoral),
               const SizedBox(width: 10),
               _buildStatCard(
-                  icon: Icons.trending_up_rounded,
+                  svgPath: 'lib/images/licensed/statistics.svg',
                   value: '\u2014',
                   label: avgLabel,
                   color: primaryLight),
@@ -624,13 +624,13 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _buildStatCard(
-                  icon: Icons.access_time_rounded,
+                  svgPath: 'lib/images/licensed/history.svg',
                   value: '\u2014',
                   label: 'Total Time',
                   color: accentCoral),
               const SizedBox(width: 10),
               _buildStatCard(
-                  icon: Icons.trending_up_rounded,
+                  svgPath: 'lib/images/licensed/statistics.svg',
                   value: '\u2014',
                   label: avgLabel,
                   color: primaryLight),
@@ -642,7 +642,8 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
   }
 
   Widget _buildStatCard({
-    required IconData icon,
+    IconData? icon,
+    String? svgPath,
     required String value,
     required String label,
     required Color color,
@@ -719,7 +720,12 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: Colors.black, width: 2),
                 ),
-                child: Icon(icon, color: Colors.white, size: 20),
+                child: svgPath != null
+                    ? Padding(
+                        padding: const EdgeInsets.all(6),
+                        child: SvgPicture.asset(svgPath, width: 20, height: 20),
+                      )
+                    : Icon(icon, color: Colors.white, size: 20),
               ),
               const SizedBox(width: 12),
               Expanded(
