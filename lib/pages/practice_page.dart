@@ -1025,28 +1025,30 @@ class _PracticePageState extends ConsumerState<PracticePage>
               opacity: _recordingsTodayCount >= _maxRecordingsPerDay && !_isRecording ? 0.4 : 1.0,
               child: GestureDetector(
                 onTap: _toggleRecording,
-                child: Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: _isRecording
-                        ? Colors.red.withAlpha(30)
-                        : darkSurfaceBg,
-                    border: Border.all(
-                      color: _isRecording
-                          ? Colors.red.withAlpha(
-                              (100 + _recPulseController.value * 155).toInt())
-                          : darkCardBorder,
-                      width: _isRecording ? 2 : 1,
-                    ),
-                  ),
-                  child: Icon(
-                    _isRecording ? Icons.stop_rounded : Icons.mic_rounded,
-                    size: 22,
-                    color: _isRecording ? Colors.red : darkTextSecondary,
-                  ),
-                ),
+                child: _isRecording
+                    ? Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.red.withAlpha(30),
+                          border: Border.all(
+                            color: Colors.red.withAlpha(
+                                (100 + _recPulseController.value * 155).toInt()),
+                            width: 2,
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.stop_rounded,
+                          size: 22,
+                          color: Colors.red,
+                        ),
+                      )
+                    : SvgPicture.asset(
+                        'lib/images/licensed/svg/microphone.svg',
+                        width: 52,
+                        height: 52,
+                      ),
               ),
             ),
             if (_isRecording) ...[
