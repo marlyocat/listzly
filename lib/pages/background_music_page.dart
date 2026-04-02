@@ -89,7 +89,7 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
                           end: Alignment.bottomRight,
                         ).createShader(bounds),
                         child: Text(
-                          'Background Music',
+                          'Music Player',
                           style: GoogleFonts.dmSerifDisplay(
                             fontSize: 28,
                             fontWeight: FontWeight.w400,

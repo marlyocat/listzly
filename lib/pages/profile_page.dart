@@ -1004,7 +1004,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
       title: 'Support',
       items: [
         _SettingsRow(
-          icon: Icons.mail_outline_rounded,
+          svgPath: 'lib/images/licensed/email.svg',
           label: 'Contact Support',
           trailing: const _TrailingText(''),
           onTap: () => launchUrl(
@@ -2469,13 +2469,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
       title: 'Practice',
       items: [
         _SettingsRow(
-          icon: Icons.timer_outlined,
+          svgPath: 'lib/images/licensed/daily-goal.svg',
           label: 'Daily Goal',
           trailing: _TrailingText('${settings.dailyGoalMinutes} min'),
           onTap: () => _showDailyGoalPicker(context, ref, settings),
         ),
         _SettingsRow(
-          icon: Icons.notifications_outlined,
+          svgPath: 'lib/images/licensed/reminder.svg',
           label: 'Reminders',
           trailing: _TrailingText(
             settings.reminderTime != null
@@ -2485,8 +2485,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
           onTap: () => _showReminderPicker(context, ref, settings),
         ),
         _SettingsRow(
-          icon: Icons.library_music_rounded,
-          label: 'Background Music',
+          svgPath: 'lib/images/licensed/music-player.svg',
+          label: 'Music Player',
           trailing: const _TrailingText(''),
           onTap: () => Navigator.push(
             context,
@@ -3016,11 +3016,19 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                             horizontal: 16, vertical: 13),
                         child: Row(
                           children: [
-                            Icon(
-                              row.icon,
-                              color: Colors.white,
-                              size: 20,
-                            ),
+                            row.svgPath != null
+                                ? SvgPicture.asset(
+                                    row.svgPath!,
+                                    width: 20,
+                                    height: 20,
+                                  )
+                                : row.icon != null
+                                    ? Icon(
+                                        row.icon,
+                                        color: Colors.white,
+                                        size: 20,
+                                      )
+                                    : const SizedBox(width: 20),
                             const SizedBox(width: 14),
                             Expanded(
                               child: Text(
@@ -3300,14 +3308,16 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
 
 // ─── Settings row model + trailing widgets ──────────────────────────
 class _SettingsRow {
-  final IconData icon;
+  final IconData? icon;
+  final String? svgPath;
   final String label;
   final _Trailing trailing;
   final VoidCallback? onTap;
   final Color? labelColor;
 
   const _SettingsRow({
-    required this.icon,
+    this.icon,
+    this.svgPath,
     required this.label,
     required this.trailing,
     this.onTap,
