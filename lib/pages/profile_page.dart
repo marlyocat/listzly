@@ -1163,7 +1163,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
 
       if (inviteCode != null) {
         items.add(_SettingsRow(
-          icon: Icons.vpn_key_rounded,
+          svgPath: 'lib/images/licensed/key.svg',
           label: 'Invite Code',
           trailing: _TrailingText(inviteCode),
           onTap: () {
@@ -1179,7 +1179,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
           },
         ));
         items.add(_SettingsRow(
-          icon: Icons.qr_code_rounded,
+          svgPath: 'lib/images/licensed/qr-code-profile.svg',
           label: 'Show QR Code',
           trailing: const _TrailingText(''),
           onTap: () => _showQrCode(context, inviteCode),
@@ -1187,14 +1187,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
       }
 
       items.add(_SettingsRow(
-        icon: Icons.group_rounded,
+        svgPath: 'lib/images/licensed/music-student.svg',
         label: 'Students',
         trailing: _TrailingText('$studentCount/$maxStudents'),
         onTap: () => _showStudentListSheet(context, ref),
       ));
 
       items.add(_SettingsRow(
-        icon: Icons.swap_horiz_rounded,
+        svgPath: 'lib/images/licensed/change-role.svg',
         label: 'Change Role',
         trailing: const _TrailingText('Teacher'),
         onTap: () => _showRoleChangePicker(context, ref, profile,
@@ -1213,7 +1213,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
           onTap: () => _showGroupInfoDialog(context, ref, membership.groupId),
         ));
         items.add(_SettingsRow(
-          icon: Icons.swap_horiz_rounded,
+          svgPath: 'lib/images/licensed/change-role.svg',
           label: 'Change Role',
           trailing: const _TrailingText('Student'),
           onTap: () => _showLeaveGroupAndChangeRoleDialog(context, ref, profile),
@@ -1233,7 +1233,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
           onTap: () => _showJoinGroupDialog(context, ref),
         ));
         items.add(_SettingsRow(
-          icon: Icons.swap_horiz_rounded,
+          svgPath: 'lib/images/licensed/change-role.svg',
           label: 'Change Role',
           trailing: _TrailingText(profile.role.displayName),
           onTap: () => _showRoleChangePicker(context, ref, profile),
@@ -1242,7 +1242,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
     } else {
       // Self-Learner
       items.add(_SettingsRow(
-        icon: Icons.swap_horiz_rounded,
+        svgPath: 'lib/images/licensed/change-role.svg',
         label: 'Change Role',
         trailing: _TrailingText(profile.role.displayName),
         onTap: () => _showRoleChangePicker(context, ref, profile),
