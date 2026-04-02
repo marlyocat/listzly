@@ -212,7 +212,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
 
       return _Quest(
         icon: _iconNameMap[def?.iconName] ?? Icons.assignment_rounded,
-        svgPath: _iconSvgMap[def?.iconName],
+        svgPath: _iconSvgMap[def?.iconName] ?? 'lib/images/licensed/assigned-quest.svg',
         title: def?.title ?? qp.questKey,
         description: isRecurring
             ? (desc.isNotEmpty ? '$desc (Resets weekly)' : 'Resets weekly')

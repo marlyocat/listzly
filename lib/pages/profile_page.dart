@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:listzly/components/animated_seal_tooltip.dart';
 import 'package:lottie/lottie.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
+import 'package:listzly/providers/assigned_quest_provider.dart';
 import 'package:listzly/models/profile.dart';
 import 'package:listzly/models/user_role.dart';
 import 'package:listzly/models/user_settings.dart';
@@ -2214,6 +2215,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                         .removeStudent(groupId, student.studentId);
                     if (!context.mounted) return;
                     ref.invalidate(unreadGroupNotificationsProvider);
+                    ref.invalidate(teacherAssignedQuestsProvider);
                     onRemoved();
                   }
                 },

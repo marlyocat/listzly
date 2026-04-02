@@ -148,6 +148,19 @@ class GroupService {
       }
     }
 
+    // Deactivate assigned quests for the leaving student
+    if (membership != null) {
+      try {
+        await _client
+            .from('assigned_quests')
+            .update({'is_active': false})
+            .eq('student_id', studentId)
+            .eq('group_id', membership.groupId);
+      } catch (e) {
+        debugPrint('Failed to deactivate quests for leaving student: $e');
+      }
+    }
+
     await _client.from('group_members').delete().eq('student_id', studentId);
   }
 
@@ -237,6 +250,17 @@ class GroupService {
         .delete()
         .eq('group_id', groupId)
         .eq('student_id', studentId);
+
+    // Deactivate assigned quests for the removed student
+    try {
+      await _client
+          .from('assigned_quests')
+          .update({'is_active': false})
+          .eq('student_id', studentId)
+          .eq('group_id', groupId);
+    } catch (e) {
+      debugPrint('Failed to deactivate quests for removed student: $e');
+    }
 
     // Revert student role to self-learner
     try {

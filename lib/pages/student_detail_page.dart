@@ -6,6 +6,7 @@ import 'package:lottie/lottie.dart';
 import 'package:listzly/models/practice_session.dart';
 import 'package:listzly/models/practice_recording.dart';
 import 'package:listzly/providers/student_data_provider.dart';
+import 'package:listzly/providers/assigned_quest_provider.dart';
 import 'package:listzly/providers/group_provider.dart';
 import 'package:listzly/providers/recording_provider.dart';
 import 'package:listzly/components/recording_list_tile.dart';
@@ -1634,6 +1635,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
           .read(groupServiceProvider)
           .removeStudent(widget.groupId!, widget.studentId);
       ref.invalidate(unreadGroupNotificationsProvider);
+      ref.invalidate(teacherAssignedQuestsProvider);
       if (mounted) Navigator.of(context).pop(true);
     }
   }
