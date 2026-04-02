@@ -683,9 +683,9 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
         child: Stack(
           clipBehavior: Clip.none,
           children: [
-            Icon(
+            const Icon(
               Icons.notifications_rounded,
-              color: count > 0 ? accentCoral : darkTextMuted,
+              color: Colors.white,
               size: 26,
             ),
             if (count > 0)
@@ -695,7 +695,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                 child: Container(
                   padding: const EdgeInsets.all(4),
                   decoration: const BoxDecoration(
-                    color: accentCoral,
+                    color: Colors.red,
                     shape: BoxShape.circle,
                   ),
                   child: Text(
