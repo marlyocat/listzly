@@ -26,17 +26,18 @@ Future<void> main() async {
     ]);
   }
 
-  await NotificationService.instance.init();
-
-  await Supabase.initialize(
-    url: supabaseUrl,
-    anonKey: supabaseAnonKey,
-  );
-
-  // Initialize RevenueCat
-  await Purchases.configure(
-    PurchasesConfiguration(revenueCatApiKey),
-  );
+  await Future.wait([
+    NotificationService.instance.init(),
+    Supabase.initialize(
+      url: supabaseUrl,
+      anonKey: supabaseAnonKey,
+    ).then((_) async {
+      // RevenueCat depends on Supabase being ready
+      await Purchases.configure(
+        PurchasesConfiguration(revenueCatApiKey),
+      );
+    }),
+  ]);
 
   // Set RevenueCat user ID if logged in
   final currentUser = Supabase.instance.client.auth.currentUser;
