@@ -1207,7 +1207,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
       if (isInGroup) {
         final membership = membershipAsync.value!;
         items.add(_SettingsRow(
-          icon: Icons.school_rounded,
+          svgPath: 'lib/images/licensed/graduation-hat.svg',
           label: 'Your Group',
           trailing: const _TrailingText('Joined'),
           onTap: () => _showGroupInfoDialog(context, ref, membership.groupId),
@@ -1219,7 +1219,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
           onTap: () => _showLeaveGroupAndChangeRoleDialog(context, ref, profile),
         ));
         items.add(_SettingsRow(
-          icon: Icons.exit_to_app_rounded,
+          svgPath: 'lib/images/licensed/exit.svg',
           label: 'Leave Group',
           trailing: const _TrailingText(''),
           labelColor: Colors.red,
@@ -1881,8 +1881,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                         color: accentCoral.withAlpha(30),
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      child: const Icon(Icons.school_rounded,
-                          color: accentCoral, size: 28),
+                      child: SvgPicture.asset(
+                          'lib/images/licensed/graduation-hat.svg',
+                          width: 28, height: 28),
                     ),
                     const SizedBox(height: 16),
                     Text(
