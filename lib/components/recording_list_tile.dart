@@ -118,12 +118,37 @@ class RecordingListTile extends StatelessWidget {
                     width: 32,
                     height: 32,
                     decoration: BoxDecoration(
-                      color: accentCoral.withAlpha(30),
                       shape: BoxShape.circle,
+                      gradient: const LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          accentCoral,
+                          accentCoralDark,
+                        ],
+                      ),
                       border: Border.all(color: Colors.black, width: 2),
+                      boxShadow: [
+                        BoxShadow(
+                          color: accentCoralDark.withValues(alpha: 0.3),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    foregroundDecoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.center,
+                        colors: [
+                          Colors.white.withValues(alpha: 0.2),
+                          Colors.white.withValues(alpha: 0.0),
+                        ],
+                      ),
                     ),
                     child: const Icon(Icons.play_arrow_rounded,
-                        color: accentCoral, size: 18),
+                        color: Colors.white, size: 18),
                   ),
                 ),
               ),

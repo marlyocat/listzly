@@ -968,21 +968,46 @@ class _PracticePageState extends ConsumerState<PracticePage>
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: accentCoral.withAlpha(30),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: accentCoral.withAlpha(80)),
+                borderRadius: BorderRadius.circular(12),
+                gradient: const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    accentCoral,
+                    accentCoralDark,
+                  ],
+                ),
+                border: Border.all(color: Colors.black, width: 2),
+                boxShadow: [
+                  BoxShadow(
+                    color: accentCoralDark.withValues(alpha: 0.3),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              foregroundDecoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.center,
+                  colors: [
+                    Colors.white.withValues(alpha: 0.2),
+                    Colors.white.withValues(alpha: 0.0),
+                  ],
+                ),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.play_arrow_rounded, size: 16, color: accentCoral),
+                  const Icon(Icons.play_arrow_rounded, size: 16, color: Colors.white),
                   const SizedBox(width: 4),
                   Text(
                     'Play Back',
                     style: GoogleFonts.nunito(
                       fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      color: accentCoral,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
                     ),
                   ),
                 ],
