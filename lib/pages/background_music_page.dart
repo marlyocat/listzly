@@ -206,7 +206,7 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
                           ),
                           const SizedBox(width: 2),
                           Text(
-                            'Upload',
+                            'Add',
                             style: GoogleFonts.nunito(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
