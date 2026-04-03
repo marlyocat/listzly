@@ -292,24 +292,52 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 5),
+                          horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: accentCoral.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.black, width: 2),
+                        borderRadius: BorderRadius.circular(12),
+                        gradient: const LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            accentCoral,       // coral top
+                            accentCoralDark,   // darker coral bottom
+                          ],
+                        ),
+                        border: Border.all(
+                          color: Colors.black,
+                          width: 2,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: accentCoralDark.withValues(alpha: 0.3),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      foregroundDecoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.center,
+                          colors: [
+                            Colors.white.withValues(alpha: 0.2),
+                            Colors.white.withValues(alpha: 0.0),
+                          ],
+                        ),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           const Icon(Icons.add_rounded,
-                              color: accentCoral, size: 16),
+                              color: Colors.white, size: 16),
                           const SizedBox(width: 4),
                           Text(
                             'Assign',
                             style: GoogleFonts.nunito(
                               fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              color: accentCoral,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
                             ),
                           ),
                         ],
