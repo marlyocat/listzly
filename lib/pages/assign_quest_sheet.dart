@@ -6,6 +6,7 @@ import 'package:listzly/models/student_summary.dart';
 import 'package:listzly/providers/assigned_quest_provider.dart';
 import 'package:listzly/providers/auth_provider.dart';
 import 'package:listzly/providers/group_provider.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:listzly/theme/colors.dart';
 
 /// Steps in the assign quest flow.
@@ -313,17 +314,22 @@ class _AssignQuestDialogState extends ConsumerState<AssignQuestDialog> {
                                 border:
                                     Border.all(color: Colors.black, width: 2),
                               ),
-                              child: Center(
-                                child: Text(
-                                  s.displayName.isNotEmpty
-                                      ? s.displayName[0].toUpperCase()
-                                      : '?',
-                                  style: GoogleFonts.dmSerifDisplay(
-                                    fontSize: 16,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
+                              child: s.avatarUrl != null
+                                  ? Padding(
+                                      padding: const EdgeInsets.all(6),
+                                      child: SvgPicture.asset(s.avatarUrl!),
+                                    )
+                                  : Center(
+                                      child: Text(
+                                        s.displayName.isNotEmpty
+                                            ? s.displayName[0].toUpperCase()
+                                            : '?',
+                                        style: GoogleFonts.dmSerifDisplay(
+                                          fontSize: 16,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
@@ -482,36 +488,57 @@ class _AssignQuestDialogState extends ConsumerState<AssignQuestDialog> {
           ],
         ),
         const SizedBox(height: 16),
-        SizedBox(
-          width: double.infinity,
-          height: 46,
-          child: ElevatedButton(
-            onPressed: _isSaving ? null : _saveQuest,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: accentCoral,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-                side: const BorderSide(color: Colors.black, width: 3),
+        GestureDetector(
+          onTap: _isSaving ? null : _saveQuest,
+          child: Container(
+            width: double.infinity,
+            height: 46,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              gradient: const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [accentCoral, accentCoralDark],
               ),
-              elevation: 0,
+              border: Border.all(color: Colors.black, width: 3),
+              boxShadow: [
+                BoxShadow(
+                  color: accentCoralDark.withValues(alpha: 0.3),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
-            child: _isSaving
-                ? const SizedBox(
-                    width: 22,
-                    height: 22,
-                    child: CircularProgressIndicator(
-                        color: Colors.white, strokeWidth: 2.5),
-                  )
-                : Text(
-                    _isEditing
-                        ? 'Save Changes'
-                        : 'Assign to ${_selectedStudent?.displayName ?? 'Student'}',
-                    style: GoogleFonts.nunito(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
+            foregroundDecoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.center,
+                colors: [
+                  Colors.white.withValues(alpha: 0.2),
+                  Colors.white.withValues(alpha: 0.0),
+                ],
+              ),
+            ),
+            child: Center(
+              child: _isSaving
+                  ? const SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                          color: Colors.white, strokeWidth: 2.5),
+                    )
+                  : Text(
+                      _isEditing
+                          ? 'Save Changes'
+                          : 'Assign to ${_selectedStudent?.displayName ?? 'Student'}',
+                      style: GoogleFonts.nunito(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                      ),
                     ),
-                  ),
+            ),
           ),
         ),
       ],
