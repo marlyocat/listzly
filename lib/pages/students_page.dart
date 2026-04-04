@@ -187,14 +187,11 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                 description: 'Assign quests to your students and track their progress',
                 tooltipBackgroundColor: const Color(0xFF1E0A4A),
                 descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
-                child: groupAsync.when(
-                  data: (group) {
-                    if (group == null) return const SizedBox.shrink();
-                    return _buildAssignedQuestsSection(context, ref, group.id);
-                  },
-                  loading: () => const SizedBox.shrink(),
-                  error: (_, _) => const SizedBox.shrink(),
-                ),
+                child: Builder(builder: (_) {
+                  final group = groupAsync.value;
+                  if (group == null) return const SizedBox.shrink();
+                  return _buildAssignedQuestsSection(context, ref, group.id);
+                }),
               ),
             ),
 
