@@ -449,7 +449,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
     if (user == null) return;
 
     try {
-      await ref.read(recordingServiceProvider).uploadRecording(
+      await ref.read(recordingServiceProvider).saveRecording(
             userId: user.id,
             sessionId: null,
             instrumentName: widget.instrument,

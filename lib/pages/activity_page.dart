@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,7 +18,6 @@ import 'package:listzly/utils/responsive.dart';
 import 'package:listzly/providers/subscription_provider.dart';
 import 'package:listzly/components/upgrade_prompt.dart';
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:listzly/components/animated_seal_tooltip.dart';
 import 'package:showcaseview/showcaseview.dart';
 
@@ -1676,6 +1674,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
 
     final recordingsAsync = ref.watch(userRecordingsProvider);
     final role = ref.watch(currentProfileProvider).value?.role;
+    final isInGroup = ref.watch(isInGroupProvider).value ?? false;
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       child: Container(
@@ -1753,13 +1752,19 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
-              child: Text(
-                'Recordings are automatically deleted after 30 days.',
-                style: GoogleFonts.nunito(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: darkTextMuted,
-                ),
+              child: Row(
+                children: [
+                  Icon(Icons.info_outline_rounded, size: 14, color: darkTextMuted),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Recordings are stored locally on your device.',
+                    style: GoogleFonts.nunito(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: darkTextMuted,
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 6),
@@ -1811,7 +1816,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                         return RecordingListTile(
                           recording: recording,
                           onPlay: () => _playRecording(recording),
-                          onToggleShare: role == UserRole.student
+                          onToggleShare: role == UserRole.student && isInGroup
                               ? () => _toggleShareRecording(recording)
                               : null,
                           onDownload: () => _downloadRecording(recording),
@@ -1854,13 +1859,13 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
 
   Future<void> _playRecording(PracticeRecording recording) async {
     try {
-      final url = await ref
+      final localPath = await ref
           .read(recordingServiceProvider)
-          .getSignedUrl(recording.filePath);
+          .getLocalPath(recording.filePath);
       if (mounted) {
         showRecordingPlayer(
           context,
-          url: url,
+          filePath: localPath,
           instrumentName: recording.instrumentName,
           date: _formatSessionDate(recording.createdAt),
         );
@@ -1884,35 +1889,19 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
 
   Future<void> _downloadRecording(PracticeRecording recording) async {
     try {
-      final url = await ref
+      final localPath = await ref
           .read(recordingServiceProvider)
-          .getSignedUrl(recording.filePath);
+          .getLocalPath(recording.filePath);
 
-      // Download file to temp directory
-      final httpClient = HttpClient();
-      final request = await httpClient.getUrl(Uri.parse(url));
-      final response = await request.close();
-      final bytes = await response.fold<List<int>>(
-        [],
-        (prev, chunk) => prev..addAll(chunk),
-      );
-      httpClient.close();
-
-      final tempDir = await getTemporaryDirectory();
-      final fileName =
-          '${recording.instrumentName}_${recording.createdAt.millisecondsSinceEpoch}.m4a';
-      final file = File('${tempDir.path}/$fileName');
-      await file.writeAsBytes(bytes);
-
-      // Open native Save As dialog
-      final params = SaveFileDialogParams(sourceFilePath: file.path);
+      // Open native Save As dialog directly from local file
+      final params = SaveFileDialogParams(sourceFilePath: localPath);
       final savedPath = await FlutterFileDialog.saveFile(params: params);
 
       if (savedPath != null && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Recording downloaded successfully',
+              'Recording saved successfully',
               style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
             ),
             behavior: SnackBarBehavior.floating,
@@ -1927,7 +1916,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Could not download recording: $e',
+              'Could not save recording: $e',
               style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
@@ -1993,19 +1982,49 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: ElevatedButton(
-                      onPressed: () => Navigator.pop(ctx, true),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: newShared ? accentCoral : Colors.red,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                    child: GestureDetector(
+                      onTap: () => Navigator.pop(ctx, true),
+                      child: Container(
+                        height: 46,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(14),
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: newShared
+                                ? [accentCoral, accentCoralDark]
+                                : [Colors.red.shade400, Colors.red.shade700],
+                          ),
+                          border: Border.all(color: Colors.black, width: 3),
+                          boxShadow: [
+                            BoxShadow(
+                              color: (newShared ? accentCoralDark : Colors.red.shade700)
+                                  .withValues(alpha: 0.3),
+                              blurRadius: 6,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
                         ),
-                      ),
-                      child: Text(
-                        newShared ? 'Share' : 'Unshare',
-                        style: GoogleFonts.nunito(
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
+                        foregroundDecoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(14),
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.center,
+                            colors: [
+                              Colors.white.withValues(alpha: 0.2),
+                              Colors.white.withValues(alpha: 0.0),
+                            ],
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            newShared ? 'Share' : 'Unshare',
+                            style: GoogleFonts.nunito(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -2023,6 +2042,8 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
     try {
       await ref.read(recordingServiceProvider).setShared(
             recording.id!,
+            recording.filePath,
+            recording.userId,
             newShared,
           );
       ref.invalidate(userRecordingsProvider);
@@ -2117,6 +2138,8 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
         await ref.read(recordingServiceProvider).deleteRecording(
               recording.id!,
               recording.filePath,
+              recording.userId,
+              recording.sharedWithTeacher,
             );
         ref.invalidate(userRecordingsProvider);
       } catch (_) {
@@ -2281,6 +2304,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
 
   void _showAllRecordings(List<PracticeRecording> recordings) {
     final role = ref.read(currentProfileProvider).value?.role;
+    final isInGroup = ref.read(isInGroupProvider).value ?? false;
     showDialog(
       context: context,
       builder: (ctx) {
@@ -2337,7 +2361,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                           return RecordingListTile(
                             recording: recording,
                             onPlay: () => _playRecording(recording),
-                            onToggleShare: role == UserRole.student
+                            onToggleShare: role == UserRole.student && isInGroup
                                 ? () => _toggleShareRecording(recording)
                                 : null,
                             onDownload: () => _downloadRecording(recording),

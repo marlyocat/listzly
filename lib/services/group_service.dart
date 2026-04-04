@@ -6,6 +6,7 @@ import 'package:listzly/models/teacher_group.dart';
 import 'package:listzly/models/group_member.dart';
 import 'package:listzly/models/group_notification.dart';
 import 'package:listzly/models/student_summary.dart';
+import 'package:listzly/services/recording_service.dart';
 
 class GroupService {
   final SupabaseClient _client;
@@ -161,6 +162,34 @@ class GroupService {
       }
     }
 
+    // Unshare all shared recordings and remove R2 copies
+    try {
+      final sharedRecordings = await _client
+          .from('practice_recordings')
+          .select('id, file_path')
+          .eq('user_id', studentId)
+          .eq('shared_with_teacher', true);
+
+      final recordingService = RecordingService(_client);
+      for (final rec in sharedRecordings) {
+        try {
+          await recordingService.deleteR2File(
+            rec['file_path'] as String,
+            studentId,
+          );
+        } catch (e) {
+          debugPrint('Failed to delete R2 file ${rec['id']}: $e');
+        }
+      }
+
+      // Batch update DB to unshare all at once (uses SECURITY DEFINER to bypass RLS)
+      await _client.rpc('unshare_student_recordings', params: {
+        'p_student_id': studentId,
+      });
+    } catch (e) {
+      debugPrint('Failed to clean up shared recordings: $e');
+    }
+
     await _client.from('group_members').delete().eq('student_id', studentId);
   }
 
@@ -243,6 +272,35 @@ class GroupService {
       studentName = profile?['display_name'] as String?;
     } catch (e) {
       debugPrint('Failed to fetch student name: $e');
+    }
+
+    // Unshare all shared recordings and remove R2 copies before deleting membership
+    try {
+      final sharedRecordings = await _client
+          .from('practice_recordings')
+          .select('id, file_path')
+          .eq('user_id', studentId)
+          .eq('shared_with_teacher', true);
+
+      final recordingService = RecordingService(_client);
+      for (final rec in sharedRecordings) {
+        // Delete R2 file
+        try {
+          await recordingService.deleteR2File(
+            rec['file_path'] as String,
+            studentId,
+          );
+        } catch (e) {
+          debugPrint('Failed to delete R2 file ${rec['id']}: $e');
+        }
+      }
+
+      // Batch update DB to unshare all at once (uses SECURITY DEFINER to bypass RLS)
+      await _client.rpc('unshare_student_recordings', params: {
+        'p_student_id': studentId,
+      });
+    } catch (e) {
+      debugPrint('Failed to clean up shared recordings: $e');
     }
 
     await _client

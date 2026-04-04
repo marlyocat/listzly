@@ -1533,7 +1533,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
     try {
       final url = await ref
           .read(recordingServiceProvider)
-          .getSignedUrl(recording.filePath);
+          .getSignedUrl(recording.filePath, recording.userId);
       if (mounted) {
         showRecordingPlayer(
           context,
