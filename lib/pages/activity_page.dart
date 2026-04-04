@@ -624,16 +624,29 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                   child: Container(
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
                         colors: [accentCoral, accentCoralDark],
                       ),
                       borderRadius: BorderRadius.circular(9),
                       boxShadow: [
                         BoxShadow(
-                          color: accentCoral.withValues(alpha: 0.3),
-                          blurRadius: 8,
+                          color: accentCoralDark.withValues(alpha: 0.3),
+                          blurRadius: 6,
                           offset: const Offset(0, 2),
                         ),
                       ],
+                    ),
+                    foregroundDecoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(9),
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.center,
+                        colors: [
+                          Colors.white.withValues(alpha: 0.2),
+                          Colors.white.withValues(alpha: 0.0),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -1231,26 +1244,15 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                                                 barH > 0 ? barH : 0,
                                             decoration: BoxDecoration(
                                               gradient: val > 0
-                                                  ? LinearGradient(
+                                                  ? const LinearGradient(
                                                       begin: Alignment
                                                           .topCenter,
                                                       end: Alignment
                                                           .bottomCenter,
-                                                      colors: isToday
-                                                          ? [
-                                                              accentCoral,
-                                                              accentCoralDark,
-                                                            ]
-                                                          : [
-                                                              accentCoral
-                                                                  .withValues(
-                                                                      alpha:
-                                                                          0.8),
-                                                              accentCoral
-                                                                  .withValues(
-                                                                      alpha:
-                                                                          0.5),
-                                                            ],
+                                                      colors: [
+                                                        accentCoral,
+                                                        accentCoralDark,
+                                                      ],
                                                     )
                                                   : null,
                                               borderRadius:
@@ -1259,15 +1261,16 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                                                 top:
                                                     Radius.circular(6),
                                               ),
-                                              boxShadow: isToday &&
-                                                      val > 0
+                                              boxShadow: val > 0
                                                   ? [
                                                       BoxShadow(
                                                         color: accentCoral
                                                             .withValues(
-                                                                alpha:
-                                                                    0.35),
-                                                        blurRadius: 10,
+                                                                alpha: isToday
+                                                                    ? 0.5
+                                                                    : 0.3),
+                                                        blurRadius:
+                                                            isToday ? 10 : 6,
                                                         offset:
                                                             const Offset(
                                                                 0, 2),
@@ -1275,6 +1278,33 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                                                     ]
                                                   : null,
                                             ),
+                                            foregroundDecoration: val > 0
+                                                ? BoxDecoration(
+                                                    borderRadius:
+                                                        const BorderRadius
+                                                            .vertical(
+                                                      top: Radius
+                                                          .circular(6),
+                                                    ),
+                                                    gradient:
+                                                        LinearGradient(
+                                                      begin: Alignment
+                                                          .topCenter,
+                                                      end: Alignment
+                                                          .center,
+                                                      colors: [
+                                                        Colors.white
+                                                            .withValues(
+                                                                alpha:
+                                                                    0.2),
+                                                        Colors.white
+                                                            .withValues(
+                                                                alpha:
+                                                                    0.0),
+                                                      ],
+                                                    ),
+                                                  )
+                                                : null,
                                           ),
                                         ),
                                       );
