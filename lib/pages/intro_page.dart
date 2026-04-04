@@ -168,7 +168,14 @@ class _IntroPageState extends State<IntroPage>
 
     return Scaffold(
       backgroundColor: const Color(0xFF150833),
-      body: Stack(
+      body: GestureDetector(
+        onTap: () {
+          if (_controller.isAnimating) {
+            _controller.forward(from: 1.0);
+          }
+        },
+        behavior: HitTestBehavior.opaque,
+        child: Stack(
           children: [
             // Subtle radial glow behind the image area
             Positioned(
@@ -325,7 +332,7 @@ class _IntroPageState extends State<IntroPage>
                             context,
                             PageRouteBuilder(
                               transitionDuration:
-                                  const Duration(milliseconds: 600),
+                                  const Duration(milliseconds: 800),
                               reverseTransitionDuration:
                                   const Duration(milliseconds: 300),
                               pageBuilder:
@@ -359,6 +366,7 @@ class _IntroPageState extends State<IntroPage>
             ),
           ],
         ),
+      ),
     );
   }
 }
