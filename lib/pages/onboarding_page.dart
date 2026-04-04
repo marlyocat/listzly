@@ -366,35 +366,42 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
 
                   // Next / Get Started button
                   Expanded(
-                    child: SizedBox(
-                      height: 54,
-                      child: DecoratedBox(
+                    child: GestureDetector(
+                      onTap: _isLoading
+                          ? null
+                          : (_currentPage < _lastPageIndex
+                              ? _nextPage
+                              : _finish),
+                      child: Container(
+                        height: 54,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(27),
                           gradient: const LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
                             colors: [accentCoral, accentCoralDark],
                           ),
+                          border: Border.all(color: Colors.black, width: 2),
                           boxShadow: [
                             BoxShadow(
-                              color: accentCoral.withAlpha(80),
-                              blurRadius: 16,
-                              offset: const Offset(0, 4),
+                              color: accentCoralDark.withValues(alpha: 0.3),
+                              blurRadius: 6,
+                              offset: const Offset(0, 2),
                             ),
                           ],
                         ),
-                        child: ElevatedButton(
-                          onPressed: _isLoading
-                              ? null
-                              : (_currentPage < _lastPageIndex
-                                  ? _nextPage
-                                  : _finish),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            shadowColor: Colors.transparent,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(27),
-                            ),
+                        foregroundDecoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(27),
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.center,
+                            colors: [
+                              Colors.white.withValues(alpha: 0.2),
+                              Colors.white.withValues(alpha: 0.0),
+                            ],
                           ),
+                        ),
+                        child: Center(
                           child: _isLoading
                               ? const SizedBox(
                                   width: 24,

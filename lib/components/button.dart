@@ -23,18 +23,30 @@ class MyButton extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
             colors: [accentCoral, accentCoralDark],
           ),
           borderRadius: BorderRadius.circular(40),
+          border: Border.all(color: Colors.black, width: 2),
           boxShadow: [
             BoxShadow(
-              color: accentCoral.withValues(alpha: 0.35),
-              blurRadius: 16,
-              offset: const Offset(0, 4),
+              color: accentCoralDark.withValues(alpha: 0.3),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
             ),
           ],
+        ),
+        foregroundDecoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(40),
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.center,
+            colors: [
+              Colors.white.withValues(alpha: 0.2),
+              Colors.white.withValues(alpha: 0.0),
+            ],
+          ),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
         child: Row(
