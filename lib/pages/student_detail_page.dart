@@ -298,7 +298,11 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                         Icons.local_fire_department_rounded,
                         '${stats.currentStreak} day streak',
                         accentCoral,
-                        imagePath: 'lib/images/licensed/svg/streak.svg',
+                        imagePath: stats.currentStreak > 0
+                            ? 'lib/images/licensed/svg/streak.svg'
+                            : stats.longestStreak > 0
+                                ? 'lib/images/licensed/svg/ice-cube.svg'
+                                : 'lib/images/licensed/svg/streak.svg',
                       ),
                       _buildChip(
                         Icons.shield_rounded,

@@ -671,7 +671,11 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
             _buildChip(
               'Streak',
               Colors.white,
-              imagePath: 'lib/images/licensed/svg/streak.svg',
+              imagePath: stats.currentStreak > 0
+                  ? 'lib/images/licensed/svg/streak.svg'
+                  : stats.longestStreak > 0
+                      ? 'lib/images/licensed/svg/ice-cube.svg'
+                      : 'lib/images/licensed/svg/streak.svg',
               countUpValue: stats.currentStreak,
               countUpSuffix: stats.currentStreak == 1 ? ' Day' : ' Days',
               staggerIndex: 0,
