@@ -222,29 +222,67 @@ class _AssignQuestDialogState extends ConsumerState<AssignQuestDialog> {
                   final name = _isEditing
                       ? widget.editStudentName ?? 'Student'
                       : _selectedStudent?.displayName ?? '';
+                  final avatarUrl = _selectedStudent?.avatarUrl;
                   if (name.isEmpty) return const SizedBox.shrink();
                   return Padding(
-                    padding: const EdgeInsets.only(top: 10),
+                    padding: const EdgeInsets.only(top: 12),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
+                          horizontal: 14, vertical: 10),
                       decoration: BoxDecoration(
-                        color: primaryColor.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.black, width: 2),
+                        color: darkCardBg,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.black, width: 3),
                       ),
                       child: Row(
-                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.person_rounded,
-                              color: primaryLight, size: 16),
-                          const SizedBox(width: 6),
-                          Text(
-                            name,
-                            style: GoogleFonts.nunito(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
+                          Container(
+                            width: 36,
+                            height: 36,
+                            decoration: BoxDecoration(
+                              color: darkSurfaceBg,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: Colors.black, width: 2),
+                            ),
+                            child: avatarUrl != null
+                                ? Padding(
+                                    padding: const EdgeInsets.all(6),
+                                    child: SvgPicture.asset(avatarUrl),
+                                  )
+                                : Center(
+                                    child: Text(
+                                      name.isNotEmpty
+                                          ? name[0].toUpperCase()
+                                          : '?',
+                                      style: GoogleFonts.dmSerifDisplay(
+                                        fontSize: 16,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Assigning to',
+                                  style: GoogleFonts.nunito(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    color: darkTextMuted,
+                                  ),
+                                ),
+                                Text(
+                                  name,
+                                  style: GoogleFonts.nunito(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
