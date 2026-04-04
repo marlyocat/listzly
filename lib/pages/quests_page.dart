@@ -764,11 +764,47 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                 builder: (context, child) {
                   return ClipRRect(
                     borderRadius: BorderRadius.circular(4),
-                    child: LinearProgressIndicator(
-                      value: (progress * _progressCurve.value).clamp(0.0, 1.0),
-                      minHeight: 5,
-                      backgroundColor: Colors.white.withValues(alpha: 0.1),
-                      valueColor: const AlwaysStoppedAnimation<Color>(Colors.green),
+                    child: SizedBox(
+                      height: 8,
+                      child: Stack(
+                        children: [
+                          Container(color: Colors.white.withValues(alpha: 0.1)),
+                          FractionallySizedBox(
+                            widthFactor: (progress * _progressCurve.value).clamp(0.0, 1.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Colors.green,
+                                    Color.lerp(Colors.green, Colors.black, 0.3)!,
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(4),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.green.withValues(alpha: 0.3),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 1),
+                                  ),
+                                ],
+                              ),
+                              foregroundDecoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(4),
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.center,
+                                  colors: [
+                                    Colors.white.withValues(alpha: 0.25),
+                                    Colors.white.withValues(alpha: 0.0),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },
@@ -978,11 +1014,39 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                                         animatedProgress.clamp(0.0, 1.0),
                                     child: Container(
                                       decoration: BoxDecoration(
-                                        color: isComplete
-                                            ? primaryColor
-                                            : primaryLight,
+                                        gradient: LinearGradient(
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.bottomCenter,
+                                          colors: [
+                                            isComplete ? primaryColor : primaryLight,
+                                            Color.lerp(
+                                              isComplete ? primaryColor : primaryLight,
+                                              Colors.black,
+                                              0.3,
+                                            )!,
+                                          ],
+                                        ),
                                         borderRadius:
                                             BorderRadius.circular(4),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: (isComplete ? primaryColor : primaryLight)
+                                                .withValues(alpha: 0.3),
+                                            blurRadius: 4,
+                                            offset: const Offset(0, 1),
+                                          ),
+                                        ],
+                                      ),
+                                      foregroundDecoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(4),
+                                        gradient: LinearGradient(
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.center,
+                                          colors: [
+                                            Colors.white.withValues(alpha: 0.25),
+                                            Colors.white.withValues(alpha: 0.0),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
