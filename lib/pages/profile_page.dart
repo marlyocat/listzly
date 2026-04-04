@@ -1670,7 +1670,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                   letterSpacing: 2,
                 ),
                 decoration: InputDecoration(
-                  labelText: 'Invite Code',
+                  labelText: 'Enter Invite Code',
                   labelStyle: GoogleFonts.nunito(
                     color: darkTextMuted,
                     fontWeight: FontWeight.w600,
