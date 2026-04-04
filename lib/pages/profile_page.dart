@@ -18,6 +18,7 @@ import 'package:listzly/providers/settings_provider.dart';
 import 'package:listzly/providers/instrument_provider.dart';
 import 'package:listzly/models/student_summary.dart';
 import 'package:listzly/providers/group_provider.dart';
+import 'package:listzly/providers/recording_provider.dart';
 import 'package:listzly/theme/colors.dart';
 import 'package:listzly/utils/level_utils.dart';
 import 'package:listzly/utils/avatar_options.dart';
@@ -1902,6 +1903,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 ref.invalidate(studentMembershipProvider);
                 ref.invalidate(isInGroupProvider);
                 ref.invalidate(currentProfileProvider);
+                ref.invalidate(userRecordingsProvider);
               } catch (e) {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -1966,6 +1968,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
               ref.invalidate(studentMembershipProvider);
               ref.invalidate(isInGroupProvider);
               ref.invalidate(currentProfileProvider);
+              ref.invalidate(userRecordingsProvider);
             },
             child: Text('Leave',
                 style: GoogleFonts.nunito(
