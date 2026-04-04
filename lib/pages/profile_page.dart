@@ -43,18 +43,33 @@ class ProfilePage extends ConsumerStatefulWidget {
 }
 
 class _ProfilePageState extends ConsumerState<ProfilePage>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late final AnimationController _titleAnimController;
+  late final AnimationController _instrumentBarAnimController;
+  late final Animation<double> _instrumentBarAnim;
+  final Set<int> _expandedInstruments = {};
 
   @override
   void initState() {
     super.initState();
     _titleAnimController = AnimationController(vsync: this);
+    _instrumentBarAnimController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    _instrumentBarAnim = CurvedAnimation(
+      parent: _instrumentBarAnimController,
+      curve: Curves.easeOutCubic,
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _instrumentBarAnimController.forward();
+    });
   }
 
   @override
   void dispose() {
     _titleAnimController.dispose();
+    _instrumentBarAnimController.dispose();
     super.dispose();
   }
 
@@ -291,6 +306,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
     ref.listen(navIndexProvider, (prev, next) {
       if (next == profileTabIndex && prev != profileTabIndex) {
         _titleAnimController
+          ..reset()
+          ..forward();
+        _instrumentBarAnimController
           ..reset()
           ..forward();
       }
@@ -3078,120 +3096,228 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                       ),
                     ),
                   )
-                : Column(
-                    children: instruments.asMap().entries.map((entry) {
-                      final i = entry.key;
-                      final inst = entry.value;
-                      final name = (inst['name'] as String?) ?? 'Unknown';
-                      final minutes =
-                          (inst['minutes'] as num?)?.toInt() ?? 0;
-                      final sessions =
-                          (inst['sessions'] as num?)?.toInt() ?? 0;
-                      final instImage = instrumentImages[name];
-                      final color = instrumentColors[name] ?? defaultColor;
-                      final fraction =
-                          totalMinutes > 0 ? minutes / totalMinutes : 0.0;
+                : AnimatedBuilder(
+                    animation: _instrumentBarAnim,
+                    builder: (context, _) => Column(
+                      children: instruments.asMap().entries.map((entry) {
+                        final i = entry.key;
+                        final inst = entry.value;
+                        final name = (inst['name'] as String?) ?? 'Unknown';
+                        final minutes =
+                            (inst['minutes'] as num?)?.toInt() ?? 0;
+                        final sessions =
+                            (inst['sessions'] as num?)?.toInt() ?? 0;
+                        final avgMinutes =
+                            (inst['avgMinutes'] as num?)?.toInt() ?? 0;
+                        final lastPracticed =
+                            inst['lastPracticed'] as DateTime?;
+                        final instImage = instrumentImages[name];
+                        final color = instrumentColors[name] ?? defaultColor;
+                        final fraction =
+                            totalMinutes > 0 ? minutes / totalMinutes : 0.0;
+                        final expanded = _expandedInstruments.contains(i);
 
-                      return Column(
-                        children: [
-                          if (i > 0)
-                            const Divider(
-                              height: 1,
-                              indent: 60,
-                              endIndent: 16,
-                              color: darkDivider,
-                            ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 12),
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 38,
-                                  height: 38,
-                                  decoration: BoxDecoration(
-                                    color: darkSurfaceBg,
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(
-                                        color: Colors.black, width: 2),
-                                  ),
-                                  child: instImage != null
-                                      ? Padding(padding: const EdgeInsets.all(6), child: SvgPicture.asset(instImage))
-                                      : const Icon(Icons.music_note, color: Colors.white, size: 20),
-                                ),
-                                const SizedBox(width: 14),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        name,
-                                        style: GoogleFonts.nunito(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w700,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 6),
-                                      ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(3),
-                                        child: SizedBox(
-                                          height: 6,
-                                          child: Stack(
-                                            children: [
-                                              Container(
-                                                  color: darkCardBg),
-                                              FractionallySizedBox(
-                                                widthFactor: fraction
-                                                    .clamp(0.0, 1.0),
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                    color: color,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            3),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.end,
+                        return Column(
+                          children: [
+                            if (i > 0)
+                              const Divider(
+                                height: 1,
+                                indent: 60,
+                                endIndent: 16,
+                                color: darkDivider,
+                              ),
+                            GestureDetector(
+                              onTap: () => setState(() {
+                                if (expanded) {
+                                  _expandedInstruments.remove(i);
+                                } else {
+                                  _expandedInstruments.add(i);
+                                }
+                              }),
+                              behavior: HitTestBehavior.opaque,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 12),
+                                child: Row(
                                   children: [
-                                    Text(
-                                      '$minutes min',
-                                      style: GoogleFonts.nunito(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w800,
-                                        color: Colors.white,
+                                    Container(
+                                      width: 38,
+                                      height: 38,
+                                      decoration: BoxDecoration(
+                                        color: darkSurfaceBg,
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: Border.all(
+                                            color: Colors.black, width: 2),
+                                      ),
+                                      child: instImage != null
+                                          ? Padding(padding: const EdgeInsets.all(6), child: SvgPicture.asset(instImage))
+                                          : const Icon(Icons.music_note, color: Colors.white, size: 20),
+                                    ),
+                                    const SizedBox(width: 14),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            name,
+                                            style: GoogleFonts.nunito(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w700,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 6),
+                                          ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(4),
+                                            child: SizedBox(
+                                              height: 8,
+                                              child: Stack(
+                                                children: [
+                                                  Container(
+                                                      color: darkCardBg),
+                                                  FractionallySizedBox(
+                                                    widthFactor: (fraction *
+                                                            _instrumentBarAnim
+                                                                .value)
+                                                        .clamp(0.0, 1.0),
+                                                    child: Container(
+                                                      decoration: BoxDecoration(
+                                                        gradient: LinearGradient(
+                                                          begin: Alignment.topCenter,
+                                                          end: Alignment.bottomCenter,
+                                                          colors: [
+                                                            color,
+                                                            Color.lerp(color, Colors.black, 0.3)!,
+                                                          ],
+                                                        ),
+                                                        borderRadius:
+                                                            BorderRadius.circular(3),
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                            color: color.withValues(alpha: 0.3),
+                                                            blurRadius: 4,
+                                                            offset: const Offset(0, 1),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      foregroundDecoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(3),
+                                                        gradient: LinearGradient(
+                                                          begin: Alignment.topCenter,
+                                                          end: Alignment.center,
+                                                          colors: [
+                                                            Colors.white.withValues(alpha: 0.25),
+                                                            Colors.white.withValues(alpha: 0.0),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    Text(
-                                      '$sessions sessions',
-                                      style: GoogleFonts.nunito(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w600,
-                                        color: darkTextSecondary,
+                                    const SizedBox(width: 12),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: [
+                                        Text(
+                                          '$minutes min',
+                                          style: GoogleFonts.nunito(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w800,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        Text(
+                                          '$sessions sessions',
+                                          style: GoogleFonts.nunito(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w600,
+                                            color: darkTextSecondary,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(width: 4),
+                                    AnimatedRotation(
+                                      turns: expanded ? 0.5 : 0.0,
+                                      duration: const Duration(milliseconds: 200),
+                                      child: const Icon(
+                                        Icons.expand_more_rounded,
+                                        color: darkTextMuted,
+                                        size: 20,
                                       ),
                                     ),
                                   ],
                                 ),
-                              ],
+                              ),
                             ),
-                          ),
-                        ],
-                      );
-                    }).toList(),
+                            AnimatedCrossFade(
+                              firstChild: const SizedBox(width: double.infinity, height: 0),
+                              secondChild: SizedBox(
+                                width: double.infinity,
+                                child: Padding(
+                                  padding: const EdgeInsets.fromLTRB(68, 0, 16, 12),
+                                  child: Wrap(
+                                    spacing: 8,
+                                    runSpacing: 6,
+                                    children: [
+                                      if (lastPracticed != null)
+                                        _buildDetailChip(
+                                          'lib/images/licensed/svg/history.svg',
+                                          'Last Played: ${_formatDate(lastPracticed)}',
+                                        ),
+                                      _buildDetailChip(
+                                        'lib/images/licensed/svg/statistics.svg',
+                                        'Avg Time: $avgMinutes min',
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              crossFadeState: expanded
+                                  ? CrossFadeState.showSecond
+                                  : CrossFadeState.showFirst,
+                              duration: const Duration(milliseconds: 200),
+                            ),
+                          ],
+                        );
+                      }).toList(),
+                    ),
                   ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetailChip(String svgPath, String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: darkSurfaceBg,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: darkDivider),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SvgPicture.asset(svgPath, width: 12, height: 12),
+          const SizedBox(width: 4),
+          Text(
+            text,
+            style: GoogleFonts.nunito(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: darkTextSecondary,
+            ),
           ),
         ],
       ),

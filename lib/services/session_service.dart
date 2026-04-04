@@ -105,11 +105,26 @@ class SessionService {
     for (final session in sessions) {
       final name = session.instrumentName;
       if (!statsMap.containsKey(name)) {
-        statsMap[name] = {'name': name, 'minutes': 0, 'sessions': 0};
+        statsMap[name] = {
+          'name': name,
+          'minutes': 0,
+          'sessions': 0,
+          'lastPracticed': session.startedAt,
+          'avgMinutes': 0,
+        };
       }
       statsMap[name]!['minutes'] =
           (statsMap[name]!['minutes'] as int) + (session.durationSeconds ~/ 60);
       statsMap[name]!['sessions'] = (statsMap[name]!['sessions'] as int) + 1;
+      final existing = statsMap[name]!['lastPracticed'] as DateTime;
+      if (session.startedAt.isAfter(existing)) {
+        statsMap[name]!['lastPracticed'] = session.startedAt;
+      }
+    }
+    for (final stats in statsMap.values) {
+      final totalMin = stats['minutes'] as int;
+      final count = stats['sessions'] as int;
+      stats['avgMinutes'] = count > 0 ? (totalMin / count).round() : 0;
     }
 
     return statsMap.values.toList()

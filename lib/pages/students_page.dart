@@ -455,7 +455,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   decoration: BoxDecoration(
-                    color: accentCoral.withAlpha(20),
+                    color: accentCoral.withAlpha(40),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: Colors.black, width: 2),
                   ),
