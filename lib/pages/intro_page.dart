@@ -170,37 +170,6 @@ class _IntroPageState extends State<IntroPage>
       backgroundColor: const Color(0xFF150833),
       body: Stack(
           children: [
-            // Background decorative rings
-            Positioned(
-              top: -80,
-              right: -60,
-              child: Container(
-                width: 260,
-                height: 260,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.06),
-                    width: 1.5,
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              top: -40,
-              right: -20,
-              child: Container(
-                width: 180,
-                height: 180,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.04),
-                    width: 1,
-                  ),
-                ),
-              ),
-            ),
             // Subtle radial glow behind the image area
             Positioned(
               top: screenHeight * 0.15,
