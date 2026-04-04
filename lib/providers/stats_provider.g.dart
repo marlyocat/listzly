@@ -87,3 +87,41 @@ final class UserStatsProvider
 }
 
 String _$userStatsHash() => r'c82d5f6bcb3803ba6d1edd3b28901c38aaa0c3b0';
+
+@ProviderFor(streakExpiry)
+final streakExpiryProvider = StreakExpiryProvider._();
+
+final class StreakExpiryProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<DateTime?>,
+          DateTime?,
+          FutureOr<DateTime?>
+        >
+    with $FutureModifier<DateTime?>, $FutureProvider<DateTime?> {
+  StreakExpiryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'streakExpiryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$streakExpiryHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<DateTime?> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<DateTime?> create(Ref ref) {
+    return streakExpiry(ref);
+  }
+}
+
+String _$streakExpiryHash() => r'015a4d5a2bb7881319892027d20d765832821cec';

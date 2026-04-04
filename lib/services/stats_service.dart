@@ -155,4 +155,24 @@ class StatsService {
 
     return UserStats.fromJson(result);
   }
+
+  /// Returns the DateTime when the streak will expire, or null if no sessions exist.
+  /// The streak expires at midnight 3 days after the last practice day.
+  Future<DateTime?> getStreakExpiryTime(String userId) async {
+    final sessions = await _client
+        .from('practice_sessions')
+        .select('completed_at')
+        .eq('user_id', userId)
+        .order('completed_at', ascending: false)
+        .limit(1);
+
+    final sessionList = sessions as List;
+    if (sessionList.isEmpty) return null;
+
+    final lastPractice = DateTime.parse(
+        (sessionList.first as Map<String, dynamic>)['completed_at'] as String);
+    final lastPracticeDay = DateTime(lastPractice.year, lastPractice.month, lastPractice.day);
+    // Streak expires at midnight 3 days after last practice
+    return lastPracticeDay.add(const Duration(days: 3));
+  }
 }

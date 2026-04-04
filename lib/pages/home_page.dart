@@ -240,6 +240,26 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
     super.dispose();
   }
 
+  void _showStreakInfo(BuildContext context, int streakDays, bool streakBroken) async {
+    final expiryTime = await ref.read(streakExpiryProvider.future);
+    if (!mounted) return;
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final practicedToday = expiryTime != null &&
+        expiryTime.subtract(const Duration(days: 3)) == today;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => _StreakInfoDialog(
+        streakDays: streakDays,
+        streakBroken: streakBroken,
+        practicedToday: practicedToday,
+        expiryTime: expiryTime,
+      ),
+    );
+  }
+
   void _onGoTap() {
     final tier = ref.read(effectiveSubscriptionTierProvider);
     if (!tier.canUseAllInstruments && _currentPage != 0) {
@@ -403,7 +423,9 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                           borderRadius: 20,
                         ),
                       )
-                    : Container(
+                    : GestureDetector(
+                  onTap: () => _showStreakInfo(context, streakDays, streakBroken),
+                  child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                   decoration: BoxDecoration(
                     color: Colors.white.withAlpha(15),
@@ -419,10 +441,15 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                       SizedBox(
                         width: 22,
                         height: 22,
-                        child: Lottie.asset(
-                          'lib/images/licensed/json/fire-streak-animation.json',
-                          fit: BoxFit.contain,
-                        ),
+                        child: streakBroken
+                            ? SvgPicture.asset(
+                                'lib/images/licensed/svg/ice-cube.svg',
+                                fit: BoxFit.contain,
+                              )
+                            : Lottie.asset(
+                                'lib/images/licensed/json/fire-streak-animation.json',
+                                fit: BoxFit.contain,
+                              ),
                       ),
                       const SizedBox(width: 6),
                       Column(
@@ -455,6 +482,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                       ),
                     ],
                   ),
+                ),
                 ),
               ),
 
@@ -785,6 +813,172 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
         ),
           ],
         ),
+    );
+  }
+}
+
+class _StreakInfoDialog extends StatefulWidget {
+  final int streakDays;
+  final bool streakBroken;
+  final bool practicedToday;
+  final DateTime? expiryTime;
+
+  const _StreakInfoDialog({
+    required this.streakDays,
+    required this.streakBroken,
+    required this.practicedToday,
+    required this.expiryTime,
+  });
+
+  @override
+  State<_StreakInfoDialog> createState() => _StreakInfoDialogState();
+}
+
+class _StreakInfoDialogState extends State<_StreakInfoDialog> {
+  late final Stream<Duration> _countdownStream;
+
+  @override
+  void initState() {
+    super.initState();
+    _countdownStream = Stream.periodic(const Duration(seconds: 1), (_) {
+      if (widget.expiryTime == null) return Duration.zero;
+      final remaining = widget.expiryTime!.difference(DateTime.now());
+      return remaining.isNegative ? Duration.zero : remaining;
+    });
+  }
+
+  String _formatCountdown(Duration d) {
+    final hours = d.inHours;
+    final minutes = d.inMinutes % 60;
+    final seconds = d.inSeconds % 60;
+    if (hours > 0) {
+      return '${hours}h ${minutes}m ${seconds}s';
+    } else if (minutes > 0) {
+      return '${minutes}m ${seconds}s';
+    }
+    return '${seconds}s';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final showCountdown = !widget.streakBroken &&
+        widget.streakDays > 0 &&
+        !widget.practicedToday &&
+        widget.expiryTime != null;
+
+    String message;
+    if (widget.streakBroken) {
+      message = 'Your streak was lost! Start practicing again to build a new one.';
+    } else if (widget.streakDays == 0) {
+      message = 'Start practicing to build your streak!';
+    } else if (widget.practicedToday) {
+      const messages = [
+        'You practiced today! Keep it up!',
+        'Great job today! Your dedication is paying off!',
+        'Another day, another win! You\'re unstoppable!',
+        'You showed up today! That\'s what champions do!',
+        'Practice makes progress! Keep going!',
+        'You\'re building something amazing, one day at a time!',
+        'Consistency is key, and you\'ve got it!',
+        'Today\'s practice is tomorrow\'s skill!',
+        'You\'re on fire! Don\'t stop now!',
+        'Music waits for no one, and neither do you!',
+      ];
+      message = messages[widget.streakDays % messages.length];
+    } else {
+      message = 'Practice now to keep your streak alive!';
+    }
+
+    return Dialog(
+      backgroundColor: const Color(0xFF1E0E3D),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: const BorderSide(color: Colors.black, width: 5),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: 40,
+              height: 40,
+              child: widget.streakBroken
+                  ? SvgPicture.asset(
+                      'lib/images/licensed/svg/ice-cube.svg',
+                      fit: BoxFit.contain,
+                    )
+                  : Lottie.asset(
+                      'lib/images/licensed/json/fire-streak-animation.json',
+                      fit: BoxFit.contain,
+                    ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              widget.streakBroken ? 'Streak Lost' : '${widget.streakDays} Day Streak',
+              style: GoogleFonts.nunito(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.nunito(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: darkTextSecondary,
+              ),
+            ),
+            if (showCountdown) ...[
+              const SizedBox(height: 16),
+              StreamBuilder<Duration>(
+                stream: _countdownStream,
+                builder: (context, snapshot) {
+                  final remaining = snapshot.data ??
+                      widget.expiryTime!.difference(DateTime.now());
+                  return Column(
+                    children: [
+                      Text(
+                        'Streak expires in',
+                        style: GoogleFonts.nunito(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: darkTextMuted,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        _formatCountdown(remaining.isNegative ? Duration.zero : remaining),
+                        style: GoogleFonts.nunito(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w800,
+                          color: accentCoral,
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ],
+            const SizedBox(height: 16),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                widget.practicedToday || widget.streakDays == 0
+                    ? 'OK'
+                    : 'Practice Now',
+                style: GoogleFonts.nunito(
+                  fontWeight: FontWeight.w700,
+                  color: accentCoral,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -15,3 +15,10 @@ Future<UserStats> userStats(Ref ref) async {
   if (user == null) throw Exception('Not authenticated');
   return ref.watch(statsServiceProvider).getStats(user.id);
 }
+
+@riverpod
+Future<DateTime?> streakExpiry(Ref ref) async {
+  final user = ref.watch(currentUserProvider);
+  if (user == null) throw Exception('Not authenticated');
+  return ref.watch(statsServiceProvider).getStreakExpiryTime(user.id);
+}
