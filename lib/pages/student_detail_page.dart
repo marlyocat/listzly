@@ -595,7 +595,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     _buildStatCard(
-                      svgPath: 'lib/images/licensed/svg/history.svg',
+                      svgPath: 'lib/images/licensed/svg/total-time.svg',
                       value: animSeconds == 0 ? '0s' : timeText,
                       label: 'Total Time',
                       color: accentCoral,
@@ -620,7 +620,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _buildStatCard(
-                  svgPath: 'lib/images/licensed/svg/history.svg',
+                  svgPath: 'lib/images/licensed/svg/total-time.svg',
                   value: '\u2014',
                   label: 'Total Time',
                   color: accentCoral),
@@ -638,7 +638,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _buildStatCard(
-                  svgPath: 'lib/images/licensed/svg/history.svg',
+                  svgPath: 'lib/images/licensed/svg/total-time.svg',
                   value: '\u2014',
                   label: 'Total Time',
                   color: accentCoral),

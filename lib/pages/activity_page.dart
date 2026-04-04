@@ -846,7 +846,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
               children: [
                 _buildStatCard(
                   icon: Icons.access_time_rounded,
-                  svgPath: 'lib/images/licensed/svg/history.svg',
+                  svgPath: 'lib/images/licensed/svg/total-time.svg',
                   value: animSeconds == 0 ? '0s' : timeText,
                   label: 'Total Time',
                   color: accentCoral,
@@ -881,7 +881,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
             children: [
               _buildStatCard(
                 icon: Icons.access_time_rounded,
-                svgPath: 'lib/images/licensed/svg/history.svg',
+                svgPath: 'lib/images/licensed/svg/total-time.svg',
                 value: '\u2014',
                 label: 'Total Time',
                 color: accentCoral,
@@ -903,7 +903,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
             children: [
               _buildStatCard(
                 icon: Icons.access_time_rounded,
-                svgPath: 'lib/images/licensed/svg/history.svg',
+                svgPath: 'lib/images/licensed/svg/total-time.svg',
                 value: '\u2014',
                 label: 'Total Time',
                 color: accentCoral,
