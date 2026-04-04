@@ -793,9 +793,10 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                               foregroundDecoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(4),
                                 gradient: LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.center,
+                                  begin: Alignment(_progressCurve.value * 2 - 0.8, 0),
+                                  end: Alignment(_progressCurve.value * 2 - 0.2, 0),
                                   colors: [
+                                    Colors.white.withValues(alpha: 0.0),
                                     Colors.white.withValues(alpha: 0.25),
                                     Colors.white.withValues(alpha: 0.0),
                                   ],
@@ -1040,9 +1041,10 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                                       foregroundDecoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(4),
                                         gradient: LinearGradient(
-                                          begin: Alignment.topCenter,
-                                          end: Alignment.center,
+                                          begin: Alignment(_progressCurve.value * 2 - 0.8, 0),
+                                          end: Alignment(_progressCurve.value * 2 - 0.2, 0),
                                           colors: [
+                                            Colors.white.withValues(alpha: 0.0),
                                             Colors.white.withValues(alpha: 0.25),
                                             Colors.white.withValues(alpha: 0.0),
                                           ],

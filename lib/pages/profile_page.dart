@@ -55,7 +55,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
     _titleAnimController = AnimationController(vsync: this);
     _instrumentBarAnimController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 2000),
     );
     _instrumentBarAnim = CurvedAnimation(
       parent: _instrumentBarAnimController,
@@ -3205,9 +3205,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                                       foregroundDecoration: BoxDecoration(
                                                         borderRadius: BorderRadius.circular(3),
                                                         gradient: LinearGradient(
-                                                          begin: Alignment.topCenter,
-                                                          end: Alignment.center,
+                                                          begin: Alignment(_instrumentBarAnim.value * 2 - 0.8, 0),
+                                                          end: Alignment(_instrumentBarAnim.value * 2 - 0.2, 0),
                                                           colors: [
+                                                            Colors.white.withValues(alpha: 0.0),
                                                             Colors.white.withValues(alpha: 0.25),
                                                             Colors.white.withValues(alpha: 0.0),
                                                           ],
