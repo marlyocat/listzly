@@ -87,11 +87,16 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           'Active Subscription',
-          style: TextStyle(fontFamily: 'DM Serif Display',fontSize: 20, color: Colors.white),
+          style: TextStyle(
+            fontFamily: 'DM Serif Display',
+            fontSize: 20,
+            color: Colors.white,
+          ),
         ),
         content: Text(
           'Please cancel your subscription in your app store settings before deleting your account to avoid being charged.',
-          style: TextStyle(fontFamily: 'Nunito',
+          style: TextStyle(
+            fontFamily: 'Nunito',
             fontSize: 14,
             fontWeight: FontWeight.w600,
             color: darkTextMuted,
@@ -102,7 +107,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
             onPressed: () => Navigator.pop(ctx),
             child: Text(
               'Cancel',
-              style: TextStyle(fontFamily: 'Nunito',
+              style: TextStyle(
+                fontFamily: 'Nunito',
                 fontWeight: FontWeight.w700,
                 color: darkTextMuted,
               ),
@@ -115,13 +121,17 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 final customerInfo = await Purchases.getCustomerInfo();
                 final url = customerInfo.managementURL;
                 if (url != null) {
-                  await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+                  await launchUrl(
+                    Uri.parse(url),
+                    mode: LaunchMode.externalApplication,
+                  );
                 }
               } catch (_) {}
             },
             child: Text(
               'Manage Subscription',
-              style: TextStyle(fontFamily: 'Nunito',
+              style: TextStyle(
+                fontFamily: 'Nunito',
                 fontWeight: FontWeight.w700,
                 color: accentCoral,
               ),
@@ -145,10 +155,16 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
           backgroundColor: const Color(0xFF1E0E3D),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           title: Text(
             'Delete Account',
-            style: TextStyle(fontFamily: 'DM Serif Display',fontSize: 20, color: Colors.white),
+            style: TextStyle(
+              fontFamily: 'DM Serif Display',
+              fontSize: 20,
+              color: Colors.white,
+            ),
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -156,7 +172,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
             children: [
               Text(
                 'This will permanently delete your account and all associated data. This cannot be undone.',
-                style: TextStyle(fontFamily: 'Nunito',
+                style: TextStyle(
+                  fontFamily: 'Nunito',
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: darkTextMuted,
@@ -165,7 +182,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
               const SizedBox(height: 16),
               Text(
                 'Type DELETE to confirm:',
-                style: TextStyle(fontFamily: 'Nunito',
+                style: TextStyle(
+                  fontFamily: 'Nunito',
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
                   color: Colors.white,
@@ -175,14 +193,16 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
               TextField(
                 controller: controller,
                 onChanged: (_) => setDialogState(() {}),
-                style: TextStyle(fontFamily: 'Nunito',
+                style: TextStyle(
+                  fontFamily: 'Nunito',
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: Colors.white,
                 ),
                 decoration: InputDecoration(
                   hintText: 'DELETE',
-                  hintStyle: TextStyle(fontFamily: 'Nunito',
+                  hintStyle: TextStyle(
+                    fontFamily: 'Nunito',
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: darkTextMuted.withAlpha(100),
@@ -190,7 +210,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                   isDense: true,
                   filled: true,
                   fillColor: darkCardBg,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(color: Colors.black, width: 3),
@@ -208,7 +231,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
               onPressed: () => Navigator.pop(ctx),
               child: Text(
                 'Cancel',
-                style: TextStyle(fontFamily: 'Nunito',
+                style: TextStyle(
+                  fontFamily: 'Nunito',
                   fontWeight: FontWeight.w700,
                   color: darkTextMuted,
                 ),
@@ -223,7 +247,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                   : null,
               child: Text(
                 'Delete Forever',
-                style: TextStyle(fontFamily: 'Nunito',
+                style: TextStyle(
+                  fontFamily: 'Nunito',
                   fontWeight: FontWeight.w700,
                   color: controller.text.trim() == 'DELETE'
                       ? Colors.red
@@ -237,7 +262,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
     );
   }
 
-  Future<void> _performAccountDeletion(BuildContext context, WidgetRef ref) async {
+  Future<void> _performAccountDeletion(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
     // Grab messenger before async gap
     final messenger = ScaffoldMessenger.of(context);
     final navigator = Navigator.of(context);
@@ -245,9 +273,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => const Center(
-        child: CircularProgressIndicator(color: accentCoral),
-      ),
+      builder: (_) =>
+          const Center(child: CircularProgressIndicator(color: accentCoral)),
     );
 
     try {
@@ -265,7 +292,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
           SnackBar(
             content: Text(
               'Your account has been deleted.',
-              style: TextStyle(fontFamily: 'Nunito',fontWeight: FontWeight.w600),
+              style: TextStyle(
+                fontFamily: 'Nunito',
+                fontWeight: FontWeight.w600,
+              ),
             ),
             showCloseIcon: true,
             duration: const Duration(seconds: 3),
@@ -280,7 +310,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
           SnackBar(
             content: Text(
               'Could not delete account. Please try again.',
-              style: TextStyle(fontFamily: 'Nunito',fontWeight: FontWeight.w600),
+              style: TextStyle(
+                fontFamily: 'Nunito',
+                fontWeight: FontWeight.w600,
+              ),
             ),
             showCloseIcon: true,
             duration: const Duration(seconds: 3),
@@ -301,7 +334,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
   @override
   Widget build(BuildContext context) {
     // Replay title animation when navigating to this tab.
-    final isTeacher = ref.watch(currentProfileProvider).value?.isTeacher ?? false;
+    final isTeacher =
+        ref.watch(currentProfileProvider).value?.isTeacher ?? false;
     final profileTabIndex = isTeacher ? 4 : 3;
     ref.listen(navIndexProvider, (prev, next) {
       if (next == profileTabIndex && prev != profileTabIndex) {
@@ -321,274 +355,343 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
     return Scaffold(
       backgroundColor: const Color(0xFF150833),
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            // Title + bird tooltip
-            SliverContentConstraint(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
-                child: Row(
-                  children: [
-                    const Spacer(),
-                    SizedBox(
-                      width: 32,
-                      height: 32,
-                      child: Lottie.asset(
-                        'lib/images/licensed/json/gear-wrench-animation.json',
-                        fit: BoxFit.contain,
-                        repeat: false,
-                        controller: _titleAnimController,
-                        onLoaded: (composition) {
-                          _titleAnimController.duration = composition.duration;
-                          _titleAnimController.forward();
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    ShaderMask(
-                      shaderCallback: (bounds) => const LinearGradient(
-                        colors: [Colors.white, primaryLight],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ).createShader(bounds),
-                      child: Text(
-                        'Profile',
-                        style: TextStyle(fontFamily: 'DM Serif Display',
-                          fontSize: 36,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    const Spacer(),
-                    AnimatedSealTooltip(
-                      onTap: _startShowcase,
-                      navIndex: profileTabIndex,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            // Profile card
-            SliverContentConstraint(
-              child: Showcase(
-                key: _profileKey,
-                description: 'View your profile info and display name',
-                tooltipBackgroundColor: const Color(0xFF1E0A4A),
-                descTextStyle: TextStyle(fontFamily: 'Nunito',fontSize: 14, color: Colors.white),
-                tooltipActions: [
-                  TooltipActionButton(
-                    type: TooltipDefaultActionType.skip,
-                    name: 'Skip tour',
-                    backgroundColor: Colors.red,
-                    textStyle: TextStyle(fontFamily: 'Nunito',fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white),
-                  ),
-                ],
-                child: profileAsync.when(
-                  data: (profile) {
-                    final email = ref.watch(currentUserProvider)?.email;
-                    return _buildProfileCard(profile, email);
-                  },
-                  loading: () => _buildProfileCardLoading(),
-                  error: (err, _) => _buildErrorCard('Failed to load profile'),
-                ),
-              ),
-            ),
-
-            // Subscription section (temporarily hidden — free Pro access active)
-            // SliverContentConstraint(
-            //   child: _buildSubscriptionSection(context, ref),
-            // ),
-
-            // Role & Group section
-            SliverContentConstraint(
-              child: Showcase(
-                key: _roleKey,
-                description: 'Switch between student and teacher roles or join a group',
-                tooltipBackgroundColor: const Color(0xFF1E0A4A),
-                descTextStyle: TextStyle(fontFamily: 'Nunito',fontSize: 14, color: Colors.white),
-                child: profileAsync.when(
-                  data: (profile) =>
-                      _buildRoleGroupSection(context, ref, profile),
-                  loading: () => const SizedBox.shrink(),
-                  error: (_, _) => const SizedBox.shrink(),
-                ),
-              ),
-            ),
-
-            // Display section
-            SliverContentConstraint(
-              child: settingsAsync.when(
-                data: (settings) => _buildDisplaySection(ref, settings),
-                loading: () => _buildSectionLoading('Display'),
-                error: (err, _) =>
-                    _buildErrorCard('Failed to load display settings'),
-              ),
-            ),
-
-            // Practice section
-            SliverContentConstraint(
-              child: Showcase(
-                key: _practiceKey,
-                description: 'Set your daily practice goal, reminder preferences, and background music',
-                tooltipBackgroundColor: const Color(0xFF1E0A4A),
-                descTextStyle: TextStyle(fontFamily: 'Nunito',fontSize: 14, color: Colors.white),
-                child: settingsAsync.when(
-                  data: (settings) => _buildPracticeSection(context, ref, settings),
-                  loading: () => _buildSectionLoading('Practice'),
-                  error: (err, _) =>
-                      _buildErrorCard('Failed to load practice settings'),
-                ),
-              ),
-            ),
-
-            // Instruments section
-            SliverContentConstraint(
-              child: Showcase(
-                key: _instrumentsKey,
-                description: 'See your total practice time for each instrument',
-                tooltipBackgroundColor: const Color(0xFF1E0A4A),
-                descTextStyle: TextStyle(fontFamily: 'Nunito',fontSize: 14, color: Colors.white),
-                child: instrumentsAsync.when(
-                  data: (instruments) => _buildInstrumentsSection(instruments),
-                  loading: () => _buildSectionLoading('My Instruments'),
-                  error: (err, _) =>
-                      _buildErrorCard('Failed to load instruments'),
-                ),
-              ),
-            ),
-
-            // Support section
-            SliverContentConstraint(
-              child: _buildSupportSection(),
-            ),
-
-            // Log Out button
-            SliverContentConstraint(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      final confirmed = await showDialog<bool>(
-                        context: context,
-                        builder: (ctx) => AlertDialog(
-                          backgroundColor: const Color(0xFF1E0E3D),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16)),
-                          title: Text(
-                            'Log Out?',
-                            style: TextStyle(fontFamily: 'DM Serif Display',
-                                fontSize: 20, color: Colors.white),
-                          ),
-                          content: Text(
-                            'Are you sure you want to log out?',
-                            style: TextStyle(fontFamily: 'Nunito',
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                              color: darkTextSecondary,
-                            ),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(ctx, false),
-                              child: Text('Cancel',
-                                  style: TextStyle(fontFamily: 'Nunito',
-                                      fontWeight: FontWeight.w700,
-                                      color: darkTextMuted)),
-                            ),
-                            TextButton(
-                              onPressed: () => Navigator.pop(ctx, true),
-                              child: Text('Log Out',
-                                  style: TextStyle(fontFamily: 'Nunito',
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.red)),
-                            ),
-                          ],
-                        ),
-                      );
-                      if (confirmed != true) return;
-                      if (!context.mounted) return;
-                      Navigator.of(context).pushAndRemoveUntil(
-                        PageRouteBuilder(
-                          transitionDuration:
-                              const Duration(milliseconds: 600),
-                          reverseTransitionDuration:
-                              const Duration(milliseconds: 300),
-                          pageBuilder:
-                              (context, animation, secondaryAnimation) =>
-                                  const AuthPage(),
-                          transitionsBuilder: (context, animation,
-                              secondaryAnimation, child) {
-                            if (animation.status == AnimationStatus.reverse) {
-                              return FadeTransition(
-                                  opacity: animation, child: child);
-                            }
-                            return TurnPageTransition(
-                              animation: animation,
-                              overleafColor: primaryDark,
-                              animationTransitionPoint: 0.5,
-                              direction: TurnDirection.rightToLeft,
-                              child: child,
-                            );
+        child: RefreshIndicator(
+          color: accentCoral,
+          backgroundColor: const Color(0xFF1E0E3D),
+          onRefresh: () async {
+            ref.invalidate(currentProfileProvider);
+            ref.invalidate(userSettingsProvider);
+            ref.invalidate(instrumentStatsProvider);
+            await Future.wait([
+              ref.read(currentProfileProvider.future),
+              ref.read(userSettingsProvider.future),
+              ref.read(instrumentStatsProvider.future),
+            ]);
+            _instrumentBarAnimController
+              ..reset()
+              ..forward();
+          },
+          child: CustomScrollView(
+            slivers: [
+              // Title + bird tooltip
+              SliverContentConstraint(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
+                  child: Row(
+                    children: [
+                      const Spacer(),
+                      SizedBox(
+                        width: 32,
+                        height: 32,
+                        child: Lottie.asset(
+                          'lib/images/licensed/json/gear-wrench-animation.json',
+                          fit: BoxFit.contain,
+                          repeat: false,
+                          controller: _titleAnimController,
+                          onLoaded: (composition) {
+                            _titleAnimController.duration =
+                                composition.duration;
+                            _titleAnimController.forward();
                           },
                         ),
-                        (route) => false,
-                      );
-                      NotificationService.instance.cancelReminder();
-                      ref.read(musicPlayerProvider).stop();
-                      ref.read(authServiceProvider).signOut();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: darkCardBg,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                        side: const BorderSide(color: Colors.black, width: 5),
                       ),
-                      elevation: 0,
-                    ),
-                    child: Text(
-                      'Log Out',
-                      style: TextStyle(fontFamily: 'Nunito',
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.red,
+                      const SizedBox(width: 8),
+                      ShaderMask(
+                        shaderCallback: (bounds) => const LinearGradient(
+                          colors: [Colors.white, primaryLight],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ).createShader(bounds),
+                        child: Text(
+                          'Profile',
+                          style: TextStyle(
+                            fontFamily: 'DM Serif Display',
+                            fontSize: 36,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
-                    ),
+                      const Spacer(),
+                      AnimatedSealTooltip(
+                        onTap: _startShowcase,
+                        navIndex: profileTabIndex,
+                      ),
+                    ],
                   ),
                 ),
               ),
-            ),
 
-            // Delete account
-            SliverContentConstraint(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
-                child: Center(
-                  child: GestureDetector(
-                    onTap: () => _showDeleteAccountDialog(context, ref),
-                    child: Text(
-                      'Delete Account',
-                      style: TextStyle(fontFamily: 'Nunito',
+              // Profile card
+              SliverContentConstraint(
+                child: Showcase(
+                  key: _profileKey,
+                  description: 'View your profile info and display name',
+                  tooltipBackgroundColor: const Color(0xFF1E0A4A),
+                  descTextStyle: TextStyle(
+                    fontFamily: 'Nunito',
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
+                  tooltipActions: [
+                    TooltipActionButton(
+                      type: TooltipDefaultActionType.skip,
+                      name: 'Skip tour',
+                      backgroundColor: Colors.red,
+                      textStyle: TextStyle(
+                        fontFamily: 'Nunito',
                         fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: darkTextMuted,
-                        decoration: TextDecoration.underline,
-                        decorationColor: darkTextMuted,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                  child: profileAsync.when(
+                    data: (profile) {
+                      final email = ref.watch(currentUserProvider)?.email;
+                      return _buildProfileCard(profile, email);
+                    },
+                    loading: () => _buildProfileCardLoading(),
+                    error: (err, _) =>
+                        _buildErrorCard('Failed to load profile'),
+                  ),
+                ),
+              ),
+
+              // Subscription section (temporarily hidden — free Pro access active)
+              // SliverContentConstraint(
+              //   child: _buildSubscriptionSection(context, ref),
+              // ),
+
+              // Role & Group section
+              SliverContentConstraint(
+                child: Showcase(
+                  key: _roleKey,
+                  description:
+                      'Switch between student and teacher roles or join a group',
+                  tooltipBackgroundColor: const Color(0xFF1E0A4A),
+                  descTextStyle: TextStyle(
+                    fontFamily: 'Nunito',
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
+                  child: profileAsync.when(
+                    data: (profile) =>
+                        _buildRoleGroupSection(context, ref, profile),
+                    loading: () => const SizedBox.shrink(),
+                    error: (_, _) => const SizedBox.shrink(),
+                  ),
+                ),
+              ),
+
+              // Display section
+              SliverContentConstraint(
+                child: settingsAsync.when(
+                  data: (settings) => _buildDisplaySection(ref, settings),
+                  loading: () => _buildSectionLoading('Display'),
+                  error: (err, _) =>
+                      _buildErrorCard('Failed to load display settings'),
+                ),
+              ),
+
+              // Practice section
+              SliverContentConstraint(
+                child: Showcase(
+                  key: _practiceKey,
+                  description:
+                      'Set your daily practice goal, reminder preferences, and background music',
+                  tooltipBackgroundColor: const Color(0xFF1E0A4A),
+                  descTextStyle: TextStyle(
+                    fontFamily: 'Nunito',
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
+                  child: settingsAsync.when(
+                    data: (settings) =>
+                        _buildPracticeSection(context, ref, settings),
+                    loading: () => _buildSectionLoading('Practice'),
+                    error: (err, _) =>
+                        _buildErrorCard('Failed to load practice settings'),
+                  ),
+                ),
+              ),
+
+              // Instruments section
+              SliverContentConstraint(
+                child: Showcase(
+                  key: _instrumentsKey,
+                  description:
+                      'See your total practice time for each instrument',
+                  tooltipBackgroundColor: const Color(0xFF1E0A4A),
+                  descTextStyle: TextStyle(
+                    fontFamily: 'Nunito',
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
+                  child: instrumentsAsync.when(
+                    data: (instruments) =>
+                        _buildInstrumentsSection(instruments),
+                    loading: () => _buildSectionLoading('My Instruments'),
+                    error: (err, _) =>
+                        _buildErrorCard('Failed to load instruments'),
+                  ),
+                ),
+              ),
+
+              // Support section
+              SliverContentConstraint(child: _buildSupportSection()),
+
+              // Log Out button
+              SliverContentConstraint(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        final confirmed = await showDialog<bool>(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            backgroundColor: const Color(0xFF1E0E3D),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            title: Text(
+                              'Log Out?',
+                              style: TextStyle(
+                                fontFamily: 'DM Serif Display',
+                                fontSize: 20,
+                                color: Colors.white,
+                              ),
+                            ),
+                            content: Text(
+                              'Are you sure you want to log out?',
+                              style: TextStyle(
+                                fontFamily: 'Nunito',
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                color: darkTextSecondary,
+                              ),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(ctx, false),
+                                child: Text(
+                                  'Cancel',
+                                  style: TextStyle(
+                                    fontFamily: 'Nunito',
+                                    fontWeight: FontWeight.w700,
+                                    color: darkTextMuted,
+                                  ),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.pop(ctx, true),
+                                child: Text(
+                                  'Log Out',
+                                  style: TextStyle(
+                                    fontFamily: 'Nunito',
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                        if (confirmed != true) return;
+                        if (!context.mounted) return;
+                        Navigator.of(context).pushAndRemoveUntil(
+                          PageRouteBuilder(
+                            transitionDuration: const Duration(
+                              milliseconds: 600,
+                            ),
+                            reverseTransitionDuration: const Duration(
+                              milliseconds: 300,
+                            ),
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) =>
+                                    const AuthPage(),
+                            transitionsBuilder:
+                                (
+                                  context,
+                                  animation,
+                                  secondaryAnimation,
+                                  child,
+                                ) {
+                                  if (animation.status ==
+                                      AnimationStatus.reverse) {
+                                    return FadeTransition(
+                                      opacity: animation,
+                                      child: child,
+                                    );
+                                  }
+                                  return TurnPageTransition(
+                                    animation: animation,
+                                    overleafColor: primaryDark,
+                                    animationTransitionPoint: 0.5,
+                                    direction: TurnDirection.rightToLeft,
+                                    child: child,
+                                  );
+                                },
+                          ),
+                          (route) => false,
+                        );
+                        NotificationService.instance.cancelReminder();
+                        ref.read(musicPlayerProvider).stop();
+                        ref.read(authServiceProvider).signOut();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: darkCardBg,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          side: const BorderSide(color: Colors.black, width: 5),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: Text(
+                        'Log Out',
+                        style: TextStyle(
+                          fontFamily: 'Nunito',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.red,
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
 
-            // Bottom spacing for nav bar
-            const SliverContentConstraint(child: SizedBox(height: 100)),
-          ],
+              // Delete account
+              SliverContentConstraint(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                  child: Center(
+                    child: GestureDetector(
+                      onTap: () => _showDeleteAccountDialog(context, ref),
+                      child: Text(
+                        'Delete Account',
+                        style: TextStyle(
+                          fontFamily: 'Nunito',
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: darkTextMuted,
+                          decoration: TextDecoration.underline,
+                          decorationColor: darkTextMuted,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              // Bottom spacing for nav bar
+              const SliverContentConstraint(child: SizedBox(height: 100)),
+            ],
+          ),
         ),
       ),
     );
@@ -636,7 +739,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
             padding: const EdgeInsets.only(left: 4, bottom: 8),
             child: Text(
               'My Subscription',
-              style: TextStyle(fontFamily: 'Nunito',
+              style: TextStyle(
+                fontFamily: 'Nunito',
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
                 color: darkTextSecondary,
@@ -651,92 +755,96 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
 
   Widget _buildFreeSubscriptionCard(BuildContext context) {
     return Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: darkCardBg,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.black, width: 5),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: darkTextMuted.withAlpha(30),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.black, width: 2),
-              ),
-              child: const Icon(Icons.person_rounded,
-                  color: darkTextMuted, size: 24),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: darkCardBg,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.black, width: 5),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: darkTextMuted.withAlpha(30),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.black, width: 2),
             ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Free Plan',
-                    style: TextStyle(fontFamily: 'Nunito',
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'Upgrade to unlock all features',
-                    style: TextStyle(fontFamily: 'Nunito',
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: darkTextMuted,
-                    ),
-                  ),
-                ],
-              ),
+            child: const Icon(
+              Icons.person_rounded,
+              color: darkTextMuted,
+              size: 24,
             ),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  PageRouteBuilder(
-                    transitionDuration: const Duration(milliseconds: 600),
-                    reverseTransitionDuration:
-                        const Duration(milliseconds: 600),
-                    pageBuilder: (_, animation, __) => const PaywallPage(),
-                    transitionsBuilder: (_, animation, __, child) {
-                      return TurnPageTransition(
-                        animation: animation,
-                        overleafColor: primaryDark,
-                        animationTransitionPoint: 0.5,
-                        direction: TurnDirection.rightToLeft,
-                        child: child,
-                      );
-                    },
-                  ),
-                );
-              },
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFF4A68E), accentCoralDark],
-                  ),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  'Upgrade',
-                  style: TextStyle(fontFamily: 'Nunito',
-                    fontSize: 13,
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Free Plan',
+                  style: TextStyle(
+                    fontFamily: 'Nunito',
+                    fontSize: 16,
                     fontWeight: FontWeight.w800,
                     color: Colors.white,
                   ),
                 ),
+                const SizedBox(height: 2),
+                Text(
+                  'Upgrade to unlock all features',
+                  style: TextStyle(
+                    fontFamily: 'Nunito',
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: darkTextMuted,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                PageRouteBuilder(
+                  transitionDuration: const Duration(milliseconds: 600),
+                  reverseTransitionDuration: const Duration(milliseconds: 600),
+                  pageBuilder: (_, animation, __) => const PaywallPage(),
+                  transitionsBuilder: (_, animation, __, child) {
+                    return TurnPageTransition(
+                      animation: animation,
+                      overleafColor: primaryDark,
+                      animationTransitionPoint: 0.5,
+                      direction: TurnDirection.rightToLeft,
+                      child: child,
+                    );
+                  },
+                ),
+              );
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFF4A68E), accentCoralDark],
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                'Upgrade',
+                style: TextStyle(
+                  fontFamily: 'Nunito',
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -758,8 +866,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: Colors.black, width: 2),
             ),
-            child: const Icon(Icons.star_rounded,
-                color: accentCoral, size: 24),
+            child: const Icon(Icons.star_rounded, color: accentCoral, size: 24),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -768,7 +875,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
               children: [
                 Text(
                   'Pro Plan',
-                  style: TextStyle(fontFamily: 'Nunito',
+                  style: TextStyle(
+                    fontFamily: 'Nunito',
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
                     color: Colors.white,
@@ -777,7 +885,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 const SizedBox(height: 2),
                 Text(
                   'Included with your teacher\'s plan',
-                  style: TextStyle(fontFamily: 'Nunito',
+                  style: TextStyle(
+                    fontFamily: 'Nunito',
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                     color: darkTextMuted,
@@ -803,10 +912,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
         child: SizedBox(
           width: 24,
           height: 24,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            color: Colors.white,
-          ),
+          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
         ),
       ),
     );
@@ -832,188 +938,208 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
         children: [
           // Header: badge + plan name + trial badge
           Row(
-              children: [
-                Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: accentCoral.withAlpha(30),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.black, width: 2),
-                  ),
-                  child: const Icon(Icons.star_rounded,
-                      color: accentCoral, size: 24),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${tier.displayName} Plan',
-                        style: TextStyle(fontFamily: 'Nunito',
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        isCancelled
-                            ? 'Cancelled'
-                            : tier.isTeacherPlan
-                                ? 'Full teacher access'
-                                : 'You have full access',
-                        style: TextStyle(fontFamily: 'Nunito',
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: isCancelled
-                              ? const Color(0xFFFBBF24)
-                              : darkTextMuted,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                if (info.isInTrial)
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF22C55E).withAlpha(25),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                          color: const Color(0xFF22C55E).withAlpha(80)),
-                    ),
-                    child: Text(
-                      'Trial',
-                      style: TextStyle(fontFamily: 'Nunito',
-                        fontSize: 11,
-                        fontWeight: FontWeight.w800,
-                        color: const Color(0xFF22C55E),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-
-            const SizedBox(height: 12),
-            Container(
-              height: 1,
-              color: Colors.white.withAlpha(15),
-            ),
-
-            // Expiration / renewal date
-            if (info.expirationDate != null) ...[
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  Icon(
-                    Icons.calendar_today_rounded,
-                    color: darkTextMuted,
-                    size: 16,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    isCancelled
-                        ? 'Access until ${_formatDate(info.expirationDate!)}'
-                        : 'Renews ${_formatDate(info.expirationDate!)}',
-                    style: TextStyle(fontFamily: 'Nunito',
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: darkTextMuted,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-
-            // Cancellation note
-            if (isCancelled && info.expirationDate != null) ...[
-              const SizedBox(height: 12),
+            children: [
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                width: 44,
+                height: 44,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFBBF24).withAlpha(15),
-                  borderRadius: BorderRadius.circular(10),
-                  border:
-                      Border.all(color: const Color(0xFFFBBF24).withAlpha(40)),
+                  color: accentCoral.withAlpha(30),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.black, width: 2),
                 ),
-                child: Row(
+                child: const Icon(
+                  Icons.star_rounded,
+                  color: accentCoral,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.info_outline_rounded,
-                        color: Color(0xFFFBBF24), size: 16),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'Your features will remain active until ${_formatDate(info.expirationDate!)}',
-                        style: TextStyle(fontFamily: 'Nunito',
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFFFBBF24),
-                        ),
+                    Text(
+                      '${tier.displayName} Plan',
+                      style: TextStyle(
+                        fontFamily: 'Nunito',
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      isCancelled
+                          ? 'Cancelled'
+                          : tier.isTeacherPlan
+                          ? 'Full teacher access'
+                          : 'You have full access',
+                      style: TextStyle(
+                        fontFamily: 'Nunito',
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: isCancelled
+                            ? const Color(0xFFFBBF24)
+                            : darkTextMuted,
                       ),
                     ),
                   ],
                 ),
               ),
-            ],
-
-            const SizedBox(height: 8),
-
-            // Manage subscription button
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  PageRouteBuilder(
-                    transitionDuration: const Duration(milliseconds: 600),
-                    reverseTransitionDuration:
-                        const Duration(milliseconds: 600),
-                    pageBuilder: (_, animation, __) => const PaywallPage(),
-                    transitionsBuilder: (_, animation, __, child) {
-                      return TurnPageTransition(
-                        animation: animation,
-                        overleafColor: primaryDark,
-                        animationTransitionPoint: 0.5,
-                        direction: TurnDirection.rightToLeft,
-                        child: child,
-                      );
-                    },
+              if (info.isInTrial)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
                   ),
-                );
-              },
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color: Colors.white.withAlpha(15),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.black, width: 2),
-                ),
-                child: Center(
-                  child: Text(
-                    'Manage Subscription',
-                    style: TextStyle(fontFamily: 'Nunito',
-                      fontSize: 13,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF22C55E).withAlpha(25),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: const Color(0xFF22C55E).withAlpha(80),
                     ),
+                  ),
+                  child: Text(
+                    'Trial',
+                    style: TextStyle(
+                      fontFamily: 'Nunito',
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF22C55E),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+
+          const SizedBox(height: 12),
+          Container(height: 1, color: Colors.white.withAlpha(15)),
+
+          // Expiration / renewal date
+          if (info.expirationDate != null) ...[
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Icon(
+                  Icons.calendar_today_rounded,
+                  color: darkTextMuted,
+                  size: 16,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  isCancelled
+                      ? 'Access until ${_formatDate(info.expirationDate!)}'
+                      : 'Renews ${_formatDate(info.expirationDate!)}',
+                  style: TextStyle(
+                    fontFamily: 'Nunito',
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: darkTextMuted,
+                  ),
+                ),
+              ],
+            ),
+          ],
+
+          // Cancellation note
+          if (isCancelled && info.expirationDate != null) ...[
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFBBF24).withAlpha(15),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: const Color(0xFFFBBF24).withAlpha(40),
+                ),
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.info_outline_rounded,
+                    color: Color(0xFFFBBF24),
+                    size: 16,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Your features will remain active until ${_formatDate(info.expirationDate!)}',
+                      style: TextStyle(
+                        fontFamily: 'Nunito',
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFFFBBF24),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+
+          const SizedBox(height: 8),
+
+          // Manage subscription button
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                PageRouteBuilder(
+                  transitionDuration: const Duration(milliseconds: 600),
+                  reverseTransitionDuration: const Duration(milliseconds: 600),
+                  pageBuilder: (_, animation, __) => const PaywallPage(),
+                  transitionsBuilder: (_, animation, __, child) {
+                    return TurnPageTransition(
+                      animation: animation,
+                      overleafColor: primaryDark,
+                      animationTransitionPoint: 0.5,
+                      direction: TurnDirection.rightToLeft,
+                      child: child,
+                    );
+                  },
+                ),
+              );
+            },
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              decoration: BoxDecoration(
+                color: Colors.white.withAlpha(15),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.black, width: 2),
+              ),
+              child: Center(
+                child: Text(
+                  'Manage Subscription',
+                  style: TextStyle(
+                    fontFamily: 'Nunito',
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
                   ),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
+      ),
     );
   }
 
-
   String _formatDate(DateTime date) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${months[date.month - 1]} ${date.day}, ${date.year}';
   }
@@ -1029,7 +1155,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
           trailing: const _TrailingText(''),
           onTap: () => launchUrl(
             Uri.parse(
-                'mailto:help.caplock@gmail.com?subject=Listzly%20Support'),
+              'mailto:help.caplock@gmail.com?subject=Listzly%20Support',
+            ),
             mode: LaunchMode.externalApplication,
           ),
         ),
@@ -1075,7 +1202,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 const SizedBox(height: 16),
                 Text(
                   'Choose Avatar',
-                  style: TextStyle(fontFamily: 'Nunito',
+                  style: TextStyle(
+                    fontFamily: 'Nunito',
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
                     color: Colors.white,
@@ -1088,10 +1216,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                     padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 5,
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
-                    ),
+                          crossAxisCount: 5,
+                          mainAxisSpacing: 12,
+                          crossAxisSpacing: 12,
+                        ),
                     itemCount: avatarOptions.length,
                     itemBuilder: (_, i) {
                       final (file, label) = avatarOptions[i];
@@ -1114,9 +1242,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                   : darkSurfaceBg,
                               borderRadius: BorderRadius.circular(14),
                               border: Border.all(
-                                color: isSelected
-                                    ? accentCoral
-                                    : Colors.black,
+                                color: isSelected ? accentCoral : Colors.black,
                                 width: 2,
                               ),
                             ),
@@ -1203,7 +1329,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 children: [
                   Text(
                     profile.displayName,
-                    style: TextStyle(fontFamily: 'Nunito',
+                    style: TextStyle(
+                      fontFamily: 'Nunito',
                       fontSize: 20,
                       fontWeight: FontWeight.w800,
                       color: Colors.white,
@@ -1213,7 +1340,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                     const SizedBox(height: 2),
                     Text(
                       email,
-                      style: TextStyle(fontFamily: 'Nunito',
+                      style: TextStyle(
+                        fontFamily: 'Nunito',
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                         color: darkTextMuted,
@@ -1229,7 +1357,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                     children: [
                       Text(
                         'Joined $joinDate',
-                        style: TextStyle(fontFamily: 'Nunito',
+                        style: TextStyle(
+                          fontFamily: 'Nunito',
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
                           color: darkTextSecondary,
@@ -1237,16 +1366,18 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 2),
+                          horizontal: 8,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           color: accentCoral.withAlpha(20),
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                              color: accentCoral.withAlpha(60)),
+                          border: Border.all(color: accentCoral.withAlpha(60)),
                         ),
                         child: Text(
                           profile.role.displayName,
-                          style: TextStyle(fontFamily: 'Nunito',
+                          style: TextStyle(
+                            fontFamily: 'Nunito',
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
                             color: accentCoral,
@@ -1299,7 +1430,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
 
   // ─── Role & Group section ─────────────────────────────────────
   Widget _buildRoleGroupSection(
-      BuildContext context, WidgetRef ref, Profile profile) {
+    BuildContext context,
+    WidgetRef ref,
+    Profile profile,
+  ) {
     final items = <_SettingsRow>[];
 
     if (profile.isTeacher) {
@@ -1311,86 +1445,115 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
       final maxStudents = tier.maxStudents;
 
       if (inviteCode != null) {
-        items.add(_SettingsRow(
-          svgPath: 'lib/images/licensed/svg/key.svg',
-          label: 'Invite Code',
-          trailing: _TrailingText(inviteCode),
-          onTap: () {
-            Clipboard.setData(ClipboardData(text: inviteCode));
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Invite code copied!',
-                    style: TextStyle(fontFamily: 'Nunito',fontWeight: FontWeight.w600)),
-                duration: const Duration(seconds: 3),
-                showCloseIcon: true,
-              ),
-            );
-          },
-        ));
-        items.add(_SettingsRow(
-          svgPath: 'lib/images/licensed/svg/qr-code-profile.svg',
-          label: 'Show QR Code',
-          trailing: const _TrailingText(''),
-          onTap: () => _showQrCode(context, inviteCode),
-        ));
+        items.add(
+          _SettingsRow(
+            svgPath: 'lib/images/licensed/svg/key.svg',
+            label: 'Invite Code',
+            trailing: _TrailingText(inviteCode),
+            onTap: () {
+              Clipboard.setData(ClipboardData(text: inviteCode));
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'Invite code copied!',
+                    style: TextStyle(
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  duration: const Duration(seconds: 3),
+                  showCloseIcon: true,
+                ),
+              );
+            },
+          ),
+        );
+        items.add(
+          _SettingsRow(
+            svgPath: 'lib/images/licensed/svg/qr-code-profile.svg',
+            label: 'Show QR Code',
+            trailing: const _TrailingText(''),
+            onTap: () => _showQrCode(context, inviteCode),
+          ),
+        );
       }
 
-      items.add(_SettingsRow(
-        svgPath: 'lib/images/licensed/svg/music-student.svg',
-        label: 'Students',
-        trailing: _TrailingText('$studentCount/$maxStudents'),
-        onTap: () => _showStudentListSheet(context, ref),
-      ));
+      items.add(
+        _SettingsRow(
+          svgPath: 'lib/images/licensed/svg/music-student.svg',
+          label: 'Students',
+          trailing: _TrailingText('$studentCount/$maxStudents'),
+          onTap: () => _showStudentListSheet(context, ref),
+        ),
+      );
 
-      items.add(_SettingsRow(
-        svgPath: 'lib/images/licensed/svg/change-role.svg',
-        label: 'Change Role',
-        trailing: const _TrailingText('Teacher'),
-        onTap: () => _showRoleChangePicker(context, ref, profile,
-            hasStudents: studentCount > 0),
-      ));
+      items.add(
+        _SettingsRow(
+          svgPath: 'lib/images/licensed/svg/change-role.svg',
+          label: 'Change Role',
+          trailing: const _TrailingText('Teacher'),
+          onTap: () => _showRoleChangePicker(
+            context,
+            ref,
+            profile,
+            hasStudents: studentCount > 0,
+          ),
+        ),
+      );
     } else if (profile.isStudent) {
       final membershipAsync = ref.watch(studentMembershipProvider);
       final isInGroup = membershipAsync.value != null;
 
       if (isInGroup) {
         final membership = membershipAsync.value!;
-        items.add(_SettingsRow(
-          svgPath: 'lib/images/licensed/svg/graduation-hat.svg',
-          label: 'Your Group',
-          trailing: const _TrailingText('Joined'),
-          onTap: () => _showGroupInfoDialog(context, ref, membership.groupId),
-        ));
-        items.add(_SettingsRow(
-          svgPath: 'lib/images/licensed/svg/change-role.svg',
-          label: 'Change Role',
-          trailing: const _TrailingText('Student'),
-          onTap: () => _showLeaveGroupAndChangeRoleDialog(context, ref, profile),
-        ));
-        items.add(_SettingsRow(
-          svgPath: 'lib/images/licensed/svg/exit.svg',
-          label: 'Leave Group',
-          trailing: const _TrailingText(''),
-          labelColor: Colors.red,
-          onTap: () => _showLeaveGroupDialog(context, ref),
-        ));
+        items.add(
+          _SettingsRow(
+            svgPath: 'lib/images/licensed/svg/graduation-hat.svg',
+            label: 'Your Group',
+            trailing: const _TrailingText('Joined'),
+            onTap: () => _showGroupInfoDialog(context, ref, membership.groupId),
+          ),
+        );
+        items.add(
+          _SettingsRow(
+            svgPath: 'lib/images/licensed/svg/change-role.svg',
+            label: 'Change Role',
+            trailing: const _TrailingText('Student'),
+            onTap: () =>
+                _showLeaveGroupAndChangeRoleDialog(context, ref, profile),
+          ),
+        );
+        items.add(
+          _SettingsRow(
+            svgPath: 'lib/images/licensed/svg/exit.svg',
+            label: 'Leave Group',
+            trailing: const _TrailingText(''),
+            labelColor: Colors.red,
+            onTap: () => _showLeaveGroupDialog(context, ref),
+          ),
+        );
       }
     } else {
       // Self-Learner
-      items.add(_SettingsRow(
-        svgPath: 'lib/images/licensed/svg/change-role.svg',
-        label: 'Change Role',
-        trailing: _TrailingText(profile.role.displayName),
-        onTap: () => _showRoleChangePicker(context, ref, profile),
-      ));
+      items.add(
+        _SettingsRow(
+          svgPath: 'lib/images/licensed/svg/change-role.svg',
+          label: 'Change Role',
+          trailing: _TrailingText(profile.role.displayName),
+          onTap: () => _showRoleChangePicker(context, ref, profile),
+        ),
+      );
     }
 
     return _buildSettingsSection(title: 'Role & Group', items: items);
   }
 
   void _showRoleChangePicker(
-      BuildContext context, WidgetRef ref, Profile profile,
-      {bool hasStudents = false}) {
+    BuildContext context,
+    WidgetRef ref,
+    Profile profile, {
+    bool hasStudents = false,
+  }) {
     final roles = [
       (UserRole.selfLearner, 'Self-Learner', 'Practice on your own'),
       (UserRole.student, 'Student', 'Join a teacher\'s group'),
@@ -1428,7 +1591,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 const SizedBox(height: 16),
                 Text(
                   'Change Role',
-                  style: TextStyle(fontFamily: 'Nunito',
+                  style: TextStyle(
+                    fontFamily: 'Nunito',
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
                     color: Colors.white,
@@ -1445,8 +1609,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
 
                       // Block role change if user has an active (non-cancelled)
                       // personal subscription. They must cancel first.
-                      final subInfo =
-                          await ref.read(subscriptionInfoProvider.future);
+                      final subInfo = await ref.read(
+                        subscriptionInfoProvider.future,
+                      );
                       if (subInfo.tier.isPro && subInfo.willRenew) {
                         if (!context.mounted) return;
                         await showDialog(
@@ -1454,15 +1619,20 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                           builder: (dCtx) => AlertDialog(
                             backgroundColor: const Color(0xFF1E0E3D),
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16)),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
                             title: Text(
                               'Active Subscription',
-                              style: TextStyle(fontFamily: 'DM Serif Display',
-                                  fontSize: 20, color: Colors.white),
+                              style: TextStyle(
+                                fontFamily: 'DM Serif Display',
+                                fontSize: 20,
+                                color: Colors.white,
+                              ),
                             ),
                             content: Text(
                               'Cancel your Pro subscription before changing roles. You\'ll keep Pro access until it expires.',
-                              style: TextStyle(fontFamily: 'Nunito',
+                              style: TextStyle(
+                                fontFamily: 'Nunito',
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
                                 color: darkTextSecondary,
@@ -1471,10 +1641,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.pop(dCtx),
-                                child: Text('OK',
-                                    style: TextStyle(fontFamily: 'Nunito',
-                                        fontWeight: FontWeight.w700,
-                                        color: accentCoral)),
+                                child: Text(
+                                  'OK',
+                                  style: TextStyle(
+                                    fontFamily: 'Nunito',
+                                    fontWeight: FontWeight.w700,
+                                    color: accentCoral,
+                                  ),
+                                ),
                               ),
                             ],
                           ),
@@ -1489,15 +1663,20 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                           builder: (dCtx) => AlertDialog(
                             backgroundColor: const Color(0xFF1E0E3D),
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16)),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
                             title: Text(
                               'Cannot Change Role',
-                              style: TextStyle(fontFamily: 'DM Serif Display',
-                                  fontSize: 20, color: Colors.white),
+                              style: TextStyle(
+                                fontFamily: 'DM Serif Display',
+                                fontSize: 20,
+                                color: Colors.white,
+                              ),
                             ),
                             content: Text(
                               'Remove all students from your group before changing roles.',
-                              style: TextStyle(fontFamily: 'Nunito',
+                              style: TextStyle(
+                                fontFamily: 'Nunito',
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
                                 color: darkTextSecondary,
@@ -1506,10 +1685,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.pop(dCtx),
-                                child: Text('OK',
-                                    style: TextStyle(fontFamily: 'Nunito',
-                                        fontWeight: FontWeight.w700,
-                                        color: accentCoral)),
+                                child: Text(
+                                  'OK',
+                                  style: TextStyle(
+                                    fontFamily: 'Nunito',
+                                    fontWeight: FontWeight.w700,
+                                    color: accentCoral,
+                                  ),
+                                ),
                               ),
                             ],
                           ),
@@ -1520,8 +1703,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                       // If switching to student, require invite code first
                       if (role == UserRole.student) {
                         final joined = await _showInviteCodeDialog(
-                            context, ref,
-                            hasStudents: hasStudents);
+                          context,
+                          ref,
+                          hasStudents: hasStudents,
+                        );
                         if (joined != true) {
                           // Join failed or was cancelled — role may have
                           // been temporarily changed, so refresh profile.
@@ -1532,17 +1717,21 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                         }
                         return;
                       }
-                      await _changeRole(context, ref, role,
-                          hasStudents: hasStudents);
+                      await _changeRole(
+                        context,
+                        ref,
+                        role,
+                        hasStudents: hasStudents,
+                      );
                     },
                     behavior: HitTestBehavior.opaque,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 14),
+                        horizontal: 20,
+                        vertical: 14,
+                      ),
                       decoration: const BoxDecoration(
-                        border: Border(
-                          top: BorderSide(color: darkDivider),
-                        ),
+                        border: Border(top: BorderSide(color: darkDivider)),
                       ),
                       child: Row(
                         children: [
@@ -1552,19 +1741,21 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                               children: [
                                 Text(
                                   name,
-                                  style: TextStyle(fontFamily: 'Nunito',
+                                  style: TextStyle(
+                                    fontFamily: 'Nunito',
                                     fontSize: 16,
                                     fontWeight: isSelected
                                         ? FontWeight.w800
                                         : FontWeight.w600,
                                     color: isSelected
-                                        ? primaryLight
+                                        ? accentCoral
                                         : Colors.white,
                                   ),
                                 ),
                                 Text(
                                   desc,
-                                  style: TextStyle(fontFamily: 'Nunito',
+                                  style: TextStyle(
+                                    fontFamily: 'Nunito',
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,
                                     color: darkTextMuted,
@@ -1574,8 +1765,11 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                             ),
                           ),
                           if (isSelected)
-                            const Icon(Icons.check_rounded,
-                                color: primaryLight, size: 22),
+                            const Icon(
+                              Icons.check_rounded,
+                              color: accentCoral,
+                              size: 22,
+                            ),
                         ],
                       ),
                     ),
@@ -1591,8 +1785,11 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
   }
 
   Future<void> _changeRole(
-      BuildContext context, WidgetRef ref, UserRole newRole,
-      {bool hasStudents = false}) async {
+    BuildContext context,
+    WidgetRef ref,
+    UserRole newRole, {
+    bool hasStudents = false,
+  }) async {
     try {
       final user = ref.read(currentUserProvider);
       if (user == null) return;
@@ -1632,8 +1829,11 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
     }
   }
 
-  Future<bool?> _showInviteCodeDialog(BuildContext context, WidgetRef ref,
-      {bool hasStudents = false}) {
+  Future<bool?> _showInviteCodeDialog(
+    BuildContext context,
+    WidgetRef ref, {
+    bool hasStudents = false,
+  }) {
     final controller = TextEditingController();
     String? errorText;
 
@@ -1642,19 +1842,24 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setState) => AlertDialog(
           backgroundColor: const Color(0xFF1E0E3D),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           title: Text(
             'Join a Teacher',
-            style:
-                TextStyle(fontFamily: 'DM Serif Display',fontSize: 20, color: Colors.white),
+            style: TextStyle(
+              fontFamily: 'DM Serif Display',
+              fontSize: 20,
+              color: Colors.white,
+            ),
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
                 'Enter your teacher\'s invite code to join their group.',
-                style: TextStyle(fontFamily: 'Nunito',
+                style: TextStyle(
+                  fontFamily: 'Nunito',
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: darkTextSecondary,
@@ -1664,21 +1869,27 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
               TextField(
                 controller: controller,
                 textCapitalization: TextCapitalization.characters,
-                style: TextStyle(fontFamily: 'Nunito',
+                style: TextStyle(
+                  fontFamily: 'Nunito',
                   color: Colors.white,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 2,
                 ),
                 decoration: InputDecoration(
                   labelText: 'Enter Invite Code',
-                  labelStyle: TextStyle(fontFamily: 'Nunito',
+                  labelStyle: TextStyle(
+                    fontFamily: 'Nunito',
                     color: darkTextMuted,
                     fontWeight: FontWeight.w600,
                   ),
                   prefixIcon: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: SvgPicture.asset('lib/images/licensed/svg/key.svg',
-                          width: 20, height: 20)),
+                    padding: const EdgeInsets.all(12),
+                    child: SvgPicture.asset(
+                      'lib/images/licensed/svg/key.svg',
+                      width: 20,
+                      height: 20,
+                    ),
+                  ),
                   filled: true,
                   fillColor: Colors.white.withAlpha(12),
                   border: OutlineInputBorder(
@@ -1691,10 +1902,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: accentCoral, width: 1.5),
+                    borderSide: const BorderSide(
+                      color: accentCoral,
+                      width: 1.5,
+                    ),
                   ),
                   hintText: 'Enter your teacher\'s code',
-                  hintStyle: TextStyle(fontFamily: 'Nunito',
+                  hintStyle: TextStyle(
+                    fontFamily: 'Nunito',
                     color: darkTextMuted.withAlpha(100),
                     fontWeight: FontWeight.w600,
                   ),
@@ -1704,8 +1919,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
               GestureDetector(
                 onTap: () async {
                   final scanned = await Navigator.of(ctx).push<String>(
-                    MaterialPageRoute(
-                        builder: (_) => const _QrScannerPage()),
+                    MaterialPageRoute(builder: (_) => const _QrScannerPage()),
                   );
                   if (!ctx.mounted) return;
                   if (scanned != null && scanned.isNotEmpty) {
@@ -1715,7 +1929,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 },
                 child: Text(
                   'Scan QR Code',
-                  style: TextStyle(fontFamily: 'Nunito',
+                  style: TextStyle(
+                    fontFamily: 'Nunito',
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: accentCoral,
@@ -1728,8 +1943,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 const SizedBox(height: 12),
                 Container(
                   width: double.infinity,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.red.withAlpha(25),
                     borderRadius: BorderRadius.circular(8),
@@ -1737,7 +1954,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                   ),
                   child: Text(
                     errorText!,
-                    style: TextStyle(fontFamily: 'Nunito',
+                    style: TextStyle(
+                      fontFamily: 'Nunito',
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
                       color: Colors.redAccent,
@@ -1750,9 +1968,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: Text('Cancel',
-                  style: TextStyle(fontFamily: 'Nunito',
-                      fontWeight: FontWeight.w700, color: darkTextMuted)),
+              child: Text(
+                'Cancel',
+                style: TextStyle(
+                  fontFamily: 'Nunito',
+                  fontWeight: FontWeight.w700,
+                  color: darkTextMuted,
+                ),
+              ),
             ),
             TextButton(
               onPressed: () async {
@@ -1764,8 +1987,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
 
                 try {
                   final groupService = ref.read(groupServiceProvider);
-                  final group =
-                      await groupService.findGroupByInviteCode(code);
+                  final group = await groupService.findGroupByInviteCode(code);
                   if (!ctx.mounted) return;
                   if (group == null) {
                     setState(() => errorText = 'Invalid invite code');
@@ -1776,8 +1998,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                   if (user == null) return;
 
                   if (group.teacherId == user.id) {
-                    setState(() => errorText =
-                        'You cannot join your own group.');
+                    setState(
+                      () => errorText = 'You cannot join your own group.',
+                    );
                     return;
                   }
 
@@ -1794,19 +2017,25 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                   // (needed for RLS). Do NOT invalidate providers so
                   // the UI keeps showing the current role.
                   await profileService.updateProfile(
-                      user.id, role: UserRole.student);
+                    user.id,
+                    role: UserRole.student,
+                  );
 
                   try {
                     // Step 2: Join the group
-                    await groupService.joinGroup(user.id, group.id,
-                        teacherId: group.teacherId);
+                    await groupService.joinGroup(
+                      user.id,
+                      group.id,
+                      teacherId: group.teacherId,
+                    );
 
                     // Step 3: Join succeeded — now safe to delete
                     // the teacher group and refresh the UI.
                     if (hasStudents) {
                       try {
-                        final teacherGroup =
-                            await groupService.getTeacherGroup(user.id);
+                        final teacherGroup = await groupService.getTeacherGroup(
+                          user.id,
+                        );
                         if (teacherGroup != null) {
                           await groupService.deleteGroup(teacherGroup.id);
                         }
@@ -1827,7 +2056,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                     if (previousRole != null) {
                       try {
                         await profileService.updateProfile(
-                            user.id, role: previousRole);
+                          user.id,
+                          role: previousRole,
+                        );
                       } catch (_) {}
                     }
                     final msg = e.toString().toLowerCase();
@@ -1836,25 +2067,29 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                       if (msg.contains('already in a group')) {
                         errorText =
                             'You are already in a group. Leave it first.';
-                      } else if (msg.contains('full') ||
-                          msg.contains('max')) {
+                      } else if (msg.contains('full') || msg.contains('max')) {
                         errorText =
                             'This group is full. Ask your teacher to upgrade their plan.';
                       } else {
-                        errorText =
-                            'Could not join group. Please try again.';
+                        errorText = 'Could not join group. Please try again.';
                       }
                     });
                   }
                 } catch (e) {
                   debugPrint('invite code dialog error: $e');
-                  setState(() => errorText =
-                      'Something went wrong. Please try again.');
+                  setState(
+                    () => errorText = 'Something went wrong. Please try again.',
+                  );
                 }
               },
-              child: Text('Join',
-                  style: TextStyle(fontFamily: 'Nunito',
-                      fontWeight: FontWeight.w700, color: accentCoral)),
+              child: Text(
+                'Join',
+                style: TextStyle(
+                  fontFamily: 'Nunito',
+                  fontWeight: FontWeight.w700,
+                  color: accentCoral,
+                ),
+              ),
             ),
           ],
         ),
@@ -1863,7 +2098,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
   }
 
   void _showLeaveGroupAndChangeRoleDialog(
-      BuildContext context, WidgetRef ref, Profile profile) {
+    BuildContext context,
+    WidgetRef ref,
+    Profile profile,
+  ) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -1871,11 +2109,16 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           'Leave Group & Change Role?',
-          style: TextStyle(fontFamily: 'DM Serif Display',fontSize: 20, color: Colors.white),
+          style: TextStyle(
+            fontFamily: 'DM Serif Display',
+            fontSize: 20,
+            color: Colors.white,
+          ),
         ),
         content: Text(
           'You are currently in a group. Changing your role will remove you from your teacher\'s group.',
-          style: TextStyle(fontFamily: 'Nunito',
+          style: TextStyle(
+            fontFamily: 'Nunito',
             fontSize: 15,
             fontWeight: FontWeight.w600,
             color: darkTextSecondary,
@@ -1884,9 +2127,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancel',
-                style: TextStyle(fontFamily: 'Nunito',
-                    fontWeight: FontWeight.w700, color: darkTextMuted)),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                fontFamily: 'Nunito',
+                fontWeight: FontWeight.w700,
+                color: darkTextMuted,
+              ),
+            ),
           ),
           TextButton(
             onPressed: () async {
@@ -1895,10 +2143,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 final user = ref.read(currentUserProvider);
                 if (user == null) return;
                 await ref.read(groupServiceProvider).leaveGroup(user.id);
-                await ref.read(profileServiceProvider).updateProfile(
-                      user.id,
-                      role: UserRole.selfLearner,
-                    );
+                await ref
+                    .read(profileServiceProvider)
+                    .updateProfile(user.id, role: UserRole.selfLearner);
                 ref.invalidate(studentMembershipProvider);
                 ref.invalidate(isInGroupProvider);
                 ref.invalidate(currentProfileProvider);
@@ -1917,12 +2164,20 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
               }
               if (context.mounted) {
                 _showRoleChangePicker(
-                    context, ref, profile.copyWith(role: UserRole.selfLearner));
+                  context,
+                  ref,
+                  profile.copyWith(role: UserRole.selfLearner),
+                );
               }
             },
-            child: Text('Leave & Continue',
-                style: TextStyle(fontFamily: 'Nunito',
-                    fontWeight: FontWeight.w700, color: Colors.red)),
+            child: Text(
+              'Leave & Continue',
+              style: TextStyle(
+                fontFamily: 'Nunito',
+                fontWeight: FontWeight.w700,
+                color: Colors.red,
+              ),
+            ),
           ),
         ],
       ),
@@ -1937,11 +2192,16 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           'Leave Group',
-          style: TextStyle(fontFamily: 'DM Serif Display',fontSize: 20, color: Colors.white),
+          style: TextStyle(
+            fontFamily: 'DM Serif Display',
+            fontSize: 20,
+            color: Colors.white,
+          ),
         ),
         content: Text(
           'Are you sure you want to leave your teacher\'s group?',
-          style: TextStyle(fontFamily: 'Nunito',
+          style: TextStyle(
+            fontFamily: 'Nunito',
             fontSize: 15,
             fontWeight: FontWeight.w600,
             color: darkTextSecondary,
@@ -1950,9 +2210,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancel',
-                style: TextStyle(fontFamily: 'Nunito',
-                    fontWeight: FontWeight.w700, color: darkTextMuted)),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                fontFamily: 'Nunito',
+                fontWeight: FontWeight.w700,
+                color: darkTextMuted,
+              ),
+            ),
           ),
           TextButton(
             onPressed: () async {
@@ -1960,18 +2225,22 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
               final user = ref.read(currentUserProvider);
               if (user == null) return;
               await ref.read(groupServiceProvider).leaveGroup(user.id);
-              await ref.read(profileServiceProvider).updateProfile(
-                    user.id,
-                    role: UserRole.selfLearner,
-                  );
+              await ref
+                  .read(profileServiceProvider)
+                  .updateProfile(user.id, role: UserRole.selfLearner);
               ref.invalidate(studentMembershipProvider);
               ref.invalidate(isInGroupProvider);
               ref.invalidate(currentProfileProvider);
               ref.invalidate(userRecordingsProvider);
             },
-            child: Text('Leave',
-                style: TextStyle(fontFamily: 'Nunito',
-                    fontWeight: FontWeight.w700, color: Colors.red)),
+            child: Text(
+              'Leave',
+              style: TextStyle(
+                fontFamily: 'Nunito',
+                fontWeight: FontWeight.w700,
+                color: Colors.red,
+              ),
+            ),
           ),
         ],
       ),
@@ -1979,10 +2248,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
   }
 
   void _showGroupInfoDialog(
-      BuildContext context, WidgetRef ref, String groupId) {
-    final teacherTier =
-        ref.read(teacherSubscriptionTierProvider).value;
-    final teacherPlanLabel = (teacherTier != null && teacherTier.studentsInheritPro)
+    BuildContext context,
+    WidgetRef ref,
+    String groupId,
+  ) {
+    final teacherTier = ref.read(teacherSubscriptionTierProvider).value;
+    final teacherPlanLabel =
+        (teacherTier != null && teacherTier.studentsInheritPro)
         ? 'Paid Plan'
         : 'Free Plan';
     showDialog(
@@ -2003,8 +2275,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 side: const BorderSide(color: Colors.black, width: 5),
               ),
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 28,
+                ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -2016,13 +2290,16 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: SvgPicture.asset(
-                          'lib/images/licensed/svg/graduation-hat.svg',
-                          width: 28, height: 28),
+                        'lib/images/licensed/svg/graduation-hat.svg',
+                        width: 28,
+                        height: 28,
+                      ),
                     ),
                     const SizedBox(height: 16),
                     Text(
                       'Your Group',
-                      style: TextStyle(fontFamily: 'DM Serif Display',
+                      style: TextStyle(
+                        fontFamily: 'DM Serif Display',
                         fontSize: 22,
                         color: Colors.white,
                       ),
@@ -2038,15 +2315,19 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.person_rounded,
-                              color: darkTextSecondary, size: 20),
+                          const Icon(
+                            Icons.person_rounded,
+                            color: darkTextSecondary,
+                            size: 20,
+                          ),
                           const SizedBox(width: 12),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 'Teacher',
-                                style: TextStyle(fontFamily: 'Nunito',
+                                style: TextStyle(
+                                  fontFamily: 'Nunito',
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                   color: darkTextMuted,
@@ -2057,12 +2338,15 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                   width: 16,
                                   height: 16,
                                   child: CircularProgressIndicator(
-                                      color: accentCoral, strokeWidth: 2),
+                                    color: accentCoral,
+                                    strokeWidth: 2,
+                                  ),
                                 )
                               else
                                 Text(
                                   teacherName!,
-                                  style: TextStyle(fontFamily: 'Nunito',
+                                  style: TextStyle(
+                                    fontFamily: 'Nunito',
                                     fontSize: 16,
                                     fontWeight: FontWeight.w800,
                                     color: Colors.white,
@@ -2084,15 +2368,19 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.workspace_premium_rounded,
-                              color: darkTextSecondary, size: 20),
+                          const Icon(
+                            Icons.workspace_premium_rounded,
+                            color: darkTextSecondary,
+                            size: 20,
+                          ),
                           const SizedBox(width: 12),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 "Teacher's Plan",
-                                style: TextStyle(fontFamily: 'Nunito',
+                                style: TextStyle(
+                                  fontFamily: 'Nunito',
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                   color: darkTextMuted,
@@ -2100,7 +2388,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                               ),
                               Text(
                                 teacherPlanLabel,
-                                style: TextStyle(fontFamily: 'Nunito',
+                                style: TextStyle(
+                                  fontFamily: 'Nunito',
                                   fontSize: 16,
                                   fontWeight: FontWeight.w800,
                                   color: Colors.white,
@@ -2150,60 +2439,62 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                     const SizedBox(height: 20),
                     Text(
                       'Your Students',
-                      style: TextStyle(fontFamily: 'Nunito',
+                      style: TextStyle(
+                        fontFamily: 'Nunito',
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
                         color: Colors.white,
                       ),
                     ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${students.length}/$maxStudents students',
-                    style: TextStyle(fontFamily: 'Nunito',
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: darkTextSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  if (students.isEmpty)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 32),
-                      child: Text(
-                        'No students yet',
-                        style: TextStyle(fontFamily: 'Nunito',
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: darkTextSecondary,
-                        ),
-                      ),
-                    )
-                  else
-                    Flexible(
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        padding: EdgeInsets.only(
-                          bottom:
-                              MediaQuery.of(ctx).padding.bottom + 16,
-                        ),
-                        itemCount: students.length,
-                        itemBuilder: (context, i) {
-                          final student = students[i];
-                          return _buildStudentListItem(
-                            ctx,
-                            ref,
-                            student,
-                            groupId,
-                            onRemoved: () {
-                              setSheetState(() {
-                                students.removeAt(i);
-                              });
-                              ref.invalidate(teacherStudentsProvider);
-                            },
-                          );
-                        },
+                    const SizedBox(height: 4),
+                    Text(
+                      '${students.length}/$maxStudents students',
+                      style: TextStyle(
+                        fontFamily: 'Nunito',
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: darkTextSecondary,
                       ),
                     ),
+                    const SizedBox(height: 12),
+                    if (students.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 32),
+                        child: Text(
+                          'No students yet',
+                          style: TextStyle(
+                            fontFamily: 'Nunito',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: darkTextSecondary,
+                          ),
+                        ),
+                      )
+                    else
+                      Flexible(
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          padding: EdgeInsets.only(
+                            bottom: MediaQuery.of(ctx).padding.bottom + 16,
+                          ),
+                          itemCount: students.length,
+                          itemBuilder: (context, i) {
+                            final student = students[i];
+                            return _buildStudentListItem(
+                              ctx,
+                              ref,
+                              student,
+                              groupId,
+                              onRemoved: () {
+                                setSheetState(() {
+                                  students.removeAt(i);
+                                });
+                                ref.invalidate(teacherStudentsProvider);
+                              },
+                            );
+                          },
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -2241,7 +2532,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                     student.displayName.isNotEmpty
                         ? student.displayName[0].toUpperCase()
                         : '?',
-                    style: TextStyle(fontFamily: 'DM Serif Display',
+                    style: TextStyle(
+                      fontFamily: 'DM Serif Display',
                       fontSize: 18,
                       color: Colors.white,
                     ),
@@ -2255,7 +2547,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                   children: [
                     Text(
                       student.displayName,
-                      style: TextStyle(fontFamily: 'Nunito',
+                      style: TextStyle(
+                        fontFamily: 'Nunito',
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
                         color: Colors.white,
@@ -2270,12 +2563,16 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            SvgPicture.asset('lib/images/licensed/svg/streak.svg',
-                                width: 14, height: 14),
+                            SvgPicture.asset(
+                              'lib/images/licensed/svg/streak.svg',
+                              width: 14,
+                              height: 14,
+                            ),
                             const SizedBox(width: 3),
                             Text(
                               '${student.currentStreak}d',
-                              style: TextStyle(fontFamily: 'Nunito',
+                              style: TextStyle(
+                                fontFamily: 'Nunito',
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
                                 color: darkTextSecondary,
@@ -2286,12 +2583,16 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            SvgPicture.asset('lib/images/licensed/svg/level.svg',
-                                width: 14, height: 14),
+                            SvgPicture.asset(
+                              'lib/images/licensed/svg/level.svg',
+                              width: 14,
+                              height: 14,
+                            ),
                             const SizedBox(width: 3),
                             Text(
                               'Lv.${LevelUtils.levelFromXp(student.totalXp)}',
-                              style: TextStyle(fontFamily: 'Nunito',
+                              style: TextStyle(
+                                fontFamily: 'Nunito',
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
                                 color: darkTextSecondary,
@@ -2302,12 +2603,16 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            SvgPicture.asset('lib/images/licensed/svg/xp.svg',
-                                width: 14, height: 14),
+                            SvgPicture.asset(
+                              'lib/images/licensed/svg/xp.svg',
+                              width: 14,
+                              height: 14,
+                            ),
                             const SizedBox(width: 3),
                             Text(
                               '${student.totalXp} XP',
-                              style: TextStyle(fontFamily: 'Nunito',
+                              style: TextStyle(
+                                fontFamily: 'Nunito',
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
                                 color: darkTextSecondary,
@@ -2327,15 +2632,20 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                     builder: (dlgCtx) => AlertDialog(
                       backgroundColor: const Color(0xFF1E0E3D),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16)),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                       title: Text(
                         'Remove Student',
-                        style: TextStyle(fontFamily: 'DM Serif Display',
-                            fontSize: 20, color: Colors.white),
+                        style: TextStyle(
+                          fontFamily: 'DM Serif Display',
+                          fontSize: 20,
+                          color: Colors.white,
+                        ),
                       ),
                       content: Text(
                         'Are you sure you want to remove ${student.displayName} from your group?',
-                        style: TextStyle(fontFamily: 'Nunito',
+                        style: TextStyle(
+                          fontFamily: 'Nunito',
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
                           color: darkTextSecondary,
@@ -2344,17 +2654,25 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(dlgCtx, false),
-                          child: Text('Cancel',
-                              style: TextStyle(fontFamily: 'Nunito',
-                                  fontWeight: FontWeight.w700,
-                                  color: darkTextMuted)),
+                          child: Text(
+                            'Cancel',
+                            style: TextStyle(
+                              fontFamily: 'Nunito',
+                              fontWeight: FontWeight.w700,
+                              color: darkTextMuted,
+                            ),
+                          ),
                         ),
                         TextButton(
                           onPressed: () => Navigator.pop(dlgCtx, true),
-                          child: Text('Remove',
-                              style: TextStyle(fontFamily: 'Nunito',
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.red)),
+                          child: Text(
+                            'Remove',
+                            style: TextStyle(
+                              fontFamily: 'Nunito',
+                              fontWeight: FontWeight.w700,
+                              color: Colors.red,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -2371,7 +2689,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 },
                 child: Text(
                   'Remove',
-                  style: TextStyle(fontFamily: 'Nunito',
+                  style: TextStyle(
+                    fontFamily: 'Nunito',
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
                     color: Colors.red,
@@ -2402,7 +2721,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
               children: [
                 Text(
                   'Scan to Join',
-                  style: TextStyle(fontFamily: 'Nunito',
+                  style: TextStyle(
+                    fontFamily: 'Nunito',
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
                     color: Colors.white,
@@ -2412,7 +2732,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 Text(
                   'Students can scan this QR code\nto join your group',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontFamily: 'Nunito',
+                  style: TextStyle(
+                    fontFamily: 'Nunito',
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                     color: darkTextSecondary,
@@ -2435,7 +2756,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 const SizedBox(height: 16),
                 Text(
                   inviteCode,
-                  style: TextStyle(fontFamily: 'DM Serif Display',
+                  style: TextStyle(
+                    fontFamily: 'DM Serif Display',
                     fontSize: 20,
                     color: accentCoral,
                     letterSpacing: 4,
@@ -2456,7 +2778,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
 
   // ─── Practice settings section ──────────────────────────────────
   Widget _buildPracticeSection(
-      BuildContext context, WidgetRef ref, UserSettings settings) {
+    BuildContext context,
+    WidgetRef ref,
+    UserSettings settings,
+  ) {
     return _buildSettingsSection(
       title: 'Practice',
       items: [
@@ -2489,17 +2814,17 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                   const BackgroundMusicPage(),
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) {
-                if (animation.status == AnimationStatus.reverse) {
-                  return FadeTransition(opacity: animation, child: child);
-                }
-                return TurnPageTransition(
-                  animation: animation,
-                  overleafColor: primaryDark,
-                  animationTransitionPoint: 0.5,
-                  direction: TurnDirection.rightToLeft,
-                  child: child,
-                );
-              },
+                    if (animation.status == AnimationStatus.reverse) {
+                      return FadeTransition(opacity: animation, child: child);
+                    }
+                    return TurnPageTransition(
+                      animation: animation,
+                      overleafColor: primaryDark,
+                      animationTransitionPoint: 0.5,
+                      direction: TurnDirection.rightToLeft,
+                      child: child,
+                    );
+                  },
             ),
           ),
         ),
@@ -2508,7 +2833,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
   }
 
   void _showDailyGoalPicker(
-      BuildContext context, WidgetRef ref, UserSettings settings) {
+    BuildContext context,
+    WidgetRef ref,
+    UserSettings settings,
+  ) {
     const goalOptions = [5, 10, 15, 20, 30, 45, 60, 90, 120];
 
     showModalBottomSheet(
@@ -2543,7 +2871,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 const SizedBox(height: 16),
                 Text(
                   'Daily Goal',
-                  style: TextStyle(fontFamily: 'Nunito',
+                  style: TextStyle(
+                    fontFamily: 'Nunito',
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
                     color: Colors.white,
@@ -2552,7 +2881,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 const SizedBox(height: 4),
                 Text(
                   'How long do you want to practice each day?',
-                  style: TextStyle(fontFamily: 'Nunito',
+                  style: TextStyle(
+                    fontFamily: 'Nunito',
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                     color: darkTextSecondary,
@@ -2571,7 +2901,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                     behavior: HitTestBehavior.opaque,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 14),
+                        horizontal: 20,
+                        vertical: 14,
+                      ),
                       decoration: BoxDecoration(
                         border: Border(
                           top: BorderSide(
@@ -2584,19 +2916,20 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                         children: [
                           Text(
                             '$minutes min',
-                            style: TextStyle(fontFamily: 'Nunito',
+                            style: TextStyle(
+                              fontFamily: 'Nunito',
                               fontSize: 16,
-                              fontWeight:
-                                  isSelected ? FontWeight.w800 : FontWeight.w600,
-                              color:
-                                  isSelected ? primaryLight : Colors.white,
+                              fontWeight: isSelected
+                                  ? FontWeight.w800
+                                  : FontWeight.w600,
+                              color: isSelected ? accentCoral : Colors.white,
                             ),
                           ),
                           const Spacer(),
                           if (isSelected)
                             const Icon(
                               Icons.check_rounded,
-                              color: primaryLight,
+                              color: accentCoral,
                               size: 22,
                             ),
                         ],
@@ -2615,7 +2948,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
 
   // ─── Reminder picker ─────────────────────────────────────────────
   void _showReminderPicker(
-      BuildContext context, WidgetRef ref, UserSettings settings) {
+    BuildContext context,
+    WidgetRef ref,
+    UserSettings settings,
+  ) {
     const hours = [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
     const minutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
     const periods = ['AM', 'PM'];
@@ -2652,8 +2988,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
             return Container(
               decoration: const BoxDecoration(
                 color: Color(0xFF1E0E3D),
-                borderRadius:
-                    BorderRadius.vertical(top: Radius.circular(20)),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                 border: Border(
                   top: BorderSide(color: Colors.black, width: 5),
                   left: BorderSide(color: Colors.black, width: 5),
@@ -2677,7 +3012,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                     const SizedBox(height: 16),
                     Text(
                       'Practice Reminder',
-                      style: TextStyle(fontFamily: 'Nunito',
+                      style: TextStyle(
+                        fontFamily: 'Nunito',
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
                         color: Colors.white,
@@ -2686,7 +3022,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                     const SizedBox(height: 4),
                     Text(
                       'When should we remind you to practice?',
-                      style: TextStyle(fontFamily: 'Nunito',
+                      style: TextStyle(
+                        fontFamily: 'Nunito',
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                         color: darkTextSecondary,
@@ -2704,7 +3041,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                             child: Container(
                               height: itemExtent,
                               margin: const EdgeInsets.symmetric(
-                                  horizontal: 24),
+                                horizontal: 24,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.white.withValues(alpha: 0.08),
                                 borderRadius: BorderRadius.circular(10),
@@ -2720,18 +3058,18 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                 flex: 3,
                                 child: ListWheelScrollView.useDelegate(
                                   controller: FixedExtentScrollController(
-                                      initialItem: initialHourIndex),
+                                    initialItem: initialHourIndex,
+                                  ),
                                   itemExtent: itemExtent,
-                                  physics:
-                                      const FixedExtentScrollPhysics(),
+                                  physics: const FixedExtentScrollPhysics(),
                                   diameterRatio: 1.5,
                                   perspective: 0.003,
                                   onSelectedItemChanged: (index) {
-                                    setSheetState(() =>
-                                        selectedHourIndex = index);
+                                    setSheetState(
+                                      () => selectedHourIndex = index,
+                                    );
                                   },
-                                  childDelegate:
-                                      ListWheelChildBuilderDelegate(
+                                  childDelegate: ListWheelChildBuilderDelegate(
                                     childCount: hours.length,
                                     builder: (context, index) {
                                       final isSelected =
@@ -2739,7 +3077,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                       return Center(
                                         child: Text(
                                           '${hours[index]}',
-                                          style: TextStyle(fontFamily: 'Nunito',
+                                          style: TextStyle(
+                                            fontFamily: 'Nunito',
                                             fontSize: isSelected ? 22 : 18,
                                             fontWeight: isSelected
                                                 ? FontWeight.w800
@@ -2759,28 +3098,30 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                 flex: 3,
                                 child: ListWheelScrollView.useDelegate(
                                   controller: FixedExtentScrollController(
-                                      initialItem: initialMinuteIndex),
+                                    initialItem: initialMinuteIndex,
+                                  ),
                                   itemExtent: itemExtent,
-                                  physics:
-                                      const FixedExtentScrollPhysics(),
+                                  physics: const FixedExtentScrollPhysics(),
                                   diameterRatio: 1.5,
                                   perspective: 0.003,
                                   onSelectedItemChanged: (index) {
-                                    setSheetState(() =>
-                                        selectedMinuteIndex = index);
+                                    setSheetState(
+                                      () => selectedMinuteIndex = index,
+                                    );
                                   },
-                                  childDelegate:
-                                      ListWheelChildBuilderDelegate(
+                                  childDelegate: ListWheelChildBuilderDelegate(
                                     childCount: minutes.length,
                                     builder: (context, index) {
                                       final isSelected =
                                           index == selectedMinuteIndex;
                                       return Center(
                                         child: Text(
-                                          minutes[index]
-                                              .toString()
-                                              .padLeft(2, '0'),
-                                          style: TextStyle(fontFamily: 'Nunito',
+                                          minutes[index].toString().padLeft(
+                                            2,
+                                            '0',
+                                          ),
+                                          style: TextStyle(
+                                            fontFamily: 'Nunito',
                                             fontSize: isSelected ? 22 : 18,
                                             fontWeight: isSelected
                                                 ? FontWeight.w800
@@ -2800,18 +3141,18 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                 flex: 3,
                                 child: ListWheelScrollView.useDelegate(
                                   controller: FixedExtentScrollController(
-                                      initialItem: initialPeriodIndex),
+                                    initialItem: initialPeriodIndex,
+                                  ),
                                   itemExtent: itemExtent,
-                                  physics:
-                                      const FixedExtentScrollPhysics(),
+                                  physics: const FixedExtentScrollPhysics(),
                                   diameterRatio: 1.5,
                                   perspective: 0.003,
                                   onSelectedItemChanged: (index) {
-                                    setSheetState(() =>
-                                        selectedPeriodIndex = index);
+                                    setSheetState(
+                                      () => selectedPeriodIndex = index,
+                                    );
                                   },
-                                  childDelegate:
-                                      ListWheelChildBuilderDelegate(
+                                  childDelegate: ListWheelChildBuilderDelegate(
                                     childCount: periods.length,
                                     builder: (context, index) {
                                       final isSelected =
@@ -2819,7 +3160,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                       return Center(
                                         child: Text(
                                           periods[index],
-                                          style: TextStyle(fontFamily: 'Nunito',
+                                          style: TextStyle(
+                                            fontFamily: 'Nunito',
                                             fontSize: isSelected ? 22 : 18,
                                             fontWeight: isSelected
                                                 ? FontWeight.w800
@@ -2862,12 +3204,15 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                   color: darkCardBg,
                                   borderRadius: BorderRadius.circular(14),
                                   border: Border.all(
-                                      color: Colors.black, width: 3),
+                                    color: Colors.black,
+                                    width: 3,
+                                  ),
                                 ),
                                 child: Center(
                                   child: Text(
                                     'Turn Off',
-                                    style: TextStyle(fontFamily: 'Nunito',
+                                    style: TextStyle(
+                                      fontFamily: 'Nunito',
                                       fontSize: 15,
                                       fontWeight: FontWeight.w800,
                                       color: Colors.white,
@@ -2901,15 +3246,42 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                               child: Container(
                                 height: 48,
                                 decoration: BoxDecoration(
-                                  color: primaryLight,
+                                  gradient: const LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [accentCoral, accentCoralDark],
+                                  ),
                                   borderRadius: BorderRadius.circular(14),
                                   border: Border.all(
-                                      color: Colors.black, width: 3),
+                                    color: Colors.black,
+                                    width: 3,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: accentCoralDark.withValues(
+                                        alpha: 0.3,
+                                      ),
+                                      blurRadius: 6,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                foregroundDecoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(14),
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.center,
+                                    colors: [
+                                      Colors.white.withValues(alpha: 0.2),
+                                      Colors.white.withValues(alpha: 0.0),
+                                    ],
+                                  ),
                                 ),
                                 child: Center(
                                   child: Text(
                                     'Set Reminder',
-                                    style: TextStyle(fontFamily: 'Nunito',
+                                    style: TextStyle(
+                                      fontFamily: 'Nunito',
                                       fontSize: 15,
                                       fontWeight: FontWeight.w800,
                                       color: Colors.white,
@@ -2974,7 +3346,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
             padding: const EdgeInsets.only(left: 4, bottom: 8),
             child: Text(
               title,
-              style: TextStyle(fontFamily: 'Nunito',
+              style: TextStyle(
+                fontFamily: 'Nunito',
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
                 color: darkTextSecondary,
@@ -3005,7 +3378,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                       behavior: HitTestBehavior.opaque,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 13),
+                          horizontal: 16,
+                          vertical: 13,
+                        ),
                         child: Row(
                           children: [
                             row.svgPath != null
@@ -3019,7 +3394,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                             Expanded(
                               child: Text(
                                 row.label,
-                                style: TextStyle(fontFamily: 'Nunito',
+                                style: TextStyle(
+                                  fontFamily: 'Nunito',
                                   fontSize: 15,
                                   fontWeight: FontWeight.w700,
                                   color: row.labelColor ?? Colors.white,
@@ -3044,7 +3420,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
   // ─── Instruments section ──────────────────────────────────────────
   Widget _buildInstrumentsSection(List<Map<String, dynamic>> instruments) {
     final totalMinutes = instruments.fold<int>(
-        0, (sum, i) => sum + ((i['minutes'] as num?)?.toInt() ?? 0));
+      0,
+      (sum, i) => sum + ((i['minutes'] as num?)?.toInt() ?? 0),
+    );
 
     // Map of instrument names to images and colors for display purposes
     const instrumentImages = <String, String>{
@@ -3070,7 +3448,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
             padding: const EdgeInsets.only(left: 4, bottom: 8),
             child: Text(
               'My Instruments',
-              style: TextStyle(fontFamily: 'Nunito',
+              style: TextStyle(
+                fontFamily: 'Nunito',
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
                 color: darkTextSecondary,
@@ -3086,11 +3465,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
             child: instruments.isEmpty
                 ? Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 24),
+                      horizontal: 16,
+                      vertical: 24,
+                    ),
                     child: Center(
                       child: Text(
                         'No instruments yet',
-                        style: TextStyle(fontFamily: 'Nunito',
+                        style: TextStyle(
+                          fontFamily: 'Nunito',
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: darkTextSecondary,
@@ -3105,8 +3487,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                         final i = entry.key;
                         final inst = entry.value;
                         final name = (inst['name'] as String?) ?? 'Unknown';
-                        final minutes =
-                            (inst['minutes'] as num?)?.toInt() ?? 0;
+                        final minutes = (inst['minutes'] as num?)?.toInt() ?? 0;
                         final sessions =
                             (inst['sessions'] as num?)?.toInt() ?? 0;
                         final avgMinutes =
@@ -3115,8 +3496,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                             inst['lastPracticed'] as DateTime?;
                         final instImage = instrumentImages[name];
                         final color = instrumentColors[name] ?? defaultColor;
-                        final fraction =
-                            totalMinutes > 0 ? minutes / totalMinutes : 0.0;
+                        final fraction = totalMinutes > 0
+                            ? minutes / totalMinutes
+                            : 0.0;
                         final expanded = _expandedInstruments.contains(i);
 
                         return Column(
@@ -3139,7 +3521,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                               behavior: HitTestBehavior.opaque,
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 12),
+                                  horizontal: 16,
+                                  vertical: 12,
+                                ),
                                 child: Row(
                                   children: [
                                     Container(
@@ -3149,11 +3533,22 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                         color: darkSurfaceBg,
                                         borderRadius: BorderRadius.circular(10),
                                         border: Border.all(
-                                            color: Colors.black, width: 2),
+                                          color: Colors.black,
+                                          width: 2,
+                                        ),
                                       ),
                                       child: instImage != null
-                                          ? Padding(padding: const EdgeInsets.all(6), child: SvgPicture.asset(instImage))
-                                          : const Icon(Icons.music_note, color: Colors.white, size: 20),
+                                          ? Padding(
+                                              padding: const EdgeInsets.all(6),
+                                              child: SvgPicture.asset(
+                                                instImage,
+                                              ),
+                                            )
+                                          : const Icon(
+                                              Icons.music_note,
+                                              color: Colors.white,
+                                              size: 20,
+                                            ),
                                     ),
                                     const SizedBox(width: 14),
                                     Expanded(
@@ -3163,7 +3558,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                         children: [
                                           Text(
                                             name,
-                                            style: TextStyle(fontFamily: 'Nunito',
+                                            style: TextStyle(
+                                              fontFamily: 'Nunito',
                                               fontSize: 15,
                                               fontWeight: FontWeight.w700,
                                               color: Colors.white,
@@ -3171,48 +3567,89 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                           ),
                                           const SizedBox(height: 6),
                                           ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(4),
+                                            borderRadius: BorderRadius.circular(
+                                              4,
+                                            ),
                                             child: SizedBox(
                                               height: 8,
                                               child: Stack(
                                                 children: [
-                                                  Container(
-                                                      color: darkCardBg),
+                                                  Container(color: darkCardBg),
                                                   FractionallySizedBox(
-                                                    widthFactor: (fraction *
-                                                            _instrumentBarAnim
-                                                                .value)
-                                                        .clamp(0.0, 1.0),
+                                                    widthFactor:
+                                                        (fraction *
+                                                                _instrumentBarAnim
+                                                                    .value)
+                                                            .clamp(0.0, 1.0),
                                                     child: Container(
                                                       decoration: BoxDecoration(
-                                                        gradient: LinearGradient(
-                                                          begin: Alignment.topCenter,
-                                                          end: Alignment.bottomCenter,
-                                                          colors: [
-                                                            color,
-                                                            Color.lerp(color, Colors.black, 0.3)!,
-                                                          ],
-                                                        ),
+                                                        gradient:
+                                                            LinearGradient(
+                                                              begin: Alignment
+                                                                  .topCenter,
+                                                              end: Alignment
+                                                                  .bottomCenter,
+                                                              colors: [
+                                                                color,
+                                                                Color.lerp(
+                                                                  color,
+                                                                  Colors.black,
+                                                                  0.3,
+                                                                )!,
+                                                              ],
+                                                            ),
                                                         borderRadius:
-                                                            BorderRadius.circular(3),
+                                                            BorderRadius.circular(
+                                                              3,
+                                                            ),
                                                         boxShadow: [
                                                           BoxShadow(
-                                                            color: color.withValues(alpha: 0.3),
+                                                            color: color
+                                                                .withValues(
+                                                                  alpha: 0.3,
+                                                                ),
                                                             blurRadius: 4,
-                                                            offset: const Offset(0, 1),
+                                                            offset:
+                                                                const Offset(
+                                                                  0,
+                                                                  1,
+                                                                ),
                                                           ),
                                                         ],
                                                       ),
                                                       foregroundDecoration: BoxDecoration(
-                                                        borderRadius: BorderRadius.circular(3),
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              3,
+                                                            ),
                                                         gradient: LinearGradient(
-                                                          begin: Alignment(_instrumentBarAnim.value * 2 - 0.8, 0),
-                                                          end: Alignment(_instrumentBarAnim.value * 2 - 0.2, 0),
+                                                          begin: Alignment(
+                                                            _instrumentBarAnim
+                                                                        .value *
+                                                                    2 -
+                                                                0.8,
+                                                            0,
+                                                          ),
+                                                          end: Alignment(
+                                                            _instrumentBarAnim
+                                                                        .value *
+                                                                    2 -
+                                                                0.2,
+                                                            0,
+                                                          ),
                                                           colors: [
-                                                            Colors.white.withValues(alpha: 0.0),
-                                                            Colors.white.withValues(alpha: 0.25),
-                                                            Colors.white.withValues(alpha: 0.0),
+                                                            Colors.white
+                                                                .withValues(
+                                                                  alpha: 0.0,
+                                                                ),
+                                                            Colors.white
+                                                                .withValues(
+                                                                  alpha: 0.25,
+                                                                ),
+                                                            Colors.white
+                                                                .withValues(
+                                                                  alpha: 0.0,
+                                                                ),
                                                           ],
                                                         ),
                                                       ),
@@ -3232,7 +3669,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                       children: [
                                         Text(
                                           '$minutes min',
-                                          style: TextStyle(fontFamily: 'Nunito',
+                                          style: TextStyle(
+                                            fontFamily: 'Nunito',
                                             fontSize: 14,
                                             fontWeight: FontWeight.w800,
                                             color: Colors.white,
@@ -3240,7 +3678,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                         ),
                                         Text(
                                           '$sessions sessions',
-                                          style: TextStyle(fontFamily: 'Nunito',
+                                          style: TextStyle(
+                                            fontFamily: 'Nunito',
                                             fontSize: 11,
                                             fontWeight: FontWeight.w600,
                                             color: darkTextSecondary,
@@ -3251,7 +3690,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                     const SizedBox(width: 4),
                                     AnimatedRotation(
                                       turns: expanded ? 0.5 : 0.0,
-                                      duration: const Duration(milliseconds: 200),
+                                      duration: const Duration(
+                                        milliseconds: 200,
+                                      ),
                                       child: const Icon(
                                         Icons.expand_more_rounded,
                                         color: darkTextMuted,
@@ -3263,11 +3704,19 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                               ),
                             ),
                             AnimatedCrossFade(
-                              firstChild: const SizedBox(width: double.infinity, height: 0),
+                              firstChild: const SizedBox(
+                                width: double.infinity,
+                                height: 0,
+                              ),
                               secondChild: SizedBox(
                                 width: double.infinity,
                                 child: Padding(
-                                  padding: const EdgeInsets.fromLTRB(68, 0, 16, 12),
+                                  padding: const EdgeInsets.fromLTRB(
+                                    68,
+                                    0,
+                                    16,
+                                    12,
+                                  ),
                                   child: Wrap(
                                     spacing: 8,
                                     runSpacing: 6,
@@ -3316,7 +3765,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
           const SizedBox(width: 4),
           Text(
             text,
-            style: TextStyle(fontFamily: 'Nunito',
+            style: TextStyle(
+              fontFamily: 'Nunito',
               fontSize: 11,
               fontWeight: FontWeight.w600,
               color: darkTextSecondary,
@@ -3338,7 +3788,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
             padding: const EdgeInsets.only(left: 4, bottom: 8),
             child: Text(
               title,
-              style: TextStyle(fontFamily: 'Nunito',
+              style: TextStyle(
+                fontFamily: 'Nunito',
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
                 color: darkTextSecondary,
@@ -3353,12 +3804,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
               border: Border.all(color: Colors.black, width: 5),
             ),
             child: const SkeletonShimmer(
-              child: Column(
-                children: [
-                  SkeletonListTile(),
-                  SkeletonListTile(),
-                ],
-              ),
+              child: Column(children: [SkeletonListTile(), SkeletonListTile()]),
             ),
           ),
         ],
@@ -3380,7 +3826,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
         child: Center(
           child: Text(
             message,
-            style: TextStyle(fontFamily: 'Nunito',
+            style: TextStyle(
+              fontFamily: 'Nunito',
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: accentCoral,
@@ -3394,8 +3841,18 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
   // ─── Utility ──────────────────────────────────────────────────────
   String _formatMonthYear(DateTime date) {
     const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December',
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
     ];
     return '${months[date.month - 1]} ${date.year}';
   }
@@ -3434,7 +3891,8 @@ class _TrailingText extends _Trailing {
       children: [
         Text(
           text,
-          style: TextStyle(fontFamily: 'Nunito',
+          style: TextStyle(
+            fontFamily: 'Nunito',
             fontSize: 14,
             fontWeight: FontWeight.w600,
             color: darkTextSecondary,
@@ -3474,7 +3932,8 @@ class _QrScannerPageState extends State<_QrScannerPage> {
         foregroundColor: Colors.white,
         title: Text(
           'Scan QR Code',
-          style: TextStyle(fontFamily: 'Nunito',
+          style: TextStyle(
+            fontFamily: 'Nunito',
             fontWeight: FontWeight.w800,
             color: Colors.white,
           ),
@@ -3494,4 +3953,3 @@ class _QrScannerPageState extends State<_QrScannerPage> {
     );
   }
 }
-
