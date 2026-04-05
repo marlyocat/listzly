@@ -152,7 +152,7 @@ class _HomeTab extends ConsumerStatefulWidget {
 class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixin {
   final PageController _pageController = PageController();
   int _currentPage = 0;
-  double? _selectedDuration;
+  double _selectedDuration = prefsInstance.getDouble('cached_duration') ?? 15;
   int? _lastKnownGoal;
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
@@ -279,7 +279,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
         pageBuilder: (context, animation, secondaryAnimation) => PracticePage(
           instrument: instrument.name,
           instrumentImagePath: instrument.iconPath,
-          durationMinutes: (_selectedDuration ?? 15).toInt(),
+          durationMinutes: _selectedDuration.toInt(),
         ),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           // Only apply turn-page effect for forward animation
@@ -326,7 +326,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
 
     if (settings != null && todayStats != null) {
       final goalMinutes = settings.dailyGoalMinutes;
-      if (_selectedDuration == null || _lastKnownGoal != goalMinutes) {
+      if (_lastKnownGoal != goalMinutes) {
         final practicedMinutes = todayStats.totalTime.inMinutes;
         final remaining = goalMinutes - practicedMinutes;
         // Round up to nearest 5, clamp to slider range (5–120), default to 15 if goal met
@@ -334,6 +334,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
             ? ((remaining / 5).ceil() * 5).toDouble().clamp(5, 120)
             : 15;
         _lastKnownGoal = goalMinutes;
+        prefsInstance.setDouble('cached_duration', _selectedDuration);
       }
     }
 
@@ -590,9 +591,8 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                                 child: Column(
                                   children: [
                                     // Duration label
-                                    if (_selectedDuration != null) ...[
                                     Text(
-                                      '${_selectedDuration!.toInt()}',
+                                      '${_selectedDuration.toInt()}',
                                       style: TextStyle(fontFamily: 'DM Serif Display',
                                         fontSize: 20,
                                         color: accentCoral,
@@ -606,15 +606,12 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                                         color: darkTextMuted,
                                       ),
                                     ),
-                                    ] else
-                                      const SizedBox(height: 34),
                                     const SizedBox(height: 2),
                                     // + button
                                     GestureDetector(
                                       onTap: () {
-                                        final current = (_selectedDuration ?? 15);
-                                        if (current < 120) {
-                                          setState(() => _selectedDuration = current + 5);
+                                        if (_selectedDuration < 120) {
+                                          setState(() => _selectedDuration = _selectedDuration + 5);
                                         }
                                       },
                                       child: Container(
@@ -648,7 +645,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                                             overlayShape: const RoundSliderOverlayShape(overlayRadius: 8),
                                           ),
                                           child: Slider(
-                                            value: _selectedDuration ?? 15,
+                                            value: _selectedDuration,
                                             min: 5,
                                             max: 120,
                                             divisions: 23,
@@ -662,9 +659,8 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                                     // - button
                                     GestureDetector(
                                       onTap: () {
-                                        final current = (_selectedDuration ?? 15);
-                                        if (current > 5) {
-                                          setState(() => _selectedDuration = current - 5);
+                                        if (_selectedDuration > 5) {
+                                          setState(() => _selectedDuration = _selectedDuration - 5);
                                         }
                                       },
                                       child: Container(

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:listzly/config/supabase_config.dart';
 import 'package:listzly/providers/auth_provider.dart';
+import 'package:listzly/providers/profile_provider.dart';
 import 'package:listzly/pages/intro_page.dart';
 import 'package:listzly/pages/auth_gate.dart';
 import 'package:listzly/pages/reset_password_page.dart';
@@ -26,6 +28,8 @@ Future<void> main() async {
       DeviceOrientation.portraitUp,
     ]);
   }
+
+  prefsInstance = await SharedPreferences.getInstance();
 
   await Future.wait([
     NotificationService.instance.init(),
