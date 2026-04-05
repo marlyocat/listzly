@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:listzly/theme/colors.dart';
 
 class MyButton extends StatelessWidget {
@@ -54,7 +53,7 @@ class MyButton extends StatelessWidget {
           children: [
             Text(
               text,
-              style: GoogleFonts.nunito(
+              style: TextStyle(fontFamily: 'Nunito',
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
                 color: Colors.white,

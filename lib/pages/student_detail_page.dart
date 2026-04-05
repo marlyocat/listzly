@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:listzly/models/practice_session.dart';
 import 'package:listzly/models/practice_recording.dart';
@@ -271,7 +270,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                         ).createShader(bounds),
                         child: Text(
                           widget.studentName,
-                          style: GoogleFonts.dmSerifDisplay(
+                          style: TextStyle(fontFamily: 'DM Serif Display',
                             fontSize: 28,
                             fontWeight: FontWeight.w400,
                             color: Colors.white,
@@ -373,7 +372,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
           const SizedBox(width: 6),
           Text(
             text,
-            style: GoogleFonts.nunito(
+            style: TextStyle(fontFamily: 'Nunito',
               fontSize: 13,
               fontWeight: FontWeight.w700,
               color: Colors.white,
@@ -452,7 +451,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                         child: Center(
                           child: AnimatedDefaultTextStyle(
                             duration: const Duration(milliseconds: 200),
-                            style: GoogleFonts.nunito(
+                            style: TextStyle(fontFamily: 'Nunito',
                               fontSize: 14,
                               fontWeight:
                                   selected ? FontWeight.w800 : FontWeight.w600,
@@ -487,7 +486,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
               children: [
                 Text(
                   _formatDateRange(),
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
                     color: Colors.white,
@@ -501,7 +500,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                       final count = (stats.sessionCount * _barAnim.value).round();
                       return Text(
                         '$count Session${stats.sessionCount == 1 ? '' : 's'}',
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(fontFamily: 'Nunito',
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
                           color: accentCoral,
@@ -520,7 +519,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                   ),
                   error: (_, _) => Text(
                     '\u2014',
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                       color: accentCoral,
@@ -699,7 +698,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                     ),
                     child: Text(
                       tooltip,
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(fontFamily: 'Nunito',
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: Colors.white,
@@ -756,7 +755,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                       child: Text(
                         value,
                         maxLines: 1,
-                        style: GoogleFonts.dmSerifDisplay(
+                        style: TextStyle(fontFamily: 'DM Serif Display',
                           fontSize: 20,
                           color: Colors.white,
                         ),
@@ -764,7 +763,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                     ),
                     Text(
                       label,
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(fontFamily: 'Nunito',
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
                         color: darkTextMuted,
@@ -898,7 +897,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                     : _selectedTab == 1
                         ? 'Monthly Overview'
                         : 'Yearly Overview',
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
                   color: Colors.white,
@@ -918,7 +917,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                         final value = (ySteps - i) * interval;
                         return Text(
                           '${value.toInt()}m',
-                          style: GoogleFonts.nunito(
+                          style: TextStyle(fontFamily: 'Nunito',
                             fontSize: 10,
                             fontWeight: FontWeight.w600,
                             color: darkTextMuted,
@@ -1037,7 +1036,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                                                           ),
                                                           child: Text(
                                                             _formatDuration(Duration(minutes: val.round())),
-                                                            style: GoogleFonts.nunito(
+                                                            style: TextStyle(fontFamily: 'Nunito',
                                                               fontSize: 9,
                                                               fontWeight: FontWeight.w700,
                                                               color: Colors.white,
@@ -1077,7 +1076,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                         Text(
                           barLabels[i],
                           textAlign: TextAlign.center,
-                          style: GoogleFonts.nunito(
+                          style: TextStyle(fontFamily: 'Nunito',
                             fontSize: barCount > 7 ? 8 : 10,
                             fontWeight: FontWeight.w700,
                             color: isHighlighted ? accentCoral : darkTextMuted,
@@ -1088,7 +1087,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                           Text(
                             barSublabels[i],
                             textAlign: TextAlign.center,
-                            style: GoogleFonts.nunito(
+                            style: TextStyle(fontFamily: 'Nunito',
                               fontSize: barCount > 7 ? 7 : 9,
                               fontWeight: FontWeight.w600,
                               color: isHighlighted
@@ -1137,7 +1136,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                 children: [
                   Text(
                     'Recent Sessions',
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
                       color: Colors.white,
@@ -1182,7 +1181,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                       ),
                       child: Text(
                         'View All',
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(fontFamily: 'Nunito',
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
                           color: Colors.white,
@@ -1214,7 +1213,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                           const SizedBox(height: 8),
                           Text(
                             'No sessions this period',
-                            style: GoogleFonts.nunito(
+                            style: TextStyle(fontFamily: 'Nunito',
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
                               color: darkTextSecondary,
@@ -1261,7 +1260,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                                       children: [
                                         Text(
                                           s.instrumentName,
-                                          style: GoogleFonts.nunito(
+                                          style: TextStyle(fontFamily: 'Nunito',
                                             fontSize: 14,
                                             fontWeight: FontWeight.w700,
                                             color: Colors.white,
@@ -1270,7 +1269,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                                         const SizedBox(height: 1),
                                         Text(
                                           _formatSessionDate(s.startedAt),
-                                          style: GoogleFonts.nunito(
+                                          style: TextStyle(fontFamily: 'Nunito',
                                             fontSize: 12,
                                             fontWeight: FontWeight.w600,
                                             color: darkTextMuted,
@@ -1281,7 +1280,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                                   ),
                                   Text(
                                     _formatSessionDuration(s.durationSeconds),
-                                    style: GoogleFonts.nunito(
+                                    style: TextStyle(fontFamily: 'Nunito',
                                       fontSize: 15,
                                       fontWeight: FontWeight.w800,
                                       color: Colors.white,
@@ -1310,7 +1309,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                     const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
                 child: Text(
                   'Could not load sessions.',
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                     color: darkTextMuted,
@@ -1361,7 +1360,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                     children: [
                       Text(
                         'Recordings',
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(fontFamily: 'Nunito',
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
                           color: Colors.white,
@@ -1370,7 +1369,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                       const SizedBox(height: 2),
                       Text(
                         'Upgrade to Pro to listen to student recordings',
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(fontFamily: 'Nunito',
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                           color: darkTextMuted,
@@ -1407,7 +1406,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                 children: [
                   Text(
                     'Recordings',
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
                       color: Colors.white,
@@ -1451,7 +1450,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                       ),
                       child: Text(
                         'View All',
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(fontFamily: 'Nunito',
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
                           color: Colors.white,
@@ -1483,7 +1482,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                           const SizedBox(height: 8),
                           Text(
                             'No recordings yet',
-                            style: GoogleFonts.nunito(
+                            style: TextStyle(fontFamily: 'Nunito',
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
                               color: darkTextSecondary,
@@ -1518,7 +1517,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                     const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
                 child: Text(
                   'Could not load recordings.',
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                     color: darkTextMuted,
@@ -1552,7 +1551,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
           SnackBar(
             content: Text(
               'Could not play recording',
-              style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+              style: TextStyle(fontFamily: 'Nunito',fontWeight: FontWeight.w600),
             ),
             behavior: SnackBarBehavior.floating,
             showCloseIcon: true,
@@ -1584,7 +1583,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
               const SizedBox(height: 20),
               Text(
                 'All Recordings',
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
                   color: Colors.white,
@@ -1593,7 +1592,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
               const SizedBox(height: 4),
               Text(
                 '${recordings.length} recording${recordings.length == 1 ? '' : 's'}',
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: darkTextSecondary,
@@ -1609,7 +1608,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                         padding: const EdgeInsets.symmetric(vertical: 24),
                         child: Text(
                           'No recordings yet',
-                          style: GoogleFonts.nunito(
+                          style: TextStyle(fontFamily: 'Nunito',
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                             color: darkTextSecondary,
@@ -1633,7 +1632,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                 onPressed: () => Navigator.pop(ctx),
                 child: Text(
                   'Close',
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontWeight: FontWeight.w700,
                     color: accentCoral,
                   ),
@@ -1666,7 +1665,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
           ),
           child: Text(
             'Remove Student',
-            style: GoogleFonts.nunito(
+            style: TextStyle(fontFamily: 'Nunito',
               fontSize: 16,
               fontWeight: FontWeight.w800,
               color: Colors.red,
@@ -1685,11 +1684,11 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           'Remove Student',
-          style: GoogleFonts.dmSerifDisplay(fontSize: 20, color: Colors.white),
+          style: TextStyle(fontFamily: 'DM Serif Display',fontSize: 20, color: Colors.white),
         ),
         content: Text(
           'Are you sure you want to remove ${widget.studentName} from your group?',
-          style: GoogleFonts.nunito(
+          style: TextStyle(fontFamily: 'Nunito',
             fontSize: 15,
             fontWeight: FontWeight.w600,
             color: darkTextSecondary,
@@ -1699,13 +1698,13 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
             child: Text('Cancel',
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                     fontWeight: FontWeight.w700, color: darkTextMuted)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             child: Text('Remove',
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                     fontWeight: FontWeight.w700, color: Colors.red)),
           ),
         ],
@@ -1738,7 +1737,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
               const SizedBox(height: 20),
               Text(
                 'All Sessions',
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
                   color: Colors.white,
@@ -1747,7 +1746,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
               const SizedBox(height: 4),
               Text(
                 '${sessions.length} session${sessions.length == 1 ? '' : 's'}',
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: darkTextSecondary,
@@ -1763,7 +1762,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                         padding: const EdgeInsets.symmetric(vertical: 24),
                         child: Text(
                           'No recent sessions yet',
-                          style: GoogleFonts.nunito(
+                          style: TextStyle(fontFamily: 'Nunito',
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                             color: darkTextSecondary,
@@ -1812,7 +1811,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                                         children: [
                                           Text(
                                             s.instrumentName,
-                                            style: GoogleFonts.nunito(
+                                            style: TextStyle(fontFamily: 'Nunito',
                                               fontSize: 14,
                                               fontWeight: FontWeight.w700,
                                               color: Colors.white,
@@ -1821,7 +1820,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                                           const SizedBox(height: 1),
                                           Text(
                                             _formatSessionDate(s.startedAt),
-                                            style: GoogleFonts.nunito(
+                                            style: TextStyle(fontFamily: 'Nunito',
                                               fontSize: 12,
                                               fontWeight: FontWeight.w600,
                                               color: darkTextMuted,
@@ -1833,7 +1832,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                                     Text(
                                       _formatSessionDuration(
                                           s.durationSeconds),
-                                      style: GoogleFonts.nunito(
+                                      style: TextStyle(fontFamily: 'Nunito',
                                         fontSize: 15,
                                         fontWeight: FontWeight.w800,
                                         color: Colors.white,
@@ -1852,7 +1851,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                 onPressed: () => Navigator.pop(ctx),
                 child: Text(
                   'Close',
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontWeight: FontWeight.w700,
                     color: accentCoral,
                   ),

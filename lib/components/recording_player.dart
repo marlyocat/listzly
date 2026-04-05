@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:listzly/theme/colors.dart';
 
@@ -115,7 +114,7 @@ class _RecordingPlayerSheetState extends State<_RecordingPlayerSheet> {
           // Title
           Text(
             '${widget.instrumentName} Recording',
-            style: GoogleFonts.nunito(
+            style: TextStyle(fontFamily: 'Nunito',
               fontSize: 18,
               fontWeight: FontWeight.w800,
               color: Colors.white,
@@ -124,7 +123,7 @@ class _RecordingPlayerSheetState extends State<_RecordingPlayerSheet> {
           const SizedBox(height: 4),
           Text(
             widget.date,
-            style: GoogleFonts.nunito(
+            style: TextStyle(fontFamily: 'Nunito',
               fontSize: 13,
               fontWeight: FontWeight.w600,
               color: darkTextMuted,
@@ -135,7 +134,7 @@ class _RecordingPlayerSheetState extends State<_RecordingPlayerSheet> {
           if (_error != null)
             Text(
               _error!,
-              style: GoogleFonts.nunito(
+              style: TextStyle(fontFamily: 'Nunito',
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: Colors.red.shade300,
@@ -189,7 +188,7 @@ class _RecordingPlayerSheetState extends State<_RecordingPlayerSheet> {
                         children: [
                           Text(
                             _formatDuration(position),
-                            style: GoogleFonts.nunito(
+                            style: TextStyle(fontFamily: 'Nunito',
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                               color: darkTextMuted,
@@ -197,7 +196,7 @@ class _RecordingPlayerSheetState extends State<_RecordingPlayerSheet> {
                           ),
                           Text(
                             _formatDuration(duration),
-                            style: GoogleFonts.nunito(
+                            style: TextStyle(fontFamily: 'Nunito',
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                               color: darkTextMuted,

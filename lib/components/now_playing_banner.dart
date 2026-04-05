@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:listzly/providers/music_provider.dart';
 import 'package:listzly/theme/colors.dart';
@@ -47,7 +46,7 @@ class NowPlayingBanner extends ConsumerWidget {
                   children: [
                     _MarqueeText(
                       text: song.title,
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(fontFamily: 'Nunito',
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                         color: Colors.white,
@@ -56,7 +55,7 @@ class NowPlayingBanner extends ConsumerWidget {
                     const SizedBox(height: 1),
                     _MarqueeText(
                       text: song.artist,
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(fontFamily: 'Nunito',
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: darkTextMuted,
@@ -250,7 +249,7 @@ class _SeekBarState extends State<_SeekBar> {
           children: [
             Text(
               _format(Duration(milliseconds: posMs.toInt())),
-              style: GoogleFonts.nunito(
+              style: TextStyle(fontFamily: 'Nunito',
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
                 color: darkTextMuted,
@@ -290,7 +289,7 @@ class _SeekBarState extends State<_SeekBar> {
             ),
             Text(
               _format(duration),
-              style: GoogleFonts.nunito(
+              style: TextStyle(fontFamily: 'Nunito',
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
                 color: darkTextMuted,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:listzly/providers/profile_provider.dart';
 import 'package:listzly/providers/subscription_provider.dart';
 import 'package:listzly/theme/colors.dart';
@@ -87,7 +86,7 @@ class _UpgradePromptSheet extends ConsumerWidget {
 
           Text(
             'Upgrade to $planName',
-            style: GoogleFonts.dmSerifDisplay(
+            style: TextStyle(fontFamily: 'DM Serif Display',
               fontSize: 22,
               color: Colors.white,
             ),
@@ -97,7 +96,7 @@ class _UpgradePromptSheet extends ConsumerWidget {
           Text(
             '$feature is available on the $planName plan.',
             textAlign: TextAlign.center,
-            style: GoogleFonts.nunito(
+            style: TextStyle(fontFamily: 'Nunito',
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: darkTextSecondary,
@@ -106,7 +105,7 @@ class _UpgradePromptSheet extends ConsumerWidget {
           const SizedBox(height: 6),
           Text(
             priceText,
-            style: GoogleFonts.nunito(
+            style: TextStyle(fontFamily: 'Nunito',
               fontSize: 13,
               fontWeight: FontWeight.w700,
               color: darkTextMuted,
@@ -156,7 +155,7 @@ class _UpgradePromptSheet extends ConsumerWidget {
               child: Text(
                 'View Plans',
                 textAlign: TextAlign.center,
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
                   color: Colors.white,
@@ -171,7 +170,7 @@ class _UpgradePromptSheet extends ConsumerWidget {
             onTap: () => Navigator.pop(context),
             child: Text(
               'Not now',
-              style: GoogleFonts.nunito(
+              style: TextStyle(fontFamily: 'Nunito',
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: darkTextMuted,

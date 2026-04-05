@@ -3,7 +3,6 @@ import 'dart:math' show pi;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:listzly/theme/colors.dart';
 
 class FlipBoxNavItem {
@@ -135,7 +134,7 @@ class _FlipBoxNavBarState extends State<FlipBoxNavBar>
                 height: widget.tileHeight,
                 iconSize: widget.iconSize,
                 textStyle: widget.textStyle ??
-                    GoogleFonts.nunito(
+                    TextStyle(fontFamily: 'Nunito',
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,

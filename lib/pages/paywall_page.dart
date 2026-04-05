@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:listzly/models/subscription_tier.dart';
 import 'package:listzly/providers/subscription_provider.dart';
@@ -135,7 +134,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
           SnackBar(
             content: Text(
               'Welcome to Listzly ${newTier.displayName}!',
-              style: GoogleFonts.nunito(fontWeight: FontWeight.w700),
+              style: TextStyle(fontFamily: 'Nunito',fontWeight: FontWeight.w700),
             ),
             behavior: SnackBarBehavior.floating,
             showCloseIcon: true,
@@ -151,7 +150,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
           SnackBar(
             content: Text(
               'Purchase failed. Please try again.',
-              style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+              style: TextStyle(fontFamily: 'Nunito',fontWeight: FontWeight.w600),
             ),
             behavior: SnackBarBehavior.floating,
             showCloseIcon: true,
@@ -178,7 +177,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
               newTier.isFree
                   ? 'No previous purchases found.'
                   : 'Restored ${newTier.displayName} plan!',
-              style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+              style: TextStyle(fontFamily: 'Nunito',fontWeight: FontWeight.w600),
             ),
             behavior: SnackBarBehavior.floating,
             showCloseIcon: true,
@@ -193,7 +192,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
           SnackBar(
             content: Text(
               'Could not restore purchases.',
-              style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+              style: TextStyle(fontFamily: 'Nunito',fontWeight: FontWeight.w600),
             ),
             behavior: SnackBarBehavior.floating,
             showCloseIcon: true,
@@ -248,7 +247,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                       onTap: _purchasing ? null : _restore,
                       child: Text(
                         'Restore',
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(fontFamily: 'Nunito',
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
                           color: accentCoral,
@@ -267,7 +266,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
               ).createShader(bounds),
               child: Text(
                 'Upgrade to Pro',
-                style: GoogleFonts.dmSerifDisplay(
+                style: TextStyle(fontFamily: 'DM Serif Display',
                   fontSize: 28,
                   color: Colors.white,
                 ),
@@ -276,7 +275,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
             const SizedBox(height: 4),
             Text(
               'Unlock your full potential',
-              style: GoogleFonts.nunito(
+              style: TextStyle(fontFamily: 'Nunito',
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: darkTextSecondary,
@@ -297,7 +296,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                 child: Text(
                                   _error!,
                                   textAlign: TextAlign.center,
-                                  style: GoogleFonts.nunito(
+                                  style: TextStyle(fontFamily: 'Nunito',
                                     fontSize: 15,
                                     fontWeight: FontWeight.w600,
                                     color: darkTextSecondary,
@@ -321,7 +320,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                         Text(
                                           'You\'re part of a teacher\'s group',
                                           textAlign: TextAlign.center,
-                                          style: GoogleFonts.nunito(
+                                          style: TextStyle(fontFamily: 'Nunito',
                                             fontSize: 16,
                                             fontWeight: FontWeight.w700,
                                             color: Colors.white,
@@ -331,7 +330,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                         Text(
                                           'Leave your teacher\'s group first to purchase your own subscription.',
                                           textAlign: TextAlign.center,
-                                          style: GoogleFonts.nunito(
+                                          style: TextStyle(fontFamily: 'Nunito',
                                             fontSize: 14,
                                             fontWeight: FontWeight.w600,
                                             color: darkTextSecondary,
@@ -475,7 +474,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                                 SnackBar(
                                                   content: Text(
                                                     'If you recently cancelled, it may take a few minutes for changes to reflect.',
-                                                    style: GoogleFonts.nunito(
+                                                    style: TextStyle(fontFamily: 'Nunito',
                                                       fontWeight:
                                                           FontWeight.w600,
                                                     ),
@@ -494,7 +493,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                       },
                                       child: Text(
                                         'Cancel Subscription',
-                                        style: GoogleFonts.nunito(
+                                        style: TextStyle(fontFamily: 'Nunito',
                                           fontSize: 13,
                                           fontWeight: FontWeight.w700,
                                           color: darkTextMuted,
@@ -602,7 +601,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
             children: [
               Text(
                 title,
-                style: GoogleFonts.dmSerifDisplay(
+                style: TextStyle(fontFamily: 'DM Serif Display',
                   fontSize: 20,
                   color: Colors.white,
                 ),
@@ -617,7 +616,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                   ),
                   child: Text(
                     'RECOMMENDED',
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 10,
                       fontWeight: FontWeight.w800,
                       color: accentCoral,
@@ -635,7 +634,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                   ),
                   child: Text(
                     'CURRENT',
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 10,
                       fontWeight: FontWeight.w800,
                       color: darkTextMuted,
@@ -653,7 +652,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
               Flexible(
                 child: Text(
                   price,
-                  style: GoogleFonts.dmSerifDisplay(
+                  style: TextStyle(fontFamily: 'DM Serif Display',
                     fontSize: 28,
                     color: accentColor,
                   ),
@@ -663,7 +662,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                 padding: const EdgeInsets.only(bottom: 4, left: 2),
                 child: Text(
                   period,
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                     color: darkTextMuted,
@@ -683,7 +682,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
               ),
               child: Text(
                 trialInfo,
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
                   color: accentCoral,
@@ -708,7 +707,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                   Flexible(
                     child: Text(
                       f,
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(fontFamily: 'Nunito',
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                         color: Colors.white,
@@ -741,7 +740,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                           ? 'Start free trial'
                           : 'Subscribe',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontSize: 15,
                     fontWeight: FontWeight.w800,
                     color: Colors.white,

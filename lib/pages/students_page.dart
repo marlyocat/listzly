@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:listzly/components/animated_seal_tooltip.dart';
 import 'package:lottie/lottie.dart';
 import 'package:listzly/providers/nav_provider.dart';
@@ -100,13 +99,13 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                       key: _bellKey,
                       description: 'Get notified when a student joins or leaves your group',
                       tooltipBackgroundColor: const Color(0xFF1E0A4A),
-                      descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                      descTextStyle: TextStyle(fontFamily: 'Nunito',fontSize: 14, color: Colors.white),
                       tooltipActions: [
                         TooltipActionButton(
                           type: TooltipDefaultActionType.skip,
                           name: 'Skip tour',
                           backgroundColor: Colors.red,
-                          textStyle: GoogleFonts.nunito(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white),
+                          textStyle: TextStyle(fontFamily: 'Nunito',fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white),
                         ),
                       ],
                       child: _buildNotificationBell(context, ref),
@@ -135,7 +134,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                       ).createShader(bounds),
                       child: Text(
                         'Students',
-                        style: GoogleFonts.dmSerifDisplay(
+                        style: TextStyle(fontFamily: 'DM Serif Display',
                           fontSize: 36,
                           fontWeight: FontWeight.w400,
                           color: Colors.white,
@@ -159,7 +158,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                 key: _inviteKey,
                 description: 'Share this invite code with your students to join your group',
                 tooltipBackgroundColor: const Color(0xFF1E0A4A),
-                descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                descTextStyle: TextStyle(fontFamily: 'Nunito',fontSize: 14, color: Colors.white),
                 child: groupAsync.when(
                   data: (group) {
                     if (group == null) return const SizedBox.shrink();
@@ -186,7 +185,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                 key: _questsKey,
                 description: 'Assign quests to your students and track their progress',
                 tooltipBackgroundColor: const Color(0xFF1E0A4A),
-                descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                descTextStyle: TextStyle(fontFamily: 'Nunito',fontSize: 14, color: Colors.white),
                 child: Builder(builder: (_) {
                   final group = groupAsync.value;
                   if (group == null) return const SizedBox.shrink();
@@ -201,7 +200,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                 key: _studentsKey,
                 description: 'Tap on a student to view their practice details and recordings',
                 tooltipBackgroundColor: const Color(0xFF1E0A4A),
-                descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                descTextStyle: TextStyle(fontFamily: 'Nunito',fontSize: 14, color: Colors.white),
                 child: studentsAsync.when(
                   data: (students) {
                     if (students.isEmpty) {
@@ -220,7 +219,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                     padding: const EdgeInsets.all(20),
                     child: Text(
                       'Could not load students.',
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(fontFamily: 'Nunito',
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: darkTextMuted,
@@ -263,7 +262,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                 children: [
                   Text(
                     'Assigned Quest',
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
                       color: Colors.white,
@@ -331,7 +330,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                           const SizedBox(width: 4),
                           Text(
                             'Assign',
-                            style: GoogleFonts.nunito(
+                            style: TextStyle(fontFamily: 'Nunito',
                               fontSize: 13,
                               fontWeight: FontWeight.w800,
                               color: Colors.white,
@@ -352,7 +351,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
                     child: Text(
                       'No quests assigned yet',
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(fontFamily: 'Nunito',
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                         color: darkTextSecondary,
@@ -377,7 +376,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
                 child: Text(
                   'Could not load quests.',
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                     color: darkTextMuted,
@@ -426,7 +425,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                 const SizedBox(width: 12),
                 Text(
                   'Invite Code',
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
                     color: Colors.white,
@@ -435,7 +434,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                 const Spacer(),
                 Text(
                   '$studentCount/$maxStudents Students',
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: atLimit ? accentCoral : darkTextSecondary,
@@ -459,7 +458,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                   child: Text(
                     'Student limit reached. Upgrade for more.',
                     textAlign: TextAlign.center,
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
                       color: accentCoral,
@@ -485,7 +484,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                     child: Text(
                       inviteCode,
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.dmSerifDisplay(
+                      style: TextStyle(fontFamily: 'DM Serif Display',
                         fontSize: 24,
                         color: Colors.white,
                         letterSpacing: 4,
@@ -513,7 +512,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text('Invite code copied!',
-                              style: GoogleFonts.nunito(
+                              style: TextStyle(fontFamily: 'Nunito',
                                   fontWeight: FontWeight.w600)),
                           showCloseIcon: true,
                           duration: const Duration(seconds: 3),
@@ -546,7 +545,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                 },
                 child: Text(
                   'Regenerate Code',
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
                     color: darkTextMuted,
@@ -572,7 +571,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
           const SizedBox(height: 16),
           Text(
             'No students yet',
-            style: GoogleFonts.dmSerifDisplay(
+            style: TextStyle(fontFamily: 'DM Serif Display',
               fontSize: 22,
               color: Colors.white,
             ),
@@ -581,7 +580,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
           Text(
             'Share your invite code with students to get started',
             textAlign: TextAlign.center,
-            style: GoogleFonts.nunito(
+            style: TextStyle(fontFamily: 'Nunito',
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: darkTextSecondary,
@@ -610,7 +609,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                 children: [
                   Text(
                     'Your Students',
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
                       color: Colors.white,
@@ -619,7 +618,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                   const Spacer(),
                   Text(
                     '${students.length} student${students.length == 1 ? '' : 's'}',
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: darkTextSecondary,
@@ -725,7 +724,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                   ),
                   child: Text(
                     '$count',
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 10,
                       fontWeight: FontWeight.w800,
                       color: Colors.white,
@@ -782,7 +781,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                       Expanded(
                         child: Text(
                           'Notifications',
-                          style: GoogleFonts.nunito(
+                          style: TextStyle(fontFamily: 'Nunito',
                             fontSize: 18,
                             fontWeight: FontWeight.w800,
                             color: Colors.white,
@@ -811,7 +810,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         child: Text(
                           'No notifications yet',
-                          style: GoogleFonts.nunito(
+                          style: TextStyle(fontFamily: 'Nunito',
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                             color: darkTextMuted,
@@ -847,7 +846,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                                         children: [
                                           Text(
                                             n.message,
-                                            style: GoogleFonts.nunito(
+                                            style: TextStyle(fontFamily: 'Nunito',
                                               fontSize: 14,
                                               fontWeight: FontWeight.w600,
                                               color: n.isRead
@@ -858,7 +857,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                                           const SizedBox(height: 2),
                                           Text(
                                             _timeAgo(n.createdAt),
-                                            style: GoogleFonts.nunito(
+                                            style: TextStyle(fontFamily: 'Nunito',
                                               fontSize: 12,
                                               fontWeight: FontWeight.w600,
                                               color: darkTextMuted.withAlpha(150),
@@ -889,7 +888,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                           },
                           child: Text(
                             'Clear All Notifications',
-                            style: GoogleFonts.nunito(
+                            style: TextStyle(fontFamily: 'Nunito',
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
                               color: Colors.red,
@@ -931,7 +930,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
               children: [
                 Text(
                   'Scan to Join',
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
                     color: Colors.white,
@@ -941,7 +940,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                 Text(
                   'Students can scan this QR code\nto join your group',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                     color: darkTextSecondary,
@@ -964,7 +963,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                 const SizedBox(height: 16),
                 Text(
                   inviteCode,
-                  style: GoogleFonts.dmSerifDisplay(
+                  style: TextStyle(fontFamily: 'DM Serif Display',
                     fontSize: 20,
                     color: accentCoral,
                     letterSpacing: 4,
@@ -1017,7 +1016,7 @@ class _StudentTile extends StatelessWidget {
                         student.displayName.isNotEmpty
                             ? student.displayName[0].toUpperCase()
                             : '?',
-                        style: GoogleFonts.dmSerifDisplay(
+                        style: TextStyle(fontFamily: 'DM Serif Display',
                           fontSize: 18,
                           color: Colors.white,
                         ),
@@ -1032,7 +1031,7 @@ class _StudentTile extends StatelessWidget {
                 children: [
                   Text(
                     student.displayName,
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
@@ -1046,7 +1045,7 @@ class _StudentTile extends StatelessWidget {
                       const SizedBox(width: 3),
                       Text(
                         '${student.currentStreak}d',
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(fontFamily: 'Nunito',
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
                           color: darkTextSecondary,
@@ -1058,7 +1057,7 @@ class _StudentTile extends StatelessWidget {
                       const SizedBox(width: 3),
                       Text(
                         'Lv.${LevelUtils.levelFromXp(student.totalXp)}',
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(fontFamily: 'Nunito',
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
                           color: darkTextSecondary,
@@ -1070,7 +1069,7 @@ class _StudentTile extends StatelessWidget {
                       const SizedBox(width: 3),
                       Text(
                         '${student.totalXp} XP',
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(fontFamily: 'Nunito',
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
                           color: darkTextSecondary,
@@ -1156,14 +1155,14 @@ class _ActiveQuestListState extends ConsumerState<_ActiveQuestList> {
                         ),
                         title: Text(
                           'Remove Quest',
-                          style: GoogleFonts.nunito(
+                          style: TextStyle(fontFamily: 'Nunito',
                             fontWeight: FontWeight.w800,
                             color: Colors.white,
                           ),
                         ),
                         content: Text(
                           'Are you sure you want to remove "${quest.title}"?',
-                          style: GoogleFonts.nunito(
+                          style: TextStyle(fontFamily: 'Nunito',
                             fontWeight: FontWeight.w600,
                             color: darkTextSecondary,
                           ),
@@ -1174,7 +1173,7 @@ class _ActiveQuestListState extends ConsumerState<_ActiveQuestList> {
                                 Navigator.pop(context, false),
                             child: Text(
                               'Cancel',
-                              style: GoogleFonts.nunito(
+                              style: TextStyle(fontFamily: 'Nunito',
                                 fontWeight: FontWeight.w700,
                                 color: darkTextSecondary,
                               ),
@@ -1185,7 +1184,7 @@ class _ActiveQuestListState extends ConsumerState<_ActiveQuestList> {
                                 Navigator.pop(context, true),
                             child: Text(
                               'Remove',
-                              style: GoogleFonts.nunito(
+                              style: TextStyle(fontFamily: 'Nunito',
                                 fontWeight: FontWeight.w700,
                                 color: Colors.red,
                               ),
@@ -1211,7 +1210,7 @@ class _ActiveQuestListState extends ConsumerState<_ActiveQuestList> {
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Text(
                 'Show all ${quests.length} quests',
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
                   color: accentCoral,
@@ -1264,7 +1263,7 @@ class _ActiveQuestTile extends StatelessWidget {
               children: [
                 Text(
                   quest.title,
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
@@ -1272,7 +1271,7 @@ class _ActiveQuestTile extends StatelessWidget {
                 ),
                 Text(
                   '$studentName · ${quest.target} sessions · +${quest.rewardXp} XP · ${quest.isRecurring ? 'Recurring Weekly' : 'One Time'}',
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                     color: darkTextSecondary,

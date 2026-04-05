@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:listzly/components/animated_seal_tooltip.dart';
 import 'package:lottie/lottie.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
@@ -88,11 +87,11 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           'Active Subscription',
-          style: GoogleFonts.dmSerifDisplay(fontSize: 20, color: Colors.white),
+          style: TextStyle(fontFamily: 'DM Serif Display',fontSize: 20, color: Colors.white),
         ),
         content: Text(
           'Please cancel your subscription in your app store settings before deleting your account to avoid being charged.',
-          style: GoogleFonts.nunito(
+          style: TextStyle(fontFamily: 'Nunito',
             fontSize: 14,
             fontWeight: FontWeight.w600,
             color: darkTextMuted,
@@ -103,7 +102,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
             onPressed: () => Navigator.pop(ctx),
             child: Text(
               'Cancel',
-              style: GoogleFonts.nunito(
+              style: TextStyle(fontFamily: 'Nunito',
                 fontWeight: FontWeight.w700,
                 color: darkTextMuted,
               ),
@@ -122,7 +121,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
             },
             child: Text(
               'Manage Subscription',
-              style: GoogleFonts.nunito(
+              style: TextStyle(fontFamily: 'Nunito',
                 fontWeight: FontWeight.w700,
                 color: accentCoral,
               ),
@@ -149,7 +148,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           title: Text(
             'Delete Account',
-            style: GoogleFonts.dmSerifDisplay(fontSize: 20, color: Colors.white),
+            style: TextStyle(fontFamily: 'DM Serif Display',fontSize: 20, color: Colors.white),
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -157,7 +156,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
             children: [
               Text(
                 'This will permanently delete your account and all associated data. This cannot be undone.',
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: darkTextMuted,
@@ -166,7 +165,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
               const SizedBox(height: 16),
               Text(
                 'Type DELETE to confirm:',
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
                   color: Colors.white,
@@ -176,14 +175,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
               TextField(
                 controller: controller,
                 onChanged: (_) => setDialogState(() {}),
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: Colors.white,
                 ),
                 decoration: InputDecoration(
                   hintText: 'DELETE',
-                  hintStyle: GoogleFonts.nunito(
+                  hintStyle: TextStyle(fontFamily: 'Nunito',
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: darkTextMuted.withAlpha(100),
@@ -209,7 +208,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
               onPressed: () => Navigator.pop(ctx),
               child: Text(
                 'Cancel',
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                   fontWeight: FontWeight.w700,
                   color: darkTextMuted,
                 ),
@@ -224,7 +223,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                   : null,
               child: Text(
                 'Delete Forever',
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                   fontWeight: FontWeight.w700,
                   color: controller.text.trim() == 'DELETE'
                       ? Colors.red
@@ -266,7 +265,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
           SnackBar(
             content: Text(
               'Your account has been deleted.',
-              style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+              style: TextStyle(fontFamily: 'Nunito',fontWeight: FontWeight.w600),
             ),
             showCloseIcon: true,
             duration: const Duration(seconds: 3),
@@ -281,7 +280,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
           SnackBar(
             content: Text(
               'Could not delete account. Please try again.',
-              style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+              style: TextStyle(fontFamily: 'Nunito',fontWeight: FontWeight.w600),
             ),
             showCloseIcon: true,
             duration: const Duration(seconds: 3),
@@ -354,7 +353,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                       ).createShader(bounds),
                       child: Text(
                         'Profile',
-                        style: GoogleFonts.dmSerifDisplay(
+                        style: TextStyle(fontFamily: 'DM Serif Display',
                           fontSize: 36,
                           fontWeight: FontWeight.w400,
                           color: Colors.white,
@@ -377,13 +376,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 key: _profileKey,
                 description: 'View your profile info and display name',
                 tooltipBackgroundColor: const Color(0xFF1E0A4A),
-                descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                descTextStyle: TextStyle(fontFamily: 'Nunito',fontSize: 14, color: Colors.white),
                 tooltipActions: [
                   TooltipActionButton(
                     type: TooltipDefaultActionType.skip,
                     name: 'Skip tour',
                     backgroundColor: Colors.red,
-                    textStyle: GoogleFonts.nunito(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white),
+                    textStyle: TextStyle(fontFamily: 'Nunito',fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white),
                   ),
                 ],
                 child: profileAsync.when(
@@ -408,7 +407,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 key: _roleKey,
                 description: 'Switch between student and teacher roles or join a group',
                 tooltipBackgroundColor: const Color(0xFF1E0A4A),
-                descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                descTextStyle: TextStyle(fontFamily: 'Nunito',fontSize: 14, color: Colors.white),
                 child: profileAsync.when(
                   data: (profile) =>
                       _buildRoleGroupSection(context, ref, profile),
@@ -434,7 +433,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 key: _practiceKey,
                 description: 'Set your daily practice goal, reminder preferences, and background music',
                 tooltipBackgroundColor: const Color(0xFF1E0A4A),
-                descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                descTextStyle: TextStyle(fontFamily: 'Nunito',fontSize: 14, color: Colors.white),
                 child: settingsAsync.when(
                   data: (settings) => _buildPracticeSection(context, ref, settings),
                   loading: () => _buildSectionLoading('Practice'),
@@ -450,7 +449,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 key: _instrumentsKey,
                 description: 'See your total practice time for each instrument',
                 tooltipBackgroundColor: const Color(0xFF1E0A4A),
-                descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                descTextStyle: TextStyle(fontFamily: 'Nunito',fontSize: 14, color: Colors.white),
                 child: instrumentsAsync.when(
                   data: (instruments) => _buildInstrumentsSection(instruments),
                   loading: () => _buildSectionLoading('My Instruments'),
@@ -482,12 +481,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                               borderRadius: BorderRadius.circular(16)),
                           title: Text(
                             'Log Out?',
-                            style: GoogleFonts.dmSerifDisplay(
+                            style: TextStyle(fontFamily: 'DM Serif Display',
                                 fontSize: 20, color: Colors.white),
                           ),
                           content: Text(
                             'Are you sure you want to log out?',
-                            style: GoogleFonts.nunito(
+                            style: TextStyle(fontFamily: 'Nunito',
                               fontSize: 15,
                               fontWeight: FontWeight.w600,
                               color: darkTextSecondary,
@@ -497,14 +496,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                             TextButton(
                               onPressed: () => Navigator.pop(ctx, false),
                               child: Text('Cancel',
-                                  style: GoogleFonts.nunito(
+                                  style: TextStyle(fontFamily: 'Nunito',
                                       fontWeight: FontWeight.w700,
                                       color: darkTextMuted)),
                             ),
                             TextButton(
                               onPressed: () => Navigator.pop(ctx, true),
                               child: Text('Log Out',
-                                  style: GoogleFonts.nunito(
+                                  style: TextStyle(fontFamily: 'Nunito',
                                       fontWeight: FontWeight.w700,
                                       color: Colors.red)),
                             ),
@@ -554,7 +553,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                     ),
                     child: Text(
                       'Log Out',
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(fontFamily: 'Nunito',
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
                         color: Colors.red,
@@ -574,7 +573,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                     onTap: () => _showDeleteAccountDialog(context, ref),
                     child: Text(
                       'Delete Account',
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(fontFamily: 'Nunito',
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                         color: darkTextMuted,
@@ -637,7 +636,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
             padding: const EdgeInsets.only(left: 4, bottom: 8),
             child: Text(
               'My Subscription',
-              style: GoogleFonts.nunito(
+              style: TextStyle(fontFamily: 'Nunito',
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
                 color: darkTextSecondary,
@@ -678,7 +677,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 children: [
                   Text(
                     'Free Plan',
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
                       color: Colors.white,
@@ -687,7 +686,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                   const SizedBox(height: 2),
                   Text(
                     'Upgrade to unlock all features',
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: darkTextMuted,
@@ -728,7 +727,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 ),
                 child: Text(
                   'Upgrade',
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontSize: 13,
                     fontWeight: FontWeight.w800,
                     color: Colors.white,
@@ -769,7 +768,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
               children: [
                 Text(
                   'Pro Plan',
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
                     color: Colors.white,
@@ -778,7 +777,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 const SizedBox(height: 2),
                 Text(
                   'Included with your teacher\'s plan',
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                     color: darkTextMuted,
@@ -852,7 +851,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                     children: [
                       Text(
                         '${tier.displayName} Plan',
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(fontFamily: 'Nunito',
                           fontSize: 16,
                           fontWeight: FontWeight.w800,
                           color: Colors.white,
@@ -865,7 +864,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                             : tier.isTeacherPlan
                                 ? 'Full teacher access'
                                 : 'You have full access',
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(fontFamily: 'Nunito',
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                           color: isCancelled
@@ -888,7 +887,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                     ),
                     child: Text(
                       'Trial',
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(fontFamily: 'Nunito',
                         fontSize: 11,
                         fontWeight: FontWeight.w800,
                         color: const Color(0xFF22C55E),
@@ -919,7 +918,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                     isCancelled
                         ? 'Access until ${_formatDate(info.expirationDate!)}'
                         : 'Renews ${_formatDate(info.expirationDate!)}',
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: darkTextMuted,
@@ -949,7 +948,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                     Expanded(
                       child: Text(
                         'Your features will remain active until ${_formatDate(info.expirationDate!)}',
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(fontFamily: 'Nunito',
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                           color: const Color(0xFFFBBF24),
@@ -996,7 +995,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 child: Center(
                   child: Text(
                     'Manage Subscription',
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 13,
                       fontWeight: FontWeight.w800,
                       color: Colors.white,
@@ -1076,7 +1075,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 const SizedBox(height: 16),
                 Text(
                   'Choose Avatar',
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
                     color: Colors.white,
@@ -1204,7 +1203,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 children: [
                   Text(
                     profile.displayName,
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 20,
                       fontWeight: FontWeight.w800,
                       color: Colors.white,
@@ -1214,7 +1213,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                     const SizedBox(height: 2),
                     Text(
                       email,
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(fontFamily: 'Nunito',
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                         color: darkTextMuted,
@@ -1230,7 +1229,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                     children: [
                       Text(
                         'Joined $joinDate',
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(fontFamily: 'Nunito',
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
                           color: darkTextSecondary,
@@ -1247,7 +1246,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                         ),
                         child: Text(
                           profile.role.displayName,
-                          style: GoogleFonts.nunito(
+                          style: TextStyle(fontFamily: 'Nunito',
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
                             color: accentCoral,
@@ -1321,7 +1320,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text('Invite code copied!',
-                    style: GoogleFonts.nunito(fontWeight: FontWeight.w600)),
+                    style: TextStyle(fontFamily: 'Nunito',fontWeight: FontWeight.w600)),
                 duration: const Duration(seconds: 3),
                 showCloseIcon: true,
               ),
@@ -1429,7 +1428,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 const SizedBox(height: 16),
                 Text(
                   'Change Role',
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
                     color: Colors.white,
@@ -1458,12 +1457,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                 borderRadius: BorderRadius.circular(16)),
                             title: Text(
                               'Active Subscription',
-                              style: GoogleFonts.dmSerifDisplay(
+                              style: TextStyle(fontFamily: 'DM Serif Display',
                                   fontSize: 20, color: Colors.white),
                             ),
                             content: Text(
                               'Cancel your Pro subscription before changing roles. You\'ll keep Pro access until it expires.',
-                              style: GoogleFonts.nunito(
+                              style: TextStyle(fontFamily: 'Nunito',
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
                                 color: darkTextSecondary,
@@ -1473,7 +1472,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                               TextButton(
                                 onPressed: () => Navigator.pop(dCtx),
                                 child: Text('OK',
-                                    style: GoogleFonts.nunito(
+                                    style: TextStyle(fontFamily: 'Nunito',
                                         fontWeight: FontWeight.w700,
                                         color: accentCoral)),
                               ),
@@ -1493,12 +1492,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                 borderRadius: BorderRadius.circular(16)),
                             title: Text(
                               'Cannot Change Role',
-                              style: GoogleFonts.dmSerifDisplay(
+                              style: TextStyle(fontFamily: 'DM Serif Display',
                                   fontSize: 20, color: Colors.white),
                             ),
                             content: Text(
                               'Remove all students from your group before changing roles.',
-                              style: GoogleFonts.nunito(
+                              style: TextStyle(fontFamily: 'Nunito',
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
                                 color: darkTextSecondary,
@@ -1508,7 +1507,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                               TextButton(
                                 onPressed: () => Navigator.pop(dCtx),
                                 child: Text('OK',
-                                    style: GoogleFonts.nunito(
+                                    style: TextStyle(fontFamily: 'Nunito',
                                         fontWeight: FontWeight.w700,
                                         color: accentCoral)),
                               ),
@@ -1553,7 +1552,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                               children: [
                                 Text(
                                   name,
-                                  style: GoogleFonts.nunito(
+                                  style: TextStyle(fontFamily: 'Nunito',
                                     fontSize: 16,
                                     fontWeight: isSelected
                                         ? FontWeight.w800
@@ -1565,7 +1564,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                 ),
                                 Text(
                                   desc,
-                                  style: GoogleFonts.nunito(
+                                  style: TextStyle(fontFamily: 'Nunito',
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,
                                     color: darkTextMuted,
@@ -1648,14 +1647,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
           title: Text(
             'Join a Teacher',
             style:
-                GoogleFonts.dmSerifDisplay(fontSize: 20, color: Colors.white),
+                TextStyle(fontFamily: 'DM Serif Display',fontSize: 20, color: Colors.white),
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
                 'Enter your teacher\'s invite code to join their group.',
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: darkTextSecondary,
@@ -1665,14 +1664,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
               TextField(
                 controller: controller,
                 textCapitalization: TextCapitalization.characters,
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                   color: Colors.white,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 2,
                 ),
                 decoration: InputDecoration(
                   labelText: 'Enter Invite Code',
-                  labelStyle: GoogleFonts.nunito(
+                  labelStyle: TextStyle(fontFamily: 'Nunito',
                     color: darkTextMuted,
                     fontWeight: FontWeight.w600,
                   ),
@@ -1695,7 +1694,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                     borderSide: const BorderSide(color: accentCoral, width: 1.5),
                   ),
                   hintText: 'Enter your teacher\'s code',
-                  hintStyle: GoogleFonts.nunito(
+                  hintStyle: TextStyle(fontFamily: 'Nunito',
                     color: darkTextMuted.withAlpha(100),
                     fontWeight: FontWeight.w600,
                   ),
@@ -1716,7 +1715,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 },
                 child: Text(
                   'Scan QR Code',
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: accentCoral,
@@ -1738,7 +1737,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                   ),
                   child: Text(
                     errorText!,
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
                       color: Colors.redAccent,
@@ -1752,7 +1751,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
             TextButton(
               onPressed: () => Navigator.pop(ctx, false),
               child: Text('Cancel',
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                       fontWeight: FontWeight.w700, color: darkTextMuted)),
             ),
             TextButton(
@@ -1854,7 +1853,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 }
               },
               child: Text('Join',
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                       fontWeight: FontWeight.w700, color: accentCoral)),
             ),
           ],
@@ -1872,11 +1871,11 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           'Leave Group & Change Role?',
-          style: GoogleFonts.dmSerifDisplay(fontSize: 20, color: Colors.white),
+          style: TextStyle(fontFamily: 'DM Serif Display',fontSize: 20, color: Colors.white),
         ),
         content: Text(
           'You are currently in a group. Changing your role will remove you from your teacher\'s group.',
-          style: GoogleFonts.nunito(
+          style: TextStyle(fontFamily: 'Nunito',
             fontSize: 15,
             fontWeight: FontWeight.w600,
             color: darkTextSecondary,
@@ -1886,7 +1885,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: Text('Cancel',
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                     fontWeight: FontWeight.w700, color: darkTextMuted)),
           ),
           TextButton(
@@ -1922,7 +1921,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
               }
             },
             child: Text('Leave & Continue',
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                     fontWeight: FontWeight.w700, color: Colors.red)),
           ),
         ],
@@ -1938,11 +1937,11 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           'Leave Group',
-          style: GoogleFonts.dmSerifDisplay(fontSize: 20, color: Colors.white),
+          style: TextStyle(fontFamily: 'DM Serif Display',fontSize: 20, color: Colors.white),
         ),
         content: Text(
           'Are you sure you want to leave your teacher\'s group?',
-          style: GoogleFonts.nunito(
+          style: TextStyle(fontFamily: 'Nunito',
             fontSize: 15,
             fontWeight: FontWeight.w600,
             color: darkTextSecondary,
@@ -1952,7 +1951,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: Text('Cancel',
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                     fontWeight: FontWeight.w700, color: darkTextMuted)),
           ),
           TextButton(
@@ -1971,7 +1970,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
               ref.invalidate(userRecordingsProvider);
             },
             child: Text('Leave',
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                     fontWeight: FontWeight.w700, color: Colors.red)),
           ),
         ],
@@ -2023,7 +2022,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                     const SizedBox(height: 16),
                     Text(
                       'Your Group',
-                      style: GoogleFonts.dmSerifDisplay(
+                      style: TextStyle(fontFamily: 'DM Serif Display',
                         fontSize: 22,
                         color: Colors.white,
                       ),
@@ -2047,7 +2046,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                             children: [
                               Text(
                                 'Teacher',
-                                style: GoogleFonts.nunito(
+                                style: TextStyle(fontFamily: 'Nunito',
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                   color: darkTextMuted,
@@ -2063,7 +2062,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                               else
                                 Text(
                                   teacherName!,
-                                  style: GoogleFonts.nunito(
+                                  style: TextStyle(fontFamily: 'Nunito',
                                     fontSize: 16,
                                     fontWeight: FontWeight.w800,
                                     color: Colors.white,
@@ -2093,7 +2092,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                             children: [
                               Text(
                                 "Teacher's Plan",
-                                style: GoogleFonts.nunito(
+                                style: TextStyle(fontFamily: 'Nunito',
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                   color: darkTextMuted,
@@ -2101,7 +2100,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                               ),
                               Text(
                                 teacherPlanLabel,
-                                style: GoogleFonts.nunito(
+                                style: TextStyle(fontFamily: 'Nunito',
                                   fontSize: 16,
                                   fontWeight: FontWeight.w800,
                                   color: Colors.white,
@@ -2151,7 +2150,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                     const SizedBox(height: 20),
                     Text(
                       'Your Students',
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(fontFamily: 'Nunito',
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
                         color: Colors.white,
@@ -2160,7 +2159,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                   const SizedBox(height: 4),
                   Text(
                     '${students.length}/$maxStudents students',
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: darkTextSecondary,
@@ -2172,7 +2171,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                       padding: const EdgeInsets.symmetric(vertical: 32),
                       child: Text(
                         'No students yet',
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(fontFamily: 'Nunito',
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: darkTextSecondary,
@@ -2242,7 +2241,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                     student.displayName.isNotEmpty
                         ? student.displayName[0].toUpperCase()
                         : '?',
-                    style: GoogleFonts.dmSerifDisplay(
+                    style: TextStyle(fontFamily: 'DM Serif Display',
                       fontSize: 18,
                       color: Colors.white,
                     ),
@@ -2256,7 +2255,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                   children: [
                     Text(
                       student.displayName,
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(fontFamily: 'Nunito',
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
                         color: Colors.white,
@@ -2276,7 +2275,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                             const SizedBox(width: 3),
                             Text(
                               '${student.currentStreak}d',
-                              style: GoogleFonts.nunito(
+                              style: TextStyle(fontFamily: 'Nunito',
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
                                 color: darkTextSecondary,
@@ -2292,7 +2291,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                             const SizedBox(width: 3),
                             Text(
                               'Lv.${LevelUtils.levelFromXp(student.totalXp)}',
-                              style: GoogleFonts.nunito(
+                              style: TextStyle(fontFamily: 'Nunito',
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
                                 color: darkTextSecondary,
@@ -2308,7 +2307,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                             const SizedBox(width: 3),
                             Text(
                               '${student.totalXp} XP',
-                              style: GoogleFonts.nunito(
+                              style: TextStyle(fontFamily: 'Nunito',
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
                                 color: darkTextSecondary,
@@ -2331,12 +2330,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                           borderRadius: BorderRadius.circular(16)),
                       title: Text(
                         'Remove Student',
-                        style: GoogleFonts.dmSerifDisplay(
+                        style: TextStyle(fontFamily: 'DM Serif Display',
                             fontSize: 20, color: Colors.white),
                       ),
                       content: Text(
                         'Are you sure you want to remove ${student.displayName} from your group?',
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(fontFamily: 'Nunito',
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
                           color: darkTextSecondary,
@@ -2346,14 +2345,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                         TextButton(
                           onPressed: () => Navigator.pop(dlgCtx, false),
                           child: Text('Cancel',
-                              style: GoogleFonts.nunito(
+                              style: TextStyle(fontFamily: 'Nunito',
                                   fontWeight: FontWeight.w700,
                                   color: darkTextMuted)),
                         ),
                         TextButton(
                           onPressed: () => Navigator.pop(dlgCtx, true),
                           child: Text('Remove',
-                              style: GoogleFonts.nunito(
+                              style: TextStyle(fontFamily: 'Nunito',
                                   fontWeight: FontWeight.w700,
                                   color: Colors.red)),
                         ),
@@ -2372,7 +2371,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 },
                 child: Text(
                   'Remove',
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
                     color: Colors.red,
@@ -2403,7 +2402,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
               children: [
                 Text(
                   'Scan to Join',
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
                     color: Colors.white,
@@ -2413,7 +2412,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 Text(
                   'Students can scan this QR code\nto join your group',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                     color: darkTextSecondary,
@@ -2436,7 +2435,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 const SizedBox(height: 16),
                 Text(
                   inviteCode,
-                  style: GoogleFonts.dmSerifDisplay(
+                  style: TextStyle(fontFamily: 'DM Serif Display',
                     fontSize: 20,
                     color: accentCoral,
                     letterSpacing: 4,
@@ -2544,7 +2543,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 const SizedBox(height: 16),
                 Text(
                   'Daily Goal',
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
                     color: Colors.white,
@@ -2553,7 +2552,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 const SizedBox(height: 4),
                 Text(
                   'How long do you want to practice each day?',
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                     color: darkTextSecondary,
@@ -2585,7 +2584,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                         children: [
                           Text(
                             '$minutes min',
-                            style: GoogleFonts.nunito(
+                            style: TextStyle(fontFamily: 'Nunito',
                               fontSize: 16,
                               fontWeight:
                                   isSelected ? FontWeight.w800 : FontWeight.w600,
@@ -2678,7 +2677,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                     const SizedBox(height: 16),
                     Text(
                       'Practice Reminder',
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(fontFamily: 'Nunito',
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
                         color: Colors.white,
@@ -2687,7 +2686,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                     const SizedBox(height: 4),
                     Text(
                       'When should we remind you to practice?',
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(fontFamily: 'Nunito',
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                         color: darkTextSecondary,
@@ -2740,7 +2739,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                       return Center(
                                         child: Text(
                                           '${hours[index]}',
-                                          style: GoogleFonts.nunito(
+                                          style: TextStyle(fontFamily: 'Nunito',
                                             fontSize: isSelected ? 22 : 18,
                                             fontWeight: isSelected
                                                 ? FontWeight.w800
@@ -2781,7 +2780,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                           minutes[index]
                                               .toString()
                                               .padLeft(2, '0'),
-                                          style: GoogleFonts.nunito(
+                                          style: TextStyle(fontFamily: 'Nunito',
                                             fontSize: isSelected ? 22 : 18,
                                             fontWeight: isSelected
                                                 ? FontWeight.w800
@@ -2820,7 +2819,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                       return Center(
                                         child: Text(
                                           periods[index],
-                                          style: GoogleFonts.nunito(
+                                          style: TextStyle(fontFamily: 'Nunito',
                                             fontSize: isSelected ? 22 : 18,
                                             fontWeight: isSelected
                                                 ? FontWeight.w800
@@ -2868,7 +2867,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                 child: Center(
                                   child: Text(
                                     'Turn Off',
-                                    style: GoogleFonts.nunito(
+                                    style: TextStyle(fontFamily: 'Nunito',
                                       fontSize: 15,
                                       fontWeight: FontWeight.w800,
                                       color: Colors.white,
@@ -2910,7 +2909,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                 child: Center(
                                   child: Text(
                                     'Set Reminder',
-                                    style: GoogleFonts.nunito(
+                                    style: TextStyle(fontFamily: 'Nunito',
                                       fontSize: 15,
                                       fontWeight: FontWeight.w800,
                                       color: Colors.white,
@@ -2975,7 +2974,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
             padding: const EdgeInsets.only(left: 4, bottom: 8),
             child: Text(
               title,
-              style: GoogleFonts.nunito(
+              style: TextStyle(fontFamily: 'Nunito',
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
                 color: darkTextSecondary,
@@ -3020,7 +3019,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                             Expanded(
                               child: Text(
                                 row.label,
-                                style: GoogleFonts.nunito(
+                                style: TextStyle(fontFamily: 'Nunito',
                                   fontSize: 15,
                                   fontWeight: FontWeight.w700,
                                   color: row.labelColor ?? Colors.white,
@@ -3071,7 +3070,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
             padding: const EdgeInsets.only(left: 4, bottom: 8),
             child: Text(
               'My Instruments',
-              style: GoogleFonts.nunito(
+              style: TextStyle(fontFamily: 'Nunito',
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
                 color: darkTextSecondary,
@@ -3091,7 +3090,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                     child: Center(
                       child: Text(
                         'No instruments yet',
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(fontFamily: 'Nunito',
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: darkTextSecondary,
@@ -3164,7 +3163,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                         children: [
                                           Text(
                                             name,
-                                            style: GoogleFonts.nunito(
+                                            style: TextStyle(fontFamily: 'Nunito',
                                               fontSize: 15,
                                               fontWeight: FontWeight.w700,
                                               color: Colors.white,
@@ -3233,7 +3232,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                       children: [
                                         Text(
                                           '$minutes min',
-                                          style: GoogleFonts.nunito(
+                                          style: TextStyle(fontFamily: 'Nunito',
                                             fontSize: 14,
                                             fontWeight: FontWeight.w800,
                                             color: Colors.white,
@@ -3241,7 +3240,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                         ),
                                         Text(
                                           '$sessions sessions',
-                                          style: GoogleFonts.nunito(
+                                          style: TextStyle(fontFamily: 'Nunito',
                                             fontSize: 11,
                                             fontWeight: FontWeight.w600,
                                             color: darkTextSecondary,
@@ -3317,7 +3316,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
           const SizedBox(width: 4),
           Text(
             text,
-            style: GoogleFonts.nunito(
+            style: TextStyle(fontFamily: 'Nunito',
               fontSize: 11,
               fontWeight: FontWeight.w600,
               color: darkTextSecondary,
@@ -3339,7 +3338,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
             padding: const EdgeInsets.only(left: 4, bottom: 8),
             child: Text(
               title,
-              style: GoogleFonts.nunito(
+              style: TextStyle(fontFamily: 'Nunito',
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
                 color: darkTextSecondary,
@@ -3381,7 +3380,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
         child: Center(
           child: Text(
             message,
-            style: GoogleFonts.nunito(
+            style: TextStyle(fontFamily: 'Nunito',
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: accentCoral,
@@ -3435,7 +3434,7 @@ class _TrailingText extends _Trailing {
       children: [
         Text(
           text,
-          style: GoogleFonts.nunito(
+          style: TextStyle(fontFamily: 'Nunito',
             fontSize: 14,
             fontWeight: FontWeight.w600,
             color: darkTextSecondary,
@@ -3475,7 +3474,7 @@ class _QrScannerPageState extends State<_QrScannerPage> {
         foregroundColor: Colors.white,
         title: Text(
           'Scan QR Code',
-          style: GoogleFonts.nunito(
+          style: TextStyle(fontFamily: 'Nunito',
             fontWeight: FontWeight.w800,
             color: Colors.white,
           ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:listzly/models/practice_recording.dart';
 import 'package:listzly/theme/colors.dart';
 
@@ -72,7 +71,7 @@ class RecordingListTile extends StatelessWidget {
                   children: [
                     Text(
                       recording.instrumentName,
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(fontFamily: 'Nunito',
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                         color: Colors.white,
@@ -81,7 +80,7 @@ class RecordingListTile extends StatelessWidget {
                     const SizedBox(height: 1),
                     Text(
                       '${_formatDate(recording.createdAt)}  ·  ${_formatDuration(recording.durationSeconds)}',
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(fontFamily: 'Nunito',
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: darkTextMuted,
@@ -168,7 +167,7 @@ class RecordingListTile extends StatelessWidget {
                             const SizedBox(width: 10),
                             Text(
                               'Download',
-                              style: GoogleFonts.nunito(
+                              style: TextStyle(fontFamily: 'Nunito',
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
                                 color: Colors.white,
@@ -194,7 +193,7 @@ class RecordingListTile extends StatelessWidget {
                               recording.sharedWithTeacher
                                   ? 'Unshare with Teacher'
                                   : 'Share with Teacher',
-                              style: GoogleFonts.nunito(
+                              style: TextStyle(fontFamily: 'Nunito',
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
                                 color: recording.sharedWithTeacher
@@ -215,7 +214,7 @@ class RecordingListTile extends StatelessWidget {
                             const SizedBox(width: 10),
                             Text(
                               'Delete',
-                              style: GoogleFonts.nunito(
+                              style: TextStyle(fontFamily: 'Nunito',
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
                                 color: Colors.red.shade300,

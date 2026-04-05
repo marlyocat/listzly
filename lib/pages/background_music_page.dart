@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:listzly/models/song.dart';
 import 'package:listzly/components/skeleton_loader.dart';
@@ -90,7 +89,7 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
                         ).createShader(bounds),
                         child: Text(
                           'Music Player',
-                          style: GoogleFonts.dmSerifDisplay(
+                          style: TextStyle(fontFamily: 'DM Serif Display',
                             fontSize: 28,
                             fontWeight: FontWeight.w400,
                             color: Colors.white,
@@ -109,7 +108,7 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
                 padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
                 child: Text(
                   'Pick a piece to listen to while you take a break. Music pauses automatically when you start practicing.',
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: darkTextMuted,
@@ -182,7 +181,7 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
                           const SizedBox(width: 4),
                           Text(
                             'Favorites',
-                            style: GoogleFonts.nunito(
+                            style: TextStyle(fontFamily: 'Nunito',
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                               color: _showFavoritesOnly
@@ -207,7 +206,7 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
                           const SizedBox(width: 2),
                           Text(
                             'Add',
-                            style: GoogleFonts.nunito(
+                            style: TextStyle(fontFamily: 'Nunito',
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                               color: darkTextMuted,
@@ -225,7 +224,7 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
                         children: [
                           Text(
                             _allExpanded ? 'Collapse all' : 'Expand all',
-                            style: GoogleFonts.nunito(
+                            style: TextStyle(fontFamily: 'Nunito',
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                               color: darkTextMuted,
@@ -266,7 +265,7 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
                     child: Text(
                       'Could not load songs.\nPlease try again later.',
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(fontFamily: 'Nunito',
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: darkTextMuted,
@@ -285,7 +284,7 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
                         padding: const EdgeInsets.all(40),
                         child: Text(
                           'No songs available yet.',
-                          style: GoogleFonts.nunito(
+                          style: TextStyle(fontFamily: 'Nunito',
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                             color: darkTextMuted,
@@ -307,7 +306,7 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
                         child: Text(
                           'No favorites yet.\nTap the heart on a piece to add it.',
                           textAlign: TextAlign.center,
-                          style: GoogleFonts.nunito(
+                          style: TextStyle(fontFamily: 'Nunito',
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                             color: darkTextMuted,
@@ -362,7 +361,7 @@ class _BackgroundMusicPageState extends ConsumerState<BackgroundMusicPage> {
                               child: Center(
                                 child: Text(
                                   'Load more (${sortedSongs.length - _visibleSongCount} more)',
-                                  style: GoogleFonts.nunito(
+                                  style: TextStyle(fontFamily: 'Nunito',
                                     fontSize: 13,
                                     fontWeight: FontWeight.w600,
                                     color: darkTextMuted,
@@ -416,7 +415,7 @@ class _MiniBanner extends StatelessWidget {
               children: [
                 Text(
                   song.title,
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
@@ -426,7 +425,7 @@ class _MiniBanner extends StatelessWidget {
                 ),
                 Text(
                   song.artist,
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                     color: darkTextMuted,
@@ -586,7 +585,7 @@ class _NowPlayingCardState extends ConsumerState<_NowPlayingCard> {
           // Song title
           _MarqueeText(
             text: song.title,
-            style: GoogleFonts.nunito(
+            style: TextStyle(fontFamily: 'Nunito',
               fontSize: 18,
               fontWeight: FontWeight.w800,
               color: Colors.white,
@@ -595,7 +594,7 @@ class _NowPlayingCardState extends ConsumerState<_NowPlayingCard> {
           const SizedBox(height: 2),
           _MarqueeText(
             text: song.artist,
-            style: GoogleFonts.nunito(
+            style: TextStyle(fontFamily: 'Nunito',
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: darkTextMuted,
@@ -652,7 +651,7 @@ class _NowPlayingCardState extends ConsumerState<_NowPlayingCard> {
                       children: [
                         Text(
                           _format(Duration(milliseconds: posMs.toInt())),
-                          style: GoogleFonts.nunito(
+                          style: TextStyle(fontFamily: 'Nunito',
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
                             color: darkTextMuted,
@@ -660,7 +659,7 @@ class _NowPlayingCardState extends ConsumerState<_NowPlayingCard> {
                         ),
                         Text(
                           _format(duration),
-                          style: GoogleFonts.nunito(
+                          style: TextStyle(fontFamily: 'Nunito',
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
                             color: darkTextMuted,
@@ -817,7 +816,7 @@ class _ComposerGroupState extends State<_ComposerGroup> {
                 Expanded(
                   child: Text(
                     widget.composer,
-                    style: GoogleFonts.dmSerifDisplay(
+                    style: TextStyle(fontFamily: 'DM Serif Display',
                       fontSize: 15,
                       color: hasActiveSong ? accentCoral : darkTextMuted,
                     ),
@@ -898,11 +897,11 @@ class _SongTile extends ConsumerWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           'Remove Upload',
-          style: GoogleFonts.dmSerifDisplay(fontSize: 20, color: Colors.white),
+          style: TextStyle(fontFamily: 'DM Serif Display',fontSize: 20, color: Colors.white),
         ),
         content: Text(
           'Remove "${song.title}" from your uploads?',
-          style: GoogleFonts.nunito(
+          style: TextStyle(fontFamily: 'Nunito',
             fontSize: 15,
             fontWeight: FontWeight.w600,
             color: darkTextMuted,
@@ -913,7 +912,7 @@ class _SongTile extends ConsumerWidget {
             onPressed: () => Navigator.pop(ctx),
             child: Text(
               'Cancel',
-              style: GoogleFonts.nunito(
+              style: TextStyle(fontFamily: 'Nunito',
                 fontWeight: FontWeight.w700,
                 color: darkTextMuted,
               ),
@@ -926,7 +925,7 @@ class _SongTile extends ConsumerWidget {
             },
             child: Text(
               'Remove',
-              style: GoogleFonts.nunito(
+              style: TextStyle(fontFamily: 'Nunito',
                 fontWeight: FontWeight.w700,
                 color: Colors.red,
               ),
@@ -991,7 +990,7 @@ class _SongTile extends ConsumerWidget {
                   children: [
                     _MarqueeText(
                       text: song.title,
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(fontFamily: 'Nunito',
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
                         color: isActive ? accentCoral : Colors.white,
@@ -999,7 +998,7 @@ class _SongTile extends ConsumerWidget {
                     ),
                     _MarqueeText(
                       text: song.artist,
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(fontFamily: 'Nunito',
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: darkTextMuted,
@@ -1185,7 +1184,7 @@ class _LoopButton extends StatelessWidget {
                   bottom: -2,
                   child: Text(
                     '1',
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 10,
                       fontWeight: FontWeight.w800,
                       color: accentCoral,

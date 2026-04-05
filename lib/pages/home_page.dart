@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 
 import 'package:listzly/components/skeleton_loader.dart';
@@ -399,7 +398,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                 key: _streakKey,
                 description: 'Track your daily practice streak here',
                 tooltipBackgroundColor: const Color(0xFF1E0A4A),
-                descTextStyle: GoogleFonts.nunito(
+                descTextStyle: TextStyle(fontFamily: 'Nunito',
                   fontSize: 14,
                   color: Colors.white,
                 ),
@@ -408,7 +407,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                     type: TooltipDefaultActionType.skip,
                     name: 'Skip tour',
                     backgroundColor: Colors.red,
-                    textStyle: GoogleFonts.nunito(
+                    textStyle: TextStyle(fontFamily: 'Nunito',
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
@@ -461,7 +460,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                               final value = (_streakCountUpController.value * streakDays).round();
                               return Text(
                                 '$value day streak',
-                                style: GoogleFonts.nunito(
+                                style: TextStyle(fontFamily: 'Nunito',
                                   fontSize: 13,
                                   fontWeight: FontWeight.w700,
                                   color: Colors.white,
@@ -472,7 +471,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                           if (streakBroken)
                             Text(
                               'Streak Broken',
-                              style: GoogleFonts.nunito(
+                              style: TextStyle(fontFamily: 'Nunito',
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,
                                 color: accentCoral,
@@ -547,7 +546,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                                       ).createShader(bounds),
                                       child: Text(
                                         inst.name,
-                                        style: GoogleFonts.dmSerifDisplay(
+                                        style: TextStyle(fontFamily: 'DM Serif Display',
                                           fontSize: 32,
                                           color: Colors.white,
                                           letterSpacing: 3,
@@ -566,7 +565,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                                       child: Text(
                                         '"${inst.quotes[_quoteIndices[index]]['quote']}"',
                                         textAlign: TextAlign.center,
-                                        style: GoogleFonts.dmSerifDisplay(
+                                        style: TextStyle(fontFamily: 'DM Serif Display',
                                           fontSize: 14,
                                           color: darkTextSecondary,
                                           fontStyle: FontStyle.italic,
@@ -576,7 +575,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                                     const SizedBox(height: 8),
                                     Text(
                                       '- ${inst.quotes[_quoteIndices[index]]['author']}',
-                                      style: GoogleFonts.dmSerifDisplay(
+                                      style: TextStyle(fontFamily: 'DM Serif Display',
                                         fontSize: 12,
                                         color: darkTextMuted,
                                       ),
@@ -594,14 +593,14 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                                     if (_selectedDuration != null) ...[
                                     Text(
                                       '${_selectedDuration!.toInt()}',
-                                      style: GoogleFonts.dmSerifDisplay(
+                                      style: TextStyle(fontFamily: 'DM Serif Display',
                                         fontSize: 20,
                                         color: accentCoral,
                                       ),
                                     ),
                                     Text(
                                       'mins',
-                                      style: GoogleFonts.nunito(
+                                      style: TextStyle(fontFamily: 'Nunito',
                                         fontSize: 10,
                                         fontWeight: FontWeight.w600,
                                         color: darkTextMuted,
@@ -731,7 +730,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> with TickerProviderStateMixi
                 key: _playKey,
                 description: 'Tap to start your practice session!',
                 tooltipBackgroundColor: const Color(0xFF1E0A4A),
-                descTextStyle: GoogleFonts.nunito(
+                descTextStyle: TextStyle(fontFamily: 'Nunito',
                   fontSize: 14,
                   color: Colors.white,
                 ),
@@ -916,7 +915,7 @@ class _StreakInfoDialogState extends State<_StreakInfoDialog> {
             const SizedBox(height: 12),
             Text(
               widget.streakBroken ? 'Streak Lost' : '${widget.streakDays} Day Streak',
-              style: GoogleFonts.nunito(
+              style: TextStyle(fontFamily: 'Nunito',
                 fontSize: 18,
                 fontWeight: FontWeight.w800,
                 color: Colors.white,
@@ -926,7 +925,7 @@ class _StreakInfoDialogState extends State<_StreakInfoDialog> {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: GoogleFonts.nunito(
+              style: TextStyle(fontFamily: 'Nunito',
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: darkTextSecondary,
@@ -943,7 +942,7 @@ class _StreakInfoDialogState extends State<_StreakInfoDialog> {
                     children: [
                       Text(
                         'Streak expires in',
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(fontFamily: 'Nunito',
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                           color: darkTextMuted,
@@ -952,7 +951,7 @@ class _StreakInfoDialogState extends State<_StreakInfoDialog> {
                       const SizedBox(height: 4),
                       Text(
                         _formatCountdown(remaining.isNegative ? Duration.zero : remaining),
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(fontFamily: 'Nunito',
                           fontSize: 24,
                           fontWeight: FontWeight.w800,
                           color: accentCoral,
@@ -970,7 +969,7 @@ class _StreakInfoDialogState extends State<_StreakInfoDialog> {
                 widget.practicedToday || widget.streakDays == 0
                     ? 'OK'
                     : 'Practice Now',
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                   fontWeight: FontWeight.w700,
                   color: accentCoral,
                 ),

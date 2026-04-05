@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:listzly/components/animated_seal_tooltip.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:listzly/components/skeleton_loader.dart';
 import 'package:listzly/models/assigned_quest.dart';
@@ -311,7 +310,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                       ).createShader(bounds),
                       child: Text(
                         'Quests',
-                        style: GoogleFonts.dmSerifDisplay(
+                        style: TextStyle(fontFamily: 'DM Serif Display',
                           fontSize: 36,
                           fontWeight: FontWeight.w400,
                           color: Colors.white,
@@ -334,13 +333,13 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                 key: _weeklyKey,
                 description: 'See which days you completed your daily quests this week',
                 tooltipBackgroundColor: const Color(0xFF1E0A4A),
-                descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                descTextStyle: TextStyle(fontFamily: 'Nunito',fontSize: 14, color: Colors.white),
                 tooltipActions: [
                   TooltipActionButton(
                     type: TooltipDefaultActionType.skip,
                     name: 'Skip tour',
                     backgroundColor: Colors.red,
-                    textStyle: GoogleFonts.nunito(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white),
+                    textStyle: TextStyle(fontFamily: 'Nunito',fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white),
                   ),
                 ],
                 child: weekCompletionAsync.when(
@@ -357,7 +356,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                 key: _statsKey,
                 description: 'Your streak, level, and total XP at a glance',
                 tooltipBackgroundColor: const Color(0xFF1E0A4A),
-                descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                descTextStyle: TextStyle(fontFamily: 'Nunito',fontSize: 14, color: Colors.white),
                 child: userStatsAsync.when(
                   data: (stats) => _buildStatsChips(stats),
                   loading: () => _buildLoadingPlaceholder(height: 60),
@@ -372,7 +371,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                 key: _questsKey,
                 description: 'Complete daily quests to earn XP and level up',
                 tooltipBackgroundColor: const Color(0xFF1E0A4A),
-                descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                descTextStyle: TextStyle(fontFamily: 'Nunito',fontSize: 14, color: Colors.white),
                 child: dailyQuestsAsync.when(
                 data: (quests) {
                   final goalMinutes = settingsAsync.value?.dailyGoalMinutes;
@@ -469,7 +468,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                         const SizedBox(width: 8),
                         Text(
                           'All quests complete!',
-                          style: GoogleFonts.nunito(
+                          style: TextStyle(fontFamily: 'Nunito',
                             fontSize: 16,
                             fontWeight: FontWeight.w800,
                             color: Colors.white,
@@ -536,7 +535,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
       child: Center(
         child: Text(
           'Something went wrong',
-          style: GoogleFonts.nunito(
+          style: TextStyle(fontFamily: 'Nunito',
             fontSize: 14,
             fontWeight: FontWeight.w600,
             color: darkTextSecondary,
@@ -587,7 +586,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
               children: [
                 Text(
                   _dayLabels[i],
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
                     color: darkTextSecondary,
@@ -640,7 +639,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
             const SizedBox(height: 12),
             Text(
               'Complete a practice session to check off a day',
-              style: GoogleFonts.nunito(
+              style: TextStyle(fontFamily: 'Nunito',
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
                 color: darkTextSecondary,
@@ -735,7 +734,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                 ],
                 Text(
                   label,
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
                     color: darkTextSecondary,
@@ -752,7 +751,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                   fit: BoxFit.scaleDown,
                   child: Text(
                     '$animatedValue$countUpSuffix',
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
                       color: color,
@@ -818,7 +817,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                 const SizedBox(height: 4),
                 Text(
                   progressLabel,
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontSize: 9,
                     fontWeight: FontWeight.w600,
                     color: darkTextMuted,
@@ -863,7 +862,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                 children: [
                   Text(
                     title,
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
                       color: Colors.white,
@@ -880,7 +879,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                   ],
                   Text(
                     subtitle,
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: subtitleColor,
@@ -970,7 +969,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                         Expanded(
                           child: Text(
                             quest.title,
-                            style: GoogleFonts.nunito(
+                            style: TextStyle(fontFamily: 'Nunito',
                               fontSize: 15,
                               fontWeight: FontWeight.w800,
                               color: isComplete
@@ -985,7 +984,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                         // Reward
                         Text(
                           '+${quest.rewardAmount} XP',
-                          style: GoogleFonts.nunito(
+                          style: TextStyle(fontFamily: 'Nunito',
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
                             color: Colors.white,
@@ -996,7 +995,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                     const SizedBox(height: 2),
                     Text(
                       quest.description,
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(fontFamily: 'Nunito',
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                         color: darkTextSecondary,
@@ -1064,7 +1063,7 @@ class _QuestsPageState extends ConsumerState<QuestsPage>
                         const SizedBox(width: 10),
                         Text(
                           '${quest.currentProgress}/${quest.targetProgress}',
-                          style: GoogleFonts.nunito(
+                          style: TextStyle(fontFamily: 'Nunito',
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
                             color: darkTextSecondary,

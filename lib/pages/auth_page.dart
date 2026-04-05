@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
 import 'package:listzly/pages/auth_gate.dart';
@@ -161,14 +160,14 @@ class _AuthPageState extends ConsumerState<AuthPage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           'Check Your Email',
-          style: GoogleFonts.dmSerifDisplay(
+          style: TextStyle(fontFamily: 'DM Serif Display',
             color: Colors.white,
             fontSize: 22,
           ),
         ),
         content: Text(
           'We\'ve sent a confirmation link to your email address. Please verify your email, then sign in.',
-          style: GoogleFonts.nunito(
+          style: TextStyle(fontFamily: 'Nunito',
             color: darkTextSecondary,
             fontSize: 15,
             fontWeight: FontWeight.w600,
@@ -179,7 +178,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
             onPressed: () => Navigator.of(context).pop(),
             child: Text(
               'OK',
-              style: GoogleFonts.nunito(
+              style: TextStyle(fontFamily: 'Nunito',
                 color: accentCoral,
                 fontWeight: FontWeight.w800,
               ),
@@ -202,7 +201,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           'Reset Password',
-          style: GoogleFonts.dmSerifDisplay(
+          style: TextStyle(fontFamily: 'DM Serif Display',
             color: Colors.white,
             fontSize: 22,
           ),
@@ -212,7 +211,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
           children: [
             Text(
               'Enter your email and we\'ll send you a link to reset your password.',
-              style: GoogleFonts.nunito(
+              style: TextStyle(fontFamily: 'Nunito',
                 color: darkTextSecondary,
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
@@ -222,7 +221,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
             TextField(
               controller: resetEmailController,
               keyboardType: TextInputType.emailAddress,
-              style: GoogleFonts.nunito(
+              style: TextStyle(fontFamily: 'Nunito',
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
               ),
@@ -235,7 +234,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
             onPressed: () => Navigator.of(context).pop(),
             child: Text(
               'Cancel',
-              style: GoogleFonts.nunito(
+              style: TextStyle(fontFamily: 'Nunito',
                 color: darkTextMuted,
                 fontWeight: FontWeight.w800,
               ),
@@ -262,7 +261,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
             },
             child: Text(
               'Send',
-              style: GoogleFonts.nunito(
+              style: TextStyle(fontFamily: 'Nunito',
                 color: accentCoral,
                 fontWeight: FontWeight.w800,
               ),
@@ -282,14 +281,14 @@ class _AuthPageState extends ConsumerState<AuthPage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           'Check Your Email',
-          style: GoogleFonts.dmSerifDisplay(
+          style: TextStyle(fontFamily: 'DM Serif Display',
             color: Colors.white,
             fontSize: 22,
           ),
         ),
         content: Text(
           'We\'ve sent a password reset link to your email. Please check your inbox (and spam folder).',
-          style: GoogleFonts.nunito(
+          style: TextStyle(fontFamily: 'Nunito',
             color: darkTextSecondary,
             fontSize: 15,
             fontWeight: FontWeight.w600,
@@ -300,7 +299,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
             onPressed: () => Navigator.of(context).pop(),
             child: Text(
               'OK',
-              style: GoogleFonts.nunito(
+              style: TextStyle(fontFamily: 'Nunito',
                 color: accentCoral,
                 fontWeight: FontWeight.w800,
               ),
@@ -325,7 +324,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
   InputDecoration _inputDecoration(String label, IconData icon) {
     return InputDecoration(
       labelText: label,
-      labelStyle: GoogleFonts.nunito(
+      labelStyle: TextStyle(fontFamily: 'Nunito',
         color: darkTextMuted,
         fontWeight: FontWeight.w600,
       ),
@@ -369,7 +368,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                 ).createShader(bounds),
                 child: Text(
                   'Listzly',
-                  style: GoogleFonts.dmSerifDisplay(
+                  style: TextStyle(fontFamily: 'DM Serif Display',
                     fontSize: 32,
                     color: Colors.white,
                   ),
@@ -381,7 +380,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
               // Title
               Text(
                 _isLogin ? 'Welcome' : 'Create Account',
-                style: GoogleFonts.dmSerifDisplay(
+                style: TextStyle(fontFamily: 'DM Serif Display',
                   fontSize: 28,
                   color: Colors.white,
                 ),
@@ -391,7 +390,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                 _isLogin
                     ? 'Sign in to start practising'
                     : 'Start your musical journey',
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
                   color: darkTextSecondary,
@@ -404,7 +403,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
               if (!_isLogin) ...[
                 TextField(
                   controller: _displayNameController,
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
                   ),
@@ -418,7 +417,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
               TextField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                   color: Colors.white,
                   fontWeight: FontWeight.w600,
                 ),
@@ -431,7 +430,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
               TextField(
                 controller: _passwordController,
                 obscureText: _obscurePassword,
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                   color: Colors.white,
                   fontWeight: FontWeight.w600,
                 ),
@@ -455,7 +454,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                     onTap: _showForgotPasswordDialog,
                     child: Text(
                       'Forgot Password?',
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(fontFamily: 'Nunito',
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
                         color: accentCoral,
@@ -512,7 +511,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                           )
                         : Text(
                             _isLogin ? 'Sign In' : 'Sign Up',
-                            style: GoogleFonts.nunito(
+                            style: TextStyle(fontFamily: 'Nunito',
                               fontSize: 17,
                               fontWeight: FontWeight.w800,
                               color: Colors.white,
@@ -532,7 +531,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
                       'or',
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(fontFamily: 'Nunito',
                         color: darkTextMuted,
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -566,7 +565,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                   onTap: () => setState(() => _isLogin = !_isLogin),
                   child: RichText(
                     text: TextSpan(
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(fontFamily: 'Nunito',
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: darkTextMuted,

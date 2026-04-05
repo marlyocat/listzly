@@ -6,7 +6,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lottie/lottie.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:record/record.dart';
@@ -312,7 +311,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
             SnackBar(
               content: Text(
                 'You can only record $_maxRecordingsPerDay times per day',
-                style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+                style: TextStyle(fontFamily: 'Nunito',fontWeight: FontWeight.w600),
               ),
               behavior: SnackBarBehavior.floating,
               showCloseIcon: true,
@@ -335,7 +334,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
           SnackBar(
             content: Text(
               'Microphone permission is required to record',
-              style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+              style: TextStyle(fontFamily: 'Nunito',fontWeight: FontWeight.w600),
             ),
             behavior: SnackBarBehavior.floating,
             showCloseIcon: true,
@@ -376,7 +375,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
           SnackBar(
             content: Text(
               'Could not start recording',
-              style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+              style: TextStyle(fontFamily: 'Nunito',fontWeight: FontWeight.w600),
             ),
             behavior: SnackBarBehavior.floating,
             showCloseIcon: true,
@@ -414,7 +413,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
         SnackBar(
           content: Text(
             'Recording reached 5-minute limit',
-            style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+            style: TextStyle(fontFamily: 'Nunito',fontWeight: FontWeight.w600),
           ),
           behavior: SnackBarBehavior.floating,
           showCloseIcon: true,
@@ -434,7 +433,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
         SnackBar(
           content: Text(
             'Recording discarded',
-            style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+            style: TextStyle(fontFamily: 'Nunito',fontWeight: FontWeight.w600),
           ),
           behavior: SnackBarBehavior.floating,
           showCloseIcon: true,
@@ -463,7 +462,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
           SnackBar(
             content: Text(
               'Recording saved',
-              style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+              style: TextStyle(fontFamily: 'Nunito',fontWeight: FontWeight.w600),
             ),
             behavior: SnackBarBehavior.floating,
             showCloseIcon: true,
@@ -478,7 +477,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
           SnackBar(
             content: Text(
               'Could not save recording',
-              style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+              style: TextStyle(fontFamily: 'Nunito',fontWeight: FontWeight.w600),
             ),
             behavior: SnackBarBehavior.floating,
             showCloseIcon: true,
@@ -657,7 +656,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           'End Session?',
-          style: GoogleFonts.dmSerifDisplay(color: Colors.white, fontSize: 24),
+          style: TextStyle(fontFamily: 'DM Serif Display',color: Colors.white, fontSize: 24),
         ),
         content: const Text(
           'This session will not be counted if you leave now.',
@@ -776,7 +775,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
                         ).createShader(bounds),
                         child: Text(
                           _formatTime(_remainingSeconds),
-                          style: GoogleFonts.dmSerifDisplay(
+                          style: TextStyle(fontFamily: 'DM Serif Display',
                             fontSize: 85,
                             color: Colors.white,
                             fontWeight: FontWeight.w400,
@@ -804,7 +803,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
                             Text(
                               '"${_instrumentQuotes[_quoteIndex]['quote']}"',
                               textAlign: TextAlign.center,
-                              style: GoogleFonts.dmSerifDisplay(
+                              style: TextStyle(fontFamily: 'DM Serif Display',
                                 fontSize: 14,
                                 color: darkTextSecondary,
                                 fontStyle: FontStyle.italic,
@@ -813,7 +812,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
                             const SizedBox(height: 8),
                             Text(
                               '- ${_instrumentQuotes[_quoteIndex]['author']}',
-                              style: GoogleFonts.dmSerifDisplay(
+                              style: TextStyle(fontFamily: 'DM Serif Display',
                                 fontSize: 12,
                                 color: darkTextMuted,
                               ),
@@ -840,7 +839,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
                             const SizedBox(width: 10),
                             Text(
                               _shockedAssets[_shockedIndex].text,
-                              style: GoogleFonts.dmSerifDisplay(
+                              style: TextStyle(fontFamily: 'DM Serif Display',
                                 fontSize: 18,
                                 color: accentCoral,
                               ),
@@ -951,7 +950,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
           const SizedBox(height: 4),
           Text(
             'Recorded ${_formatTime(_pendingRecordingDuration)}',
-            style: GoogleFonts.nunito(
+            style: TextStyle(fontFamily: 'Nunito',
               fontSize: 12,
               fontWeight: FontWeight.w700,
               color: darkTextSecondary,
@@ -1004,7 +1003,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
                   const SizedBox(width: 4),
                   Text(
                     'Play Back',
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 11,
                       fontWeight: FontWeight.w800,
                       color: Colors.white,
@@ -1018,7 +1017,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
           Text(
             'Complete the practice session to save the recording.\nExiting early will discard it.',
             textAlign: TextAlign.center,
-            style: GoogleFonts.nunito(
+            style: TextStyle(fontFamily: 'Nunito',
               fontSize: 10,
               fontWeight: FontWeight.w600,
               color: darkTextMuted,
@@ -1029,7 +1028,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
             onTap: _discardRecording,
             child: Text(
               'Discard Recording',
-              style: GoogleFonts.nunito(
+              style: TextStyle(fontFamily: 'Nunito',
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
                 color: Colors.red,
@@ -1095,7 +1094,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
                   const SizedBox(width: 6),
                   Text(
                     'REC ${_formatTime(_recordingElapsedSeconds)} / 5:00',
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
                       color: Colors.red.shade300,
@@ -1108,7 +1107,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
                 padding: const EdgeInsets.only(top: 6),
                 child: Text(
                   _recordingsTodayCount >= _maxRecordingsPerDay ? 'Limit reached' : 'Record',
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
                     color: darkTextMuted,
@@ -1171,7 +1170,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
               ).createShader(bounds),
               child: Text(
                 _rocketQuotes[_rocketQuoteIndex],
-                style: GoogleFonts.dmSerifDisplay(
+                style: TextStyle(fontFamily: 'DM Serif Display',
                   fontSize: 28,
                   color: Colors.white,
                 ),
@@ -1205,7 +1204,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
                   ).createShader(bounds),
                   child: Text(
                     _celebrations[_celebrationIndex].text,
-                    style: GoogleFonts.dmSerifDisplay(
+                    style: TextStyle(fontFamily: 'DM Serif Display',
                       fontSize: 22,
                       color: Colors.white,
                     ),
@@ -1261,7 +1260,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
                   ).createShader(bounds),
                   child: Text(
                     'Session Complete!',
-                    style: GoogleFonts.dmSerifDisplay(
+                    style: TextStyle(fontFamily: 'DM Serif Display',
                       fontSize: 36,
                       color: Colors.white,
                       shadows: [
@@ -1295,7 +1294,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
                         const SizedBox(width: 8),
                         Text(
                           widget.instrument,
-                          style: GoogleFonts.dmSerifDisplay(
+                          style: TextStyle(fontFamily: 'DM Serif Display',
                             fontSize: 18,
                             color: darkTextSecondary,
                           ),
@@ -1305,7 +1304,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
                     const SizedBox(height: 8),
                     Text(
                       '${widget.durationMinutes} minutes practiced',
-                      style: GoogleFonts.dmSerifDisplay(
+                      style: TextStyle(fontFamily: 'DM Serif Display',
                         fontSize: 14,
                         color: darkTextMuted,
                       ),
@@ -1315,7 +1314,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
                     // Session XP
                     Text(
                       'Session: +$xpEarned XP',
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(fontFamily: 'Nunito',
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                         color: darkTextMuted,
@@ -1333,7 +1332,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
                           const SizedBox(width: 6),
                           Text(
                             '${q.title}: +${q.xp} XP',
-                            style: GoogleFonts.nunito(
+                            style: TextStyle(fontFamily: 'Nunito',
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
                               color: darkTextMuted,
@@ -1348,7 +1347,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
                     // Total XP
                     Text(
                       '+${xpEarned + _completedQuests.fold(0, (sum, q) => sum + q.xp)} XP',
-                      style: GoogleFonts.dmSerifDisplay(
+                      style: TextStyle(fontFamily: 'DM Serif Display',
                         fontSize: 24,
                         color: accentCoral,
                       ),
@@ -1372,7 +1371,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
                           const SizedBox(width: 6),
                           Text(
                             'Level $_newLevel!',
-                            style: GoogleFonts.dmSerifDisplay(
+                            style: TextStyle(fontFamily: 'DM Serif Display',
                               fontSize: 20,
                               color: Colors.amber,
                             ),
@@ -1410,7 +1409,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
                           currentStreak <= 1
                               ? 'Streak started!'
                               : 'Keep the streak going! $currentStreak days',
-                          style: GoogleFonts.nunito(
+                          style: TextStyle(fontFamily: 'Nunito',
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
                             color: darkTextMuted,
@@ -1453,7 +1452,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
                     child: Center(
                       child: Text(
                         'Done',
-                        style: GoogleFonts.dmSerifDisplay(
+                        style: TextStyle(fontFamily: 'DM Serif Display',
                           fontSize: 20,
                           color: Colors.white,
                           letterSpacing: 2,

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:listzly/providers/nav_provider.dart';
 import 'package:listzly/models/practice_session.dart';
@@ -360,7 +359,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                   const SizedBox(height: 24),
                   Text(
                     'Activity',
-                    style: GoogleFonts.dmSerifDisplay(
+                    style: TextStyle(fontFamily: 'DM Serif Display',
                       fontSize: 28,
                       color: Colors.white,
                     ),
@@ -369,7 +368,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                   Text(
                     'Track your practice sessions, view stats, and manage recordings with Pro.',
                     textAlign: TextAlign.center,
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: darkTextSecondary,
@@ -396,7 +395,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                       ),
                       child: Text(
                         'Upgrade to Pro',
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(fontFamily: 'Nunito',
                           fontSize: 16,
                           fontWeight: FontWeight.w800,
                           color: Colors.white,
@@ -502,7 +501,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                           ).createShader(bounds),
                           child: Text(
                             'Activity',
-                            style: GoogleFonts.dmSerifDisplay(
+                            style: TextStyle(fontFamily: 'DM Serif Display',
                               fontSize: 36,
                               fontWeight: FontWeight.w400,
                               color: Colors.white,
@@ -525,13 +524,13 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                     key: _tabsKey,
                     description: 'Switch between weekly, monthly, and yearly views',
                     tooltipBackgroundColor: const Color(0xFF1E0A4A),
-                    descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                    descTextStyle: TextStyle(fontFamily: 'Nunito',fontSize: 14, color: Colors.white),
                     tooltipActions: [
                       TooltipActionButton(
                         type: TooltipDefaultActionType.skip,
                         name: 'Skip tour',
                         backgroundColor: Colors.red,
-                        textStyle: GoogleFonts.nunito(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white),
+                        textStyle: TextStyle(fontFamily: 'Nunito',fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white),
                       ),
                     ],
                     child: _buildSegmentedTabs(),
@@ -547,7 +546,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                     key: _statsKey,
                     description: 'Your practice time, sessions, and daily average',
                     tooltipBackgroundColor: const Color(0xFF1E0A4A),
-                    descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                    descTextStyle: TextStyle(fontFamily: 'Nunito',fontSize: 14, color: Colors.white),
                     child: _buildSummaryStats(statsAsync),
                   ),
                 ),
@@ -558,7 +557,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                     key: _chartKey,
                     description: 'Visualize your practice time day by day',
                     tooltipBackgroundColor: const Color(0xFF1E0A4A),
-                    descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                    descTextStyle: TextStyle(fontFamily: 'Nunito',fontSize: 14, color: Colors.white),
                     child: _buildBarChart(sessionsAsync),
                   ),
                 ),
@@ -569,7 +568,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                     key: _sessionsKey,
                     description: 'View your recent practice sessions and how long each session lasted',
                     tooltipBackgroundColor: const Color(0xFF1E0A4A),
-                    descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                    descTextStyle: TextStyle(fontFamily: 'Nunito',fontSize: 14, color: Colors.white),
                     child: _buildSessionList(sessionsAsync),
                   ),
                 ),
@@ -580,7 +579,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                     key: _recordingsKey,
                     description: 'Listen to, download, or share your practice recordings with your teacher',
                     tooltipBackgroundColor: const Color(0xFF1E0A4A),
-                    descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                    descTextStyle: TextStyle(fontFamily: 'Nunito',fontSize: 14, color: Colors.white),
                     child: _buildRecordingsList(),
                   ),
                 ),
@@ -665,7 +664,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                         child: Center(
                           child: AnimatedDefaultTextStyle(
                             duration: const Duration(milliseconds: 200),
-                            style: GoogleFonts.nunito(
+                            style: TextStyle(fontFamily: 'Nunito',
                               fontSize: 14,
                               fontWeight:
                                   selected ? FontWeight.w800 : FontWeight.w600,
@@ -705,7 +704,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                   key: _dateKey,
                   description: 'Tap the calendar icon to jump to a specific date',
                   tooltipBackgroundColor: const Color(0xFF1E0A4A),
-                  descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+                  descTextStyle: TextStyle(fontFamily: 'Nunito',fontSize: 14, color: Colors.white),
                   child: GestureDetector(
                     onTap: () => _showDatePicker(context),
                     child: Row(
@@ -713,7 +712,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                       children: [
                         Text(
                           _formatDateRange(),
-                          style: GoogleFonts.nunito(
+                          style: TextStyle(fontFamily: 'Nunito',
                             fontSize: 18,
                             fontWeight: FontWeight.w800,
                             color: Colors.white,
@@ -746,7 +745,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                       final count = (stats.sessionCount * _barAnim.value).round();
                       return Text(
                         '$count Session${stats.sessionCount == 1 ? '' : 's'}',
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(fontFamily: 'Nunito',
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
                           color: accentCoral,
@@ -765,7 +764,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                   ),
                   error: (_, _) => Text(
                     '\u2014',
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                       color: accentCoral,
@@ -780,7 +779,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
             key: _arrowsKey,
             description: 'Navigate to the previous or next week, month, or year',
             tooltipBackgroundColor: const Color(0xFF1E0A4A),
-            descTextStyle: GoogleFonts.nunito(fontSize: 14, color: Colors.white),
+            descTextStyle: TextStyle(fontFamily: 'Nunito',fontSize: 14, color: Colors.white),
             child: Row(
               children: [
                 _buildCircleIconButton(Icons.chevron_left, onTap: _shiftRangeBack),
@@ -961,7 +960,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                     ),
                     child: Text(
                       tooltip,
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(fontFamily: 'Nunito',
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: Colors.white,
@@ -1015,7 +1014,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                     child: Text(
                       value,
                       maxLines: 1,
-                      style: GoogleFonts.dmSerifDisplay(
+                      style: TextStyle(fontFamily: 'DM Serif Display',
                         fontSize: 20,
                         color: Colors.white,
                       ),
@@ -1023,7 +1022,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                   ),
                   Text(
                     label,
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
                       color: darkTextMuted,
@@ -1154,7 +1153,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                     : _selectedTab == 1
                         ? 'Monthly Overview'
                         : 'Yearly Overview',
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
                   color: Colors.white,
@@ -1178,7 +1177,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                           final value = (ySteps - i) * interval;
                           return Text(
                             '${value.toInt()}m',
-                            style: GoogleFonts.nunito(
+                            style: TextStyle(fontFamily: 'Nunito',
                               fontSize: 10,
                               fontWeight: FontWeight.w600,
                               color: darkTextMuted,
@@ -1334,7 +1333,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                           Text(
                             barLabels[i],
                             textAlign: TextAlign.center,
-                            style: GoogleFonts.nunito(
+                            style: TextStyle(fontFamily: 'Nunito',
                               fontSize: barCount > 7 ? 8 : 10,
                               fontWeight: FontWeight.w700,
                               color: isHighlighted
@@ -1347,7 +1346,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                             Text(
                               barSublabels[i],
                               textAlign: TextAlign.center,
-                              style: GoogleFonts.nunito(
+                              style: TextStyle(fontFamily: 'Nunito',
                                 fontSize: barCount > 7 ? 7 : 9,
                                 fontWeight: FontWeight.w600,
                                 color: isHighlighted
@@ -1399,7 +1398,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                 children: [
                   Text(
                     'Recent Sessions',
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
                       color: Colors.white,
@@ -1446,7 +1445,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                       ),
                       child: Text(
                         'View All',
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(fontFamily: 'Nunito',
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
                           color: Colors.white,
@@ -1483,7 +1482,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                           const SizedBox(height: 8),
                           Text(
                             'No sessions this period',
-                            style: GoogleFonts.nunito(
+                            style: TextStyle(fontFamily: 'Nunito',
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
                               color: darkTextSecondary,
@@ -1492,7 +1491,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                           const SizedBox(height: 4),
                           Text(
                             'Start a practice session to see it here',
-                            style: GoogleFonts.nunito(
+                            style: TextStyle(fontFamily: 'Nunito',
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                               color: darkTextMuted,
@@ -1539,7 +1538,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                                 children: [
                                   Text(
                                     s.instrumentName,
-                                    style: GoogleFonts.nunito(
+                                    style: TextStyle(fontFamily: 'Nunito',
                                       fontSize: 14,
                                       fontWeight: FontWeight.w700,
                                       color: Colors.white,
@@ -1548,7 +1547,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                                   const SizedBox(height: 1),
                                   Text(
                                     _formatSessionDate(s.startedAt),
-                                    style: GoogleFonts.nunito(
+                                    style: TextStyle(fontFamily: 'Nunito',
                                       fontSize: 12,
                                       fontWeight: FontWeight.w600,
                                       color: darkTextMuted,
@@ -1563,7 +1562,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                               children: [
                                 Text(
                                   _formatSessionDuration(s.durationSeconds),
-                                  style: GoogleFonts.nunito(
+                                  style: TextStyle(fontFamily: 'Nunito',
                                     fontSize: 15,
                                     fontWeight: FontWeight.w800,
                                     color: Colors.white,
@@ -1595,7 +1594,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                 padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
                 child: Text(
                   'Could not load sessions.',
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                     color: darkTextMuted,
@@ -1646,7 +1645,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                     children: [
                       Text(
                         'My Recordings',
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(fontFamily: 'Nunito',
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
                           color: Colors.white,
@@ -1655,7 +1654,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                       const SizedBox(height: 2),
                       Text(
                         'Upgrade to Pro to record your practice',
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(fontFamily: 'Nunito',
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                           color: darkTextMuted,
@@ -1692,7 +1691,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                 children: [
                   Text(
                     'My Recordings',
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
                       color: Colors.white,
@@ -1739,7 +1738,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                       ),
                       child: Text(
                         'View All',
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(fontFamily: 'Nunito',
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
                           color: Colors.white,
@@ -1758,7 +1757,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                   const SizedBox(width: 4),
                   Text(
                     'Recordings are stored locally on your device.',
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
                       color: darkTextMuted,
@@ -1793,7 +1792,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                           const SizedBox(height: 8),
                           Text(
                             'No recordings yet',
-                            style: GoogleFonts.nunito(
+                            style: TextStyle(fontFamily: 'Nunito',
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
                               color: darkTextSecondary,
@@ -1802,7 +1801,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                           const SizedBox(height: 4),
                           Text(
                             'Record during a practice session to save it here',
-                            style: GoogleFonts.nunito(
+                            style: TextStyle(fontFamily: 'Nunito',
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                               color: darkTextMuted,
@@ -1842,7 +1841,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                     const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
                 child: Text(
                   'Could not load recordings.',
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                     color: darkTextMuted,
@@ -1876,7 +1875,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
           SnackBar(
             content: Text(
               'Could not play recording',
-              style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+              style: TextStyle(fontFamily: 'Nunito',fontWeight: FontWeight.w600),
             ),
             behavior: SnackBarBehavior.floating,
             showCloseIcon: true,
@@ -1902,7 +1901,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
           SnackBar(
             content: Text(
               'Recording saved successfully',
-              style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+              style: TextStyle(fontFamily: 'Nunito',fontWeight: FontWeight.w600),
             ),
             behavior: SnackBarBehavior.floating,
             showCloseIcon: true,
@@ -1917,7 +1916,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
           SnackBar(
             content: Text(
               'Could not save recording: $e',
-              style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+              style: TextStyle(fontFamily: 'Nunito',fontWeight: FontWeight.w600),
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
             ),
@@ -1947,7 +1946,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
             children: [
               Text(
                 newShared ? 'Share with Teacher?' : 'Unshare with Teacher?',
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
                   color: Colors.white,
@@ -1959,7 +1958,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                     ? 'Your teacher will be able to listen to this recording.'
                     : 'Your teacher will no longer be able to listen to this recording.',
                 textAlign: TextAlign.center,
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: darkTextSecondary,
@@ -1973,7 +1972,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                       onPressed: () => Navigator.pop(ctx, false),
                       child: Text(
                         'Cancel',
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(fontFamily: 'Nunito',
                           fontWeight: FontWeight.w700,
                           color: darkTextMuted,
                         ),
@@ -2019,7 +2018,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                         child: Center(
                           child: Text(
                             newShared ? 'Share' : 'Unshare',
-                            style: GoogleFonts.nunito(
+                            style: TextStyle(fontFamily: 'Nunito',
                               fontSize: 16,
                               fontWeight: FontWeight.w800,
                               color: Colors.white,
@@ -2073,7 +2072,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
               newShared
                   ? 'Recording shared with teacher'
                   : 'Recording unshared',
-              style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+              style: TextStyle(fontFamily: 'Nunito',fontWeight: FontWeight.w600),
             ),
             behavior: SnackBarBehavior.floating,
             showCloseIcon: true,
@@ -2087,7 +2086,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
           SnackBar(
             content: Text(
               'Could not update sharing',
-              style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+              style: TextStyle(fontFamily: 'Nunito',fontWeight: FontWeight.w600),
             ),
             behavior: SnackBarBehavior.floating,
             showCloseIcon: true,
@@ -2107,11 +2106,11 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
         title: Text(
           'Delete Recording',
           style:
-              GoogleFonts.dmSerifDisplay(fontSize: 20, color: Colors.white),
+              TextStyle(fontFamily: 'DM Serif Display',fontSize: 20, color: Colors.white),
         ),
         content: Text(
           'Are you sure you want to delete this recording? This cannot be undone.',
-          style: GoogleFonts.nunito(
+          style: TextStyle(fontFamily: 'Nunito',
             fontSize: 15,
             fontWeight: FontWeight.w600,
             color: darkTextSecondary,
@@ -2121,13 +2120,13 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
             child: Text('Cancel',
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                     fontWeight: FontWeight.w700, color: darkTextMuted)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             child: Text('Delete',
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                     fontWeight: FontWeight.w700, color: Colors.red)),
           ),
         ],
@@ -2148,7 +2147,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
             SnackBar(
               content: Text(
                 'Could not delete recording',
-                style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+                style: TextStyle(fontFamily: 'Nunito',fontWeight: FontWeight.w600),
               ),
               behavior: SnackBarBehavior.floating,
               showCloseIcon: true,
@@ -2177,7 +2176,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
               const SizedBox(height: 20),
               Text(
                 'All Sessions',
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
                   color: Colors.white,
@@ -2186,7 +2185,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
               const SizedBox(height: 4),
               Text(
                 '${sessions.length} session${sessions.length == 1 ? '' : 's'}',
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: darkTextSecondary,
@@ -2202,7 +2201,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                         padding: const EdgeInsets.symmetric(vertical: 24),
                         child: Text(
                           'No recent sessions yet',
-                          style: GoogleFonts.nunito(
+                          style: TextStyle(fontFamily: 'Nunito',
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                             color: darkTextSecondary,
@@ -2249,7 +2248,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                                         children: [
                                           Text(
                                             s.instrumentName,
-                                            style: GoogleFonts.nunito(
+                                            style: TextStyle(fontFamily: 'Nunito',
                                               fontSize: 14,
                                               fontWeight: FontWeight.w700,
                                               color: Colors.white,
@@ -2258,7 +2257,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                                           const SizedBox(height: 1),
                                           Text(
                                             _formatSessionDate(s.startedAt),
-                                            style: GoogleFonts.nunito(
+                                            style: TextStyle(fontFamily: 'Nunito',
                                               fontSize: 12,
                                               fontWeight: FontWeight.w600,
                                               color: darkTextMuted,
@@ -2269,7 +2268,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                                     ),
                                     Text(
                                       _formatSessionDuration(s.durationSeconds),
-                                      style: GoogleFonts.nunito(
+                                      style: TextStyle(fontFamily: 'Nunito',
                                         fontSize: 15,
                                         fontWeight: FontWeight.w800,
                                         color: Colors.white,
@@ -2288,7 +2287,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                 onPressed: () => Navigator.pop(ctx),
                 child: Text(
                   'Close',
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontWeight: FontWeight.w700,
                     color: accentCoral,
                   ),
@@ -2321,7 +2320,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
               const SizedBox(height: 20),
               Text(
                 'All Recordings',
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
                   color: Colors.white,
@@ -2330,7 +2329,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
               const SizedBox(height: 4),
               Text(
                 '${recordings.length} recording${recordings.length == 1 ? '' : 's'}',
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: darkTextSecondary,
@@ -2346,7 +2345,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                         padding: const EdgeInsets.symmetric(vertical: 24),
                         child: Text(
                           'No recordings yet',
-                          style: GoogleFonts.nunito(
+                          style: TextStyle(fontFamily: 'Nunito',
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                             color: darkTextSecondary,
@@ -2377,7 +2376,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                 onPressed: () => Navigator.pop(ctx),
                 child: Text(
                   'Close',
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     fontWeight: FontWeight.w700,
                     color: accentCoral,
                   ),

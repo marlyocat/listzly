@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
 import 'package:listzly/models/user_role.dart';
@@ -287,7 +286,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                     ).createShader(bounds),
                     child: Text(
                       'Listzly',
-                      style: GoogleFonts.dmSerifDisplay(
+                      style: TextStyle(fontFamily: 'DM Serif Display',
                         fontSize: 28,
                         color: Colors.white,
                       ),
@@ -415,7 +414,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                                   _currentPage < _lastPageIndex
                                       ? 'Next'
                                       : 'Get Started',
-                                  style: GoogleFonts.nunito(
+                                  style: TextStyle(fontFamily: 'Nunito',
                                     fontSize: 17,
                                     fontWeight: FontWeight.w800,
                                     color: Colors.white,
@@ -451,7 +450,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           Text(
             card.title,
             textAlign: TextAlign.center,
-            style: GoogleFonts.dmSerifDisplay(
+            style: TextStyle(fontFamily: 'DM Serif Display',
               fontSize: 30,
               color: Colors.white,
             ),
@@ -462,7 +461,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
             child: Text(
               card.description,
               textAlign: TextAlign.center,
-              style: GoogleFonts.nunito(
+              style: TextStyle(fontFamily: 'Nunito',
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: darkTextSecondary,
@@ -485,7 +484,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           const SizedBox(height: 40),
           Text(
             'Choose Your Role',
-            style: GoogleFonts.dmSerifDisplay(
+            style: TextStyle(fontFamily: 'DM Serif Display',
               fontSize: 28,
               color: Colors.white,
             ),
@@ -493,7 +492,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           const SizedBox(height: 8),
           Text(
             'How will you use Listzly?',
-            style: GoogleFonts.nunito(
+            style: TextStyle(fontFamily: 'Nunito',
               fontSize: 15,
               fontWeight: FontWeight.w600,
               color: darkTextSecondary,
@@ -545,14 +544,14 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
             TextField(
               controller: _inviteCodeController,
               textCapitalization: TextCapitalization.characters,
-              style: GoogleFonts.nunito(
+              style: TextStyle(fontFamily: 'Nunito',
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
                 letterSpacing: 2,
               ),
               decoration: InputDecoration(
                 labelText: 'Invite Code',
-                labelStyle: GoogleFonts.nunito(
+                labelStyle: TextStyle(fontFamily: 'Nunito',
                   color: darkTextMuted,
                   fontWeight: FontWeight.w600,
                 ),
@@ -573,7 +572,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                   borderSide: const BorderSide(color: accentCoral, width: 1.5),
                 ),
                 hintText: 'Enter your teacher\'s code',
-                hintStyle: GoogleFonts.nunito(
+                hintStyle: TextStyle(fontFamily: 'Nunito',
                   color: darkTextMuted.withAlpha(100),
                   fontWeight: FontWeight.w600,
                 ),
@@ -598,7 +597,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                   const SizedBox(width: 6),
                   Text(
                     'Scan QR Code',
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
                       color: primaryLight,
@@ -614,7 +613,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
             const SizedBox(height: 16),
             Text(
               _errorMessage!,
-              style: GoogleFonts.nunito(
+              style: TextStyle(fontFamily: 'Nunito',
                 color: accentCoralDark,
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -638,7 +637,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           const SizedBox(height: 40),
           Text(
             'Daily Practice Goal',
-            style: GoogleFonts.dmSerifDisplay(
+            style: TextStyle(fontFamily: 'DM Serif Display',
               fontSize: 28,
               color: Colors.white,
             ),
@@ -646,7 +645,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           const SizedBox(height: 8),
           Text(
             'How long do you want to practice each day?',
-            style: GoogleFonts.nunito(
+            style: TextStyle(fontFamily: 'Nunito',
               fontSize: 15,
               fontWeight: FontWeight.w600,
               color: darkTextSecondary,
@@ -681,7 +680,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                     children: [
                       Text(
                         '$minutes',
-                        style: GoogleFonts.dmSerifDisplay(
+                        style: TextStyle(fontFamily: 'DM Serif Display',
                           fontSize: 28,
                           color: isSelected ? accentCoral : Colors.white,
                         ),
@@ -689,7 +688,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                       const SizedBox(height: 2),
                       Text(
                         'minutes',
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(fontFamily: 'Nunito',
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
                           color: isSelected ? accentCoral : darkTextMuted,
@@ -721,7 +720,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           const SizedBox(height: 40),
           Text(
             'Stay on Track',
-            style: GoogleFonts.dmSerifDisplay(
+            style: TextStyle(fontFamily: 'DM Serif Display',
               fontSize: 28,
               color: Colors.white,
             ),
@@ -729,7 +728,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           const SizedBox(height: 8),
           Text(
             'Get a daily reminder to practice',
-            style: GoogleFonts.nunito(
+            style: TextStyle(fontFamily: 'Nunito',
               fontSize: 15,
               fontWeight: FontWeight.w600,
               color: darkTextSecondary,
@@ -787,7 +786,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                       children: [
                         Text(
                           'Daily Reminder',
-                          style: GoogleFonts.nunito(
+                          style: TextStyle(fontFamily: 'Nunito',
                             fontSize: 18,
                             fontWeight: FontWeight.w800,
                             color: _reminderEnabled
@@ -798,7 +797,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                         const SizedBox(height: 2),
                         Text(
                           'Never miss a practice session',
-                          style: GoogleFonts.nunito(
+                          style: TextStyle(fontFamily: 'Nunito',
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
                             color: darkTextMuted,
@@ -852,7 +851,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                   const SizedBox(height: 16),
                   Text(
                     'Remind me at',
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                       color: darkTextSecondary,
@@ -902,7 +901,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                                     return Center(
                                       child: Text(
                                         '${_hours[index]}',
-                                        style: GoogleFonts.nunito(
+                                        style: TextStyle(fontFamily: 'Nunito',
                                           fontSize:
                                               isSelected ? 22 : 18,
                                           fontWeight: isSelected
@@ -943,7 +942,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                                         _minutes[index]
                                             .toString()
                                             .padLeft(2, '0'),
-                                        style: GoogleFonts.nunito(
+                                        style: TextStyle(fontFamily: 'Nunito',
                                           fontSize:
                                               isSelected ? 22 : 18,
                                           fontWeight: isSelected
@@ -982,7 +981,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                                     return Center(
                                       child: Text(
                                         _periods[index],
-                                        style: GoogleFonts.nunito(
+                                        style: TextStyle(fontFamily: 'Nunito',
                                           fontSize:
                                               isSelected ? 22 : 18,
                                           fontWeight: isSelected
@@ -1015,7 +1014,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
             const SizedBox(height: 16),
             Text(
               _errorMessage!,
-              style: GoogleFonts.nunito(
+              style: TextStyle(fontFamily: 'Nunito',
                 color: accentCoralDark,
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -1087,7 +1086,7 @@ class _RoleCard extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 18,
                       fontWeight: FontWeight.w800,
                       color: isSelected ? Colors.white : darkTextSecondary,
@@ -1096,7 +1095,7 @@ class _RoleCard extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     description,
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(fontFamily: 'Nunito',
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: darkTextMuted,
@@ -1142,7 +1141,7 @@ class _QrScannerPageState extends State<_QrScannerPage> {
         foregroundColor: Colors.white,
         title: Text(
           'Scan QR Code',
-          style: GoogleFonts.nunito(
+          style: TextStyle(fontFamily: 'Nunito',
             fontWeight: FontWeight.w800,
             color: Colors.white,
           ),

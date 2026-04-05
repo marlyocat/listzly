@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:listzly/models/assigned_quest.dart';
 import 'package:listzly/models/student_summary.dart';
 import 'package:listzly/providers/assigned_quest_provider.dart';
@@ -90,7 +89,7 @@ class _AssignQuestDialogState extends ConsumerState<AssignQuestDialog> {
         SnackBar(
           content: Text(
             message,
-            style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+            style: TextStyle(fontFamily: 'Nunito',fontWeight: FontWeight.w600),
           ),
           showCloseIcon: true,
           duration: const Duration(seconds: 3),
@@ -202,7 +201,7 @@ class _AssignQuestDialogState extends ConsumerState<AssignQuestDialog> {
                           : _isEditing
                               ? 'Edit Quest'
                               : 'Create Quest',
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(fontFamily: 'Nunito',
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
                         color: Colors.white,
@@ -254,7 +253,7 @@ class _AssignQuestDialogState extends ConsumerState<AssignQuestDialog> {
                                       name.isNotEmpty
                                           ? name[0].toUpperCase()
                                           : '?',
-                                      style: GoogleFonts.dmSerifDisplay(
+                                      style: TextStyle(fontFamily: 'DM Serif Display',
                                         fontSize: 16,
                                         color: Colors.white,
                                       ),
@@ -268,7 +267,7 @@ class _AssignQuestDialogState extends ConsumerState<AssignQuestDialog> {
                               children: [
                                 Text(
                                   'Assigning to',
-                                  style: GoogleFonts.nunito(
+                                  style: TextStyle(fontFamily: 'Nunito',
                                     fontSize: 11,
                                     fontWeight: FontWeight.w600,
                                     color: darkTextMuted,
@@ -276,7 +275,7 @@ class _AssignQuestDialogState extends ConsumerState<AssignQuestDialog> {
                                 ),
                                 Text(
                                   name,
-                                  style: GoogleFonts.nunito(
+                                  style: TextStyle(fontFamily: 'Nunito',
                                     fontSize: 15,
                                     fontWeight: FontWeight.w800,
                                     color: Colors.white,
@@ -319,7 +318,7 @@ class _AssignQuestDialogState extends ConsumerState<AssignQuestDialog> {
             padding: const EdgeInsets.symmetric(vertical: 20),
             child: Text(
               'No students in your group yet.',
-              style: GoogleFonts.nunito(
+              style: TextStyle(fontFamily: 'Nunito',
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: darkTextSecondary,
@@ -362,7 +361,7 @@ class _AssignQuestDialogState extends ConsumerState<AssignQuestDialog> {
                                         s.displayName.isNotEmpty
                                             ? s.displayName[0].toUpperCase()
                                             : '?',
-                                        style: GoogleFonts.dmSerifDisplay(
+                                        style: TextStyle(fontFamily: 'DM Serif Display',
                                           fontSize: 16,
                                           color: Colors.white,
                                         ),
@@ -373,7 +372,7 @@ class _AssignQuestDialogState extends ConsumerState<AssignQuestDialog> {
                             Expanded(
                               child: Text(
                                 s.displayName,
-                                style: GoogleFonts.nunito(
+                                style: TextStyle(fontFamily: 'Nunito',
                                   fontSize: 15,
                                   fontWeight: FontWeight.w700,
                                   color: Colors.white,
@@ -399,7 +398,7 @@ class _AssignQuestDialogState extends ConsumerState<AssignQuestDialog> {
       ),
       error: (_, _) => Text(
         'Could not load students.',
-        style: GoogleFonts.nunito(
+        style: TextStyle(fontFamily: 'Nunito',
           fontSize: 14,
           fontWeight: FontWeight.w600,
           color: darkTextMuted,
@@ -454,7 +453,7 @@ class _AssignQuestDialogState extends ConsumerState<AssignQuestDialog> {
           children: [
             Text(
               '* Frequency',
-              style: GoogleFonts.nunito(
+              style: TextStyle(fontFamily: 'Nunito',
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
                 color: darkTextSecondary,
@@ -474,7 +473,7 @@ class _AssignQuestDialogState extends ConsumerState<AssignQuestDialog> {
                 PopupMenuItem(
                   value: false,
                   child: Text('One Time',
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(fontFamily: 'Nunito',
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: Colors.white,
@@ -488,7 +487,7 @@ class _AssignQuestDialogState extends ConsumerState<AssignQuestDialog> {
                           size: 18, color: accentCoral),
                       const SizedBox(width: 8),
                       Text('Recurring Weekly',
-                          style: GoogleFonts.nunito(
+                          style: TextStyle(fontFamily: 'Nunito',
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                             color: Colors.white,
@@ -510,7 +509,7 @@ class _AssignQuestDialogState extends ConsumerState<AssignQuestDialog> {
                     Expanded(
                       child: Text(
                         _isRecurring ? 'Recurring Weekly' : 'One Time',
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(fontFamily: 'Nunito',
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: Colors.white,
@@ -570,7 +569,7 @@ class _AssignQuestDialogState extends ConsumerState<AssignQuestDialog> {
                       _isEditing
                           ? 'Save Changes'
                           : 'Assign to ${_selectedStudent?.displayName ?? 'Student'}',
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(fontFamily: 'Nunito',
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
                         color: Colors.white,
@@ -594,7 +593,7 @@ class _AssignQuestDialogState extends ConsumerState<AssignQuestDialog> {
       children: [
         Text(
           label,
-          style: GoogleFonts.nunito(
+          style: TextStyle(fontFamily: 'Nunito',
             fontSize: 13,
             fontWeight: FontWeight.w700,
             color: darkTextSecondary,
@@ -604,14 +603,14 @@ class _AssignQuestDialogState extends ConsumerState<AssignQuestDialog> {
         TextField(
           controller: controller,
           keyboardType: keyboardType,
-          style: GoogleFonts.nunito(
+          style: TextStyle(fontFamily: 'Nunito',
             fontSize: 14,
             fontWeight: FontWeight.w600,
             color: Colors.white,
           ),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: GoogleFonts.nunito(
+            hintStyle: TextStyle(fontFamily: 'Nunito',
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: darkTextMuted.withValues(alpha: 0.4),

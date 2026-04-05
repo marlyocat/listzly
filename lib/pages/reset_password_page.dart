@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:listzly/theme/colors.dart';
 import 'package:listzly/utils/responsive.dart';
@@ -61,14 +60,14 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             title: Text(
               'Password Updated',
-              style: GoogleFonts.dmSerifDisplay(
+              style: TextStyle(fontFamily: 'DM Serif Display',
                 color: Colors.white,
                 fontSize: 22,
               ),
             ),
             content: Text(
               'Your password has been updated successfully. You can now sign in with your new password.',
-              style: GoogleFonts.nunito(
+              style: TextStyle(fontFamily: 'Nunito',
                 color: darkTextSecondary,
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
@@ -79,7 +78,7 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
                 onPressed: () => Navigator.of(context).pop(),
                 child: Text(
                   'OK',
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(fontFamily: 'Nunito',
                     color: accentCoral,
                     fontWeight: FontWeight.w800,
                   ),
@@ -113,7 +112,7 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
   InputDecoration _inputDecoration(String label, IconData icon, {required bool obscure, required VoidCallback onToggle}) {
     return InputDecoration(
       labelText: label,
-      labelStyle: GoogleFonts.nunito(
+      labelStyle: TextStyle(fontFamily: 'Nunito',
         color: darkTextMuted,
         fontWeight: FontWeight.w600,
       ),
@@ -164,7 +163,7 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
                 ).createShader(bounds),
                 child: Text(
                   'Listzly',
-                  style: GoogleFonts.dmSerifDisplay(
+                  style: TextStyle(fontFamily: 'DM Serif Display',
                     fontSize: 32,
                     color: Colors.white,
                   ),
@@ -175,7 +174,7 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
 
               Text(
                 'Set New Password',
-                style: GoogleFonts.dmSerifDisplay(
+                style: TextStyle(fontFamily: 'DM Serif Display',
                   fontSize: 28,
                   color: Colors.white,
                 ),
@@ -183,7 +182,7 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
               const SizedBox(height: 8),
               Text(
                 'Enter your new password below',
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
                   color: darkTextSecondary,
@@ -195,7 +194,7 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
               TextField(
                 controller: _passwordController,
                 obscureText: _obscurePassword,
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                   color: Colors.white,
                   fontWeight: FontWeight.w600,
                 ),
@@ -211,7 +210,7 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
               TextField(
                 controller: _confirmController,
                 obscureText: _obscureConfirm,
-                style: GoogleFonts.nunito(
+                style: TextStyle(fontFamily: 'Nunito',
                   color: Colors.white,
                   fontWeight: FontWeight.w600,
                 ),
@@ -262,7 +261,7 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
                           )
                         : Text(
                             'Update Password',
-                            style: GoogleFonts.nunito(
+                            style: TextStyle(fontFamily: 'Nunito',
                               fontSize: 17,
                               fontWeight: FontWeight.w800,
                               color: Colors.white,

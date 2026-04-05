@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
 import 'package:listzly/components/button.dart';
 import 'package:listzly/pages/auth_page.dart';
@@ -220,7 +219,7 @@ class _IntroPageState extends State<IntroPage>
                         ).createShader(bounds),
                         child: Text(
                           "Listzly",
-                          style: GoogleFonts.dmSerifDisplay(
+                          style: TextStyle(fontFamily: 'DM Serif Display',
                             fontSize: 32,
                             color: Colors.white,
                           ),
@@ -251,7 +250,7 @@ class _IntroPageState extends State<IntroPage>
                       _line1Anim,
                       Text(
                         'YOUR MUSIC',
-                        style: GoogleFonts.dmSerifDisplay(
+                        style: TextStyle(fontFamily: 'DM Serif Display',
                           fontSize: 42,
                           color: Colors.white,
                           height: 1.05,
@@ -264,7 +263,7 @@ class _IntroPageState extends State<IntroPage>
                           _practiceLetterAnims[e.key],
                           Text(
                             e.value,
-                            style: GoogleFonts.dmSerifDisplay(
+                            style: TextStyle(fontFamily: 'DM Serif Display',
                               fontSize: 42,
                               color: accentCoral,
                               height: 1.05,
@@ -277,7 +276,7 @@ class _IntroPageState extends State<IntroPage>
                       _line3Anim,
                       Text(
                         'COMPANION',
-                        style: GoogleFonts.dmSerifDisplay(
+                        style: TextStyle(fontFamily: 'DM Serif Display',
                           fontSize: 42,
                           color: Colors.white,
                           height: 1.05,
@@ -308,7 +307,7 @@ class _IntroPageState extends State<IntroPage>
                           Expanded(
                             child: Text(
                               "Set goals, build streaks, and\nmaster your instrument",
-                              style: GoogleFonts.nunito(
+                              style: TextStyle(fontFamily: 'Nunito',
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
                                 color: darkTextSecondary,
