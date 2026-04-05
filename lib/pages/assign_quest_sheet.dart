@@ -57,6 +57,26 @@ class _AssignQuestDialogState extends ConsumerState<AssignQuestDialog> {
       _targetController.text = '1';
       _rewardController.text = '10';
     }
+    _rewardController.addListener(_clampRewardXp);
+    _targetController.addListener(_clampSessions);
+  }
+
+  void _clampRewardXp() {
+    final value = int.tryParse(_rewardController.text);
+    if (value != null && value > 100) {
+      _rewardController.text = '100';
+      _rewardController.selection =
+          const TextSelection.collapsed(offset: 3);
+    }
+  }
+
+  void _clampSessions() {
+    final value = int.tryParse(_targetController.text);
+    if (value != null && value > 100) {
+      _targetController.text = '100';
+      _targetController.selection =
+          const TextSelection.collapsed(offset: 3);
+    }
   }
 
   @override
@@ -64,6 +84,8 @@ class _AssignQuestDialogState extends ConsumerState<AssignQuestDialog> {
     _titleController.dispose();
     _descriptionController.dispose();
     _targetController.dispose();
+    _rewardController.removeListener(_clampRewardXp);
+    _targetController.removeListener(_clampSessions);
     _rewardController.dispose();
     super.dispose();
   }
@@ -112,8 +134,8 @@ class _AssignQuestDialogState extends ConsumerState<AssignQuestDialog> {
       return;
     }
 
-    if (target > 3) {
-      _showError('Sessions cannot exceed 3');
+    if (target > 100) {
+      _showError('Sessions cannot exceed 100');
       return;
     }
 
