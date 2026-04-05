@@ -46,7 +46,9 @@ class _RecordingPlayerSheet extends StatefulWidget {
 class _RecordingPlayerSheetState extends State<_RecordingPlayerSheet> {
   late final AudioPlayer _player;
   bool _isLoading = true;
+  bool _showControls = false;
   String? _error;
+  Duration _duration = Duration.zero;
 
   @override
   void initState() {
@@ -62,13 +64,24 @@ class _RecordingPlayerSheetState extends State<_RecordingPlayerSheet> {
       } else {
         await _player.setUrl(widget.url!);
       }
-      setState(() => _isLoading = false);
-      await _player.play();
+      _duration = _player.duration ?? Duration.zero;
+      _player.play();
+      // Wait until playing + a couple position ticks so the slider is stable
+      await _player.playerStateStream.firstWhere((s) => s.playing);
+      await Future.delayed(const Duration(milliseconds: 150));
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _showControls = true;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-        _error = 'Could not load recording';
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _error = 'Could not load recording';
+        });
+      }
     }
   }
 
@@ -82,6 +95,15 @@ class _RecordingPlayerSheetState extends State<_RecordingPlayerSheet> {
     final minutes = d.inMinutes;
     final seconds = d.inSeconds.remainder(60);
     return '$minutes:${seconds.toString().padLeft(2, '0')}';
+  }
+
+  void _skipBy(int seconds) {
+    final pos = _player.position;
+    final dur = _duration;
+    final target = pos + Duration(seconds: seconds);
+    _player.seek(Duration(
+      milliseconds: target.inMilliseconds.clamp(0, dur.inMilliseconds),
+    ));
   }
 
   @override
@@ -150,117 +172,153 @@ class _RecordingPlayerSheetState extends State<_RecordingPlayerSheet> {
               ),
             )
           else ...[
-            // Seek slider
-            StreamBuilder<Duration>(
-              stream: _player.positionStream,
-              builder: (context, snapshot) {
-                final position = snapshot.data ?? Duration.zero;
-                final duration = _player.duration ?? Duration.zero;
-                return Column(
-                  children: [
-                    SliderTheme(
-                      data: SliderThemeData(
-                        activeTrackColor: accentCoral,
-                        inactiveTrackColor: darkSurfaceBg,
-                        thumbColor: accentCoral,
-                        thumbShape: const RoundSliderThumbShape(
-                            enabledThumbRadius: 6),
-                        trackHeight: 3,
-                        overlayShape: const RoundSliderOverlayShape(
-                            overlayRadius: 14),
-                      ),
-                      child: Slider(
-                        min: 0,
-                        max: duration.inMilliseconds.toDouble().clamp(1, double.infinity),
-                        value: position.inMilliseconds
-                            .toDouble()
-                            .clamp(0, duration.inMilliseconds.toDouble()),
-                        onChanged: (value) {
-                          _player
-                              .seek(Duration(milliseconds: value.toInt()));
-                        },
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            AnimatedOpacity(
+              opacity: _showControls ? 1.0 : 0.0,
+              duration: const Duration(milliseconds: 200),
+              child: Column(
+                children: [
+                  // Seek slider
+                  StreamBuilder<Duration>(
+                    stream: _player.positionStream,
+                    builder: (context, snapshot) {
+                      final position = snapshot.data ?? Duration.zero;
+                      final duration = _duration;
+                      return Column(
                         children: [
-                          Text(
-                            _formatDuration(position),
-                            style: TextStyle(fontFamily: 'Nunito',
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: darkTextMuted,
+                          SliderTheme(
+                            data: SliderThemeData(
+                              activeTrackColor: accentCoral,
+                              inactiveTrackColor: darkSurfaceBg,
+                              thumbColor: accentCoral,
+                              thumbShape: const RoundSliderThumbShape(
+                                  enabledThumbRadius: 6),
+                              trackHeight: 3,
+                              overlayShape: const RoundSliderOverlayShape(
+                                  overlayRadius: 14),
+                            ),
+                            child: Slider(
+                              min: 0,
+                              max: duration.inMilliseconds.toDouble().clamp(1, double.infinity),
+                              value: position.inMilliseconds
+                                  .toDouble()
+                                  .clamp(0, duration.inMilliseconds.toDouble()),
+                              onChanged: (value) {
+                                _player
+                                    .seek(Duration(milliseconds: value.toInt()));
+                              },
                             ),
                           ),
-                          Text(
-                            _formatDuration(duration),
-                            style: TextStyle(fontFamily: 'Nunito',
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: darkTextMuted,
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  _formatDuration(position),
+                                  style: TextStyle(fontFamily: 'Nunito',
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: darkTextMuted,
+                                  ),
+                                ),
+                                Text(
+                                  _formatDuration(duration),
+                                  style: TextStyle(fontFamily: 'Nunito',
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: darkTextMuted,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
-            const SizedBox(height: 16),
-
-            // Play/Pause button
-            StreamBuilder<PlayerState>(
-              stream: _player.playerStateStream,
-              builder: (context, snapshot) {
-                final playerState = snapshot.data;
-                final playing = playerState?.playing ?? false;
-                final completed =
-                    playerState?.processingState == ProcessingState.completed;
-
-                return GestureDetector(
-                  onTap: () {
-                    if (completed) {
-                      _player.seek(Duration.zero);
-                      _player.play();
-                    } else if (playing) {
-                      _player.pause();
-                    } else {
-                      _player.play();
-                    }
-                  },
-                  child: Container(
-                    width: 56,
-                    height: 56,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: const LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [Color(0xFFF4A68E), accentCoralDark],
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: accentCoral.withAlpha(100),
-                          blurRadius: 16,
-                          spreadRadius: 2,
-                        ),
-                      ],
-                    ),
-                    child: Icon(
-                      completed
-                          ? Icons.replay_rounded
-                          : playing
-                              ? Icons.pause_rounded
-                              : Icons.play_arrow_rounded,
-                      size: 32,
-                      color: Colors.white,
-                    ),
+                      );
+                    },
                   ),
-                );
-              },
+                  const SizedBox(height: 16),
+
+                  // Transport controls
+                  StreamBuilder<PlayerState>(
+                    stream: _player.playerStateStream,
+                    builder: (context, snapshot) {
+                      final playerState = snapshot.data;
+                      final playing = playerState?.playing ?? false;
+                      final completed =
+                          playerState?.processingState == ProcessingState.completed;
+
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Rewind 10s
+                          GestureDetector(
+                            onTap: () => _skipBy(-10),
+                            child: Icon(
+                              Icons.replay_10_rounded,
+                              color: darkTextMuted,
+                              size: 32,
+                            ),
+                          ),
+                          const SizedBox(width: 24),
+
+                          // Play/Pause
+                          GestureDetector(
+                            onTap: () {
+                              if (completed) {
+                                _player.seek(Duration.zero);
+                                _player.play();
+                              } else if (playing) {
+                                _player.pause();
+                              } else {
+                                _player.play();
+                              }
+                            },
+                            child: Container(
+                              width: 56,
+                              height: 56,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: const LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [Color(0xFFF4A68E), accentCoralDark],
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: accentCoral.withAlpha(100),
+                                    blurRadius: 16,
+                                    spreadRadius: 2,
+                                  ),
+                                ],
+                              ),
+                              child: Icon(
+                                completed
+                                    ? Icons.replay_rounded
+                                    : playing
+                                        ? Icons.pause_rounded
+                                        : Icons.play_arrow_rounded,
+                                size: 32,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 24),
+
+                          // Forward 10s
+                          GestureDetector(
+                            onTap: () => _skipBy(10),
+                            child: Icon(
+                              Icons.forward_10_rounded,
+                              color: darkTextMuted,
+                              size: 32,
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ],
           const SizedBox(height: 16),
