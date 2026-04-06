@@ -130,7 +130,7 @@ class NotificationService {
       body: daily.$2,
       scheduledDate: scheduledDate,
       notificationDetails: details,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       matchDateTimeComponents: DateTimeComponents.time,
       payload: 'daily_reminder',
     );
@@ -195,7 +195,7 @@ class NotificationService {
       body: warn2.$2,
       scheduledDate: day2,
       notificationDetails: details,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       payload: 'streak_warning_2',
     );
 
@@ -206,7 +206,7 @@ class NotificationService {
       body: warn3.$2,
       scheduledDate: day3,
       notificationDetails: details,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       payload: 'streak_warning_3',
     );
   }

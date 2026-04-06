@@ -3401,6 +3401,18 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
           .read(userSettingsProvider.notifier)
           .updateSetting('reminder_time', timeStr);
       await NotificationService.instance.scheduleDailyReminder(timeStr);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Reminder set for ${_formatReminderDisplay(timeStr)}',
+              style: TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600),
+            ),
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
     }
   }
 
@@ -3409,6 +3421,18 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
         .read(userSettingsProvider.notifier)
         .updateSetting('reminder_time', null);
     await NotificationService.instance.cancelReminder();
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Reminder turned off',
+            style: TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600),
+          ),
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
   }
 
   // ─── Generic settings section ─────────────────────────────────────
