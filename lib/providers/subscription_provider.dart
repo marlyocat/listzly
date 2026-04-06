@@ -111,7 +111,7 @@ class OwnSubscriptionTier extends _$OwnSubscriptionTier {
 
 /// Temporary: grant all users Pro access for App Hive testing.
 /// Set to false when testing is complete.
-const _freeAccessForTesting = true;
+const _freeAccessForTesting = false;
 
 /// The effective tier: user's own tier, or Pro if student is in a paid
 /// teacher's group.

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:listzly/providers/profile_provider.dart';
 import 'package:listzly/providers/subscription_provider.dart';
 import 'package:listzly/theme/colors.dart';
@@ -18,24 +20,53 @@ Future<void> showUpgradePrompt(
   );
 }
 
-class _UpgradePromptSheet extends ConsumerWidget {
+class _UpgradePromptSheet extends ConsumerStatefulWidget {
   final String feature;
   const _UpgradePromptSheet({required this.feature});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_UpgradePromptSheet> createState() =>
+      _UpgradePromptSheetState();
+}
+
+class _UpgradePromptSheetState extends ConsumerState<_UpgradePromptSheet> {
+  String? _localizedPrice;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPrice();
+  }
+
+  Future<void> _loadPrice() async {
+    try {
+      final offerings = await Purchases.getOfferings();
+      final isTeacher =
+          ref.read(currentProfileProvider).value?.isTeacher ?? false;
+      final packageId =
+          isTeacher ? 'teacher_lite_monthly' : 'personal_pro_yearly';
+      final package = offerings.current?.availablePackages
+          .where((p) => p.identifier == packageId)
+          .firstOrNull;
+      if (package != null && mounted) {
+        setState(() => _localizedPrice = package.storeProduct.priceString);
+      }
+    } catch (_) {}
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final isTeacher =
         ref.watch(currentProfileProvider).value?.isTeacher ?? false;
-    final planName = isTeacher ? 'Teacher Lite' : 'Pro';
+    final planName = isTeacher ? 'Teacher Lite' : 'Personal Pro';
     final trialEligible =
         ref.watch(isTrialEligibleProvider).value ?? false;
-    final priceText = trialEligible
-        ? isTeacher
-            ? 'Free for 14 days, then \$4.99/month'
-            : 'Free for 14 days, then \$7.99/year'
-        : isTeacher
-            ? 'Starting at \$4.99/month'
-            : 'Only \$7.99/year';
+    final period = isTeacher ? '/month' : '/year';
+    final priceText = _localizedPrice != null
+        ? trialEligible
+            ? 'Free for 14 days, then $_localizedPrice$period'
+            : 'Only $_localizedPrice$period'
+        : '';
 
     final bottomPadding = MediaQuery.of(context).viewPadding.bottom;
     return Container(
@@ -63,24 +94,11 @@ class _UpgradePromptSheet extends ConsumerWidget {
           ),
           const SizedBox(height: 24),
 
-          // Lock icon
-          Container(
-            width: 64,
-            height: 64,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: [
-                  accentCoral.withAlpha(40),
-                  accentCoralDark.withAlpha(40),
-                ],
-              ),
-            ),
-            child: const Icon(
-              Icons.lock_rounded,
-              size: 32,
-              color: accentCoral,
-            ),
+          // Crown icon
+          SvgPicture.asset(
+            'lib/images/licensed/svg/crown.svg',
+            width: 72,
+            height: 72,
           ),
           const SizedBox(height: 20),
 
@@ -94,7 +112,7 @@ class _UpgradePromptSheet extends ConsumerWidget {
           const SizedBox(height: 8),
 
           Text(
-            '$feature is available on the $planName plan.',
+            '${widget.feature} is available on the $planName plan.',
             textAlign: TextAlign.center,
             style: TextStyle(fontFamily: 'Nunito',
               fontSize: 14,
@@ -102,15 +120,17 @@ class _UpgradePromptSheet extends ConsumerWidget {
               color: darkTextSecondary,
             ),
           ),
-          const SizedBox(height: 6),
-          Text(
-            priceText,
-            style: TextStyle(fontFamily: 'Nunito',
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              color: darkTextMuted,
+          if (priceText.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Text(
+              priceText,
+              style: TextStyle(fontFamily: 'Nunito',
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: darkTextMuted,
+              ),
             ),
-          ),
+          ],
           const SizedBox(height: 24),
 
           // Upgrade button
@@ -141,16 +161,30 @@ class _UpgradePromptSheet extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(vertical: 14),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [Color(0xFFF4A68E), accentCoralDark],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [accentCoral, accentCoralDark],
                 ),
                 borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: Colors.black, width: 2),
                 boxShadow: [
                   BoxShadow(
-                    color: accentCoral.withAlpha(80),
-                    blurRadius: 12,
-                    spreadRadius: 1,
+                    color: accentCoralDark.withValues(alpha: 0.3),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
                   ),
                 ],
+              ),
+              foregroundDecoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(14),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.center,
+                  colors: [
+                    Colors.white.withValues(alpha: 0.2),
+                    Colors.white.withValues(alpha: 0.0),
+                  ],
+                ),
               ),
               child: Text(
                 'View Plans',

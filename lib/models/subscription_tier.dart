@@ -42,14 +42,12 @@ enum SubscriptionTier {
 
   // Personal Pro features (available with any paid plan)
   bool get canRecord => isPro;
-  bool get canUseAllInstruments => isPro;
-  bool get canViewActivity => isPro;
+  bool get canViewFullActivity => isPro;
+  bool get canUseMusicPlayer => isPro;
 
   // Teacher-specific Pro features (only with teacher plans)
-  // TODO: restore to isTeacherPlan when pro is re-enabled
-  bool get canAssignQuests => true;
-  // TODO: restore to isTeacherPlan when pro is re-enabled
-  bool get canViewStudentRecordings => true;
+  bool get canAssignQuests => isTeacherPlan;
+  bool get canViewStudentRecordings => isTeacherPlan;
 
   /// Whether students in this teacher's group should inherit Pro.
   bool get studentsInheritPro => isPro;

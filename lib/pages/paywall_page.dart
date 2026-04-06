@@ -350,9 +350,11 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                     price: '\$0',
                                     period: 'forever',
                                     features: [
-                                      '1 instrument',
-                                      'Daily quests',
-                                      'Streaks & XP',
+                                      'All 4 instruments',
+                                      'Practice timer with tracking',
+                                      'Current streak & total XP',
+                                      '7-day activity history',
+                                      '3 daily quests',
                                     ],
                                     isCurrentPlan: currentTier.isFree,
                                     accentColor: darkTextMuted,
@@ -366,9 +368,10 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                           'personal_pro_yearly', '\$7.99'),
                                       period: '/year',
                                       features: [
-                                        'All 4 instruments',
-                                        'Activity tracking & stats',
-                                        'Recordings',
+                                        'Full activity history',
+                                        'Recording & playback',
+                                        'Music Player with favorites & uploads',
+                                        'Unlimited quest history',
                                       ],
                                       isCurrentPlan:
                                           currentTier == SubscriptionTier.pro &&
@@ -388,11 +391,11 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                           'teacher_lite_monthly', '\$4.99'),
                                       period: '/month',
                                       features: [
-                                        'All 4 instruments',
-                                        'Activity tracking & stats',
-                                        'Recordings',
+                                        'Everything in Pro',
                                         'Up to 10 students',
-                                        'Custom quest assignment',
+                                        'Assigned quests',
+                                        'View student recordings & stats',
+                                        'Group notifications',
                                         'Students get Pro free',
                                       ],
                                       isCurrentPlan: currentTier ==
@@ -412,11 +415,11 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                           'teacher_pro_monthly', '\$9.99'),
                                       period: '/month',
                                       features: [
-                                        'All 4 instruments',
-                                        'Activity tracking & stats',
-                                        'Recordings',
+                                        'Everything in Pro',
                                         'Up to 25 students',
-                                        'Custom quest assignment',
+                                        'Assigned quests',
+                                        'View student recordings & stats',
+                                        'Group notifications',
                                         'Students get Pro free',
                                       ],
                                       isCurrentPlan: currentTier ==
@@ -437,11 +440,11 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                           'teacher_premium_monthly', '\$14.99'),
                                       period: '/month',
                                       features: [
-                                        'All 4 instruments',
-                                        'Activity tracking & stats',
-                                        'Recordings',
+                                        'Everything in Pro',
                                         'Up to 50 students',
-                                        'Custom quest assignment',
+                                        'Assigned quests',
+                                        'View student recordings & stats',
+                                        'Group notifications',
                                         'Students get Pro free',
                                       ],
                                       isCurrentPlan: currentTier ==
@@ -729,9 +732,30 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [Color(0xFFF4A68E), accentCoralDark],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [accentCoral, accentCoralDark],
                   ),
                   borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.black, width: 2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: accentCoralDark.withValues(alpha: 0.3),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                foregroundDecoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.center,
+                    colors: [
+                      Colors.white.withValues(alpha: 0.2),
+                      Colors.white.withValues(alpha: 0.0),
+                    ],
+                  ),
                 ),
                 child: Text(
                   _purchasing

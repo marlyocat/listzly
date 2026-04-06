@@ -131,6 +131,11 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
 
   /// Shift the current range backward by one period.
   void _shiftRangeBack() {
+    final tier = ref.read(effectiveSubscriptionTierProvider);
+    if (!tier.canViewFullActivity) {
+      showUpgradePrompt(context, feature: 'Full activity history');
+      return;
+    }
     setState(() {
       switch (_selectedTab) {
         case 0:
@@ -153,6 +158,11 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
 
   /// Shift the current range forward by one period.
   void _shiftRangeForward() {
+    final tier = ref.read(effectiveSubscriptionTierProvider);
+    if (!tier.canViewFullActivity) {
+      showUpgradePrompt(context, feature: 'Full activity history');
+      return;
+    }
     setState(() {
       switch (_selectedTab) {
         case 0:
@@ -183,6 +193,11 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
   // ---- Date picker ----
 
   Future<void> _showDatePicker(BuildContext context) async {
+    final tier = ref.read(effectiveSubscriptionTierProvider);
+    if (!tier.canViewFullActivity) {
+      showUpgradePrompt(context, feature: 'Full activity history');
+      return;
+    }
     final picked = await showDatePicker(
       context: context,
       initialDate: _rangeStart,
@@ -325,92 +340,6 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
 
   @override
   Widget build(BuildContext context) {
-    final tier = ref.watch(effectiveSubscriptionTierProvider);
-
-    // Lock entire activity page for free users
-    if (!tier.canViewActivity) {
-      return Scaffold(
-        backgroundColor: const Color(0xFF150833),
-        body: SafeArea(
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: [
-                          accentCoral.withAlpha(40),
-                          accentCoralDark.withAlpha(40),
-                        ],
-                      ),
-                    ),
-                    child: const Icon(
-                      Icons.lock_rounded,
-                      size: 40,
-                      color: accentCoral,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Activity',
-                    style: TextStyle(fontFamily: 'DM Serif Display',
-                      fontSize: 28,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Track your practice sessions, view stats, and manage recordings with Pro.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontFamily: 'Nunito',
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: darkTextSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  GestureDetector(
-                    onTap: () => showUpgradePrompt(context, feature: 'Activity'),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 32, vertical: 14),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFFF4A68E), accentCoralDark],
-                        ),
-                        borderRadius: BorderRadius.circular(14),
-                        boxShadow: [
-                          BoxShadow(
-                            color: accentCoral.withAlpha(80),
-                            blurRadius: 12,
-                            spreadRadius: 1,
-                          ),
-                        ],
-                      ),
-                      child: Text(
-                        'Upgrade to Pro',
-                        style: TextStyle(fontFamily: 'Nunito',
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
     // Watch providers using the current date range
     final sessionsAsync = ref.watch(
       sessionListProvider(start: _rangeStart, end: _rangeEnd),
@@ -651,9 +580,15 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                 Row(
                   children: List.generate(3, (i) {
                     final selected = _selectedTab == i;
+                    final canViewFull = ref.watch(effectiveSubscriptionTierProvider).canViewFullActivity;
+                    final isLocked = i > 0 && !canViewFull;
                     return Expanded(
                       child: GestureDetector(
                         onTap: () {
+                          if (isLocked) {
+                            showUpgradePrompt(context, feature: 'Full activity history');
+                            return;
+                          }
                           setState(() {
                             _selectedTab = i;
                             _computeDateRange();
@@ -662,17 +597,32 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                         },
                         behavior: HitTestBehavior.opaque,
                         child: Center(
-                          child: AnimatedDefaultTextStyle(
-                            duration: const Duration(milliseconds: 200),
-                            style: TextStyle(fontFamily: 'Nunito',
-                              fontSize: 14,
-                              fontWeight:
-                                  selected ? FontWeight.w800 : FontWeight.w600,
-                              color: selected
-                                  ? Colors.white
-                                  : darkTextMuted,
-                            ),
-                            child: Text(labels[i]),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (isLocked) ...[
+                                SvgPicture.asset(
+                                  'lib/images/licensed/svg/crown.svg',
+                                  width: 14,
+                                  height: 14,
+                                ),
+                                const SizedBox(width: 4),
+                              ],
+                              AnimatedDefaultTextStyle(
+                                duration: const Duration(milliseconds: 200),
+                                style: TextStyle(fontFamily: 'Nunito',
+                                  fontSize: 14,
+                                  fontWeight:
+                                      selected ? FontWeight.w800 : FontWeight.w600,
+                                  color: selected
+                                      ? Colors.white
+                                      : isLocked
+                                          ? darkTextMuted.withAlpha(100)
+                                          : darkTextMuted,
+                                ),
+                                child: Text(labels[i]),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -1628,16 +1578,9 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
             ),
             child: Row(
               children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: darkSurfaceBg,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Icon(Icons.lock_rounded,
-                      color: Colors.white54, size: 20),
-                ),
+                SvgPicture.asset(
+                    'lib/images/licensed/svg/crown.svg',
+                    width: 40, height: 40),
                 const SizedBox(width: 14),
                 Expanded(
                   child: Column(

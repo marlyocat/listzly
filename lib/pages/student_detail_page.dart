@@ -1343,16 +1343,9 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
             ),
             child: Row(
               children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: darkSurfaceBg,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Icon(Icons.lock_rounded,
-                      color: Colors.white54, size: 20),
-                ),
+                SvgPicture.asset(
+                    'lib/images/licensed/svg/crown.svg',
+                    width: 40, height: 40),
                 const SizedBox(width: 14),
                 Expanded(
                   child: Column(

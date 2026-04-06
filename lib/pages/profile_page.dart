@@ -25,6 +25,7 @@ import 'package:listzly/utils/responsive.dart';
 import 'package:listzly/services/notification_service.dart';
 import 'package:listzly/providers/subscription_provider.dart';
 import 'package:listzly/models/subscription_info.dart';
+import 'package:listzly/components/upgrade_prompt.dart';
 import 'package:listzly/pages/paywall_page.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -458,10 +459,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 ),
               ),
 
-              // Subscription section (temporarily hidden — free Pro access active)
-              // SliverContentConstraint(
-              //   child: _buildSubscriptionSection(context, ref),
-              // ),
+              // Subscription section
+              SliverContentConstraint(
+                child: _buildSubscriptionSection(context, ref),
+              ),
 
               // Role & Group section
               SliverContentConstraint(
@@ -828,9 +829,30 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [Color(0xFFF4A68E), accentCoralDark],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [accentCoral, accentCoralDark],
                 ),
                 borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.black, width: 2),
+                boxShadow: [
+                  BoxShadow(
+                    color: accentCoralDark.withValues(alpha: 0.3),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              foregroundDecoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.center,
+                  colors: [
+                    Colors.white.withValues(alpha: 0.2),
+                    Colors.white.withValues(alpha: 0.0),
+                  ],
+                ),
               ),
               child: Text(
                 'Upgrade',
@@ -1104,9 +1126,31 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 12),
               decoration: BoxDecoration(
-                color: Colors.white.withAlpha(15),
+                gradient: const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [accentCoral, accentCoralDark],
+                ),
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: Colors.black, width: 2),
+                boxShadow: [
+                  BoxShadow(
+                    color: accentCoralDark.withValues(alpha: 0.3),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              foregroundDecoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.center,
+                  colors: [
+                    Colors.white.withValues(alpha: 0.2),
+                    Colors.white.withValues(alpha: 0.0),
+                  ],
+                ),
               ),
               child: Center(
                 child: Text(
@@ -2804,29 +2848,38 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
         _SettingsRow(
           svgPath: 'lib/images/licensed/svg/music-player.svg',
           label: 'Music Player',
-          trailing: const _TrailingText(''),
-          onTap: () => Navigator.push(
-            context,
-            PageRouteBuilder(
-              transitionDuration: const Duration(milliseconds: 600),
-              reverseTransitionDuration: const Duration(milliseconds: 300),
-              pageBuilder: (context, animation, secondaryAnimation) =>
-                  const BackgroundMusicPage(),
-              transitionsBuilder:
-                  (context, animation, secondaryAnimation, child) {
-                    if (animation.status == AnimationStatus.reverse) {
-                      return FadeTransition(opacity: animation, child: child);
-                    }
-                    return TurnPageTransition(
-                      animation: animation,
-                      overleafColor: primaryDark,
-                      animationTransitionPoint: 0.5,
-                      direction: TurnDirection.rightToLeft,
-                      child: child,
-                    );
-                  },
-            ),
-          ),
+          trailing: ref.watch(effectiveSubscriptionTierProvider).canUseMusicPlayer
+              ? const _TrailingText('')
+              : const _TrailingCrown(),
+          onTap: () {
+            final tier = ref.read(effectiveSubscriptionTierProvider);
+            if (!tier.canUseMusicPlayer) {
+              showUpgradePrompt(context, feature: 'Music Player');
+              return;
+            }
+            Navigator.push(
+              context,
+              PageRouteBuilder(
+                transitionDuration: const Duration(milliseconds: 600),
+                reverseTransitionDuration: const Duration(milliseconds: 300),
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    const BackgroundMusicPage(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                      if (animation.status == AnimationStatus.reverse) {
+                        return FadeTransition(opacity: animation, child: child);
+                      }
+                      return TurnPageTransition(
+                        animation: animation,
+                        overleafColor: primaryDark,
+                        animationTransitionPoint: 0.5,
+                        direction: TurnDirection.rightToLeft,
+                        child: child,
+                      );
+                    },
+              ),
+            );
+          },
         ),
       ],
     );
@@ -3897,6 +3950,26 @@ class _TrailingText extends _Trailing {
             fontWeight: FontWeight.w600,
             color: darkTextSecondary,
           ),
+        ),
+        const SizedBox(width: 4),
+        const Icon(Icons.chevron_right, color: darkTextMuted, size: 20),
+      ],
+    );
+  }
+}
+
+class _TrailingCrown extends _Trailing {
+  const _TrailingCrown();
+
+  @override
+  Widget build() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SvgPicture.asset(
+          'lib/images/licensed/svg/crown.svg',
+          width: 20,
+          height: 20,
         ),
         const SizedBox(width: 4),
         const Icon(Icons.chevron_right, color: darkTextMuted, size: 20),
