@@ -1345,6 +1345,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
             GestureDetector(
               onTap: () => _showAvatarPickerSheet(profile),
               child: Stack(
+                clipBehavior: Clip.none,
                 children: [
                   Container(
                     width: 60,
@@ -1366,8 +1367,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                           ),
                   ),
                   Positioned(
-                    right: -2,
-                    bottom: -2,
+                    right: -4,
+                    bottom: -4,
                     child: Container(
                       width: 22,
                       height: 22,
