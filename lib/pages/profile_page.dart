@@ -76,6 +76,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
 
   // Showcase keys
   final _profileKey = GlobalKey();
+  final _subscriptionKey = GlobalKey();
   final _roleKey = GlobalKey();
   final _practiceKey = GlobalKey();
   final _instrumentsKey = GlobalKey();
@@ -326,6 +327,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
   void _startShowcase() {
     ShowcaseView.get().startShowCase([
       _profileKey,
+      _subscriptionKey,
       _roleKey,
       _practiceKey,
       _instrumentsKey,
@@ -461,7 +463,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
 
               // Subscription section
               SliverContentConstraint(
-                child: _buildSubscriptionSection(context, ref),
+                child: Showcase(
+                  key: _subscriptionKey,
+                  description: 'View your subscription plan and upgrade to unlock more features',
+                  tooltipBackgroundColor: const Color(0xFF1E0A4A),
+                  descTextStyle: TextStyle(fontFamily: 'Nunito', fontSize: 14, color: Colors.white),
+                  child: _buildSubscriptionSection(context, ref),
+                ),
               ),
 
               // Role & Group section
@@ -755,117 +763,131 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
   }
 
   Widget _buildFreeSubscriptionCard(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: darkCardBg,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.black, width: 5),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: darkTextMuted.withAlpha(30),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.black, width: 2),
-            ),
-            child: const Icon(
-              Icons.person_rounded,
-              color: darkTextMuted,
-              size: 24,
-            ),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          PageRouteBuilder(
+            transitionDuration: const Duration(milliseconds: 600),
+            reverseTransitionDuration: const Duration(milliseconds: 600),
+            pageBuilder: (_, animation, __) => const PaywallPage(),
+            transitionsBuilder: (_, animation, __, child) {
+              return TurnPageTransition(
+                animation: animation,
+                overleafColor: primaryDark,
+                animationTransitionPoint: 0.5,
+                direction: TurnDirection.rightToLeft,
+                child: child,
+              );
+            },
           ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: darkCardBg,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.black, width: 5),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                Text(
-                  'Free Plan',
-                  style: TextStyle(
-                    fontFamily: 'Nunito',
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.white,
+                Expanded(
+                  child: ShaderMask(
+                    shaderCallback: (bounds) => const LinearGradient(
+                      colors: [Colors.white, accentCoral],
+                    ).createShader(bounds),
+                    child: Text(
+                      'Free Plan',
+                      style: TextStyle(
+                        fontFamily: 'DM Serif Display',
+                        fontSize: 22,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  'Upgrade to unlock all features',
-                  style: TextStyle(
-                    fontFamily: 'Nunito',
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: darkTextMuted,
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [accentCoral, accentCoralDark],
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.black, width: 2),
+                    boxShadow: [
+                      BoxShadow(
+                        color: accentCoralDark.withValues(alpha: 0.3),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  foregroundDecoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.center,
+                      colors: [
+                        Colors.white.withValues(alpha: 0.2),
+                        Colors.white.withValues(alpha: 0.0),
+                      ],
+                    ),
+                  ),
+                  child: Text(
+                    'Upgrade',
+                    style: TextStyle(
+                      fontFamily: 'Nunito',
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ],
             ),
-          ),
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                PageRouteBuilder(
-                  transitionDuration: const Duration(milliseconds: 600),
-                  reverseTransitionDuration: const Duration(milliseconds: 600),
-                  pageBuilder: (_, animation, __) => const PaywallPage(),
-                  transitionsBuilder: (_, animation, __, child) {
-                    return TurnPageTransition(
-                      animation: animation,
-                      overleafColor: primaryDark,
-                      animationTransitionPoint: 0.5,
-                      direction: TurnDirection.rightToLeft,
-                      child: child,
-                    );
-                  },
-                ),
-              );
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [accentCoral, accentCoralDark],
-                ),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.black, width: 2),
-                boxShadow: [
-                  BoxShadow(
-                    color: accentCoralDark.withValues(alpha: 0.3),
-                    blurRadius: 6,
-                    offset: const Offset(0, 2),
+            const SizedBox(height: 14),
+            // Locked Pro features preview
+            ...(() {
+              final isTeacher = ref.watch(currentProfileProvider).value?.isTeacher ?? false;
+              final proFeatures = [
+                'Full activity history',
+                'Recording & playback',
+                'Music Player with favorites & uploads',
+              ];
+              if (isTeacher) {
+                proFeatures.add('Assigned quests');
+              }
+              return proFeatures;
+            })().map((feature) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                children: [
+                  SvgPicture.asset(
+                    'lib/images/licensed/svg/crown.svg',
+                    width: 16,
+                    height: 16,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    feature,
+                    style: TextStyle(
+                      fontFamily: 'Nunito',
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: darkTextSecondary,
+                    ),
                   ),
                 ],
               ),
-              foregroundDecoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.center,
-                  colors: [
-                    Colors.white.withValues(alpha: 0.2),
-                    Colors.white.withValues(alpha: 0.0),
-                  ],
-                ),
-              ),
-              child: Text(
-                'Upgrade',
-                style: TextStyle(
-                  fontFamily: 'Nunito',
-                  fontSize: 13,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-        ],
+            )),
+          ],
+        ),
       ),
     );
   }
@@ -880,29 +902,27 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
       ),
       child: Row(
         children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: accentCoral.withAlpha(30),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.black, width: 2),
-            ),
-            child: const Icon(Icons.star_rounded, color: accentCoral, size: 24),
-          ),
-          const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Pro Plan',
-                  style: TextStyle(
-                    fontFamily: 'Nunito',
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.white,
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      'Pro Plan',
+                      style: TextStyle(
+                        fontFamily: 'DM Serif Display',
+                        fontSize: 22,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    SvgPicture.asset(
+                      'lib/images/licensed/svg/crown.svg',
+                      width: 20,
+                      height: 20,
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 2),
                 Text(
@@ -961,33 +981,27 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
           // Header: badge + plan name + trial badge
           Row(
             children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: accentCoral.withAlpha(30),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.black, width: 2),
-                ),
-                child: const Icon(
-                  Icons.star_rounded,
-                  color: accentCoral,
-                  size: 24,
-                ),
-              ),
-              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      '${tier.displayName} Plan',
-                      style: TextStyle(
-                        fontFamily: 'Nunito',
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          '${tier.displayName} Plan',
+                          style: TextStyle(
+                            fontFamily: 'DM Serif Display',
+                            fontSize: 22,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        SvgPicture.asset(
+                          'lib/images/licensed/svg/crown.svg',
+                          width: 20,
+                          height: 20,
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 2),
                     Text(

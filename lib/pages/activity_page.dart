@@ -1596,7 +1596,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage>
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Upgrade to Pro to record your practice',
+                        'Upgrade to ${ref.watch(currentProfileProvider).value?.isTeacher == true ? 'Teacher Lite' : 'Personal Pro'} to record your practice',
                         style: TextStyle(fontFamily: 'Nunito',
                           fontSize: 12,
                           fontWeight: FontWeight.w600,

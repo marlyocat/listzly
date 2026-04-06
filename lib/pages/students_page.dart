@@ -240,6 +240,57 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
 
   Widget _buildAssignedQuestsSection(
       BuildContext context, WidgetRef ref, String groupId) {
+    final tier = ref.watch(effectiveSubscriptionTierProvider);
+    if (!tier.canAssignQuests) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+        child: GestureDetector(
+          onTap: () => showUpgradePrompt(context, feature: 'Custom quest assignment'),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: darkCardBg,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: Colors.black, width: 5),
+            ),
+            child: Row(
+              children: [
+                SvgPicture.asset(
+                    'lib/images/licensed/svg/crown.svg',
+                    width: 40, height: 40),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Assigned Quests',
+                        style: TextStyle(fontFamily: 'Nunito',
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Upgrade to Teacher Lite to assign quests',
+                        style: TextStyle(fontFamily: 'Nunito',
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: darkTextMuted,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.chevron_right, color: darkTextMuted),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     final activeQuestsAsync = ref.watch(teacherAssignedQuestsProvider);
     final students = ref.watch(teacherStudentsProvider).value ?? [];
     final studentNames = {
@@ -271,12 +322,6 @@ class _StudentsPageState extends ConsumerState<StudentsPage>
                   const Spacer(),
                   GestureDetector(
                     onTap: () async {
-                      final tier = ref.read(effectiveSubscriptionTierProvider);
-                      if (!tier.canAssignQuests) {
-                        showUpgradePrompt(context,
-                            feature: 'Custom quest assignment');
-                        return;
-                      }
                       final result = await showDialog<bool>(
                         context: context,
                         builder: (_) =>

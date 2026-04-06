@@ -39,6 +39,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
   int _refreshKey = 0;
   late final AnimationController _barAnimController;
   late final Animation<double> _barAnim;
+  late final AnimationController _calendarAnimController;
 
   static const _dayLabels = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
   static const _monthNames = [
@@ -67,6 +68,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
       parent: _barAnimController,
       curve: Curves.easeOutCubic,
     );
+    _calendarAnimController = AnimationController(vsync: this);
     Future.delayed(const Duration(milliseconds: 300), () {
       if (mounted) _barAnimController.forward();
     });
@@ -75,6 +77,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
   @override
   void dispose() {
     _barAnimController.dispose();
+    _calendarAnimController.dispose();
     super.dispose();
   }
 
@@ -99,6 +102,11 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
   }
 
   void _shiftRangeBack() {
+    final tier = ref.read(effectiveSubscriptionTierProvider);
+    if (!tier.canViewFullActivity) {
+      showUpgradePrompt(context, feature: 'Full activity history');
+      return;
+    }
     setState(() {
       switch (_selectedTab) {
         case 0:
@@ -120,6 +128,11 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
   }
 
   void _shiftRangeForward() {
+    final tier = ref.read(effectiveSubscriptionTierProvider);
+    if (!tier.canViewFullActivity) {
+      showUpgradePrompt(context, feature: 'Full activity history');
+      return;
+    }
     setState(() {
       switch (_selectedTab) {
         case 0:
@@ -144,6 +157,65 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
     _barAnimController.reset();
     Future.delayed(const Duration(milliseconds: 100), () {
       if (mounted) _barAnimController.forward();
+    });
+  }
+
+  Future<void> _showDatePicker(BuildContext context) async {
+    final tier = ref.read(effectiveSubscriptionTierProvider);
+    if (!tier.canViewFullActivity) {
+      showUpgradePrompt(context, feature: 'Full activity history');
+      return;
+    }
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _rangeStart,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(9999, 12, 31),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.dark(
+              primary: accentCoral,
+              onPrimary: Colors.white,
+              surface: Color(0xFF1E0E3D),
+              onSurface: Colors.white,
+            ),
+            dialogTheme: const DialogThemeData(
+              backgroundColor: Color(0xFF1E0E3D),
+            ),
+            datePickerTheme: const DatePickerThemeData(
+              backgroundColor: Color(0xFF1E0E3D),
+              headerForegroundColor: Colors.white,
+              dayForegroundColor: WidgetStatePropertyAll(Colors.white),
+              yearForegroundColor: WidgetStatePropertyAll(Colors.white),
+              weekdayStyle: TextStyle(color: Colors.white70),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked == null) return;
+
+    setState(() {
+      switch (_selectedTab) {
+        case 0:
+          final weekday = picked.weekday;
+          _rangeStart = DateTime(picked.year, picked.month, picked.day - (weekday - 1));
+          _rangeEnd = _rangeStart.add(const Duration(days: 6));
+          break;
+        case 1:
+          _rangeStart = DateTime(picked.year, picked.month);
+          _rangeEnd = DateTime(picked.year, picked.month + 1)
+              .subtract(const Duration(days: 1));
+          break;
+        case 2:
+          _rangeStart = DateTime(picked.year);
+          _rangeEnd = DateTime(picked.year, 12, 31);
+          break;
+      }
+      _restartBarAnimation();
     });
   }
 
@@ -233,6 +305,9 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
               studentId: widget.studentId, start: _rangeStart, end: _rangeEnd,
             ).future);
             _barAnimController
+              ..reset()
+              ..forward();
+            _calendarAnimController
               ..reset()
               ..forward();
             setState(() => _refreshKey++);
@@ -438,9 +513,15 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                 Row(
                   children: List.generate(3, (i) {
                     final selected = _selectedTab == i;
+                    final canViewFull = ref.watch(effectiveSubscriptionTierProvider).canViewFullActivity;
+                    final isLocked = i > 0 && !canViewFull;
                     return Expanded(
                       child: GestureDetector(
                         onTap: () {
+                          if (isLocked) {
+                            showUpgradePrompt(context, feature: 'Full activity history');
+                            return;
+                          }
                           setState(() {
                             _selectedTab = i;
                             _computeDateRange();
@@ -449,15 +530,32 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                         },
                         behavior: HitTestBehavior.opaque,
                         child: Center(
-                          child: AnimatedDefaultTextStyle(
-                            duration: const Duration(milliseconds: 200),
-                            style: TextStyle(fontFamily: 'Nunito',
-                              fontSize: 14,
-                              fontWeight:
-                                  selected ? FontWeight.w800 : FontWeight.w600,
-                              color: selected ? Colors.white : darkTextMuted,
-                            ),
-                            child: Text(labels[i]),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (isLocked) ...[
+                                SvgPicture.asset(
+                                  'lib/images/licensed/svg/crown.svg',
+                                  width: 14,
+                                  height: 14,
+                                ),
+                                const SizedBox(width: 4),
+                              ],
+                              AnimatedDefaultTextStyle(
+                                duration: const Duration(milliseconds: 200),
+                                style: TextStyle(fontFamily: 'Nunito',
+                                  fontSize: 14,
+                                  fontWeight:
+                                      selected ? FontWeight.w800 : FontWeight.w600,
+                                  color: selected
+                                      ? Colors.white
+                                      : isLocked
+                                          ? darkTextMuted.withAlpha(100)
+                                          : darkTextMuted,
+                                ),
+                                child: Text(labels[i]),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -484,12 +582,35 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  _formatDateRange(),
-                  style: TextStyle(fontFamily: 'Nunito',
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.white,
+                GestureDetector(
+                  onTap: () => _showDatePicker(context),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        _formatDateRange(),
+                        style: TextStyle(fontFamily: 'Nunito',
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      SizedBox(
+                        width: 28,
+                        height: 28,
+                        child: Lottie.asset(
+                          'lib/images/licensed/json/calendar-animation.json',
+                          fit: BoxFit.contain,
+                          repeat: false,
+                          controller: _calendarAnimController,
+                          onLoaded: (composition) {
+                            _calendarAnimController.duration = composition.duration;
+                            _calendarAnimController.forward();
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -1361,7 +1482,7 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Upgrade to Pro to listen to student recordings',
+                        'Upgrade to Teacher Lite to listen to student recordings',
                         style: TextStyle(fontFamily: 'Nunito',
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
