@@ -391,12 +391,14 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                           'teacher_lite_monthly', '\$4.99'),
                                       period: '/month',
                                       features: [
-                                        'Everything in Pro',
                                         'Up to 10 students',
                                         'Assigned quests',
                                         'View student recordings & stats',
                                         'Group notifications',
                                         'Students get Pro free',
+                                        'Full activity history',
+                                        'Recording & playback',
+                                        'Music Player',
                                       ],
                                       isCurrentPlan: currentTier ==
                                               SubscriptionTier.teacherLite &&
@@ -415,12 +417,14 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                           'teacher_pro_monthly', '\$9.99'),
                                       period: '/month',
                                       features: [
-                                        'Everything in Pro',
                                         'Up to 25 students',
                                         'Assigned quests',
                                         'View student recordings & stats',
                                         'Group notifications',
                                         'Students get Pro free',
+                                        'Full activity history',
+                                        'Recording & playback',
+                                        'Music Player',
                                       ],
                                       isCurrentPlan: currentTier ==
                                               SubscriptionTier.teacherPro &&
@@ -440,12 +444,14 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                           'teacher_premium_monthly', '\$14.99'),
                                       period: '/month',
                                       features: [
-                                        'Everything in Pro',
                                         'Up to 50 students',
                                         'Assigned quests',
                                         'View student recordings & stats',
                                         'Group notifications',
                                         'Students get Pro free',
+                                        'Full activity history',
+                                        'Recording & playback',
+                                        'Music Player',
                                       ],
                                       isCurrentPlan: currentTier ==
                                               SubscriptionTier.teacherPremium &&
