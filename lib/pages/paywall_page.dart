@@ -347,8 +347,8 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                   // Free plan (always shown)
                                   _buildPlanCard(
                                     title: 'Free',
-                                    price: '\$0',
-                                    period: 'forever',
+                                    price: '',
+                                    period: '',
                                     features: [
                                       'All 4 instruments',
                                       'Practice timer with tracking',
@@ -371,7 +371,6 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                         'Full activity history',
                                         'Recording & playback',
                                         'Music Player with favorites & uploads',
-                                        'Unlimited quest history',
                                       ],
                                       isCurrentPlan:
                                           currentTier == SubscriptionTier.pro &&
@@ -608,11 +607,16 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
             runSpacing: 6,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              Text(
-                title,
-                style: TextStyle(fontFamily: 'DM Serif Display',
-                  fontSize: 20,
-                  color: Colors.white,
+              ShaderMask(
+                shaderCallback: (bounds) => const LinearGradient(
+                  colors: [Colors.white, accentCoral],
+                ).createShader(bounds),
+                child: Text(
+                  title,
+                  style: TextStyle(fontFamily: 'DM Serif Display',
+                    fontSize: 20,
+                    color: Colors.white,
+                  ),
                 ),
               ),
               if (isPopular)
@@ -622,6 +626,7 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                   decoration: BoxDecoration(
                     color: accentCoral.withAlpha(30),
                     borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.black, width: 1.5),
                   ),
                   child: Text(
                     'RECOMMENDED',
@@ -652,34 +657,36 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                 ),
             ],
           ),
-          const SizedBox(height: 8),
+          if (price.isNotEmpty) ...[
+            const SizedBox(height: 8),
 
-          // Price
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Flexible(
-                child: Text(
-                  price,
-                  style: TextStyle(fontFamily: 'DM Serif Display',
-                    fontSize: 28,
-                    color: accentColor,
+            // Price
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Flexible(
+                  child: Text(
+                    price,
+                    style: TextStyle(fontFamily: 'DM Serif Display',
+                      fontSize: 28,
+                      color: accentColor,
+                    ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4, left: 2),
-                child: Text(
-                  period,
-                  style: TextStyle(fontFamily: 'Nunito',
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: darkTextMuted,
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 4, left: 2),
+                  child: Text(
+                    period,
+                    style: TextStyle(fontFamily: 'Nunito',
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: darkTextMuted,
                   ),
                 ),
               ),
             ],
           ),
+          ],
           if (trialInfo != null) ...[
             const SizedBox(height: 6),
             Container(

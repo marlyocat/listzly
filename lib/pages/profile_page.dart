@@ -788,7 +788,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
         decoration: BoxDecoration(
           color: darkCardBg,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.black, width: 5),
+          border: Border.all(color: accentCoral, width: 2),
+          boxShadow: [
+            BoxShadow(
+              color: accentCoral.withAlpha(30),
+              blurRadius: 20,
+              spreadRadius: 2,
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
