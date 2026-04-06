@@ -1239,7 +1239,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (ctx) {
-        return DraggableScrollableSheet(
+        return GestureDetector(
+          onTap: () => Navigator.pop(ctx),
+          behavior: HitTestBehavior.opaque,
+          child: DraggableScrollableSheet(
           initialChildSize: 0.55,
           maxChildSize: 0.85,
           minChildSize: 0.3,
@@ -1322,6 +1325,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
               ],
             ),
           ),
+        ),
         );
       },
     );
