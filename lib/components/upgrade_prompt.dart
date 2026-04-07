@@ -44,7 +44,7 @@ class _UpgradePromptSheetState extends ConsumerState<_UpgradePromptSheet> {
       final isTeacher =
           ref.read(currentProfileProvider).value?.isTeacher ?? false;
       final packageId =
-          isTeacher ? 'teacher_lite_monthly' : 'personal_pro_yearly';
+          isTeacher ? 'teacher_lite_monthly' : 'personal_pro_monthly';
       final package = offerings.current?.availablePackages
           .where((p) => p.identifier == packageId)
           .firstOrNull;

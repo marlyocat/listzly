@@ -1212,7 +1212,12 @@ class _PracticePageState extends ConsumerState<PracticePage>
                 ),
               ),
 
-            const Spacer(flex: 3),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+
+            const SizedBox(height: 40),
 
             // Star animation
             Transform.scale(
@@ -1422,7 +1427,13 @@ class _PracticePageState extends ConsumerState<PracticePage>
               ),
             ),
 
-            const Spacer(flex: 2),
+            const SizedBox(height: 24),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
 
             // Done button
             Transform.scale(
@@ -1464,7 +1475,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
               ),
             ),
 
-            const Spacer(flex: 2),
+            const SizedBox(height: 24),
           ],
         );
       },

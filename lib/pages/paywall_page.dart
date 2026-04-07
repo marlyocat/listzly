@@ -365,8 +365,8 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                     _buildPlanCard(
                                       title: 'Personal Pro',
                                       price: _getPrice(
-                                          'personal_pro_yearly', '\$7.99'),
-                                      period: '/year',
+                                          'personal_pro_monthly', '\$0.99'),
+                                      period: '/month',
                                       features: [
                                         'Full activity history',
                                         'Recording & playback',
@@ -377,9 +377,9 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                               !isCancelled,
                                       isPopular: true,
                                       accentColor: accentCoral,
-                                      trialInfo: _getTrialInfo('personal_pro_yearly'),
+                                      trialInfo: _getTrialInfo('personal_pro_monthly'),
                                       onTap: () =>
-                                          _purchaseProduct('personal_pro_yearly'),
+                                          _purchaseProduct('personal_pro_monthly'),
                                     ),
                                   ],
                                   if (isTeacher) ...[
@@ -478,21 +478,45 @@ class _PaywallPageState extends ConsumerState<PaywallPage> {
                                                 mode: LaunchMode
                                                     .externalApplication);
                                             if (mounted) {
-                                              messenger.showSnackBar(
-                                                SnackBar(
-                                                  content: Text(
-                                                    'If you recently cancelled, it may take a few minutes for changes to reflect.',
-                                                    style: TextStyle(fontFamily: 'Nunito',
-                                                      fontWeight:
-                                                          FontWeight.w600,
+                                              // Check if user actually cancelled
+                                              final updatedInfo =
+                                                  await Purchases.getCustomerInfo();
+                                              final entitlement =
+                                                  updatedInfo.entitlements.active['pro'];
+                                              if (entitlement != null && !entitlement.willRenew) {
+                                                messenger.showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                      'Your subscription will remain active until the end of your current billing period.',
+                                                      style: TextStyle(fontFamily: 'Nunito',
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                      ),
                                                     ),
+                                                    duration: const Duration(
+                                                        seconds: 6),
+                                                    behavior:
+                                                        SnackBarBehavior.floating,
                                                   ),
-                                                  duration: const Duration(
-                                                      seconds: 6),
-                                                  behavior:
-                                                      SnackBarBehavior.floating,
-                                                ),
-                                              );
+                                                );
+                                                ref.invalidate(subscriptionInfoProvider);
+                                              } else {
+                                                messenger.showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                      'Subscription was not cancelled.',
+                                                      style: TextStyle(fontFamily: 'Nunito',
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                      ),
+                                                    ),
+                                                    duration: const Duration(
+                                                        seconds: 3),
+                                                    behavior:
+                                                        SnackBarBehavior.floating,
+                                                  ),
+                                                );
+                                              }
                                             }
                                           }
                                         } catch (e) {
