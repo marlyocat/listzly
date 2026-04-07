@@ -3405,7 +3405,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Reminder set for ${_formatReminderDisplay(timeStr)}',
+              'Daily reminder set for ${_formatReminderDisplay(timeStr)}',
               style: TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600),
             ),
             behavior: SnackBarBehavior.floating,
