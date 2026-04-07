@@ -24,7 +24,8 @@ class SubscriptionService {
       final tier = _tierFromEntitlements(customerInfo);
       if (tier.isFree) return SubscriptionInfo.free;
 
-      final entitlement = customerInfo.entitlements.active[entitlementPro]!;
+      final entitlement = customerInfo.entitlements.active[entitlementPro];
+      if (entitlement == null) return SubscriptionInfo.free;
       DateTime? expirationDate;
       if (entitlement.expirationDate != null) {
         expirationDate = DateTime.tryParse(entitlement.expirationDate!);
@@ -48,13 +49,14 @@ class SubscriptionService {
   }
 
   /// Stream that emits whenever the subscription status changes.
-  Stream<SubscriptionTier> get onTierChanged {
+  /// Single cached instance — only one listener is ever registered.
+  late final Stream<SubscriptionTier> onTierChanged = () {
     final controller = StreamController<SubscriptionTier>.broadcast();
     Purchases.addCustomerInfoUpdateListener((info) {
       controller.add(_tierFromEntitlements(info));
     });
     return controller.stream;
-  }
+  }();
 
   SubscriptionTier _tierFromEntitlements(CustomerInfo info) {
     final proEntitlement = info.entitlements.active[entitlementPro];
