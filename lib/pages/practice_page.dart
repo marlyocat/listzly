@@ -1301,7 +1301,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
                           widget.instrument,
                           style: TextStyle(fontFamily: 'DM Serif Display',
                             fontSize: 18,
-                            color: darkTextSecondary,
+                            color: Colors.white,
                           ),
                         ),
                       ],
@@ -1322,7 +1322,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
                       style: TextStyle(fontFamily: 'Nunito',
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
-                        color: darkTextMuted,
+                        color: accentCoral,
                       ),
                     ),
 
@@ -1340,7 +1340,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
                             style: TextStyle(fontFamily: 'Nunito',
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
-                              color: darkTextMuted,
+                              color: Colors.green,
                             ),
                           ),
                         ],
@@ -1350,12 +1350,32 @@ class _PracticePageState extends ConsumerState<PracticePage>
                     const SizedBox(height: 12),
 
                     // Total XP
-                    Text(
-                      '+${xpEarned + _completedQuests.fold(0, (sum, q) => sum + q.xp)} XP',
-                      style: TextStyle(fontFamily: 'DM Serif Display',
-                        fontSize: 24,
-                        color: accentCoral,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Total XP Earned:',
+                          style: TextStyle(fontFamily: 'Nunito',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                            color: accentCoral,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '+${xpEarned + _completedQuests.fold(0, (sum, q) => sum + q.xp)} XP',
+                          style: TextStyle(fontFamily: 'DM Serif Display',
+                            fontSize: 26,
+                            color: accentCoral,
+                            shadows: [
+                              Shadow(
+                                color: accentCoral.withAlpha(80),
+                                blurRadius: 12,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
 
                     // Level up
@@ -1417,7 +1437,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
                           style: TextStyle(fontFamily: 'Nunito',
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
-                            color: darkTextMuted,
+                            color: Colors.amber,
                           ),
                         ),
                       ],
