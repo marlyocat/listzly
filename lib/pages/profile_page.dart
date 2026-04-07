@@ -365,6 +365,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
             ref.invalidate(currentProfileProvider);
             ref.invalidate(userSettingsProvider);
             ref.invalidate(instrumentStatsProvider);
+            ref.invalidate(subscriptionInfoProvider);
             await Future.wait([
               ref.read(currentProfileProvider.future),
               ref.read(userSettingsProvider.future),
